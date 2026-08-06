@@ -35,3 +35,4 @@
 .button.primary:hover{background:#003f35}
 .card,.stat-card{border-color:rgba(0,75,63,.12)}
 @media(max-width:780px){.brand-sidebar img{max-width:210px}.branded-stat{padding:16px}.auth-brand img{max-width:320px}.auth-ornament{display:none}}
+.auth-back{margin:14px 0 0;text-align:center;font-size:12px;font-weight:800}.auth-back a{color:var(--emerald)}

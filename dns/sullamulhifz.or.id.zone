@@ -1,0 +1,10 @@
+$ORIGIN sullamulhifz.or.id.
+$TTL 300
+@       IN A      38.47.180.127
+www     IN CNAME  sullamulhifz.or.id.
+app     IN A      38.47.180.127
+
+; Reserved — activate only when the corresponding Coolify resource is ready.
+; academy IN A      38.47.180.127
+; staging IN A      38.47.180.127
+; api     IN A      38.47.180.127

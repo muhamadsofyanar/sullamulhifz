@@ -1,5 +1,23 @@
 # Changelog
 
+## v1.3.0 — Public Website & Domain Preparation
+
+- menambahkan website publik pada route `/`;
+- menambahkan halaman Tentang, Program, TPA, Academy, Artikel, Kontak, dan Privasi;
+- menambahkan metadata SEO, Open Graph, robots, dan sitemap;
+- memisahkan perilaku root pada host portal `app.sullamulhifz.or.id`;
+- menambahkan paket DNS Cloudflare dan panduan domain/subdomain;
+- memperbarui service worker agar navigasi publik tidak memakai cache halaman login lama;
+- tidak mengubah database atau data awal.
+
+## v1.2.1 — Documentation Governance
+
+- Menambahkan `START-HERE.md` sebagai pintu masuk ketika riwayat chat hilang.
+- Menambahkan current state, roadmap, arsitektur, decision log, issue register, data governance, dan handover.
+- Menetapkan standar release, upgrade, testing, rollback, dan operasi Coolify.
+- Menambahkan template issue/PR dan GitHub Action untuk memastikan setiap rilis memiliki panduan upgrade.
+- Tidak mengubah fitur, database, atau data produksi.
+
 ## v1.1.1 — Blade hotfix
 - Memperbaiki parse error `unexpected token endif` pada halaman Pembinaan Jumat.
 - Memisahkan directive Blade bersarang agar kompilasi view stabil di Laravel/PHP 8.4.

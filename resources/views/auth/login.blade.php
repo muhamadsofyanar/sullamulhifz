@@ -19,6 +19,7 @@
             <button class="button primary wide" type="submit">Masuk</button>
         </form>
         <p class="auth-note">Pembinaan berlangsung di dunia nyata. Aplikasi menjaga jejak, komunikasi, dan kesinambungannya.</p>
+        <p class="auth-back"><a href="{{ config('sullam.public_url') ?: route('public.home') }}">← Kembali ke website utama</a></p>
     </div>
 </div>
 @endsection

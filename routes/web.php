@@ -16,9 +16,24 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\ClassroomController;
 use App\Http\Controllers\Teacher\MeetingController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', fn () => auth()->check() ? redirect()->route('dashboard') : redirect()->route('login'));
+Route::get('/', function (Request $request) {
+    if ($request->getHost() === config('sullam.portal_host')) {
+        return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
+    }
+
+    return view('public.home');
+})->name('public.home');
+
+Route::view('/tentang', 'public.about')->name('public.about');
+Route::view('/program', 'public.programs')->name('public.programs');
+Route::view('/tpa', 'public.tpa')->name('public.tpa');
+Route::view('/academy', 'public.academy')->name('public.academy');
+Route::view('/artikel', 'public.articles')->name('public.articles');
+Route::view('/kontak', 'public.contact')->name('public.contact');
+Route::view('/privasi', 'public.privacy')->name('public.privacy');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');

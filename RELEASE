@@ -1,3 +1,4 @@
-Sullamul Hifz v1.2.0
-Release: official-branding
-Data: 88 santri, 88 wali, 4 guru, Tahfizh A/B
+Sullamul Hifz v1.3.0
+Release type: public-website
+Database changes: none
+Upgrade: safe from v1.2.x; do not wipe database

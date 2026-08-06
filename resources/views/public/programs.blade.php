@@ -1,0 +1,12 @@
+@extends('layouts.public')
+@section('title', 'Program Sullamul Ḥifẓ')
+@section('description', 'Jalur program Sullamul Ḥifẓ untuk lembaga, guru, orang tua, dan pembelajar Al-Qur’an.')
+@section('content')
+<section class="page-hero"><div class="public-container page-hero-inner"><span class="public-eyebrow">PROGRAM</span><h1>Satu filosofi, beberapa jalur pembinaan.</h1><p>Program dibangun bertahap sesuai kebutuhan nyata dan kesiapan sistem.</p></div></section>
+<section class="public-section"><div class="public-container program-stack">
+<article class="program-row"><div class="program-index">01</div><div><span class="status-badge active">Aktif</span><h2>TPA Al-Insyirah</h2><p>Operasional pembelajaran melalui kelas utama, kelompok Tahfizh, penugasan guru, jadwal, kehadiran, Tahsin, hafalan, murāja‘ah, dan komunikasi wali.</p><a class="text-link" href="{{ route('public.tpa') }}">Lihat detail TPA →</a></div><div class="program-points"><span>Administrasi terhubung</span><span>Jejak pembelajaran</span><span>Komunikasi wali</span></div></article>
+<article class="program-row" id="keluarga"><div class="program-index">02</div><div><span class="status-badge">Dalam pengembangan</span><h2>Keluarga Qur’ani</h2><p>Pendampingan bagi orang tua agar rumah menjadi ruang penguatan, bukan ruang tekanan kedua. Fokus pada kebiasaan, komunikasi, dukungan, dan kesinambungan.</p></div><div class="program-points"><span>Parenting Qur’ani</span><span>Panduan pendampingan</span><span>Komunikasi guru–wali</span></div></article>
+<article class="program-row"><div class="program-index">03</div><div><span class="status-badge upcoming">Segera hadir</span><h2>Sullamul Ḥifẓ Academy</h2><p>Kelas digital untuk guru Al-Qur’an, pengelola lembaga, orang tua, dan pembelajar umum. Academy dibangun setelah fondasi TPA dan portal pengguna stabil.</p><a class="text-link" href="{{ route('public.academy') }}">Lihat roadmap Academy →</a></div><div class="program-points"><span>Video & modul</span><span>Kuis & tugas</span><span>Progress & sertifikat</span></div></article>
+<article class="program-row"><div class="program-index">04</div><div><span class="status-badge">Bertahap</span><h2>Community & Pembinaan</h2><p>Ruang penguatan nilai, pembinaan Jumat, artikel, diskusi termoderasi, dan agenda yang menghubungkan peserta, keluarga, guru, dan lembaga.</p></div><div class="program-points"><span>Pembinaan Jumat</span><span>Artikel & audio</span><span>Komunitas termoderasi</span></div></article>
+</div></section>
+@endsection

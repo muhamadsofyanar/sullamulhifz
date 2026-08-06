@@ -1,0 +1,4 @@
+Type,Name,Content,Proxy status,TTL,Comment
+A,@,38.47.180.127,Proxied,Auto,Website utama
+CNAME,www,sullamulhifz.or.id,Proxied,Auto,Alias website utama
+A,app,38.47.180.127,Proxied,Auto,Portal aplikasi

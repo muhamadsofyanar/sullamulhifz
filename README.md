@@ -1,9 +1,21 @@
-# Sullamul Ḥifẓ v1.1.0 — TPA Al-Insyirah
+# Sullamul Ḥifẓ v1.2.1 — TPA Al-Insyirah
 
-> **v1.2.0 — Official Branding:** logo resmi, icon system, palet Deep Emerald–Warm Gold–Ivory, hotfix Pembinaan Jumat, dan data awal terenkripsi tetap dipertahankan. Lihat `UPGRADE-V1.2.0.md` untuk upgrade tanpa menghapus database.
+> **v1.2.1 — Documentation Governance:** fungsi aplikasi tetap berbasis v1.2.0 Official Branding. Rilis ini menambahkan roadmap, current state, handover, standar rilis/upgrade, dan pemeriksaan otomatis dokumentasi. Mulai dari [`START-HERE.md`](START-HERE.md).
 
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
+
+## Dokumentasi proyek
+
+Ketika riwayat chat hilang atau pekerjaan berpindah akun, mulai dari:
+
+- [`START-HERE.md`](START-HERE.md)
+- [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
+- [`docs/ROADMAP.md`](docs/ROADMAP.md)
+- [`docs/NEXT-RELEASE-v1.3.0.md`](docs/NEXT-RELEASE-v1.3.0.md)
+- [`docs/HANDOVER-NEXT-CHAT.md`](docs/HANDOVER-NEXT-CHAT.md)
+
+Setiap versi wajib memiliki `UPGRADE-VX.Y.Z.md` dan `docs/releases/vX.Y.Z.md`. GitHub Action akan memeriksa kelengkapannya.
 
 Aplikasi web responsif/PWA untuk pencatatan penting pembelajaran Al-Qur’an, tugas rumah, buku penghubung, pengumuman, dan Pembinaan Jumat. Implementasi pertama disiapkan untuk **TPA Al-Insyirah**.
 
