@@ -4,7 +4,7 @@ Tanggal pemeriksaan: 6 Agustus 2026
 
 ## Cakupan yang selesai
 
-- Fondasi Laravel 13 dan PHP 8.3.
+- Fondasi Laravel 13 dan PHP 8.4.1.
 - Autentikasi email/nomor telepon, pembatasan login, dan kewajiban mengganti kata sandi awal.
 - Role admin lembaga, kepala TPA, guru, dan wali.
 - Data santri, beberapa wali per santri, guru, tahun ajaran, jenjang, kelas, kelompok belajar, program, penugasan, dan jadwal.

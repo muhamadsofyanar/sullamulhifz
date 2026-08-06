@@ -51,7 +51,7 @@ Aplikasi web responsif/PWA untuk pencatatan penting pembelajaran Al-Qur’an, tu
 
 ## Teknologi
 
-- PHP 8.3+
+- PHP 8.4.1+
 - Laravel 13
 - Blade + CSS/JavaScript mandiri, tanpa proses build Node wajib
 - MySQL 8 / MariaDB kompatibel
