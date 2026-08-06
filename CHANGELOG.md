@@ -1,5 +1,16 @@
 # Changelog
 
+## 1.0.0 — 2026-08-06
+
+Stable deployment release for Coolify + MySQL.
+
+- Uses PHP 8.4 runtime and Composer platform PHP 8.4.1.
+- Uses `PDO::MYSQL_ATTR_SSL_CA` in the MySQL configuration.
+- Shortens the `assignment_submissions` composite unique-index name to `asgn_submission_recipient_attempt_uq`, compatible with MySQL's identifier limit.
+- Adds `scripts/first-install.sh` for a clean one-time database installation.
+- Adds `scripts/deploy.sh` for subsequent deployments.
+- Adds `RELEASE` and `public/release.txt` so the deployed version can be verified.
+
 ## 0.1.0 — 2026-08-06
 
 - Fondasi Laravel 13.
@@ -15,8 +26,5 @@
 - PWA dasar.
 - Dockerfile, NGINX Unit, seeder produksi, dan panduan Coolify.
 
-## 0.1.1 - 2026-08-06
-
-- Align runtime and Composer dependency resolution to PHP 8.4.1+.
-- Upgrade NGINX Unit runtime image from `1.34.1-php8.3` to `1.34.2-php8.4`.
-- Pin Composer platform PHP to 8.4.1 to prevent build/runtime dependency mismatch.
+## 0.1.3 - 2026-08-06
+- Shortened the `assignment_submissions` composite unique-index name for MySQL's 64-character identifier limit.

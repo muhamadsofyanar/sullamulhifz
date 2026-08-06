@@ -1,0 +1,5 @@
+Sullamul Hifz v1.0.0
+Release: stable
+Date: 2026-08-06
+Migration fix: asgn_submission_recipient_attempt_uq
+PHP runtime: 8.4

@@ -170,7 +170,7 @@ return new class extends Migration {
             $table->string('mime_type')->nullable();
             $table->unsignedBigInteger('file_size')->nullable();
             $table->timestamps();
-            $table->unique(['assignment_recipient_id', 'attempt_number']);
+            $table->unique(['assignment_recipient_id', 'attempt_number'], 'asgn_submission_recipient_attempt_uq');
         });
     }
 

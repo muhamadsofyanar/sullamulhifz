@@ -9,6 +9,10 @@ RUN composer install \
 
 FROM unit:1.34.2-php8.4
 
+LABEL org.opencontainers.image.title="Sullamul Hifz" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.description="Platform pembinaan Al-Quran Sullamul Hifz"
+
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
         libonig-dev \
@@ -42,7 +46,8 @@ RUN mkdir -p \
         storage/logs \
         bootstrap/cache \
     && chown -R unit:unit storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+    && chmod -R 775 storage bootstrap/cache \
+    && chmod +x scripts/*.sh
 
 EXPOSE 8000
 CMD ["unitd", "--no-daemon"]
