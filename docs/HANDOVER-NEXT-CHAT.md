@@ -8,22 +8,23 @@ Saya melanjutkan proyek Sullamul Ḥifẓ dari repository GitHub muhamadsofyanar
 Pelajari terlebih dahulu:
 1. START-HERE.md
 2. docs/CURRENT-STATE.md
-3. docs/QURAN-LEARNING-v1.6.0.md
-4. UPGRADE-V1.6.0.md
-5. docs/TEST-v1.6.0.md
-6. docs/DATABASE-v1.6.0.md
-7. docs/ROLLBACK-v1.6.0.md
-8. docs/ROADMAP.md
-9. CHANGELOG.md
-10. RELEASE
+3. docs/QARI-TAHFIZH-v1.6.1.md
+4. UPGRADE-V1.6.1.md
+5. docs/TEST-v1.6.1.md
+6. docs/DATABASE-v1.6.1.md
+7. docs/QURAN-LEARNING-v1.6.0.md
+8. docs/ROLLBACK-v1.6.1.md
+9. docs/ROADMAP.md
+10. CHANGELOG.md
+11. RELEASE
 
 Fakta penting:
 - website publik: sullamulhifz.or.id;
 - portal: app.sullamulhifz.or.id;
-- baseline sebelum paket: v1.5.1;
-- paket saat ini: v1.6.0 Quran Learning Complete;
+- baseline sebelum paket: v1.6.0;
+- paket saat ini: v1.6.1 Qari Tahfizh;
 - data yang wajib dipertahankan: 88 santri, 88 wali, 4 guru, 6 kelas utama, Tahfizh A 30, Tahfizh B 27;
-- target pustaka Quran Learning: 37 surah dan 564 timing ayat Juz 30;
+- target pustaka Quran Learning: 37 surah dan 564 timing per qari, total 1.128 untuk Al-Husary dan Al-Minshawi;
 - angka 100% pada pustaka bukan progres santri;
 - video harus dikurasi manual.
 

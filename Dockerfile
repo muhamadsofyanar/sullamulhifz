@@ -50,4 +50,4 @@ RUN mkdir -p \
     && chmod +x scripts/*.sh
 
 EXPOSE 8000
-CMD ["sh", "scripts/container-start-v1.6.0.sh"]
+CMD ["sh", "scripts/container-start-v1.6.1.sh"]

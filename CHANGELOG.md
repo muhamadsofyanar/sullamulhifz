@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.6.1 — Qari Tahfizh — 2026-08-06
+
+- Al-Husary menjadi qari utama tahfizh.
+- Al-Minshawi ditambahkan untuk murajaah dan tadabbur.
+- Sinkronisasi dua sumber mencapai target 1.128 timing Juz 30.
+- Pemilihan qari berlaku untuk preset, target, dan latihan manual.
+- Sumber Al-Ajmi dinonaktifkan tanpa menghapus data lama.
+
 ## v1.6.0 — Quran Learning Complete — 2026-08-06
 
 - Menambahkan pustaka audio Juz 30 dan timing 564 ayat.

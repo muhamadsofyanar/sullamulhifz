@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Models\Institution;
 use App\Models\QuranAudioSource;
+use App\Services\QuranAudioSyncService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Schema;
 use Tests\TestCase;
@@ -35,9 +36,9 @@ class QuranLearningMigrationTest extends TestCase
             'institution_id' => $institution->id,
             'name' => 'Murattal Uji',
             'provider' => 'mp3quran',
-            'external_id' => '5',
-            'reciter_name' => 'Ahmad bin Ali Al-Ajmi',
-            'base_url' => 'https://server10.mp3quran.net/ajm/',
+            'external_id' => '118',
+            'reciter_name' => 'Mahmoud Khalil Al-Husary',
+            'base_url' => 'https://server13.mp3quran.net/husr/',
             'is_default' => true,
             'status' => 'active',
         ]);
@@ -45,4 +46,17 @@ class QuranLearningMigrationTest extends TestCase
         $this->assertTrue($source->is_default);
         $this->assertSame($institution->id, $source->institution_id);
     }
+
+    public function test_qari_tahfizh_definitions_use_husary_and_minshawi(): void
+    {
+        $definitions = app(QuranAudioSyncService::class)->sourceDefinitions();
+
+        $this->assertSame(['118', '112'], array_column($definitions, 'external_id'));
+        $this->assertTrue($definitions[0]['is_default']);
+        $this->assertSame('Mahmoud Khalil Al-Husary', $definitions[0]['reciter_name']);
+        $this->assertSame('Muhammad Siddiq Al-Minshawi', $definitions[1]['reciter_name']);
+        $this->assertSame('https://server13.mp3quran.net/husr/', $definitions[0]['base_url']);
+        $this->assertSame('https://server10.mp3quran.net/minsh/', $definitions[1]['base_url']);
+    }
+
 }

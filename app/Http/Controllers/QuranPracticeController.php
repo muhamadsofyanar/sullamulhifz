@@ -104,7 +104,7 @@ class QuranPracticeController extends Controller
 
         if (! empty($data['preset_id'])) {
             $preset = QuranPracticePreset::query()->where('institution_id', $institutionId)->findOrFail($data['preset_id']);
-            $payload = $builder->fromPreset($preset);
+            $payload = $builder->fromPreset($preset, isset($data['source_id']) ? (int) $data['source_id'] : null);
         } elseif (! empty($data['target_id'])) {
             $target = MemorizationTarget::query()->with('surah')->where('institution_id', $institutionId)->findOrFail($data['target_id']);
             $this->authorizeTarget($request, $target);

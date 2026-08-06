@@ -1,80 +1,64 @@
-# Sullamul Ḥifẓ v1.4.4 — Institution Reference
+# Sullamul Ḥifẓ v1.6.1 — Qari Tahfizh
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat ini melengkapi TPA Al-Insyirah sebagai profil implementasi pertama Sullamul Ḥifẓ dan menyediakan panduan adaptasi bagi lembaga lain. Fitur Ikrar Santri v1.4.3 tetap tersedia. Tidak ada migration baru.
+Sullamul Ḥifẓ adalah platform web responsif/PWA untuk operasional TPA, pembelajaran Al-Qur'an, komunikasi guru–wali, dan pencatatan perjalanan santri. TPA Al-Insyirah menjadi implementasi pertama.
 
-> Produksi aktif yang telah berjalan adalah v1.3.0 pada `taysriulqurani.id`. Paket v1.4.x tetap merupakan kandidat yang harus diuji sebelum dipindahkan ke domain baru.
+## Status saat ini
+
+- **Website publik:** `https://sullamulhifz.or.id`
+- **Portal aplikasi:** `https://app.sullamulhifz.or.id`
+- **Domain lama/cadangan:** `https://taysriulqurani.id`
+- **Rilis paket:** v1.6.1 — Qari Tahfizh
+- **Data yang wajib dipertahankan:** 88 santri, 88 wali, 4 guru, 6 kelas utama, Tahfizh A dan Tahfizh B
 
 ## Mulai dari sini
 
-- [`START-HERE.md`](START-HERE.md)
-- [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
-- [`docs/ROADMAP.md`](docs/ROADMAP.md)
-- [`docs/HANDOVER-NEXT-CHAT.md`](docs/HANDOVER-NEXT-CHAT.md)
-- [`docs/NEXT-RELEASE-v2.0.0.md`](docs/NEXT-RELEASE-v2.0.0.md)
+1. [`START-HERE.md`](START-HERE.md)
+2. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
+3. [`docs/QARI-TAHFIZH-v1.6.1.md`](docs/QARI-TAHFIZH-v1.6.1.md)
+4. [`UPGRADE-V1.6.1.md`](UPGRADE-V1.6.1.md)
+5. [`docs/TEST-v1.6.1.md`](docs/TEST-v1.6.1.md)
+6. [`docs/ROLLBACK-v1.6.1.md`](docs/ROLLBACK-v1.6.1.md)
+7. [`docs/HANDOVER-NEXT-CHAT.md`](docs/HANDOVER-NEXT-CHAT.md)
 
-## Produk
+## Fitur aktif
 
-Sullamul Ḥifẓ mencakup:
+- website publik dan profil referensi TPA Al-Insyirah;
+- portal admin, guru, dan wali;
+- profil lembaga, tahun ajaran, kelas, kelompok, dan jadwal;
+- absensi, Tahsīn, Tahfizh, murāja‘ah, tugas, dan rapor;
+- target hafalan personal dan observasi metode belajar;
+- buku penghubung, pengumuman, Pembinaan Jumat, dan Ikrar Santri;
+- pemisahan domain publik dan portal;
+- Quran Learning untuk ayat, rentang ayat, surah, halaman, rubu’, dan target santri;
+- pengulangan per ayat atau seluruh pilihan, termasuk jumlah ulang, jeda, dan kecepatan;
+- video bacaan yang diterbitkan setelah kurasi admin.
 
-- website publik;
-- portal operasional TPA untuk admin, guru, dan wali;
-- pencatatan kehadiran, Tahsin, Tahfizh, Murajaah, tugas, buku penghubung, pengumuman, dan Pembinaan Jumat;
-- pengelolaan data awal TPA Al-Insyirah;
-- arah pengembangan Academy pada fase v2.
+## Qari v1.6.1
 
+### Mahmoud Khalil Al-Husary — pilihan utama tahfizh
 
-## Fitur v1.4.4
+Digunakan sebagai pilihan awal untuk talaqqi, ketelitian bacaan, hafalan baru, dan latihan berulang.
 
-- profil lengkap publik `/lembaga/tpa-al-insyirah`;
-- panduan adaptasi `/referensi-lembaga`;
-- identitas, statistik, kelas, kelompok Tahfizh, guru, program, alur pembinaan, nilai, dan kemitraan keluarga;
-- pemisahan tegas antara data yang telah ditetapkan dan data placeholder;
-- daftar bagian yang dapat ditiru dan yang wajib disesuaikan lembaga lain;
-- poster Ikrar Santri sebagai referensi visual;
-- konfigurasi profil yang dapat dioverride melalui `institutions.settings.reference_profile`;
-- sitemap, navigasi, dokumentasi, dan feature test baru.
+### Muhammad Siddiq Al-Minshawi — pilihan murāja‘ah
 
-## Fitur v1.4.3
+Disediakan sebagai alternatif untuk murāja‘ah, menyimak dengan tempo tenang, dan tadabbur.
 
-- halaman publik `/ikrar-santri`;
-- halaman portal `/nilai/ikrar-santri`;
-- editor admin `/admin/ikrar-santri`;
-- tujuh ikrar santri;
-- lima budaya bersama;
-- contoh pembiasaan di kelas, rumah, dan masjid;
-- mode cetak;
-- fallback konfigurasi aman ketika tabel pengaturan belum tersedia.
-
-## Data awal TPA Al-Insyirah
-
-- 88 santri;
-- 88 wali;
-- guru Nurul, Jundi, Yanti, dan Sofyan;
-- 6 kelas utama;
-- Tahfizh A: 30 santri;
-- Tahfizh B: 27 santri.
+Pemilih qari berlaku pada latihan manual, preset, dan target hafalan. Pustaka menargetkan **564 timing Juz 30 per qari**, atau **1.128 timing** untuk dua qari.
 
 ## Infrastruktur
 
-- PHP 8.4+;
-- Laravel 13;
-- MySQL 8;
-- Blade + CSS/JavaScript mandiri;
-- Docker + NGINX Unit;
-- Coolify;
-- PWA dasar.
+- PHP 8.4+
+- Laravel 13
+- MySQL 8.0
+- Blade + CSS/JavaScript mandiri
+- Docker + NGINX Unit
+- Coolify
 
-## Domain target
+## Aturan keselamatan produksi
 
-- `sullamulhifz.or.id` — website publik;
-- `app.sullamulhifz.or.id` — portal TPA;
-- `academy.sullamulhifz.or.id` — Academy mendatang.
-
-## Larangan produksi
-
-Jangan menjalankan perintah berikut pada database produksi yang sudah berisi data:
+Jangan menjalankan:
 
 ```text
 php artisan db:wipe
@@ -83,26 +67,6 @@ scripts/first-install.sh
 ProductionSeeder
 ```
 
-Upgrade kandidat v1.4.x harus mengikuti `docs/UPGRADE-v1.4.0.md`, setelah backup dan pengujian pada database terpisah.
+Migration rilis bersifat additive. Backup database tetap wajib sebelum upgrade.
 
-## Rahasia
-
-Jangan commit:
-
-- `.env`;
-- APP key;
-- DB URL;
-- password;
-- data key;
-- daftar akun rahasia;
-- dump database.
-
-Panduan deployment rinci tetap tersedia pada `README-COOLIFY.md`.
-
-## Update v1.5.0 — Academic Core Complete
-
-Rilis ini menggabungkan profil lembaga, semester aktif, delapan rubu’ Juz 30, target hafalan personal, observasi metode belajar, integrasi portal wali, serta migration otomatis additive dalam satu upload dan satu redeploy. Lihat `UPGRADE-V1.5.0.md` dan `docs/PHASES-v1.5.0.md`.
-
-## Quran Learning v1.6.0
-
-Portal `/latihan-quran` menyediakan pengulangan ayat, rentang, surah, halaman, rubu’, dan target santri. Admin mengelola kelengkapan 564 ayat Juz 30 melalui `/admin/quran-library`. Lihat `docs/QURAN-LEARNING-v1.6.0.md`.
+Jangan commit `.env`, `APP_KEY`, `DB_URL`, password, data key, daftar akun rahasia, atau dump database.

@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Services\QuranAudioSyncService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v1.6.0 — Bukan Sekadar Hafal, Tapi KUAT.');
+    $this->info('Sullamul Hifz v1.6.1 — Qari Tahfizh: Al-Husary & Al-Minshawi.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -120,32 +120,45 @@ Artisan::command('sullam:ensure-quran-audio {--institution=}', function (): int 
     }
 
     $service = app(QuranAudioSyncService::class);
+    $requiredIds = collect($service->sourceDefinitions())->pluck('external_id')->map(fn ($id) => (string) $id);
     $hasFailure = false;
 
     foreach ($institutions as $institution) {
-        $source = QuranAudioSource::query()
+        $sources = QuranAudioSource::query()
             ->where('institution_id', $institution->id)
             ->where('status', 'active')
-            ->orderByDesc('is_default')
-            ->first();
+            ->whereIn('external_id', $requiredIds)
+            ->get();
 
-        $count = $source
-            ? QuranAyahTiming::query()->where('quran_audio_source_id', $source->id)->whereBetween('surah_id', [78, 114])->count()
-            : 0;
+        $complete = $sources->count() === $requiredIds->count()
+            && $sources->every(fn (QuranAudioSource $source): bool => QuranAyahTiming::query()
+                ->where('quran_audio_source_id', $source->id)
+                ->whereBetween('surah_id', [78, 114])
+                ->count() >= QuranAudioSyncService::JUZ_30_AYAH_COUNT);
 
-        if ($count >= QuranAudioSyncService::JUZ_30_AYAH_COUNT) {
-            $service->seedPresets($institution, $source);
-            $this->info("{$institution->name}: audio Juz 30 sudah lengkap ({$count}/564). Preset dipastikan tersedia.");
+        if ($complete) {
+            $defaultSource = $sources->firstWhere('is_default', true) ?: $sources->first();
+            $service->seedPresets($institution, $defaultSource);
+            foreach ($sources->sortByDesc('is_default') as $source) {
+                $count = QuranAyahTiming::query()
+                    ->where('quran_audio_source_id', $source->id)
+                    ->whereBetween('surah_id', [78, 114])
+                    ->count();
+                $this->info("{$institution->name}: {$source->reciter_name} lengkap ({$count}/564)." . ($source->is_default ? ' [utama]' : ''));
+            }
             continue;
         }
 
-        $this->info("{$institution->name}: sinkronisasi audio Juz 30 dimulai ({$count}/564)...");
+        $this->info("{$institution->name}: sinkronisasi dua qari Juz 30 dimulai...");
         try {
             $result = $service->syncInstitution($institution);
-            $this->info("{$institution->name}: {$result['timings']}/564 timing, {$result['pages']} halaman, {$result['presets']} preset.");
+            foreach ($result['sources'] as $sourceResult) {
+                $this->info("{$institution->name}: {$sourceResult['reciter_name']} {$sourceResult['timings']}/564 timing." . ($sourceResult['is_default'] ? ' [utama]' : ''));
+            }
+            $this->info("Total: {$result['total_timings']}/{$result['expected_timings']} timing, {$result['pages']} halaman, {$result['presets']} preset.");
             if ($result['failed_surahs']) {
                 $hasFailure = true;
-                $this->warn('Surah yang perlu dicoba ulang: '.implode(', ', $result['failed_surahs']));
+                $this->warn('Bagian yang perlu dicoba ulang: '.implode('; ', $result['failed_surahs']));
             }
         } catch (Throwable $exception) {
             report($exception);
@@ -155,7 +168,7 @@ Artisan::command('sullam:ensure-quran-audio {--institution=}', function (): int 
     }
 
     return $hasFailure ? 1 : 0;
-})->purpose('Mengisi timing 564 ayat Juz 30 dan preset latihan secara idempoten');
+})->purpose('Mengisi timing Juz 30 untuk Al-Husary dan Al-Minshawi secara idempoten');
 
 Artisan::command('sullam:verify-quran-learning', function (): int {
     $required = [
@@ -173,19 +186,42 @@ Artisan::command('sullam:verify-quran-learning', function (): int {
     }
 
     $rows = [];
+    $allComplete = true;
     foreach (Institution::query()->where('status', 'active')->get() as $institution) {
-        $source = QuranAudioSource::query()
+        $sources = QuranAudioSource::query()
             ->where('institution_id', $institution->id)
             ->where('status', 'active')
+            ->whereIn('external_id', ['118', '112'])
             ->orderByDesc('is_default')
-            ->first();
-        $timings = $source
-            ? QuranAyahTiming::query()->where('quran_audio_source_id', $source->id)->whereBetween('surah_id', [78, 114])->count()
-            : 0;
-        $rows[] = [$institution->name, $source?->reciter_name ?? 'Belum ada', $timings, $timings >= 564 ? 'Lengkap' : 'Perlu sinkronisasi'];
+            ->get();
+
+        if ($sources->count() !== 2) {
+            $allComplete = false;
+        }
+
+        foreach ($sources as $source) {
+            $timings = QuranAyahTiming::query()
+                ->where('quran_audio_source_id', $source->id)
+                ->whereBetween('surah_id', [78, 114])
+                ->count();
+            $complete = $timings >= 564;
+            $allComplete = $allComplete && $complete;
+            $rows[] = [
+                $institution->name,
+                $source->reciter_name,
+                $source->is_default ? 'Utama' : 'Tambahan',
+                $timings.'/564',
+                $complete ? 'Lengkap' : 'Perlu sinkronisasi',
+            ];
+        }
     }
 
-    $this->table(['Lembaga', 'Sumber', 'Timing', 'Status'], $rows);
-    $this->info('Struktur Quran Learning v1.6.0 siap. Kekurangan timing tidak menghentikan aplikasi; sinkronisasi dapat diulang.');
+    $this->table(['Lembaga', 'Qari', 'Peran', 'Timing', 'Status'], $rows);
+    $this->info('Struktur Quran Learning v1.6.1 siap: Al-Husary sebagai qari utama dan Al-Minshawi sebagai pilihan murajaah.');
+
+    if (! $allComplete) {
+        $this->warn('Timing belum lengkap. Aplikasi tetap dijalankan dan sinkronisasi dilanjutkan di latar belakang.');
+    }
+
     return 0;
-})->purpose('Memeriksa tabel dan kelengkapan pustaka Quran Learning v1.6.0');
+})->purpose('Memeriksa dua sumber qari dan kelengkapan timing Juz 30 v1.6.1');

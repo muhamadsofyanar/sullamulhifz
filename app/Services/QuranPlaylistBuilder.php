@@ -13,11 +13,11 @@ use Illuminate\Validation\ValidationException;
 
 class QuranPlaylistBuilder
 {
-    public function fromPreset(QuranPracticePreset $preset): array
+    public function fromPreset(QuranPracticePreset $preset, ?int $sourceId = null): array
     {
         return $this->build([
             'institution_id' => $preset->institution_id,
-            'source_id' => $preset->quran_audio_source_id,
+            'source_id' => $sourceId ?: $preset->quran_audio_source_id,
             'mode' => $preset->mode,
             'rubu_id' => $preset->quran_rubu_id,
             'page_number' => $preset->page_number,

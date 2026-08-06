@@ -1,0 +1,22 @@
+SULLAMUL HIFZ v1.6.1 — BUILD REPORT
+
+Release: Qari Tahfizh
+Date: 2026-08-06
+
+Scope:
+- Al-Husary menjadi qari default untuk latihan tahfizh.
+- Al-Minshawi menjadi qari pilihan untuk murajaah dan tadabbur.
+- Timing API read 118 dan 112.
+- Target runtime: 2 x 564 = 1.128 timing Juz 30.
+- Pemilih qari berlaku pada preset, target, dan latihan manual.
+- Sumber Al-Ajmi dinonaktifkan tanpa menghapus data lama.
+- Migration additive dan sinkronisasi idempoten.
+- Sinkronisasi tetap berjalan di latar belakang agar web cepat aktif.
+
+Static verification:
+- 194 file PHP lolos `php -l`.
+- Script startup dan smoke test lolos `sh -n`.
+- Tidak ada `.env`, dump database, atau file kredensial yang ditambahkan.
+- Full Laravel/database production test belum dijalankan di lingkungan pembuatan paket.
+
+Patch files: 29

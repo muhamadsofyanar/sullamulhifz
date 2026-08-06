@@ -1,0 +1,31 @@
+SULLAMUL HIFZ v1.6.1 — PATCH FILES
+
+- PATCH-FILES-V1.6.1.txt
+- .env.example
+- BUILD-REPORT-V1.6.1
+- CHANGELOG.md
+- Dockerfile
+- PROJECT-MANIFEST-V1.6.1
+- README.md
+- RELEASE
+- START-HERE.md
+- UPGRADE-V1.6.1.md
+- app/Http/Controllers/Admin/QuranLibraryController.php
+- app/Http/Controllers/QuranPracticeController.php
+- app/Services/QuranAudioSyncService.php
+- app/Services/QuranPlaylistBuilder.php
+- database/migrations/2026_08_06_000310_qari_tahfizh_v161.php
+- docs/CURRENT-STATE.md
+- docs/DATABASE-v1.6.1.md
+- docs/HANDOVER-NEXT-CHAT.md
+- docs/QARI-TAHFIZH-v1.6.1.md
+- docs/ROLLBACK-v1.6.1.md
+- docs/TEST-v1.6.1.md
+- docs/releases/v1.6.1.md
+- public/release.txt
+- resources/views/admin/quran-library/index.blade.php
+- resources/views/quran-practice/index.blade.php
+- routes/console.php
+- scripts/container-start-v1.6.1.sh
+- scripts/smoke-test-v1.6.1.sh
+- tests/Feature/QuranLearningMigrationTest.php

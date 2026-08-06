@@ -4,8 +4,8 @@ Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang atau peng
 
 ## Status rilis
 
-- **Produksi sebelum upgrade ini:** v1.5.1, Academic Core + hotfix NGINX Unit.
-- **Paket repository ini:** v1.6.0 — Quran Learning Complete.
+- **Produksi sebelum upgrade ini:** v1.6.0, Quran Learning Complete.
+- **Paket repository ini:** v1.6.1 — Qari Tahfizh.
 - **Website publik:** `https://sullamulhifz.or.id`.
 - **Portal aplikasi:** `https://app.sullamulhifz.or.id`.
 - **Domain lama:** `https://taysriulqurani.id`, masih dipertahankan sebagai cadangan transisi.
@@ -31,15 +31,17 @@ Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang atau peng
 ## Urutan membaca
 
 1. `docs/CURRENT-STATE.md`
-2. `docs/QURAN-LEARNING-v1.6.0.md`
-3. `UPGRADE-V1.6.0.md`
-4. `docs/TEST-v1.6.0.md`
-5. `docs/DATABASE-v1.6.0.md`
-6. `docs/ROLLBACK-v1.6.0.md`
-7. `docs/ROADMAP.md`
-8. `docs/ARCHITECTURE.md`
-9. `docs/HANDOVER-NEXT-CHAT.md`
-10. `CHANGELOG.md`
+2. `docs/QARI-TAHFIZH-v1.6.1.md`
+3. `UPGRADE-V1.6.1.md`
+4. `docs/QURAN-LEARNING-v1.6.0.md`
+5. `docs/TEST-v1.6.1.md`
+6. `docs/DATABASE-v1.6.1.md`
+7. `docs/QURAN-LEARNING-v1.6.0.md`
+8. `docs/ROLLBACK-v1.6.1.md`
+9. `docs/ROADMAP.md`
+10. `docs/ARCHITECTURE.md`
+11. `docs/HANDOVER-NEXT-CHAT.md`
+12. `CHANGELOG.md`
 
 ## Aturan keselamatan
 
@@ -47,7 +49,7 @@ Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang atau peng
 - Migration yang sudah pernah berjalan tidak boleh diedit; tambahkan migration baru.
 - Backup database sebelum upgrade.
 - Jangan mengunggah `.env`, `APP_KEY`, `DB_URL`, password, dump database, atau `INITIAL_TPA_DATA_KEY`.
-- Jangan mengisi progres santri secara fiktif. Istilah 100% pada Pustaka Qur’an berarti 564 timing ayat referensi tersedia, bukan progres santri.
+- Jangan mengisi progres santri secara fiktif. Istilah 100% pada Pustaka Qur’an berarti 1.128 timing tersedia—564 untuk setiap qari—bukan progres santri.
 - Video hanya diterbitkan setelah sumber dan izin tayangnya diperiksa.
 
 ## Sumber kebenaran

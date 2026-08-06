@@ -21,30 +21,45 @@ class QuranAudioSyncService
     public const JUZ_30_SURAH_END = 114;
     public const JUZ_30_AYAH_COUNT = 564;
 
-    public function syncInstitution(Institution $institution): array
+    /** @return array<int, array<string, mixed>> */
+    public function sourceDefinitions(): array
     {
-        $source = QuranAudioSource::query()->updateOrCreate(
-            ['institution_id' => $institution->id, 'provider' => 'mp3quran', 'external_id' => '5'],
+        return [
             [
-                'name' => 'Murattal Ahmad Al-Ajmi',
-                'reciter_name' => 'Ahmad bin Ali Al-Ajmi',
+                'external_id' => '118',
+                'name' => 'Murattal Mahmoud Khalil Al-Husary',
+                'reciter_name' => 'Mahmoud Khalil Al-Husary',
                 'rewaya' => 'Hafs dari Asim — Murattal',
-                'base_url' => 'https://server10.mp3quran.net/ajm/',
+                'base_url' => 'https://server13.mp3quran.net/husr/',
+                'is_default' => true,
                 'metadata' => [
                     'timing_endpoint' => 'https://mp3quran.net/api/v3/ayat_timing',
                     'source_attribution' => 'MP3Quran.net',
                     'sync_scope' => 'Juz 30',
+                    'learning_role' => 'Standar utama tahfizh',
+                    'description' => 'Bacaan presisi, tempo terukur, dan tajwid kuat untuk talaqqi serta penguatan hafalan.',
                 ],
-                'is_default' => true,
-                'status' => 'active',
-            ]
-        );
+            ],
+            [
+                'external_id' => '112',
+                'name' => 'Murattal Muhammad Siddiq Al-Minshawi',
+                'reciter_name' => 'Muhammad Siddiq Al-Minshawi',
+                'rewaya' => 'Hafs dari Asim — Murattal',
+                'base_url' => 'https://server10.mp3quran.net/minsh/',
+                'is_default' => false,
+                'metadata' => [
+                    'timing_endpoint' => 'https://mp3quran.net/api/v3/ayat_timing',
+                    'source_attribution' => 'MP3Quran.net',
+                    'sync_scope' => 'Juz 30',
+                    'learning_role' => 'Pilihan murajaah dan tadabbur',
+                    'description' => 'Tempo tenang dan bacaan menyentuh untuk murajaah, menyimak, dan tadabbur.',
+                ],
+            ],
+        ];
+    }
 
-        QuranAudioSource::query()
-            ->where('institution_id', $institution->id)
-            ->where('id', '!=', $source->id)
-            ->update(['is_default' => false]);
-
+    public function syncInstitution(Institution $institution): array
+    {
         $surahs = QuranSurah::query()
             ->whereBetween('id', [self::JUZ_30_SURAH_START, self::JUZ_30_SURAH_END])
             ->orderBy('id')
@@ -55,7 +70,91 @@ class QuranAudioSyncService
             throw new RuntimeException('Master Juz 30 belum lengkap: dibutuhkan 37 surah dan 564 ayat.');
         }
 
-        $responses = $this->fetchTimings($surahs->keys()->all(), (int) ($source->external_id ?: 5));
+        QuranAudioSource::query()
+            ->where('institution_id', $institution->id)
+            ->where('provider', 'mp3quran')
+            ->update(['is_default' => false]);
+
+        // Sumber lama tidak dihapus agar riwayat aman, tetapi tidak lagi ditawarkan kepada pengguna.
+        QuranAudioSource::query()
+            ->where('institution_id', $institution->id)
+            ->where('provider', 'mp3quran')
+            ->where('external_id', '5')
+            ->update(['is_default' => false, 'status' => 'inactive']);
+
+        $sourceResults = [];
+        $defaultSource = null;
+
+        foreach ($this->sourceDefinitions() as $definition) {
+            $source = QuranAudioSource::query()->updateOrCreate(
+                [
+                    'institution_id' => $institution->id,
+                    'provider' => 'mp3quran',
+                    'external_id' => $definition['external_id'],
+                ],
+                [
+                    'name' => $definition['name'],
+                    'reciter_name' => $definition['reciter_name'],
+                    'rewaya' => $definition['rewaya'],
+                    'base_url' => $definition['base_url'],
+                    'metadata' => $definition['metadata'],
+                    'is_default' => $definition['is_default'],
+                    'status' => 'active',
+                ]
+            );
+
+            if ($definition['is_default']) {
+                $defaultSource = $source;
+            }
+
+            $sourceResults[] = $this->syncSource($source, $surahs);
+        }
+
+        $defaultSource ??= QuranAudioSource::query()
+            ->where('institution_id', $institution->id)
+            ->where('status', 'active')
+            ->orderByDesc('is_default')
+            ->firstOrFail();
+
+        $this->seedPresets($institution, $defaultSource);
+
+        $failed = collect($sourceResults)
+            ->flatMap(function (array $result): array {
+                return collect($result['failed_surahs'])
+                    ->map(fn (int $surahId): string => $result['reciter_name'].' — surah '.$surahId)
+                    ->all();
+            })
+            ->values()
+            ->all();
+
+        return [
+            'source_id' => $defaultSource->id,
+            'source_count' => count($sourceResults),
+            'sources' => $sourceResults,
+            'timings' => QuranAyahTiming::query()
+                ->where('quran_audio_source_id', $defaultSource->id)
+                ->whereBetween('surah_id', [78, 114])
+                ->count(),
+            'total_timings' => collect($sourceResults)->sum('timings'),
+            'expected_timings' => self::JUZ_30_AYAH_COUNT * count($sourceResults),
+            'pages' => QuranAyahTiming::query()
+                ->where('quran_audio_source_id', $defaultSource->id)
+                ->whereNotNull('page_number')
+                ->distinct()
+                ->count('page_number'),
+            'presets' => QuranPracticePreset::query()
+                ->where('institution_id', $institution->id)
+                ->where('status', 'active')
+                ->count(),
+            'failed_surahs' => $failed,
+            'saved_operations' => collect($sourceResults)->sum('saved_operations'),
+        ];
+    }
+
+    /** @param \Illuminate\Support\Collection<int, QuranSurah> $surahs */
+    private function syncSource(QuranAudioSource $source, \Illuminate\Support\Collection $surahs): array
+    {
+        $responses = $this->fetchTimings($surahs->keys()->all(), (int) $source->external_id);
         $saved = 0;
         $failed = [];
 
@@ -103,13 +202,15 @@ class QuranAudioSyncService
             }
         });
 
-        $this->seedPresets($institution, $source);
-
         return [
             'source_id' => $source->id,
-            'timings' => QuranAyahTiming::query()->where('quran_audio_source_id', $source->id)->whereBetween('surah_id', [78, 114])->count(),
-            'pages' => QuranAyahTiming::query()->where('quran_audio_source_id', $source->id)->whereNotNull('page_number')->distinct()->count('page_number'),
-            'presets' => QuranPracticePreset::query()->where('institution_id', $institution->id)->where('status', 'active')->count(),
+            'external_id' => $source->external_id,
+            'reciter_name' => $source->reciter_name,
+            'is_default' => $source->is_default,
+            'timings' => QuranAyahTiming::query()
+                ->where('quran_audio_source_id', $source->id)
+                ->whereBetween('surah_id', [78, 114])
+                ->count(),
             'failed_surahs' => array_values(array_unique($failed)),
             'saved_operations' => $saved,
         ];

@@ -24,11 +24,12 @@ v1.5.1 adalah baseline stabil sebelum paket ini: Academic Core v1.5.0 dengan hot
 
 ## Paket saat ini
 
-**v1.6.0 — Quran Learning Complete** menambahkan:
+**v1.6.1 — Qari Tahfizh** melanjutkan Quran Learning dengan:
 
 - tabel pustaka audio, timing ayat, preset, sesi latihan, dan video;
-- sumber murattal default Ahmad bin Ali Al-Ajmi;
-- sinkronisasi 37 surah / 564 ayat Juz 30;
+- qari utama Mahmoud Khalil Al-Husary untuk ketelitian tahfizh;
+- qari pilihan Muhammad Siddiq Al-Minshawi untuk murajaah dan tadabbur;
+- sinkronisasi 37 surah / 564 ayat Juz 30 untuk masing-masing qari (1.128 timing total);
 - latihan ayat, rentang, surah, halaman, rubu’, dan target santri;
 - pengulangan per ayat atau seluruh pilihan;
 - jumlah ulang, jeda, dan kecepatan yang dapat dipilih;
@@ -46,7 +47,7 @@ Migration dan source tersedia dalam paket. Kelengkapan audio runtime harus diver
 php artisan sullam:verify-quran-learning
 ```
 
-Target master referensi adalah 564/564 timing. Data progres santri tetap berasal dari input nyata guru dan wali.
+Target master referensi adalah 564 timing per qari atau 1.128 timing untuk dua qari. Data progres santri tetap berasal dari input nyata guru dan wali.
 
 ## Batasan yang disengaja
 

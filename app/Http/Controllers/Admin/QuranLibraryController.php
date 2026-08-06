@@ -20,13 +20,29 @@ class QuranLibraryController extends Controller
     public function index(Request $request): View
     {
         $institutionId = $request->user()->institution_id;
-        $sources = QuranAudioSource::query()->where('institution_id', $institutionId)->withCount('timings')->get();
+        $sources = QuranAudioSource::query()
+            ->where('institution_id', $institutionId)
+            ->where('status', 'active')
+            ->withCount(['timings' => fn ($query) => $query->whereBetween('surah_id', [78, 114])])
+            ->orderByDesc('is_default')
+            ->get();
         $sourceIds = $sources->pluck('id');
+        $defaultSource = $sources->firstWhere('is_default', true) ?: $sources->first();
+        $expectedTimingCount = max(1, $sources->count()) * QuranAudioSyncService::JUZ_30_AYAH_COUNT;
+
         return view('admin.quran-library.index', [
             'sources' => $sources,
-            'timingCount' => QuranAyahTiming::query()->whereIn('quran_audio_source_id', $sourceIds)->count(),
-            'surahCount' => QuranAyahTiming::query()->whereIn('quran_audio_source_id', $sourceIds)->distinct()->count('surah_id'),
-            'pageCount' => QuranAyahTiming::query()->whereIn('quran_audio_source_id', $sourceIds)->whereNotNull('page_number')->distinct()->count('page_number'),
+            'qariReadyCount' => $sources->where('timings_count', '>=', QuranAudioSyncService::JUZ_30_AYAH_COUNT)->count(),
+            'expectedQariCount' => 2,
+            'timingCount' => $sources->sum('timings_count'),
+            'expectedTimingCount' => $expectedTimingCount,
+            'defaultTimingCount' => $defaultSource?->timings_count ?? 0,
+            'surahCount' => $defaultSource
+                ? QuranAyahTiming::query()->where('quran_audio_source_id', $defaultSource->id)->distinct()->count('surah_id')
+                : 0,
+            'pageCount' => $defaultSource
+                ? QuranAyahTiming::query()->where('quran_audio_source_id', $defaultSource->id)->whereNotNull('page_number')->distinct()->count('page_number')
+                : 0,
             'presetCount' => QuranPracticePreset::query()->where('institution_id', $institutionId)->where('status','active')->count(),
             'presets' => QuranPracticePreset::query()->with(['source','rubu','startSurah'])->where('institution_id', $institutionId)->latest()->paginate(30),
             'videos' => QuranVideoResource::query()->with('surah')->where('institution_id', $institutionId)->latest()->get(),
@@ -38,8 +54,8 @@ class QuranLibraryController extends Controller
     {
         try {
             $result = $service->syncInstitution($request->user()->institution);
-            $message = "Sinkronisasi selesai: {$result['timings']}/564 timing ayat, {$result['pages']} halaman, {$result['presets']} preset.";
-            if ($result['failed_surahs']) $message .= ' Surah perlu diulang: '.implode(', ', $result['failed_surahs']).'.';
+            $message = "Sinkronisasi selesai: {$result['source_count']} qari, {$result['total_timings']}/{$result['expected_timings']} timing ayat, {$result['pages']} halaman, {$result['presets']} preset.";
+            if ($result['failed_surahs']) $message .= ' Bagian perlu diulang: '.implode('; ', $result['failed_surahs']).'.';
             return back()->with('success', $message);
         } catch (Throwable $e) {
             report($e);
