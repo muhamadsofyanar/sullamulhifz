@@ -1,5 +1,33 @@
 # Changelog
 
+## v1.4.4 — Institution Reference
+
+- Added a comprehensive public profile for TPA Al-Insyirah.
+- Added a public adoption guide for other institutions.
+- Added class, Tahfizh group, teacher, program, learning path, values, family partnership, and governance reference sections.
+- Clearly separated established facts from institutional placeholders.
+- Added the user-provided Ikrar Santri poster as a reference asset.
+- Added config-driven institution profile overrides through institution settings.
+- Added navigation, sitemap, tests, upgrade guidance, and release documentation.
+- No new database migration.
+
+## v1.4.3 — Ikrar Santri
+
+- Added a responsive public Ikrar Santri page.
+- Added an authenticated portal Ikrar Santri page for admin, teacher, and guardian accounts.
+- Added an admin editor backed by `system_settings` with a safe config fallback.
+- Added seven pledge points, five shared cultures, and three spaces of practice.
+- Added print-friendly layouts.
+- Added links from the homepage, TPA page, footer, and portal navigation.
+- Added feature tests and release documentation.
+- No new database migration.
+
+## v1.4.2 — Academic Foundation Examples
+
+- Added example documentation for institution profile, academic year, Juz 30 rubu’, marhalah, STIFIn safeguards, Community, user flow, and conceptual data dictionary.
+- Added non-private example JSON data.
+- No runtime or database changes.
+
 ## v1.4.1 — Documentation Sync
 
 - Synchronized production and candidate release status.

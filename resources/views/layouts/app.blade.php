@@ -44,6 +44,9 @@
                 <a href="{{ route('admin.content.index') }}" class="{{ request()->routeIs('admin.content.*') ? 'active' : '' }}" @if(request()->routeIs('admin.content.*')) aria-current="page" @endif>
                     <x-icon name="guidance"/><span>Konten & Pembinaan</span>
                 </a>
+                <a href="{{ route('admin.student-pledge.edit') }}" class="{{ request()->routeIs('admin.student-pledge.*') ? 'active' : '' }}">
+                    <x-icon name="values"/><span>Kelola Ikrar</span>
+                </a>
                 <a href="{{ route('admin.website.index') }}" class="{{ request()->routeIs('admin.website.*') ? 'active' : '' }}">
                     <x-icon name="community"/><span>Website</span>
                 </a>
@@ -75,6 +78,9 @@
             </a>
             <a href="{{ route('feed.friday') }}" class="{{ request()->routeIs('feed.friday') ? 'active' : '' }}" @if(request()->routeIs('feed.friday')) aria-current="page" @endif>
                 <x-icon name="values"/><span>Pembinaan Jumat</span>
+            </a>
+            <a href="{{ route('feed.pledge') }}" class="{{ request()->routeIs('feed.pledge') ? 'active' : '' }}" @if(request()->routeIs('feed.pledge')) aria-current="page" @endif>
+                <x-icon name="academic"/><span>Ikrar Santri</span>
             </a>
         </nav>
 

@@ -6,6 +6,7 @@ use App\Models\Announcement;
 use App\Models\AnnouncementRead;
 use App\Models\FridayDevelopmentSession;
 use App\Models\TeacherAssignment;
+use App\Support\StudentPledge;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -57,6 +58,13 @@ class ContentFeedController extends Controller
             ->where('status','published')->where(fn($q)=>$q->whereNull('class_id')->orWhereIn('class_id',$classIds))
             ->latest('session_date')->paginate(20);
         return view('content.friday',compact('items'));
+    }
+
+    public function pledge(Request $request): View
+    {
+        return view('content.pledge', [
+            'pledge' => StudentPledge::forInstitution($request->user()->institution_id),
+        ]);
     }
 
     private function classIds(Request $request)

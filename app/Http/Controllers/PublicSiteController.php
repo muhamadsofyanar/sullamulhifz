@@ -6,6 +6,8 @@ use App\Models\AdmissionRegistration;
 use App\Models\Institution;
 use App\Models\PublicArticle;
 use App\Models\PublicPage;
+use App\Support\InstitutionReference;
+use App\Support\StudentPledge;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -46,6 +48,32 @@ class PublicSiteController extends Controller
         }
 
         return view('public.page', compact('page'));
+    }
+
+    public function pledge(): View
+    {
+        $institutionId = Schema::hasTable('institutions')
+            ? Institution::query()->where('status', 'active')->value('id')
+            : null;
+
+        return view('public.pledge', [
+            'pledge' => StudentPledge::forInstitution($institutionId),
+        ]);
+    }
+
+
+    public function institutionShowcase(): View
+    {
+        return view('public.institution-showcase', [
+            'profile' => InstitutionReference::current(),
+        ]);
+    }
+
+    public function institutionReference(): View
+    {
+        return view('public.institution-reference', [
+            'profile' => InstitutionReference::current(),
+        ]);
     }
 
     public function articles(): View

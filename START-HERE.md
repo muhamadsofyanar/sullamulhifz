@@ -5,7 +5,7 @@ Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang, pekerjaa
 ## Status yang harus dibedakan
 
 - **Produksi yang sedang berjalan:** v1.3.0 pada `taysriulqurani.id`.
-- **Paket kandidat pengembangan:** v1.4.1 Documentation Sync, berbasis fitur v1.4.0 TPA Operational Complete.
+- **Paket kandidat pengembangan:** v1.4.4 Ikrar Santri, berbasis fitur v1.4.0 TPA Operational Complete dan dokumentasi v1.4.1.
 - **Status v1.4.x:** belum boleh dianggap production-ready sebelum pengujian staging dan upgrade terhadap salinan database selesai.
 - **Domain baru yang dipersiapkan:**
   - `sullamulhifz.or.id` — website publik;
@@ -27,11 +27,13 @@ Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang, pekerjaa
 2. `docs/ROADMAP.md`
 3. `docs/ARCHITECTURE.md`
 4. `docs/DECISIONS.md`
-5. `docs/NEXT-RELEASE-v2.0.0.md`
-6. `docs/UPGRADE-v1.4.0.md`
-7. `docs/TEST-v1.4.0.md`
-8. `docs/ROLLBACK-v1.4.0.md`
-9. `docs/HANDOVER-NEXT-CHAT.md`
+5. `docs/IKRAR-SANTRI.md`
+6. `docs/NEXT-RELEASE-v2.0.0.md`
+7. `UPGRADE-V1.4.3.md`
+8. `docs/UPGRADE-v1.4.0.md`
+9. `docs/TEST-v1.4.0.md`
+10. `docs/ROLLBACK-v1.4.0.md`
+11. `docs/HANDOVER-NEXT-CHAT.md`
 
 ## Aturan keselamatan
 
@@ -53,3 +55,9 @@ Jika chat bertentangan dengan repository, gunakan urutan berikut:
 5. dokumen rilis di `docs/releases/`;
 6. `CHANGELOG.md`;
 7. riwayat chat.
+
+
+## Profil referensi lembaga
+
+- `/lembaga/tpa-al-insyirah` menampilkan implementasi pertama.
+- `/referensi-lembaga` menjelaskan cara lembaga lain mengadaptasi struktur tanpa menyalin identitas.

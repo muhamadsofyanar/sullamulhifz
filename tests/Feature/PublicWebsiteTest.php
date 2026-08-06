@@ -20,6 +20,7 @@ class PublicWebsiteTest extends TestCase
             ['/tentang', 'Tangga pertumbuhan'],
             ['/program', 'beberapa jalur pembinaan'],
             ['/tpa', 'Administrasi yang membantu'],
+            ['/ikrar-santri', 'Ikrar Santri'],
             ['/academy', 'Ruang belajar digital'],
             ['/artikel', 'Membaca ulang perjalanan'],
             ['/kontak', 'Mari membangun perjalanan'],

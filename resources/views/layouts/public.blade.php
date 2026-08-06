@@ -43,6 +43,7 @@
             <a href="{{ route('public.about') }}" class="{{ request()->routeIs('public.about') ? 'active' : '' }}">Tentang</a>
             <a href="{{ route('public.programs') }}" class="{{ request()->routeIs('public.programs') ? 'active' : '' }}">Program</a>
             <a href="{{ route('public.tpa') }}" class="{{ request()->routeIs('public.tpa') ? 'active' : '' }}">TPA</a>
+            <a href="{{ route('public.institution.showcase') }}" class="{{ request()->routeIs('public.institution.*') ? 'active' : '' }}">Implementasi</a>
             <a href="{{ route('public.academy') }}" class="{{ request()->routeIs('public.academy') ? 'active' : '' }}">Academy</a>
             <a href="{{ route('public.articles') }}" class="{{ request()->routeIs('public.articles') ? 'active' : '' }}">Artikel</a>
             <a href="{{ route('public.contact') }}" class="{{ request()->routeIs('public.contact') ? 'active' : '' }}">Kontak</a>
@@ -65,6 +66,9 @@
         <div>
             <h2>Ekosistem</h2>
             <a href="{{ route('public.tpa') }}">Sullamul Ḥifẓ TPA</a>
+            <a href="{{ route('public.institution.showcase') }}">TPA Al-Insyirah</a>
+            <a href="{{ route('public.institution.reference') }}">Referensi lembaga</a>
+            <a href="{{ route('public.pledge') }}">Ikrar Santri</a>
             <a href="{{ route('public.academy') }}">Sullamul Ḥifẓ Academy</a>
             <a href="{{ route('public.programs') }}">Keluarga & komunitas</a>
         </div>

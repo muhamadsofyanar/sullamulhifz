@@ -4,6 +4,16 @@
 
 Menyelaraskan status produksi, paket kandidat, domain, handover, dan urutan pengembangan. Tidak mengubah database atau fitur aplikasi.
 
+## v1.4.3 — Ikrar Santri
+
+- halaman publik dan portal;
+- editor admin;
+- tujuh ikrar;
+- lima budaya bersama;
+- pembiasaan di kelas, rumah, dan masjid;
+- tampilan cetak;
+- tanpa migration baru.
+
 ## v1.4.x — Stabilisasi TPA
 
 Fokus hanya pada:
@@ -58,3 +68,11 @@ Multi-lembaga, isolasi tenant, admin lembaga, dan pelaporan lintas lembaga.
 ## v3.1.0
 
 Identitas terpadu/SSO untuk Website, TPA, Academy, dan Community.
+
+
+## v1.4.4 — Institution Reference
+
+- profil lengkap TPA Al-Insyirah;
+- panduan adaptasi lembaga lain;
+- pemisahan fakta dan placeholder;
+- referensi tata kelola, privasi, dan prinsip tanpa ranking.

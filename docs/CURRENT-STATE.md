@@ -12,7 +12,7 @@ Tanggal sinkronisasi dokumentasi: 6 Agustus 2026.
 
 ## Kandidat pengembangan
 
-Repository paket ini ditandai **v1.4.1 Documentation Sync**. Kode fungsionalnya berbasis kandidat **v1.4.0 TPA Operational Complete**, yang menambahkan antara lain administrasi wali, impor CSV, CMS publik, pendaftaran, pengumuman tertarget, lampiran buku penghubung, Pembinaan Jumat yang diperluas, rapor, ekspor, riwayat login, dan pengaturan operasional.
+Repository paket ini ditandai **v1.4.4 Ikrar Santri**. Kode fungsionalnya berbasis kandidat **v1.4.0 TPA Operational Complete** dan dokumentasi v1.4.1. Rilis v1.4.4 menambahkan Ikrar Santri pada website publik dan portal, editor admin, lima budaya bersama, tiga ruang pembiasaan, serta mode cetak.
 
 Kandidat v1.4.x belum boleh dinyatakan stabil hanya karena source tersedia. Sebelum produksi, wajib dilakukan:
 
@@ -30,6 +30,15 @@ Kandidat v1.4.x belum boleh dinyatakan stabil hanya karena source tersedia. Sebe
 - `app.sullamulhifz.or.id` — portal TPA.
 - `academy.sullamulhifz.or.id` — Academy, belum LMS pada fase v1.
 
+## Fitur kandidat terbaru
+
+- `/ikrar-santri` — halaman publik;
+- `/nilai/ikrar-santri` — portal admin, guru, dan wali;
+- `/admin/ikrar-santri` — editor admin;
+- data default aman di `config/student_pledge.php`;
+- perubahan admin disimpan sebagai JSON pada `system_settings`;
+- tidak ada migration baru.
+
 ## Batasan saat ini
 
 - Academy penuh belum dibuat.
@@ -37,3 +46,8 @@ Kandidat v1.4.x belum boleh dinyatakan stabil hanya karena source tersedia. Sebe
 - Pembayaran dan WhatsApp API otomatis belum dibuat.
 - Aplikasi native Android/iOS belum dibuat.
 - Domain baru masih menunggu aktivasi/verifikasi DNS.
+
+
+## Institution Reference v1.4.4
+
+TPA Al-Insyirah kini memiliki profil publik lengkap sebagai implementasi pertama, disertai panduan adaptasi untuk lembaga lain. Data yang belum ditetapkan tetap ditandai sebagai placeholder.

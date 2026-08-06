@@ -80,6 +80,20 @@
     </div>
 </section>
 
+<section class="public-section pledge-teaser-section">
+    <div class="public-container pledge-teaser-card">
+        <div>
+            <span class="public-eyebrow">NILAI YANG DIBIASAKAN</span>
+            <h2>Ikrar Santri TPA Al-Insyirah</h2>
+            <p>Tujuh janji sederhana untuk menumbuhkan ketaatan, cinta Al-Qur’an, adab, tanggung jawab, kebersihan, kasih sayang, dan semangat belajar.</p>
+            <a class="public-button primary" href="{{ route('public.pledge') }}">Baca Ikrar Santri</a>
+        </div>
+        <div class="pledge-teaser-numbers" aria-label="Tujuh ikrar santri">
+            @foreach(range(1,7) as $number)<span>{{ $number }}</span>@endforeach
+        </div>
+    </div>
+</section>
+
 <section class="public-section kuat-section" id="kuat">
     <div class="public-container kuat-layout">
         <div class="kuat-intro">

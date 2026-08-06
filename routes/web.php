@@ -8,6 +8,7 @@ use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\ContentController as AdminContentController;
 use App\Http\Controllers\Admin\StudentController;
+use App\Http\Controllers\Admin\StudentPledgeController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\AuthController;
@@ -32,6 +33,9 @@ Route::get('/academy', fn () => app(PublicSiteController::class)->page('academy'
 Route::get('/kontak', fn () => app(PublicSiteController::class)->page('kontak'))->name('public.contact');
 Route::get('/privasi', fn () => app(PublicSiteController::class)->page('privasi'))->name('public.privacy');
 Route::get('/syarat-ketentuan', fn () => app(PublicSiteController::class)->page('syarat-ketentuan'))->name('public.terms');
+Route::get('/ikrar-santri', [PublicSiteController::class, 'pledge'])->name('public.pledge');
+Route::get('/lembaga/tpa-al-insyirah', [PublicSiteController::class, 'institutionShowcase'])->name('public.institution.showcase');
+Route::get('/referensi-lembaga', [PublicSiteController::class, 'institutionReference'])->name('public.institution.reference');
 Route::get('/artikel', [PublicSiteController::class, 'articles'])->name('public.articles');
 Route::get('/artikel/{article}', [PublicSiteController::class, 'article'])->name('public.article');
 Route::get('/pendaftaran', [PublicSiteController::class, 'registration'])->name('public.registration');
@@ -58,6 +62,7 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::get('/pengumuman', [ContentFeedController::class, 'announcements'])->name('feed.announcements');
     Route::post('/pengumuman/{announcement}/konfirmasi', [ContentFeedController::class, 'acknowledge'])->name('feed.announcements.acknowledge');
     Route::get('/pembinaan-jumat', [ContentFeedController::class, 'friday'])->name('feed.friday');
+    Route::get('/nilai/ikrar-santri', [ContentFeedController::class, 'pledge'])->name('feed.pledge');
     Route::get('/media/submission/{submission}', [MediaController::class, 'submission'])->name('media.submission');
     Route::get('/media/liaison/{message}', [MediaController::class, 'liaison'])->name('media.liaison');
 
@@ -90,6 +95,10 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::get('/content', [AdminContentController::class, 'index'])->name('content.index');
             Route::post('/content/announcements', [AdminContentController::class, 'storeAnnouncement'])->name('content.announcements.store');
             Route::post('/content/friday', [AdminContentController::class, 'storeFriday'])->name('content.friday.store');
+
+            Route::get('/ikrar-santri', [StudentPledgeController::class, 'edit'])->name('student-pledge.edit');
+            Route::put('/ikrar-santri', [StudentPledgeController::class, 'update'])->name('student-pledge.update');
+            Route::delete('/ikrar-santri', [StudentPledgeController::class, 'reset'])->name('student-pledge.reset');
 
             Route::get('/website', [WebsiteController::class, 'index'])->name('website.index');
             Route::post('/website/pages', [WebsiteController::class, 'storePage'])->name('website.pages.store');

@@ -39,3 +39,35 @@
 /* v1.4.0 operational UI */
 .button.small{padding:7px 10px;font-size:12px}.text-danger{color:var(--danger)}.pinned-card{border-left:4px solid var(--gold)}.reply-box-attachment{grid-template-columns:1fr minmax(170px,260px) auto}.public-badge{display:inline-flex}.card details{padding:10px 0}.card details summary{display:flex;justify-content:space-between;gap:12px}.button.danger{background:var(--danger);color:#fff;border-color:var(--danger)}
 @media(max-width:780px){.reply-box-attachment{grid-template-columns:1fr}}
+
+/* v1.4.3 — Ikrar Santri */
+.portal-pledge-board{overflow:hidden;background:linear-gradient(145deg,#fffdf8,#f8f0dd);border:1px solid var(--line);border-radius:26px;box-shadow:var(--shadow);margin-bottom:20px}
+.portal-pledge-head{display:flex;align-items:center;gap:18px;padding:27px 30px;border-bottom:1px solid var(--line)}
+.portal-pledge-head img{width:70px;height:70px;padding:10px;border-radius:20px;background:#fff;border:1px solid var(--line)}
+.portal-pledge-head span{font-size:10px;letter-spacing:.11em;text-transform:uppercase;color:#99701e;font-weight:900}
+.portal-pledge-head h2{font:600 38px/1 Georgia,serif;margin:6px 0 8px}
+.portal-pledge-head p{margin:0;color:var(--muted);font-weight:700}
+.portal-pledge-layout{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(270px,.65fr)}
+.portal-pledge-list{list-style:none;margin:0;padding:25px 30px;display:grid;gap:10px}
+.portal-pledge-list li{display:grid;grid-template-columns:52px 1fr;gap:13px;align-items:center;padding:13px;border:1px solid var(--line);border-radius:15px;background:rgba(255,255,255,.88)}
+.portal-pledge-number{width:44px;height:44px;border-radius:13px;display:grid;place-items:center;background:var(--emerald);color:#fff;font:700 23px Georgia,serif}
+.portal-pledge-list small,.portal-pledge-list strong,.portal-pledge-list em{display:block}
+.portal-pledge-list small{font-size:9px;text-transform:uppercase;letter-spacing:.1em;color:#99701e;font-weight:900}
+.portal-pledge-list strong{margin-top:2px;line-height:1.4}
+.portal-pledge-list em{font-style:normal;color:var(--muted);font-size:13px}
+.portal-pledge-aside{padding:32px;background:linear-gradient(155deg,var(--emerald),#07382f);color:#fff;display:flex;flex-direction:column;justify-content:center}
+.portal-pledge-aside blockquote{font:500 27px/1.4 Georgia,serif;margin:14px 0}
+.portal-pledge-aside p{color:rgba(255,255,255,.72);margin:0}
+.portal-pledge-closing{padding:15px 22px;background:var(--emerald);color:#fff;text-align:center;font-weight:900}
+.pledge-practice-cards .card h2{font-family:Georgia,serif;font-size:25px;margin:8px 0}
+.portal-pledge-values{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px}
+.portal-pledge-values article{padding:14px;border-radius:13px;background:var(--emerald-3)}
+.portal-pledge-values strong,.portal-pledge-values span{display:block}
+.portal-pledge-values strong{color:var(--emerald);font-size:13px}
+.portal-pledge-values span{color:var(--muted);font-size:12px;margin-top:5px;line-height:1.5}
+.pledge-admin-list{display:grid;gap:12px}
+.pledge-admin-list fieldset{background:#fbfcfb}
+@media(max-width:1050px){.portal-pledge-values{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:780px){.portal-pledge-layout{grid-template-columns:1fr}.portal-pledge-head{align-items:flex-start;padding:22px}.portal-pledge-list{padding:18px}.portal-pledge-aside{padding:26px}.portal-pledge-values{grid-template-columns:1fr}.pledge-practice-cards{grid-template-columns:1fr}}
+@media print{.sidebar,.topbar,.sidebar-backdrop,.pledge-no-print{display:none!important}.app-shell{display:block}.content-wrap{padding:0;max-width:none}.portal-pledge-board{box-shadow:none;margin:0;border:1px solid #aaa}.portal-pledge-head{padding:18px}.portal-pledge-layout{grid-template-columns:1.35fr .65fr}.portal-pledge-list{padding:14px;gap:6px}.portal-pledge-list li{padding:8px}.portal-pledge-number{width:36px;height:36px}.portal-pledge-aside,.portal-pledge-closing,.portal-pledge-number{-webkit-print-color-adjust:exact;print-color-adjust:exact}.portal-pledge-aside,.portal-pledge-closing,.portal-pledge-number{color:#fff!important}body,html{background:#fff}}
+.portal-pledge-closing strong,.portal-pledge-closing small{display:block}.portal-pledge-closing small{margin-top:4px;font-size:10px;opacity:.72;font-weight:650}
