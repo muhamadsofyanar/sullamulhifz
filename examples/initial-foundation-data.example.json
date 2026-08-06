@@ -1,0 +1,203 @@
+{
+  "release": "v1.4.2-academic-foundation-example",
+  "master_brand": {
+    "name": "Sullamul Ḥifẓ",
+    "tagline": "Bukan Sekadar Hafal, Tapi KUAT",
+    "framework": {
+      "K": "Kenali Diri",
+      "U": "Ukur Kemampuan, Usahakan Bertahap",
+      "A": "Al-Qur'an Dipahami dan Diamalkan",
+      "T": "Teguh Menjaga Perjalanan"
+    }
+  },
+  "institution": {
+    "name": "TPA Al-Insyirah",
+    "brand_relation": "TPA Al-Insyirah — Powered by Sullamul Ḥifẓ",
+    "academic_year": "2026/2027",
+    "student_count": 88,
+    "unknown_fields": [
+      "address",
+      "phone",
+      "email",
+      "leader_name",
+      "legal_number",
+      "vision",
+      "mission"
+    ]
+  },
+  "teachers": [
+    {
+      "name": "Nurul",
+      "assignment": [
+        "Tamhidi A",
+        "Tamhidi B"
+      ],
+      "program": "Tahsīn"
+    },
+    {
+      "name": "Jundi",
+      "assignment": [
+        "Mustawa Awal A",
+        "Mustawa Awal B"
+      ],
+      "program": "Tahsīn"
+    },
+    {
+      "name": "Yanti",
+      "assignment": [
+        "Mustawa Tsani A",
+        "Mustawa Tsani B"
+      ],
+      "program": "Tahsīn"
+    },
+    {
+      "name": "Sofyan",
+      "assignment": [
+        "Tahfizh A",
+        "Tahfizh B"
+      ],
+      "program": "Tahfizh"
+    }
+  ],
+  "classes": [
+    {
+      "name": "Tamhidi A",
+      "count": 18,
+      "schedule": "13.00-15.00"
+    },
+    {
+      "name": "Tamhidi B",
+      "count": 13,
+      "schedule": "13.00-15.00"
+    },
+    {
+      "name": "Mustawa Awal A",
+      "count": 16,
+      "schedule": "15.30-17.30"
+    },
+    {
+      "name": "Mustawa Awal B",
+      "count": 14,
+      "schedule": "15.30-17.30"
+    },
+    {
+      "name": "Mustawa Tsani A",
+      "count": 14,
+      "schedule": "15.30-17.30"
+    },
+    {
+      "name": "Mustawa Tsani B",
+      "count": 13,
+      "schedule": "15.30-17.30"
+    }
+  ],
+  "learning_groups": [
+    {
+      "name": "Tahfizh A",
+      "count": 30,
+      "source_classes": [
+        "Mustawa Awal A",
+        "Mustawa Tsani A"
+      ],
+      "teacher": "Sofyan"
+    },
+    {
+      "name": "Tahfizh B",
+      "count": 27,
+      "source_classes": [
+        "Mustawa Awal B",
+        "Mustawa Tsani B"
+      ],
+      "teacher": "Sofyan"
+    }
+  ],
+  "juz_30_rubu": [
+    {
+      "number": 1,
+      "range": "An-Nas - Al-Qori'ah",
+      "surah_numbers": "114-101"
+    },
+    {
+      "number": 2,
+      "range": "Al-'Adiyat - Al-Insyirah",
+      "surah_numbers": "100-94"
+    },
+    {
+      "number": 3,
+      "range": "Adh-Dhuha - Al-Balad",
+      "surah_numbers": "93-90"
+    },
+    {
+      "number": 4,
+      "range": "Al-Fajr - Al-A'la",
+      "surah_numbers": "89-87"
+    },
+    {
+      "number": 5,
+      "range": "Ath-Thariq - Al-Insyiqaq",
+      "surah_numbers": "86-84"
+    },
+    {
+      "number": 6,
+      "range": "Al-Muthaffifin - Al-Infithar",
+      "surah_numbers": "83-82"
+    },
+    {
+      "number": 7,
+      "range": "At-Takwir - 'Abasa",
+      "surah_numbers": "81-80"
+    },
+    {
+      "number": 8,
+      "range": "An-Nazi'at - An-Naba'",
+      "surah_numbers": "79-78"
+    }
+  ],
+  "marhalah": [
+    {
+      "code": "ayah",
+      "label": "Āyah",
+      "description": "Satu ayat atau bagian ayat"
+    },
+    {
+      "code": "tsalatsiyyah",
+      "label": "Tsalātsiyyah",
+      "description": "Tiga baris"
+    },
+    {
+      "code": "khamsiyyah",
+      "label": "Khamsiyyah",
+      "description": "Lima baris"
+    },
+    {
+      "code": "nisfiyyah",
+      "label": "Niṣfiyyah",
+      "description": "Sekitar tujuh sampai delapan baris"
+    },
+    {
+      "code": "safhah",
+      "label": "Ṣafḥah",
+      "description": "Lima belas baris"
+    },
+    {
+      "code": "safhatayn",
+      "label": "Ṣafḥatayn",
+      "description": "Tiga puluh baris"
+    }
+  ],
+  "stifin": {
+    "default_status": "Belum Dites",
+    "allowed_profiles": [
+      "Sensing",
+      "Thinking",
+      "Intuiting",
+      "Feeling",
+      "Insting"
+    ],
+    "affects_class_or_score": false
+  },
+  "privacy": {
+    "contains_real_student_names": false,
+    "contains_credentials": false
+  }
+}
