@@ -1,0 +1,28 @@
+SULLAMUL HIFZ v1.5.0 — BUILD REPORT
+
+Release: Academic Core Complete
+Baseline: v1.4.5 Portal Domain Separation
+
+Implemented:
+- Additive database migration
+- Institution profile editor
+- Academic year semester controls
+- Eight Juz 30 rubu master records
+- Memorization targets
+- Learning observations
+- Teacher target and learning profile workspace
+- Guardian target visibility
+- Admin student academic summary
+- Automatic safe migration on container startup
+- Verification command, smoke test, upgrade and rollback docs
+
+Validation performed in artifact environment:
+- PHP syntax checks
+- Shell syntax checks
+- Route/controller/view reference review
+- Archive integrity and SHA-256 generation
+
+Not performed:
+- Connection to production MySQL
+- Production login using real accounts
+- Browser end-to-end test against the live deployment

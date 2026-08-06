@@ -1,0 +1,25 @@
+Sullamul Hifz v1.5.0 — Academic Core Complete
+
+Main new runtime files:
+- database/migrations/2026_08_06_000200_academic_core_v150.php
+- app/Models/QuranRubu.php
+- app/Models/MemorizationTarget.php
+- app/Models/LearningObservation.php
+- app/Http/Controllers/Admin/InstitutionController.php
+- app/Http/Controllers/Admin/AcademicCoreController.php
+- app/Http/Controllers/Teacher/LearningPlanController.php
+- resources/views/admin/institution/edit.blade.php
+- resources/views/admin/academic-core/index.blade.php
+- resources/views/teacher/learning-plan/index.blade.php
+- scripts/container-start-v1.5.0.sh
+- scripts/smoke-test-v1.5.0.sh
+
+Modified:
+- Dockerfile
+- routes/web.php
+- routes/console.php
+- model relationships
+- teacher meeting workflow
+- guardian and admin student views
+- application navigation
+- release documentation
