@@ -30,4 +30,4 @@ else
 fi
 
 echo "Menjalankan NGINX Unit..."
-exec unitd --no-daemon
+exec /usr/local/bin/docker-entrypoint.sh unitd --no-daemon
