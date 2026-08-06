@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\EnforceDomainSeparation;
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsureRole;
 use Illuminate\Foundation\Application;
@@ -14,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->trustProxies(at: '*');
+        $middleware->web(append: [EnforceDomainSeparation::class]);
         $middleware->alias([
             'role' => EnsureRole::class,
             'password.changed' => EnsurePasswordChanged::class,

@@ -76,3 +76,12 @@ Identitas terpadu/SSO untuk Website, TPA, Academy, dan Community.
 - panduan adaptasi lembaga lain;
 - pemisahan fakta dan placeholder;
 - referensi tata kelola, privasi, dan prinsip tanpa ranking.
+
+
+## v1.4.5 — Portal Domain Separation
+
+- website publik pada domain utama;
+- portal autentikasi pada subdomain `app`;
+- canonical redirect `www`;
+- domain lama dipertahankan sementara;
+- tanpa perubahan database.

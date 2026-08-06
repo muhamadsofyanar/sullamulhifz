@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.4.5 — Portal Domain Separation
+
+- Separated the public website and authenticated portal by hostname.
+- Added canonical redirect from `www.sullamulhifz.or.id` to the root domain.
+- Redirected login, dashboard, and operational routes to `app.sullamulhifz.or.id`.
+- Redirected public pages requested on the portal host back to the public domain.
+- Kept `taysriulqurani.id` available during the transition.
+- Added feature tests, smoke test, upgrade, rollback, and Coolify guidance.
+- No new database migration.
+
 ## v1.4.4 — Institution Reference
 
 - Added a comprehensive public profile for TPA Al-Insyirah.

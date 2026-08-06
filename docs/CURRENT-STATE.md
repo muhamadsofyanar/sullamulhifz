@@ -12,7 +12,7 @@ Tanggal sinkronisasi dokumentasi: 6 Agustus 2026.
 
 ## Kandidat pengembangan
 
-Repository paket ini ditandai **v1.4.4 Ikrar Santri**. Kode fungsionalnya berbasis kandidat **v1.4.0 TPA Operational Complete** dan dokumentasi v1.4.1. Rilis v1.4.4 menambahkan Ikrar Santri pada website publik dan portal, editor admin, lima budaya bersama, tiga ruang pembiasaan, serta mode cetak.
+Repository paket ini ditandai **v1.4.5 Portal Domain Separation**. Kode fungsionalnya berbasis kandidat **v1.4.0 TPA Operational Complete** dan dokumentasi v1.4.1. Rilis v1.4.4 menambahkan Ikrar Santri pada website publik dan portal, editor admin, lima budaya bersama, tiga ruang pembiasaan, serta mode cetak.
 
 Kandidat v1.4.x belum boleh dinyatakan stabil hanya karena source tersedia. Sebelum produksi, wajib dilakukan:
 
@@ -45,9 +45,14 @@ Kandidat v1.4.x belum boleh dinyatakan stabil hanya karena source tersedia. Sebe
 - Multi-lembaga belum dibuat.
 - Pembayaran dan WhatsApp API otomatis belum dibuat.
 - Aplikasi native Android/iOS belum dibuat.
-- Domain baru masih menunggu aktivasi/verifikasi DNS.
+- Domain utama `sullamulhifz.or.id` telah aktif; subdomain portal `app.sullamulhifz.or.id` disiapkan melalui v1.4.5.
 
 
 ## Institution Reference v1.4.4
 
 TPA Al-Insyirah kini memiliki profil publik lengkap sebagai implementasi pertama, disertai panduan adaptasi untuk lembaga lain. Data yang belum ditetapkan tetap ditandai sebagai placeholder.
+
+
+## Portal Domain Separation v1.4.5
+
+Website publik tetap pada `sullamulhifz.or.id`, sedangkan login, dashboard, dan operasi privat diarahkan ke `app.sullamulhifz.or.id`. Domain lama dipertahankan sementara sebagai jalur transisi. Tidak ada perubahan database.
