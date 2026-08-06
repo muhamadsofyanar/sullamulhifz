@@ -1,55 +1,55 @@
-# START HERE — Sullamul Hifz v1.4.0
-
-Current production target: **v1.4.0 TPA Operational Complete**.
-
-Read in this order:
-
-1. `docs/CURRENT-STATE.md`
-2. `docs/UPGRADE-v1.4.0.md`
-3. `docs/TEST-v1.4.0.md`
-4. `docs/ROLLBACK-v1.4.0.md`
-5. `docs/DATABASE-v1.4.0.md`
-6. `docs/ROADMAP.md`
-
-Critical rule: never run `db:wipe`, `migrate:fresh`, or `first-install.sh` on production.
-
 # START HERE — Sullamul Ḥifẓ
 
-Dokumen ini adalah pintu masuk resmi proyek. Gunakan ini ketika riwayat chat hilang, pengembang berganti, atau pekerjaan dilanjutkan dari akun/perangkat lain.
+Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang, pekerjaan berpindah akun, atau pengembang berganti.
 
-## Status terkini
+## Status yang harus dibedakan
 
-- **Versi repository:** v1.2.1 — Documentation Governance
-- **Versi fungsional aplikasi:** basis v1.2.0 Official Branding
-- **Lingkungan produksi:** Coolify, Dockerfile, NGINX Unit, PHP 8.4, Laravel 13, MySQL 8
-- **Domain sementara:** `taysriulqurani.id`
-- **Data awal:** 88 santri, 88 wali, 4 guru, 6 kelas utama, 2 kelompok Tahfizh
-- **Prioritas berikutnya:** v1.3.0 — Public Website & Route Separation
+- **Produksi yang sedang berjalan:** v1.3.0 pada `taysriulqurani.id`.
+- **Paket kandidat pengembangan:** v1.4.1 Documentation Sync, berbasis fitur v1.4.0 TPA Operational Complete.
+- **Status v1.4.x:** belum boleh dianggap production-ready sebelum pengujian staging dan upgrade terhadap salinan database selesai.
+- **Domain baru yang dipersiapkan:**
+  - `sullamulhifz.or.id` — website publik;
+  - `app.sullamulhifz.or.id` — portal TPA;
+  - `academy.sullamulhifz.or.id` — Academy pada fase v2.
 
-## Baca dalam urutan ini
+## Data produksi yang harus dipertahankan
 
-1. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md) — kondisi nyata aplikasi sekarang.
-2. [`docs/ROADMAP.md`](docs/ROADMAP.md) — urutan pengembangan versi demi versi.
-3. [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — batas modul dan arah teknis.
-4. [`docs/NEXT-RELEASE-v1.3.0.md`](docs/NEXT-RELEASE-v1.3.0.md) — pekerjaan terdekat.
-5. [`docs/RELEASE-STANDARD.md`](docs/RELEASE-STANDARD.md) — aturan membuat rilis.
-6. [`docs/UPGRADE-STANDARD.md`](docs/UPGRADE-STANDARD.md) — prosedur upgrade produksi.
-7. [`docs/HANDOVER-NEXT-CHAT.md`](docs/HANDOVER-NEXT-CHAT.md) — prompt untuk melanjutkan di chat baru.
+- 88 santri;
+- 88 akun wali;
+- 4 guru: Nurul, Jundi, Yanti, dan Sofyan;
+- 6 kelas utama;
+- Tahfizh A: 30 santri;
+- Tahfizh B: 27 santri.
 
-## Aturan keselamatan paling penting
+## Urutan membaca
 
-- **Jangan menjalankan** `php artisan db:wipe`, `migrate:fresh`, atau `scripts/first-install.sh` pada database produksi yang sudah berisi data.
-- Upgrade normal menggunakan `sh scripts/deploy.sh` atau perintah khusus yang tertulis pada panduan versi.
-- Jangan unggah `.env`, password, `APP_KEY`, `DB_URL`, atau `INITIAL_TPA_DATA_KEY` ke GitHub.
-- Sebelum migration produksi, buat backup database dan pastikan backup dapat dipulihkan.
-- Migration yang sudah pernah dijalankan di produksi tidak boleh diedit. Tambahkan migration baru.
+1. `docs/CURRENT-STATE.md`
+2. `docs/ROADMAP.md`
+3. `docs/ARCHITECTURE.md`
+4. `docs/DECISIONS.md`
+5. `docs/NEXT-RELEASE-v2.0.0.md`
+6. `docs/UPGRADE-v1.4.0.md`
+7. `docs/TEST-v1.4.0.md`
+8. `docs/ROLLBACK-v1.4.0.md`
+9. `docs/HANDOVER-NEXT-CHAT.md`
+
+## Aturan keselamatan
+
+- Jangan menjalankan `db:wipe`, `migrate:fresh`, atau `scripts/first-install.sh` pada database produksi yang sudah berisi data.
+- Jangan menjalankan `ProductionSeeder` untuk upgrade produksi.
+- Sebelum migration produksi, buat backup database dan uji pemulihannya.
+- Migration lama yang pernah berjalan tidak boleh diedit; tambahkan migration baru.
+- Jangan mengunggah `.env`, `APP_KEY`, `DB_URL`, password, dump database, atau `INITIAL_TPA_DATA_KEY` ke GitHub.
+- Jangan memasang domain yang sama pada dua resource Coolify sekaligus.
 
 ## Sumber kebenaran
 
-Jika isi chat bertentangan dengan repository, gunakan urutan sumber berikut:
+Jika chat bertentangan dengan repository, gunakan urutan berikut:
 
-1. kode pada branch produksi;
-2. `RELEASE` dan `public/release.txt`;
-3. dokumen rilis di `docs/releases/`;
-4. `CHANGELOG.md`;
-5. riwayat chat.
+1. kode pada branch yang benar-benar dideploy;
+2. status deployment Coolify dan migration database;
+3. `RELEASE` dan `public/release.txt`;
+4. `docs/CURRENT-STATE.md`;
+5. dokumen rilis di `docs/releases/`;
+6. `CHANGELOG.md`;
+7. riwayat chat.

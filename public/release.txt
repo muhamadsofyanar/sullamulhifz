@@ -1,7 +1,4 @@
-Sullamul Hifz v1.4.0
-Release: TPA Operational Complete
-Database upgrade: additive
-Public website CMS: enabled
-CSV import preview: enabled
-Report cards: enabled
-Guardian management: enabled
+Sullamul Hifz v1.4.1
+Release: Documentation Sync
+Database changes: none
+Functional candidate base: v1.4.0

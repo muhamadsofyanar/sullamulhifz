@@ -1,5 +1,13 @@
 # Changelog
 
+## v1.4.1 — Documentation Sync
+
+- Synchronized production and candidate release status.
+- Updated START-HERE, current state, roadmap, documentation index, and handover.
+- Archived the completed v1.3.0 plan.
+- Added the v2.0.0 Academy MVP planning document.
+- No database or runtime feature changes.
+
 ## v1.4.0 — TPA Operational Complete
 
 - Added guardian management and password reset workflow.

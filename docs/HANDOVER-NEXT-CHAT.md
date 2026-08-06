@@ -1,59 +1,68 @@
-# Handover untuk Chat/Akun Baru
+# Handover untuk Chat atau Akun Baru
 
 Gunakan dokumen ini ketika riwayat percakapan tidak tersedia.
 
-## Prompt siap pakai
-
-Salin teks berikut ke chat baru:
+## Prompt siap salin
 
 ```text
 Saya melanjutkan proyek Sullamul Ḥifẓ dari repository GitHub.
 
-Sebelum memberi saran atau membuat patch, pelajari berkas berikut dari repository:
+Sebelum memberi saran atau membuat patch, pelajari:
 1. START-HERE.md
 2. docs/CURRENT-STATE.md
 3. docs/ROADMAP.md
 4. docs/ARCHITECTURE.md
 5. docs/DECISIONS.md
-6. docs/NEXT-RELEASE-v1.3.0.md
+6. docs/NEXT-RELEASE-v2.0.0.md
 7. docs/RELEASE-STANDARD.md
 8. docs/UPGRADE-STANDARD.md
-9. CHANGELOG.md
-10. RELEASE
+9. docs/UPGRADE-v1.4.0.md
+10. docs/TEST-v1.4.0.md
+11. docs/ROLLBACK-v1.4.0.md
+12. CHANGELOG.md
+13. RELEASE
 
-Versi baseline saat ini adalah v1.2.1 documentation-governance dengan aplikasi fungsional berbasis v1.2.0. Produksi memakai Coolify, Dockerfile, NGINX Unit, PHP 8.4, Laravel 13, dan MySQL 8. Data TPA sudah berisi 88 santri, 88 wali, 4 guru, 6 kelas utama, Tahfizh A 30 santri, dan Tahfizh B 27 santri.
+Fakta penting:
+- Produksi aktif yang sudah berjalan lancar adalah v1.3.0 pada taysriulqurani.id.
+- Paket kandidat repository adalah v1.4.1 Documentation Sync berbasis kandidat fitur v1.4.0 TPA Operational Complete.
+- Kandidat v1.4.x belum boleh dianggap production-ready sebelum diuji pada aplikasi dan database terpisah serta diuji upgrade dari salinan database v1.3.0.
+- Data yang harus dipertahankan: 88 santri, 88 wali, guru Nurul/Jundi/Yanti/Sofyan, 6 kelas utama, Tahfizh A 30 santri, Tahfizh B 27 santri.
+- Target domain: sullamulhifz.or.id untuk website, app.sullamulhifz.or.id untuk portal TPA, academy.sullamulhifz.or.id untuk Academy mendatang.
 
-Larangan penting: jangan menyarankan db:wipe, migrate:fresh, atau first-install.sh untuk upgrade produksi. Jangan meminta saya mengirim APP_KEY, DB_URL, password, atau INITIAL_TPA_DATA_KEY.
+Larangan:
+- jangan menyarankan db:wipe, migrate:fresh, first-install.sh, atau ProductionSeeder untuk upgrade produksi;
+- jangan meminta APP_KEY, DB_URL, password, dump database, atau INITIAL_TPA_DATA_KEY;
+- jangan mengklaim suatu versi sudah production-ready tanpa hasil test dan deployment nyata.
 
-Pekerjaan berikutnya adalah v1.3.0 Public Website & Route Separation, kecuali saya menyatakan prioritas lain.
+Prioritas berikutnya adalah menstabilkan v1.4.x dan menyiapkan cutover domain. Setelah stabil, pengembangan besar berikutnya adalah v2.0.0 Academy MVP.
 ```
 
-## Berkas yang perlu diberikan ke asisten baru
-
-Paling aman berikan link repository atau ZIP source terbaru. Jangan hanya mengirim screenshot. Jika akses repository tidak tersedia, unggah minimal:
+## Berkas minimum yang diberikan kepada asisten baru
 
 - `START-HERE.md`;
 - seluruh folder `docs/`;
 - `README.md`;
 - `CHANGELOG.md`;
 - `RELEASE`;
-- file kode yang hendak diubah.
+- file kode yang hendak diubah;
+- log error terbaru bila ada.
 
 ## Informasi yang tidak boleh dikirim
 
 - `.env`;
+- APP key;
 - data key;
 - password;
 - DB URL;
-- APP KEY;
 - dump database;
 - daftar akun rahasia.
 
-## Format permintaan upgrade
+## Format permintaan rilis
 
 ```text
 Buat rilis vX.Y.Z untuk scope berikut: ...
 Pertahankan seluruh data produksi.
-Sertakan UPGRADE-VX.Y.Z.md, docs/releases/vX.Y.Z.md, CHANGELOG, RELEASE, public/release.txt, test, dan rollback.
+Sertakan panduan upgrade, rollback, test, migration impact, changelog, release marker, dan handover.
 Jangan memakai database wipe.
+Bedakan fitur yang baru dibuat, yang sudah diuji, dan yang sudah benar-benar dideploy.
 ```
