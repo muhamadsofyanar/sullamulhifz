@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Student extends Model
 {
     use SoftDeletes;
-    protected $fillable = ['institution_id','student_code','full_name','nickname','gender','birth_date','address','joined_at','status','special_needs_notes','stifin_status','stifin_result','stifin_tested_at','stifin_notes'];
+    protected $fillable = ['institution_id','student_code','full_name','nickname','gender','birth_place','birth_date','photo_path','address','joined_at','status','special_needs_notes','stifin_status','stifin_result','stifin_tested_at','stifin_notes'];
     protected function casts(): array { return ['birth_date'=>'date','joined_at'=>'date','stifin_tested_at'=>'date']; }
     public function guardians(): BelongsToMany
     {
@@ -25,4 +25,5 @@ class Student extends Model
     public function murajaahRecords(): HasMany { return $this->hasMany(MurajaahRecord::class); }
     public function tahsinRecords(): HasMany { return $this->hasMany(TahsinRecord::class); }
     public function attendanceRecords(): HasMany { return $this->hasMany(AttendanceRecord::class); }
+    public function reportCards(): HasMany { return $this->hasMany(ReportCard::class); }
 }

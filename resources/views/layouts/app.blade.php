@@ -30,6 +30,12 @@
                 <a href="{{ route('admin.teachers.index') }}" class="{{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}" @if(request()->routeIs('admin.teachers.*')) aria-current="page" @endif>
                     <x-icon name="teacher"/><span>Guru</span>
                 </a>
+                <a href="{{ route('admin.guardians.index') }}" class="{{ request()->routeIs('admin.guardians.*') ? 'active' : '' }}">
+                    <x-icon name="profile"/><span>Wali</span>
+                </a>
+                <a href="{{ route('admin.imports.index') }}" class="{{ request()->routeIs('admin.imports.*') ? 'active' : '' }}">
+                    <x-icon name="assignment"/><span>Impor Data</span>
+                </a>
                 <a href="{{ route('admin.academic.index') }}" class="{{ request()->routeIs('admin.academic.*') ? 'active' : '' }}" @if(request()->routeIs('admin.academic.*')) aria-current="page" @endif>
                     <x-icon name="academic"/><span>Akademik</span>
                 </a>
@@ -37,6 +43,12 @@
             @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']))
                 <a href="{{ route('admin.content.index') }}" class="{{ request()->routeIs('admin.content.*') ? 'active' : '' }}" @if(request()->routeIs('admin.content.*')) aria-current="page" @endif>
                     <x-icon name="guidance"/><span>Konten & Pembinaan</span>
+                </a>
+                <a href="{{ route('admin.website.index') }}" class="{{ request()->routeIs('admin.website.*') ? 'active' : '' }}">
+                    <x-icon name="community"/><span>Website</span>
+                </a>
+                <a href="{{ route('admin.report-cards.index') }}" class="{{ request()->routeIs('admin.report-cards.*') ? 'active' : '' }}">
+                    <x-icon name="report"/><span>Rapor</span>
                 </a>
                 <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" @if(request()->routeIs('admin.reports.*')) aria-current="page" @endif>
                     <x-icon name="report"/><span>Laporan</span>

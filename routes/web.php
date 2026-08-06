@@ -1,6 +1,10 @@
 <?php
 
 use App\Http\Controllers\Admin\AcademicController;
+use App\Http\Controllers\Admin\GuardianController;
+use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\ReportCardController;
+use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\ContentController as AdminContentController;
 use App\Http\Controllers\Admin\StudentController;
@@ -13,27 +17,25 @@ use App\Http\Controllers\Guardian\PortalController;
 use App\Http\Controllers\LiaisonController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\ClassroomController;
 use App\Http\Controllers\Teacher\MeetingController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function (Request $request) {
-    if ($request->getHost() === config('sullam.portal_host')) {
-        return auth()->check() ? redirect()->route('dashboard') : redirect()->route('login');
-    }
-
-    return view('public.home');
-})->name('public.home');
-
-Route::view('/tentang', 'public.about')->name('public.about');
-Route::view('/program', 'public.programs')->name('public.programs');
-Route::view('/tpa', 'public.tpa')->name('public.tpa');
-Route::view('/academy', 'public.academy')->name('public.academy');
-Route::view('/artikel', 'public.articles')->name('public.articles');
-Route::view('/kontak', 'public.contact')->name('public.contact');
-Route::view('/privasi', 'public.privacy')->name('public.privacy');
+Route::get('/', [PublicSiteController::class, 'home'])->name('public.home');
+Route::get('/tentang', fn () => app(PublicSiteController::class)->page('tentang'))->name('public.about');
+Route::get('/program', fn () => app(PublicSiteController::class)->page('program'))->name('public.programs');
+Route::get('/tpa', fn () => app(PublicSiteController::class)->page('tpa'))->name('public.tpa');
+Route::get('/academy', fn () => app(PublicSiteController::class)->page('academy'))->name('public.academy');
+Route::get('/kontak', fn () => app(PublicSiteController::class)->page('kontak'))->name('public.contact');
+Route::get('/privasi', fn () => app(PublicSiteController::class)->page('privasi'))->name('public.privacy');
+Route::get('/syarat-ketentuan', fn () => app(PublicSiteController::class)->page('syarat-ketentuan'))->name('public.terms');
+Route::get('/artikel', [PublicSiteController::class, 'articles'])->name('public.articles');
+Route::get('/artikel/{article}', [PublicSiteController::class, 'article'])->name('public.article');
+Route::get('/pendaftaran', [PublicSiteController::class, 'registration'])->name('public.registration');
+Route::post('/pendaftaran', [PublicSiteController::class, 'storeRegistration'])->middleware('throttle:5,10')->name('public.registration.store');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -54,13 +56,21 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::post('/buku-penghubung/{thread}/balas', [LiaisonController::class, 'reply'])->name('liaison.reply');
 
     Route::get('/pengumuman', [ContentFeedController::class, 'announcements'])->name('feed.announcements');
+    Route::post('/pengumuman/{announcement}/konfirmasi', [ContentFeedController::class, 'acknowledge'])->name('feed.announcements.acknowledge');
     Route::get('/pembinaan-jumat', [ContentFeedController::class, 'friday'])->name('feed.friday');
     Route::get('/media/submission/{submission}', [MediaController::class, 'submission'])->name('media.submission');
+    Route::get('/media/liaison/{message}', [MediaController::class, 'liaison'])->name('media.liaison');
 
     Route::prefix('admin')->name('admin.')->group(function (): void {
         Route::middleware('role:superadmin,institution_admin')->group(function (): void {
             Route::resource('students', StudentController::class)->except(['destroy']);
             Route::post('/students/{student}/guardians', [StudentController::class, 'addGuardian'])->name('students.guardians.store');
+            Route::resource('guardians', GuardianController::class)->only(['index','show','update']);
+            Route::get('/imports', [ImportController::class, 'index'])->name('imports.index');
+            Route::get('/imports/template', [ImportController::class, 'template'])->name('imports.template');
+            Route::post('/imports/preview', [ImportController::class, 'preview'])->name('imports.preview');
+            Route::get('/imports/{batch}', [ImportController::class, 'show'])->name('imports.show');
+            Route::post('/imports/{batch}/commit', [ImportController::class, 'commit'])->name('imports.commit');
             Route::resource('teachers', TeacherController::class)->only(['index','create','store']);
             Route::put('/accounts/{user}/password', [AccountController::class, 'resetPassword'])->name('accounts.password');
 
@@ -81,9 +91,27 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::post('/content/announcements', [AdminContentController::class, 'storeAnnouncement'])->name('content.announcements.store');
             Route::post('/content/friday', [AdminContentController::class, 'storeFriday'])->name('content.friday.store');
 
+            Route::get('/website', [WebsiteController::class, 'index'])->name('website.index');
+            Route::post('/website/pages', [WebsiteController::class, 'storePage'])->name('website.pages.store');
+            Route::put('/website/pages/{page}', [WebsiteController::class, 'updatePage'])->name('website.pages.update');
+            Route::post('/website/articles', [WebsiteController::class, 'storeArticle'])->name('website.articles.store');
+            Route::put('/website/articles/{article}', [WebsiteController::class, 'updateArticle'])->name('website.articles.update');
+            Route::put('/website/registrations/{registration}', [WebsiteController::class, 'updateRegistration'])->name('website.registrations.update');
+
+            Route::get('/report-cards', [ReportCardController::class, 'index'])->name('report-cards.index');
+            Route::post('/report-cards', [ReportCardController::class, 'store'])->name('report-cards.store');
+            Route::get('/report-cards/{reportCard}', [ReportCardController::class, 'show'])->name('report-cards.show');
+            Route::put('/report-cards/{reportCard}', [ReportCardController::class, 'update'])->name('report-cards.update');
+            Route::post('/report-cards/{reportCard}/publish', [ReportCardController::class, 'publish'])->name('report-cards.publish');
+            Route::get('/report-cards/{reportCard}/print', [ReportCardController::class, 'print'])->name('report-cards.print');
+
             Route::get('/reports', [ReportController::class, 'index'])->name('reports.index');
             Route::get('/reports/students.csv', [ReportController::class, 'studentsCsv'])->name('reports.students.csv');
             Route::get('/reports/attendance.csv', [ReportController::class, 'attendanceCsv'])->name('reports.attendance.csv');
+            Route::get('/reports/guardians.csv', [ReportController::class, 'guardiansCsv'])->name('reports.guardians.csv');
+            Route::get('/reports/tahsin.csv', [ReportController::class, 'tahsinCsv'])->name('reports.tahsin.csv');
+            Route::get('/reports/memorization.csv', [ReportController::class, 'memorizationCsv'])->name('reports.memorization.csv');
+            Route::get('/reports/murajaah.csv', [ReportController::class, 'murajaahCsv'])->name('reports.murajaah.csv');
         });
     });
 

@@ -114,6 +114,17 @@
     </div>
 </section>
 
+@if(isset($featuredArticles) && $featuredArticles->isNotEmpty())
+<section class="public-section soft-section">
+    <div class="public-container section-heading centered"><span class="public-eyebrow">ARTIKEL TERBARU</span><h2>Gagasan untuk menjaga perjalanan.</h2></div>
+    <div class="public-container article-grid">
+        @foreach($featuredArticles as $article)
+        <a class="article-card" href="{{ route('public.article', $article) }}"><span>ARTIKEL</span><h2>{{ $article->title }}</h2><p>{{ $article->excerpt }}</p><small>Baca artikel →</small></a>
+        @endforeach
+    </div>
+</section>
+@endif
+
 <section class="public-cta">
     <div class="public-container cta-inner">
         <div><span class="public-eyebrow light">MULAI DARI YANG SUDAH ADA</span><h2>Kenali ekosistemnya. Gunakan aplikasinya. Jaga perjalanannya.</h2></div>

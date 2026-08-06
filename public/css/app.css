@@ -36,3 +36,6 @@
 .card,.stat-card{border-color:rgba(0,75,63,.12)}
 @media(max-width:780px){.brand-sidebar img{max-width:210px}.branded-stat{padding:16px}.auth-brand img{max-width:320px}.auth-ornament{display:none}}
 .auth-back{margin:14px 0 0;text-align:center;font-size:12px;font-weight:800}.auth-back a{color:var(--emerald)}
+/* v1.4.0 operational UI */
+.button.small{padding:7px 10px;font-size:12px}.text-danger{color:var(--danger)}.pinned-card{border-left:4px solid var(--gold)}.reply-box-attachment{grid-template-columns:1fr minmax(170px,260px) auto}.public-badge{display:inline-flex}.card details{padding:10px 0}.card details summary{display:flex;justify-content:space-between;gap:12px}.button.danger{background:var(--danger);color:#fff;border-color:var(--danger)}
+@media(max-width:780px){.reply-box-attachment{grid-template-columns:1fr}}

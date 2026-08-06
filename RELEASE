@@ -1,4 +1,4 @@
-Sullamul Hifz v1.3.0
-Release type: public-website
-Database changes: none
-Upgrade: safe from v1.2.x; do not wipe database
+Sullamul Hifz v1.4.0
+Release type: TPA Operational Complete
+Database changes: additive migration only
+Upgrade: safe from v1.3.0 after database backup; never wipe production

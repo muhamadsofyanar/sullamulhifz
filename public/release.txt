@@ -1,5 +1,7 @@
-Sullamul Hifz v1.3.0
-Release: public-website
-Public routes: enabled
-Portal host routing: enabled
-Database changes: none
+Sullamul Hifz v1.4.0
+Release: TPA Operational Complete
+Database upgrade: additive
+Public website CMS: enabled
+CSV import preview: enabled
+Report cards: enabled
+Guardian management: enabled

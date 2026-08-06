@@ -1,0 +1,8 @@
+@extends('layouts.app')
+@php($pageTitle='Preview Impor')
+@section('content')
+<div class="page-head"><div><span class="eyebrow">BATCH #{{ $batch->id }}</span><h1>Preview impor</h1><p>{{ $batch->original_name }} · {{ $batch->total_rows }} baris</p></div><a class="button secondary" href="{{ route('admin.imports.index') }}">Kembali</a></div>
+<div class="stats-grid three"><div class="stat-card"><span>Valid</span><strong>{{ $batch->success_rows }}</strong></div><div class="stat-card"><span>Tidak valid</span><strong>{{ $batch->failed_rows }}</strong></div><div class="stat-card"><span>Status</span><strong>{{ $batch->status }}</strong></div></div>
+<div class="card table-card"><table><thead><tr><th>Baris</th><th>Santri</th><th>Kelas</th><th>Wali</th><th>Status</th></tr></thead><tbody>@foreach($batch->rows as $row)<tr><td>{{ $row->row_number }}</td><td>{{ $row->payload['full_name'] ?? '-' }}<small>{{ $row->payload['student_code'] ?? '' }}</small></td><td>{{ $row->payload['class_code'] ?? '-' }}</td><td>{{ $row->payload['guardian_name'] ?? '-' }}<small>{{ $row->payload['guardian_phone'] ?? '' }}</small></td><td><span class="badge">{{ $row->status }}</span>@if($row->error_message)<small class="text-danger">{{ $row->error_message }}</small>@endif</td></tr>@endforeach</tbody></table></div>
+@if($batch->status==='preview' && $batch->failed_rows===0)<form method="post" action="{{ route('admin.imports.commit',$batch) }}" onsubmit="return confirm('Impor seluruh data valid sekarang?')">@csrf<button class="button primary">Konfirmasi impor {{ $batch->success_rows }} baris</button></form>@elseif($batch->failed_rows>0)<div class="alert danger">Perbaiki CSV lalu unggah kembali. Batch yang memiliki baris tidak valid tidak dapat diimpor.</div>@endif
+@endsection

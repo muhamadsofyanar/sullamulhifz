@@ -22,6 +22,7 @@ class PortalController extends Controller
             'tahsinRecords'=>fn($q)=>$q->with('surah')->latest()->limit(20),
             'memorizationRecords'=>fn($q)=>$q->with('surah')->latest('recorded_at')->limit(20),
             'murajaahRecords'=>fn($q)=>$q->with('surah')->latest('recorded_at')->limit(20),
+            'reportCards'=>fn($q)=>$q->with('academicYear','items')->where('status','published')->latest('published_at'),
         ]);
         return view('guardian.child',compact('student'));
     }

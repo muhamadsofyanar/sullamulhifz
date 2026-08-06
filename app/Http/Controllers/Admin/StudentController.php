@@ -45,7 +45,10 @@ class StudentController extends Controller
 
         $student = DB::transaction(function () use ($request, $data, $institutionId): Student {
             $studentData = $data;
-            unset($studentData['class_id']);
+            unset($studentData['class_id'], $studentData['photo']);
+            if ($request->hasFile('photo')) {
+                $studentData['photo_path'] = $request->file('photo')->store('students', 'public');
+            }
             $student = Student::create([
                 ...$studentData,
                 'institution_id' => $institutionId,
@@ -93,7 +96,10 @@ class StudentController extends Controller
 
         DB::transaction(function () use ($request, $student, $data): void {
             $studentData = $data;
-            unset($studentData['class_id']);
+            unset($studentData['class_id'], $studentData['photo']);
+            if ($request->hasFile('photo')) {
+                $studentData['photo_path'] = $request->file('photo')->store('students', 'public');
+            }
             $student->update($studentData);
             $newClassId = $request->integer('class_id');
             if ($newClassId && $student->currentEnrollment?->class_id !== $newClassId) {
@@ -122,6 +128,7 @@ class StudentController extends Controller
             'full_name' => ['required','string','max:190'],
             'nickname' => ['nullable','string','max:100'],
             'gender' => ['nullable', Rule::in(['male','female'])],
+            'birth_place' => ['nullable','string','max:100'],
             'birth_date' => ['nullable','date','before:today'],
             'address' => ['nullable','string'],
             'joined_at' => ['nullable','date'],
@@ -129,6 +136,7 @@ class StudentController extends Controller
             'special_needs_notes' => ['nullable','string'],
             'stifin_status' => ['required', Rule::in(['untested','tested'])],
             'stifin_result' => ['nullable','string','max:50'],
+            'photo' => ['nullable','image','max:3072'],
             'class_id' => ['required','integer', Rule::exists('classes','id')->where('institution_id',$request->user()->institution_id)],
         ]);
     }

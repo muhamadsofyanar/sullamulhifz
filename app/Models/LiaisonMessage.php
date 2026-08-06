@@ -4,10 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class LiaisonMessage extends Model
 {
-    protected $fillable = ['liaison_thread_id','sender_user_id','message','message_type'];
+    use SoftDeletes;
+
+    protected $fillable = [
+        'liaison_thread_id','sender_user_id','message','message_type','file_path','original_name','mime_type','file_size',
+    ];
+
     public function thread(): BelongsTo { return $this->belongsTo(LiaisonThread::class, 'liaison_thread_id'); }
     public function sender(): BelongsTo { return $this->belongsTo(User::class, 'sender_user_id'); }
 }

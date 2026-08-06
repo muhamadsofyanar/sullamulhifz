@@ -3,7 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
+use App\Models\AdmissionRegistration;
 use App\Models\AssignmentRecipient;
+use App\Models\AttendanceRecord;
+use App\Models\Guardian;
+use App\Models\LearningGroup;
 use App\Models\FridayDevelopmentSession;
 use App\Models\LiaisonThread;
 use App\Models\Meeting;
@@ -14,6 +18,7 @@ use App\Models\TeacherAssignment;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
@@ -44,6 +49,11 @@ class DashboardController extends Controller
             'teacherCount' => Teacher::where('institution_id', $institutionId)->where('status', 'active')->count(),
             'classCount' => SchoolClass::where('institution_id', $institutionId)->where('status', 'active')->count(),
             'todayMeetings' => Meeting::where('institution_id', $institutionId)->whereDate('meeting_date', today())->count(),
+            'guardianCount' => Guardian::where('institution_id', $institutionId)->where('status','active')->count(),
+            'groupCount' => LearningGroup::where('institution_id', $institutionId)->where('status','active')->count(),
+            'todayAttendance' => AttendanceRecord::whereHas('meeting', fn($q)=>$q->where('institution_id',$institutionId)->whereDate('meeting_date',today()))->count(),
+            'openThreads' => LiaisonThread::where('institution_id',$institutionId)->whereIn('status',['new','active','waiting'])->count(),
+            'newRegistrations' => Schema::hasTable('admission_registrations') ? AdmissionRegistration::where('institution_id',$institutionId)->where('status','new')->count() : 0,
             'recentAnnouncements' => Announcement::where('institution_id', $institutionId)->latest('publish_at')->limit(5)->get(),
         ]);
     }

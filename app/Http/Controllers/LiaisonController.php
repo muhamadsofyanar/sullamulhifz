@@ -49,8 +49,10 @@ class LiaisonController extends Controller
             'student_id'=>['required','exists:students,id'],
             'category'=>['required',Rule::in(['learning','tahsin','tahfizh','murajaah','character','health','administration','consultation'])],
             'subject'=>['required','string','max:190'],
-            'message'=>['required','string','max:5000'],
+            'message'=>['nullable','string','max:5000'],
+            'attachment'=>['nullable','file','max:10240'],
         ]);
+        abort_if(blank($data['message'] ?? null) && ! $request->hasFile('attachment'),422,'Isi pesan atau lampiran wajib ditambahkan.');
         $student=Student::findOrFail($data['student_id']);
         abort_unless($student->institution_id===$request->user()->institution_id,403);
         $teacherId=null;
@@ -65,7 +67,8 @@ class LiaisonController extends Controller
 
         $thread=DB::transaction(function() use($request,$data,$student,$teacherId):LiaisonThread{
             $thread=LiaisonThread::create(['institution_id'=>$student->institution_id,'student_id'=>$student->id,'class_id'=>$student->currentEnrollment?->class_id,'category'=>$data['category'],'subject'=>$data['subject'],'created_by_user_id'=>$request->user()->id,'assigned_teacher_id'=>$teacherId,'status'=>'active','last_message_at'=>now()]);
-            LiaisonMessage::create(['liaison_thread_id'=>$thread->id,'sender_user_id'=>$request->user()->id,'message'=>$data['message'],'message_type'=>'text']);
+            $fileData=$this->storeAttachment($request,$thread->id);
+            LiaisonMessage::create([...$fileData,'liaison_thread_id'=>$thread->id,'sender_user_id'=>$request->user()->id,'message'=>$data['message']??'','message_type'=>$fileData?'attachment':'text']);
             $participants=collect([$request->user()->id]);
             if($teacherId){$participants->push(optional(\App\Models\Teacher::find($teacherId))->user_id);}
             foreach($student->guardians as $guardian){$participants->push($guardian->user_id);}
@@ -86,8 +89,10 @@ class LiaisonController extends Controller
     public function reply(Request $request,LiaisonThread $thread): RedirectResponse
     {
         $this->authorizeThread($request,$thread);
-        $data=$request->validate(['message'=>['required','string','max:5000']]);
-        LiaisonMessage::create(['liaison_thread_id'=>$thread->id,'sender_user_id'=>$request->user()->id,'message'=>$data['message'],'message_type'=>'text']);
+        $data=$request->validate(['message'=>['nullable','string','max:5000'],'attachment'=>['nullable','file','max:10240']]);
+        abort_if(blank($data['message'] ?? null) && ! $request->hasFile('attachment'),422,'Isi pesan atau lampiran wajib ditambahkan.');
+        $fileData=$this->storeAttachment($request,$thread->id);
+        LiaisonMessage::create([...$fileData,'liaison_thread_id'=>$thread->id,'sender_user_id'=>$request->user()->id,'message'=>$data['message']??'','message_type'=>$fileData?'attachment':'text']);
         $thread->update(['last_message_at'=>now(),'status'=>'active']);
         return back()->with('success','Tanggapan berhasil dikirim.');
     }
@@ -98,6 +103,18 @@ class LiaisonController extends Controller
         if($request->user()->hasAnyRole(['institution_admin','head','superadmin'])) return;
         if($request->user()->hasRole('teacher')) abort_unless($thread->assigned_teacher_id===$request->user()->teacher?->id,403);
         if($request->user()->hasRole('guardian')) abort_unless($request->user()->guardian?->students()->whereKey($thread->student_id)->exists(),403);
+    }
+
+    private function storeAttachment(Request $request, int $threadId): array
+    {
+        if (! $request->hasFile('attachment')) return [];
+        $file=$request->file('attachment');
+        return [
+            'file_path'=>$file->store('liaison/'.$threadId,'local'),
+            'original_name'=>$file->getClientOriginalName(),
+            'mime_type'=>$file->getMimeType(),
+            'file_size'=>$file->getSize(),
+        ];
     }
 
     private function teacherCanAccessStudent(?int $teacherId,Student $student): bool

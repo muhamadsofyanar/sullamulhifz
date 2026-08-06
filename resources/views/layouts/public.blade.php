@@ -46,6 +46,7 @@
             <a href="{{ route('public.academy') }}" class="{{ request()->routeIs('public.academy') ? 'active' : '' }}">Academy</a>
             <a href="{{ route('public.articles') }}" class="{{ request()->routeIs('public.articles') ? 'active' : '' }}">Artikel</a>
             <a href="{{ route('public.contact') }}" class="{{ request()->routeIs('public.contact') ? 'active' : '' }}">Kontak</a>
+            <a href="{{ route('public.registration') }}" class="{{ request()->routeIs('public.registration*') ? 'active' : '' }}">Daftar</a>
             <a class="public-login-button" href="{{ $portalUrl }}">Masuk aplikasi</a>
         </nav>
     </div>
@@ -73,6 +74,7 @@
             <a href="{{ route('public.articles') }}">Artikel</a>
             <a href="{{ route('public.contact') }}">Kontak</a>
             <a href="{{ route('public.privacy') }}">Privasi</a>
+            <a href="{{ route('public.terms') }}">Syarat & ketentuan</a>
         </div>
         <div>
             <h2>Aplikasi</h2>

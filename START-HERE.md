@@ -1,3 +1,18 @@
+# START HERE — Sullamul Hifz v1.4.0
+
+Current production target: **v1.4.0 TPA Operational Complete**.
+
+Read in this order:
+
+1. `docs/CURRENT-STATE.md`
+2. `docs/UPGRADE-v1.4.0.md`
+3. `docs/TEST-v1.4.0.md`
+4. `docs/ROLLBACK-v1.4.0.md`
+5. `docs/DATABASE-v1.4.0.md`
+6. `docs/ROADMAP.md`
+
+Critical rule: never run `db:wipe`, `migrate:fresh`, or `first-install.sh` on production.
+
 # START HERE — Sullamul Ḥifẓ
 
 Dokumen ini adalah pintu masuk resmi proyek. Gunakan ini ketika riwayat chat hilang, pengembang berganti, atau pekerjaan dilanjutkan dari akun/perangkat lain.
