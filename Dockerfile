@@ -7,7 +7,7 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader
 
-FROM unit:1.34.1-php8.3
+FROM unit:1.34.2-php8.4
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev \
