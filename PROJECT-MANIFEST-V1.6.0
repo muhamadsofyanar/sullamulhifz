@@ -1,0 +1,11 @@
+Version: v1.6.0
+Name: Quran Learning Complete
+Public site: https://sullamulhifz.or.id
+Portal: https://app.sullamulhifz.or.id
+Admin library: /admin/quran-library
+User player: /latihan-quran
+Auto migrate: yes
+Audio auto sync: background, configurable
+Database destructive operation: none
+Primary source: MP3Quran timing API read 5 / Ahmad bin Ali Al-Ajmi
+Video policy: curated manually, unpublished by default

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AcademicController;
 use App\Http\Controllers\Admin\AcademicCoreController;
 use App\Http\Controllers\Admin\InstitutionController;
+use App\Http\Controllers\Admin\QuranLibraryController;
 use App\Http\Controllers\Admin\GuardianController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ReportCardController;
@@ -20,6 +21,7 @@ use App\Http\Controllers\Guardian\PortalController;
 use App\Http\Controllers\LiaisonController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\QuranPracticeController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\ClassroomController;
@@ -66,6 +68,11 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::post('/pengumuman/{announcement}/konfirmasi', [ContentFeedController::class, 'acknowledge'])->name('feed.announcements.acknowledge');
     Route::get('/pembinaan-jumat', [ContentFeedController::class, 'friday'])->name('feed.friday');
     Route::get('/nilai/ikrar-santri', [ContentFeedController::class, 'pledge'])->name('feed.pledge');
+    Route::get('/latihan-quran', [QuranPracticeController::class, 'index'])->name('quran-practice.index');
+    Route::get('/latihan-quran/playlist', [QuranPracticeController::class, 'playlist'])->name('quran-practice.playlist');
+    Route::get('/latihan-quran/target/{target}', [QuranPracticeController::class, 'target'])->name('quran-practice.target');
+    Route::post('/latihan-quran/sesi', [QuranPracticeController::class, 'startSession'])->name('quran-practice.sessions.start');
+    Route::put('/latihan-quran/sesi/{session}/selesai', [QuranPracticeController::class, 'completeSession'])->name('quran-practice.sessions.complete');
     Route::get('/media/submission/{submission}', [MediaController::class, 'submission'])->name('media.submission');
     Route::get('/media/liaison/{message}', [MediaController::class, 'liaison'])->name('media.liaison');
 
@@ -103,6 +110,11 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         });
 
         Route::middleware('role:superadmin,institution_admin,head')->group(function (): void {
+            Route::get('/quran-library', [QuranLibraryController::class, 'index'])->name('quran-library.index');
+            Route::post('/quran-library/sync', [QuranLibraryController::class, 'sync'])->name('quran-library.sync');
+            Route::post('/quran-library/videos', [QuranLibraryController::class, 'storeVideo'])->name('quran-library.videos.store');
+            Route::put('/quran-library/videos/{video}', [QuranLibraryController::class, 'updateVideo'])->name('quran-library.videos.update');
+
             Route::get('/content', [AdminContentController::class, 'index'])->name('content.index');
             Route::post('/content/announcements', [AdminContentController::class, 'storeAnnouncement'])->name('content.announcements.store');
             Route::post('/content/friday', [AdminContentController::class, 'storeFriday'])->name('content.friday.store');

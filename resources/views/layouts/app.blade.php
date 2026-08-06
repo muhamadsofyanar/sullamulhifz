@@ -45,6 +45,9 @@
                 <a href="{{ route('admin.institution.edit') }}" class="{{ request()->routeIs('admin.institution.*') ? 'active' : '' }}">
                     <x-icon name="community"/><span>Profil Lembaga</span>
                 </a>
+                <a href="{{ route('admin.quran-library.index') }}" class="{{ request()->routeIs('admin.quran-library.*') ? 'active' : '' }}">
+                    <x-icon name="audio"/><span>Pustaka Qur’an</span>
+                </a>
             @endif
             @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']))
                 <a href="{{ route('admin.content.index') }}" class="{{ request()->routeIs('admin.content.*') ? 'active' : '' }}" @if(request()->routeIs('admin.content.*')) aria-current="page" @endif>
@@ -87,6 +90,9 @@
             </a>
             <a href="{{ route('feed.friday') }}" class="{{ request()->routeIs('feed.friday') ? 'active' : '' }}" @if(request()->routeIs('feed.friday')) aria-current="page" @endif>
                 <x-icon name="values"/><span>Pembinaan Jumat</span>
+            </a>
+            <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*') ? 'active' : '' }}" @if(request()->routeIs('quran-practice.*')) aria-current="page" @endif>
+                <x-icon name="audio"/><span>Latihan Al-Qur’an</span>
             </a>
             <a href="{{ route('feed.pledge') }}" class="{{ request()->routeIs('feed.pledge') ? 'active' : '' }}" @if(request()->routeIs('feed.pledge')) aria-current="page" @endif>
                 <x-icon name="academic"/><span>Ikrar Santri</span>

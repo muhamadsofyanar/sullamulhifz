@@ -1,0 +1,14 @@
+SULLAMUL HIFZ v1.6.0 — BUILD REPORT
+
+Scope: Quran Learning Complete
+Baseline: v1.5.1
+Added/modified files before manifest: 41
+PHP source files checked: 126
+Static PHP syntax check: passed
+Shell syntax check: passed
+Migration: additive
+Production database test: not run in the build environment
+External timing API: synchronized at runtime and safe to retry
+NGINX Unit startup: official docker-entrypoint retained
+Target library: 37 surah / 564 ayat Juz 30
+Privacy: no APP_KEY, DB_URL, password, account list, or new child data included

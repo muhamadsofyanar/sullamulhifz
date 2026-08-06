@@ -102,3 +102,7 @@ Panduan deployment rinci tetap tersedia pada `README-COOLIFY.md`.
 ## Update v1.5.0 — Academic Core Complete
 
 Rilis ini menggabungkan profil lembaga, semester aktif, delapan rubu’ Juz 30, target hafalan personal, observasi metode belajar, integrasi portal wali, serta migration otomatis additive dalam satu upload dan satu redeploy. Lihat `UPGRADE-V1.5.0.md` dan `docs/PHASES-v1.5.0.md`.
+
+## Quran Learning v1.6.0
+
+Portal `/latihan-quran` menyediakan pengulangan ayat, rentang, surah, halaman, rubu’, dan target santri. Admin mengelola kelengkapan 564 ayat Juz 30 melalui `/admin/quran-library`. Lihat `docs/QURAN-LEARNING-v1.6.0.md`.

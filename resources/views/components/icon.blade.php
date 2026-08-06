@@ -64,6 +64,11 @@
         @case('plus')
             <path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
             @break
+        @case('audio')
+            <path d="M9 6v12M9 8l8-2v9" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="6.5" cy="18" r="2.5" class="icon-accent"/>
+            <circle cx="14.5" cy="15" r="2.5" class="icon-accent"/>
+            @break
         @case('calendar')
             <rect x="4" y="5.5" width="16" height="14.5" rx="2" stroke="currentColor" stroke-width="1.8"/>
             <path d="M7.5 3v5M16.5 3v5M4 10h16" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>

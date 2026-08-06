@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.6.0 — Quran Learning Complete — 2026-08-06
+
+- Menambahkan pustaka audio Juz 30 dan timing 564 ayat.
+- Menambahkan pemutar pengulangan ayat/rentang/surah/halaman/rubu’.
+- Menambahkan latihan dari target santri dan pencatatan sesi.
+- Menambahkan video bacaan terkurasi.
+- Menambahkan sinkronisasi audio latar belakang tanpa menunda startup web.
+
+
 ## v1.5.0 — Academic Core Complete
 
 - Added editable institution profile and academic readiness overview.

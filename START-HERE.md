@@ -1,67 +1,61 @@
 # START HERE — Sullamul Ḥifẓ
 
-Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang, pekerjaan berpindah akun, atau pengembang berganti.
+Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang atau pengembang berganti.
 
-## Status yang harus dibedakan
+## Status rilis
 
-- **Produksi yang sedang berjalan:** v1.3.0 pada `taysriulqurani.id`.
-- **Paket kandidat pengembangan:** v1.4.4 Ikrar Santri, berbasis fitur v1.4.0 TPA Operational Complete dan dokumentasi v1.4.1.
-- **Status v1.4.x:** belum boleh dianggap production-ready sebelum pengujian staging dan upgrade terhadap salinan database selesai.
-- **Domain baru yang dipersiapkan:**
-  - `sullamulhifz.or.id` — website publik;
-  - `app.sullamulhifz.or.id` — portal TPA;
-  - `academy.sullamulhifz.or.id` — Academy pada fase v2.
+- **Produksi sebelum upgrade ini:** v1.5.1, Academic Core + hotfix NGINX Unit.
+- **Paket repository ini:** v1.6.0 — Quran Learning Complete.
+- **Website publik:** `https://sullamulhifz.or.id`.
+- **Portal aplikasi:** `https://app.sullamulhifz.or.id`.
+- **Domain lama:** `https://taysriulqurani.id`, masih dipertahankan sebagai cadangan transisi.
 
-## Data produksi yang harus dipertahankan
+## Data yang harus dipertahankan
 
 - 88 santri;
-- 88 akun wali;
+- 88 wali;
 - 4 guru: Nurul, Jundi, Yanti, dan Sofyan;
 - 6 kelas utama;
 - Tahfizh A: 30 santri;
 - Tahfizh B: 27 santri.
 
+## Fitur inti aktif
+
+- website publik dan referensi TPA Al-Insyirah;
+- portal admin, guru, dan wali;
+- Academic Core, target hafalan, observasi metode belajar;
+- Ikrar Santri;
+- pemisahan domain publik dan portal;
+- Quran Learning: audio Juz 30, pengulangan ayat/rentang/surah/halaman/rubu’, target santri, sesi latihan, dan video terkurasi.
+
 ## Urutan membaca
 
 1. `docs/CURRENT-STATE.md`
-2. `docs/ROADMAP.md`
-3. `docs/ARCHITECTURE.md`
-4. `docs/DECISIONS.md`
-5. `docs/IKRAR-SANTRI.md`
-6. `docs/NEXT-RELEASE-v2.0.0.md`
-7. `UPGRADE-V1.4.3.md`
-8. `docs/UPGRADE-v1.4.0.md`
-9. `docs/TEST-v1.4.0.md`
-10. `docs/ROLLBACK-v1.4.0.md`
-11. `docs/HANDOVER-NEXT-CHAT.md`
+2. `docs/QURAN-LEARNING-v1.6.0.md`
+3. `UPGRADE-V1.6.0.md`
+4. `docs/TEST-v1.6.0.md`
+5. `docs/DATABASE-v1.6.0.md`
+6. `docs/ROLLBACK-v1.6.0.md`
+7. `docs/ROADMAP.md`
+8. `docs/ARCHITECTURE.md`
+9. `docs/HANDOVER-NEXT-CHAT.md`
+10. `CHANGELOG.md`
 
 ## Aturan keselamatan
 
-- Jangan menjalankan `db:wipe`, `migrate:fresh`, atau `scripts/first-install.sh` pada database produksi yang sudah berisi data.
-- Jangan menjalankan `ProductionSeeder` untuk upgrade produksi.
-- Sebelum migration produksi, buat backup database dan uji pemulihannya.
-- Migration lama yang pernah berjalan tidak boleh diedit; tambahkan migration baru.
-- Jangan mengunggah `.env`, `APP_KEY`, `DB_URL`, password, dump database, atau `INITIAL_TPA_DATA_KEY` ke GitHub.
-- Jangan memasang domain yang sama pada dua resource Coolify sekaligus.
+- Jangan menjalankan `db:wipe`, `migrate:fresh`, `scripts/first-install.sh`, atau `ProductionSeeder` pada produksi.
+- Migration yang sudah pernah berjalan tidak boleh diedit; tambahkan migration baru.
+- Backup database sebelum upgrade.
+- Jangan mengunggah `.env`, `APP_KEY`, `DB_URL`, password, dump database, atau `INITIAL_TPA_DATA_KEY`.
+- Jangan mengisi progres santri secara fiktif. Istilah 100% pada Pustaka Qur’an berarti 564 timing ayat referensi tersedia, bukan progres santri.
+- Video hanya diterbitkan setelah sumber dan izin tayangnya diperiksa.
 
 ## Sumber kebenaran
 
-Jika chat bertentangan dengan repository, gunakan urutan berikut:
-
-1. kode pada branch yang benar-benar dideploy;
-2. status deployment Coolify dan migration database;
+1. kode pada commit yang benar-benar dideploy;
+2. deployment Coolify dan status migration;
 3. `RELEASE` dan `public/release.txt`;
 4. `docs/CURRENT-STATE.md`;
-5. dokumen rilis di `docs/releases/`;
+5. dokumen rilis;
 6. `CHANGELOG.md`;
 7. riwayat chat.
-
-
-## Profil referensi lembaga
-
-- `/lembaga/tpa-al-insyirah` menampilkan implementasi pertama.
-- `/referensi-lembaga` menjelaskan cara lembaga lain mengadaptasi struktur tanpa menyalin identitas.
-
-## Update v1.5.0 — Academic Core Complete
-
-Rilis ini menggabungkan profil lembaga, semester aktif, delapan rubu’ Juz 30, target hafalan personal, observasi metode belajar, integrasi portal wali, serta migration otomatis additive dalam satu upload dan satu redeploy. Lihat `UPGRADE-V1.5.0.md` dan `docs/PHASES-v1.5.0.md`.
