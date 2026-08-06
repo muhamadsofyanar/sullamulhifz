@@ -1,0 +1,40 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      APP_NAME: "Sullamul Hifz"
+      APP_ENV: local
+      APP_DEBUG: "true"
+      APP_URL: http://localhost:8000
+      APP_KEY: ${APP_KEY}
+      DB_CONNECTION: mysql
+      DB_HOST: mysql
+      DB_PORT: 3306
+      DB_DATABASE: sullamul_hifz
+      DB_USERNAME: sullamul_hifz
+      DB_PASSWORD: local-password
+      SESSION_SECURE_COOKIE: "false"
+      INITIAL_ADMIN_EMAIL: admin@sullamulhifz.local
+      INITIAL_ADMIN_PASSWORD: "Local-Sullam-2026!"
+      SEED_DEMO_DATA: "true"
+    depends_on:
+      mysql:
+        condition: service_healthy
+  mysql:
+    image: mysql:8.4
+    environment:
+      MYSQL_DATABASE: sullamul_hifz
+      MYSQL_USER: sullamul_hifz
+      MYSQL_PASSWORD: local-password
+      MYSQL_ROOT_PASSWORD: local-root-password
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-plocal-root-password"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+volumes:
+  mysql-data:

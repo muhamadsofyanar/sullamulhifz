@@ -1,0 +1,26 @@
+<?php
+return [
+    'required' => ':attribute wajib diisi.',
+    'required_with' => ':attribute wajib diisi ketika :values tersedia.',
+    'email' => ':attribute harus berupa alamat email yang valid.',
+    'unique' => ':attribute sudah digunakan.',
+    'exists' => ':attribute yang dipilih tidak tersedia.',
+    'date' => ':attribute harus berupa tanggal yang valid.',
+    'date_format' => ':attribute tidak sesuai format :format.',
+    'after' => ':attribute harus setelah :date.',
+    'after_or_equal' => ':attribute harus sama dengan atau setelah :date.',
+    'before' => ':attribute harus sebelum :date.',
+    'integer' => ':attribute harus berupa angka bulat.',
+    'min' => ['numeric'=>':attribute minimal :min.','string'=>':attribute minimal :min karakter.','file'=>':attribute minimal :min kilobita.','array'=>':attribute minimal memiliki :min item.'],
+    'max' => ['numeric'=>':attribute maksimal :max.','string'=>':attribute maksimal :max karakter.','file'=>':attribute maksimal :max kilobita.','array'=>':attribute maksimal memiliki :max item.'],
+    'in' => ':attribute yang dipilih tidak valid.',
+    'confirmed' => 'Konfirmasi :attribute tidak sesuai.',
+    'current_password' => 'Kata sandi saat ini tidak sesuai.',
+    'file' => ':attribute harus berupa file.',
+    'mimetypes' => 'Jenis file :attribute tidak didukung.',
+    'array' => ':attribute harus berupa daftar.',
+    'gte' => ':attribute harus lebih besar atau sama dengan :value.',
+    'attributes' => [
+        'full_name'=>'nama lengkap','nickname'=>'nama panggilan','student_code'=>'kode santri','class_id'=>'kelas','teacher_id'=>'guru','program_id'=>'program','learning_group_id'=>'kelompok belajar','guardian_name'=>'nama wali','guardian_phone'=>'nomor telepon wali','guardian_email'=>'email wali','guardian_password'=>'kata sandi awal wali','password'=>'kata sandi','email'=>'email','phone'=>'nomor telepon','meeting_date'=>'tanggal pertemuan','student_id'=>'santri','surah_id'=>'surah','start_verse'=>'ayat awal','end_verse'=>'ayat akhir','title'=>'judul','content'=>'isi','message'=>'pesan','evidence'=>'file bukti','due_at'=>'tenggat',
+    ],
+];

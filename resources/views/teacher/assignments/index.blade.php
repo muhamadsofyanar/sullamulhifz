@@ -1,0 +1,5 @@
+@extends('layouts.app',['pageTitle'=>'Tugas'])
+@section('content')
+<div class="page-head"><div><h1>Tugas</h1><p>Tugas dapat diberikan kepada kelas atau kelompok, lalu dipantau per santri.</p></div><a class="button primary" href="{{ route('teacher.assignments.create') }}">+ Buat Tugas</a></div>
+<section class="card table-card"><table><thead><tr><th>Tugas</th><th>Penerima</th><th>Progres</th><th>Tenggat</th><th></th></tr></thead><tbody>@forelse($assignments as $assignment)<tr><td><strong>{{ $assignment->title }}</strong><small>{{ ($assignment->schoolClass ?: $assignment->learningGroup)?->name }}</small></td><td>{{ $assignment->recipients->count() }} santri</td><td>{{ $assignment->recipients->whereIn('status',['accepted','completed'])->count() }} selesai</td><td>{{ $assignment->due_at?->format('d M Y H:i') ?: '—' }}</td><td><a href="{{ route('teacher.assignments.show',$assignment) }}">Buka</a></td></tr>@empty<tr><td colspan="5" class="empty">Belum ada tugas.</td></tr>@endforelse</tbody></table></section>{{ $assignments->links() }}
+@endsection

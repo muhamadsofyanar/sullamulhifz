@@ -1,0 +1,5 @@
+@extends('layouts.app',['pageTitle'=>'Catatan Baru'])
+@section('content')
+<div class="page-head"><div><h1>Catatan buku penghubung</h1><p>Gunakan untuk informasi yang memerlukan komunikasi atau tindak lanjut.</p></div></div>
+<form class="card stack narrow" method="post" action="{{ route('liaison.store') }}">@csrf<label>Santri<select name="student_id" required><option value="">Pilih santri</option>@foreach($students as $student)<option value="{{ $student->id }}">{{ $student->full_name }}</option>@endforeach</select></label><label>Kategori<select name="category"><option value="learning">Pembelajaran</option><option value="tahsin">Tahsīn</option><option value="tahfizh">Tahfizh</option><option value="murajaah">Murāja‘ah</option><option value="character">Karakter</option><option value="health">Kesehatan</option><option value="administration">Administrasi</option><option value="consultation">Konsultasi</option></select></label><label>Subjek<input name="subject" required></label><label>Pesan<textarea name="message" required></textarea></label><button class="button primary">Kirim Catatan</button></form>
+@endsection
