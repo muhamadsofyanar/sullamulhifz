@@ -1,3 +1,7 @@
+# Sullamul Ḥifẓ v1.9.0 — TPA Launch Complete
+
+> Current candidate release. Read `START-HERE.md` and `UPGRADE-V1.9.0.md` before deployment.
+
 # Sullamul Ḥifẓ v1.6.1 — Qari Tahfizh
 
 **Bukan Sekadar Hafal, Tapi KUAT.**

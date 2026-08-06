@@ -48,6 +48,9 @@
                 <a href="{{ route('admin.quran-library.index') }}" class="{{ request()->routeIs('admin.quran-library.*') ? 'active' : '' }}">
                     <x-icon name="audio"/><span>Pustaka Qur’an</span>
                 </a>
+                <a href="{{ route('admin.launch-readiness.index') }}" class="{{ request()->routeIs('admin.launch-readiness.*') ? 'active' : '' }}">
+                    <x-icon name="report"/><span>Siap Launch</span>
+                </a>
             @endif
             @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']))
                 <a href="{{ route('admin.content.index') }}" class="{{ request()->routeIs('admin.content.*') ? 'active' : '' }}" @if(request()->routeIs('admin.content.*')) aria-current="page" @endif>
@@ -67,6 +70,9 @@
                 </a>
             @endif
             @if(auth()->user()->hasRole('teacher'))
+                <a href="{{ route('teacher.daily.index') }}" class="{{ request()->routeIs('teacher.daily.*') ? 'active' : '' }}">
+                    <x-icon name="home"/><span>Operasional Hari Ini</span>
+                </a>
                 <a href="{{ route('teacher.classrooms.index') }}" class="{{ request()->routeIs('teacher.classrooms.*') || request()->routeIs('teacher.meetings.*') ? 'active' : '' }}">
                     <x-icon name="classroom"/><span>Kelas Saya</span>
                 </a>

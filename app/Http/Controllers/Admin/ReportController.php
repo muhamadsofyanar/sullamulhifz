@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceRecord;
+use App\Models\AssignmentRecipient;
 use App\Models\Guardian;
 use App\Models\MemorizationRecord;
 use App\Models\MurajaahRecord;
@@ -64,6 +65,44 @@ class ReportController extends Controller
     {
         $records=MurajaahRecord::with(['student','surah'])->where('institution_id',$request->user()->institution_id)->latest('recorded_at')->get();
         return $this->csv('murajaah',['Tanggal','Santri','Jenis','Surah','Ayat awal','Ayat akhir','Hasil','Bantuan','Review berikutnya','Catatan'],function($out)use($records):void{foreach($records as $r)fputcsv($out,[optional($r->recorded_at)->format('Y-m-d H:i'),$r->student?->full_name,$r->murajaah_type,$r->surah?->name_latin,$r->start_verse,$r->end_verse,$r->result,$r->assistance_level,optional($r->next_review_date)->format('Y-m-d'),$r->teacher_notes]);});
+    }
+
+
+    public function monthlyCsv(Request $request): StreamedResponse
+    {
+        $institutionId = $request->user()->institution_id;
+        $month = $request->string('month')->toString() ?: now()->format('Y-m');
+        $start = \Carbon\Carbon::createFromFormat('Y-m', $month)->startOfMonth();
+        $end = $start->copy()->endOfMonth();
+        $students = Student::with('currentEnrollment.schoolClass')
+            ->where('institution_id',$institutionId)->where('status','active')->orderBy('full_name')->get();
+
+        return $this->csv('ringkasan-bulanan-'.$month,
+            ['Santri','Kelas','Pertemuan','Hadir/Terlambat','Kehadiran %','Tahsīn','Tahfizh','Murāja‘ah','Tugas Selesai'],
+            function($out) use($students,$start,$end): void {
+                foreach($students as $student){
+                    $attendance=$student->attendanceRecords()->whereHas('meeting',fn($q)=>$q->whereBetween('meeting_date',[$start,$end]))->get();
+                    $meetings=$attendance->pluck('meeting_id')->unique()->count();
+                    $present=$attendance->whereIn('status',['present','late'])->count();
+                    $pct=$attendance->count()>0?round(($present/$attendance->count())*100):0;
+                    $tahsin=$student->tahsinRecords()->whereBetween('created_at',[$start,$end])->count();
+                    $hifz=$student->memorizationRecords()->whereBetween('recorded_at',[$start,$end])->count();
+                    $murajaah=$student->murajaahRecords()->whereBetween('recorded_at',[$start,$end])->count();
+                    $tasks=AssignmentRecipient::where('student_id',$student->id)->where('status','completed')->whereBetween('completed_at',[$start,$end])->count();
+                    fputcsv($out,[$student->full_name,$student->currentEnrollment?->schoolClass?->name,$meetings,$present,$pct.'%',$tahsin,$hifz,$murajaah,$tasks]);
+                }
+            }
+        );
+    }
+
+    public function tasksCsv(Request $request): StreamedResponse
+    {
+        $records=AssignmentRecipient::with(['student','assignment.schoolClass','assignment.learningGroup'])
+            ->whereHas('assignment',fn($q)=>$q->where('institution_id',$request->user()->institution_id))
+            ->latest()->get();
+        return $this->csv('tugas-santri',['Tugas','Jenis','Kelas/Kelompok','Santri','Status','Tenggat','Selesai'],function($out)use($records):void{
+            foreach($records as $r)fputcsv($out,[$r->assignment?->title,$r->assignment?->assignment_type,($r->assignment?->schoolClass?:$r->assignment?->learningGroup)?->name,$r->student?->full_name,$r->status,optional($r->assignment?->due_at)->format('Y-m-d H:i'),optional($r->completed_at)->format('Y-m-d H:i')]);
+        });
     }
 
     private function csv(string $name,array $headers,callable $rows): StreamedResponse

@@ -9,6 +9,9 @@ use App\Models\AttendanceRecord;
 use App\Models\Guardian;
 use App\Models\LearningGroup;
 use App\Models\FridayDevelopmentSession;
+use App\Models\MemorizationTarget;
+use App\Models\QuranPracticeSession;
+use App\Models\Schedule;
 use App\Models\LiaisonThread;
 use App\Models\Meeting;
 use App\Models\SchoolClass;
@@ -69,8 +72,14 @@ class DashboardController extends Controller
         return view('dashboard.teacher', [
             'teacher' => $teacher,
             'teachingAssignments' => $assignments,
+            'todayMeetings' => Meeting::with(['schoolClass','learningGroup','attendanceRecords'])
+                ->where('teacher_id',$teacher->id)->whereDate('meeting_date',today())->latest('started_at')->get(),
+            'openMeetings' => Meeting::with(['schoolClass','learningGroup'])
+                ->where('teacher_id',$teacher->id)->whereIn('status',['draft','ongoing'])->latest('meeting_date')->limit(6)->get(),
+            'activeTargets' => MemorizationTarget::where('assigned_by_teacher_id',$teacher->id)
+                ->whereIn('status',['active','in_progress','strengthening'])->count(),
             'pendingSubmissions' => AssignmentRecipient::whereHas('assignment', fn ($q) => $q->where('created_by_teacher_id', $teacher->id))
-                ->whereIn('status', ['submitted', 'reviewing'])->count(),
+                ->whereIn('status', ['submitted', 'reviewing','revision_needed'])->count(),
             'activeThreads' => LiaisonThread::where('assigned_teacher_id', $teacher->id)->whereIn('status', ['new', 'active', 'waiting'])->count(),
         ]);
     }
@@ -83,9 +92,15 @@ class DashboardController extends Controller
         $studentIds = $students->pluck('id');
         $classIds = $students->pluck('currentEnrollment.class_id')->filter();
 
+        $todayRecords = AttendanceRecord::with(['student','meeting.schoolClass','meeting.learningGroup'])
+            ->whereIn('student_id',$studentIds)
+            ->whereHas('meeting',fn($q)=>$q->whereDate('meeting_date',today())->whereNotNull('summary_published_at'))
+            ->get();
+
         return view('dashboard.guardian', [
             'guardian' => $guardian,
             'students' => $students,
+            'todayRecords' => $todayRecords,
             'activeTasks' => AssignmentRecipient::with(['assignment', 'student'])
                 ->whereIn('student_id', $studentIds)
                 ->whereIn('status', ['assigned', 'submitted', 'revision_needed'])
@@ -99,4 +114,5 @@ class DashboardController extends Controller
                 ->where('status', 'published')->where(fn ($q) => $q->whereNull('class_id')->orWhereIn('class_id', $classIds))->latest('session_date')->limit(3)->get(),
         ]);
     }
+
 }

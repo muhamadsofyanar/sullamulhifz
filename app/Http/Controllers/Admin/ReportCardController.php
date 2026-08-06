@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
+use App\Models\AssignmentRecipient;
 use App\Models\ReportCard;
 use App\Models\ReportCardItem;
 use App\Models\Student;
@@ -107,20 +108,32 @@ class ReportCardController extends Controller
             ->when($card->period_start, fn ($q) => $q->whereHas('meeting', fn ($m) => $m->whereDate('meeting_date','>=',$card->period_start)))
             ->when($card->period_end, fn ($q) => $q->whereHas('meeting', fn ($m) => $m->whereDate('meeting_date','<=',$card->period_end)))
             ->get();
-        $present = $attendance->where('status','present')->count();
+        $present = $attendance->whereIn('status',['present','late'])->count();
         $total = $attendance->count();
         $attendancePct = $total > 0 ? round(($present / $total) * 100) : null;
 
-        $latestTahsin = $student->tahsinRecords()->latest()->first();
-        $latestHifz = $student->memorizationRecords()->with('surah')->latest('recorded_at')->first();
-        $latestMurajaah = $student->murajaahRecords()->with('surah')->latest('recorded_at')->first();
+        $period = fn ($query, string $column = 'created_at') => $query
+            ->when($card->period_start, fn ($q) => $q->whereDate($column, '>=', $card->period_start))
+            ->when($card->period_end, fn ($q) => $q->whereDate($column, '<=', $card->period_end));
+
+        $latestTahsin = $period($student->tahsinRecords())->latest()->first();
+        $latestHifz = $period($student->memorizationRecords()->with('surah'), 'recorded_at')->latest('recorded_at')->first();
+        $latestMurajaah = $period($student->murajaahRecords()->with('surah'), 'recorded_at')->latest('recorded_at')->first();
+        $taskQuery = AssignmentRecipient::where('student_id', $student->id);
+        $period($taskQuery, 'completed_at');
+        $completedTasks = $taskQuery->where('status', 'completed')->count();
+
+        $tahsinLabels = ['good'=>'Baik','practice_needed'=>'Perlu latihan','guidance_needed'=>'Perlu pendampingan','special_correction'=>'Perlu koreksi khusus'];
+        $hifzLabels = ['fluent'=>'Lancar','fair'=>'Lulus dengan penguatan','repeat_needed'=>'Perlu diulang','postponed'=>'Belum dinilai'];
+        $murajaahLabels = ['maintained'=>'Terjaga','strengthening_needed'=>'Perlu penguatan','reactivation_needed'=>'Perlu dipanggil kembali'];
 
         $items = [
-            ['category'=>'kehadiran','label'=>'Kehadiran','score'=>$attendancePct !== null ? $attendancePct.'%' : '-', 'description'=>$total.' pertemuan tercatat; '.$present.' hadir.','sort_order'=>10],
-            ['category'=>'tahsin','label'=>'Tahsin','score'=>$latestTahsin?->overall_status ?: '-', 'description'=>$latestTahsin?->teacher_notes ?: 'Belum ada penilaian Tahsin.','sort_order'=>20],
-            ['category'=>'tahfizh','label'=>'Tahfizh','score'=>$latestHifz?->result ?: '-', 'description'=>$latestHifz ? (($latestHifz->surah?->name_latin ?: 'Surah').' ayat '.$latestHifz->start_verse.'–'.$latestHifz->end_verse) : 'Belum ada setoran hafalan.','sort_order'=>30],
-            ['category'=>'murajaah','label'=>'Murajaah','score'=>$latestMurajaah?->result ?: '-', 'description'=>$latestMurajaah ? (($latestMurajaah->surah?->name_latin ?: 'Surah').' ayat '.$latestMurajaah->start_verse.'–'.$latestMurajaah->end_verse) : 'Belum ada catatan murajaah.','sort_order'=>40],
-            ['category'=>'pembiasaan','label'=>'Adab & Pembiasaan','score'=>'-', 'description'=>'Diisi guru berdasarkan pengamatan pembelajaran.','sort_order'=>50],
+            ['category'=>'kehadiran','label'=>'Kehadiran','score'=>$attendancePct !== null ? $attendancePct.'%' : '-', 'description'=>$total.' catatan kehadiran; '.$present.' hadir atau terlambat.','sort_order'=>10],
+            ['category'=>'tahsin','label'=>'Tahsīn','score'=>$latestTahsin ? ($tahsinLabels[$latestTahsin->overall_status] ?? $latestTahsin->overall_status) : '-', 'description'=>$latestTahsin?->teacher_notes ?: 'Belum ada penilaian Tahsīn pada periode ini.','sort_order'=>20],
+            ['category'=>'tahfizh','label'=>'Tahfizh','score'=>$latestHifz ? ($hifzLabels[$latestHifz->result] ?? $latestHifz->result) : '-', 'description'=>$latestHifz ? (($latestHifz->surah?->name_latin ?: 'Surah').' ayat '.$latestHifz->start_verse.'–'.$latestHifz->end_verse.'. '.($latestHifz->review_recommendation ?: $latestHifz->teacher_notes)) : 'Belum ada setoran hafalan pada periode ini.','sort_order'=>30],
+            ['category'=>'murajaah','label'=>'Murāja‘ah','score'=>$latestMurajaah ? ($murajaahLabels[$latestMurajaah->result] ?? $latestMurajaah->result) : '-', 'description'=>$latestMurajaah ? (($latestMurajaah->surah?->name_latin ?: 'Surah').' ayat '.$latestMurajaah->start_verse.'–'.$latestMurajaah->end_verse.'. '.($latestMurajaah->review_recommendation ?: $latestMurajaah->teacher_notes)) : 'Belum ada catatan Murāja‘ah pada periode ini.','sort_order'=>40],
+            ['category'=>'tugas','label'=>'Tugas Rumah','score'=>(string)$completedTasks, 'description'=>$completedTasks.' tugas selesai pada periode rapor.','sort_order'=>45],
+            ['category'=>'pembiasaan','label'=>'Adab & Pembiasaan','score'=>'-', 'description'=>'Diisi guru berdasarkan pengamatan nyata, tanpa ranking atau perbandingan.','sort_order'=>50],
         ];
 
         foreach ($items as $item) {

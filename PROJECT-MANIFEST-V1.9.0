@@ -1,0 +1,27 @@
+SULLAMUL HIFZ v1.9.0 — TPA LAUNCH COMPLETE
+
+Baseline: v1.6.1 — Qari Tahfizh
+Release type: additive application/database upgrade
+Deployment target: GitHub main → Coolify → Dockerfile → NGINX Unit
+Public site: https://sullamulhifz.or.id
+Portal: https://app.sullamulhifz.or.id
+
+Key additions:
+- Meeting type, completion state and guardian summary.
+- Bulk attendance and richer Tahsin/Tahfizh/Murajaah records.
+- Daily teacher workspace.
+- Audio-linked assignments and guardian evidence checklist.
+- Guardian monthly summaries.
+- Monthly/task CSV reports and richer report-card source data.
+- Launch-readiness control panel.
+- Security response headers, PWA/offline fallback and friendly error pages.
+- Idempotent launch template seeder, startup verification and smoke test.
+
+Data policy:
+- Existing santri, wali, guru, classes, groups, records and accounts are preserved.
+- Migration is additive.
+- No production wipe/fresh/install seeder is part of startup.
+- Real attendance, assessment and report data must not be fabricated.
+
+Deferred:
+- Full Sullamul Hifz Academy / LMS remains v2.0.0.

@@ -43,3 +43,14 @@
 - [`releases/TEMPLATE.md`](releases/TEMPLATE.md)
 
 `NEXT-RELEASE-v1.3.0.md` dipertahankan sebagai penanda arsip dan bukan prioritas aktif.
+
+## v1.9.0 — TPA Launch Complete
+
+- `PHASES-v1.9.0.md`
+- `DATABASE-v1.9.0.md`
+- `TEST-v1.9.0.md`
+- `ROLLBACK-v1.9.0.md`
+- `ADMIN-MANUAL-v1.9.0.md`
+- `TEACHER-MANUAL-v1.9.0.md`
+- `GUARDIAN-MANUAL-v1.9.0.md`
+- `BACKUP-RESTORE-v1.9.0.md`

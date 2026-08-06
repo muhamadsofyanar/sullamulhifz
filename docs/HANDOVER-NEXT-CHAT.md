@@ -1,56 +1,35 @@
-# Handover untuk Chat atau Pengembang Baru
+# Handover for the Next Chat
 
-## Prompt siap salin
+## Project
 
-```text
-Saya melanjutkan proyek Sullamul Ḥifẓ dari repository GitHub muhamadsofyanar/sullamulhifz.
+- Repository: `muhamadsofyanar/sullamulhifz`
+- Branch: `main`
+- Hosting: Coolify, Dockerfile, NGINX Unit, PHP 8.4, MySQL 8.0-bookworm
+- Public: `sullamulhifz.or.id`
+- Portal: `app.sullamulhifz.or.id`
 
-Pelajari terlebih dahulu:
-1. START-HERE.md
-2. docs/CURRENT-STATE.md
-3. docs/QARI-TAHFIZH-v1.6.1.md
-4. UPGRADE-V1.6.1.md
-5. docs/TEST-v1.6.1.md
-6. docs/DATABASE-v1.6.1.md
-7. docs/QURAN-LEARNING-v1.6.0.md
-8. docs/ROLLBACK-v1.6.1.md
-9. docs/ROADMAP.md
-10. CHANGELOG.md
-11. RELEASE
+## Current package
 
-Fakta penting:
-- website publik: sullamulhifz.or.id;
-- portal: app.sullamulhifz.or.id;
-- baseline sebelum paket: v1.6.0;
-- paket saat ini: v1.6.1 Qari Tahfizh;
-- data yang wajib dipertahankan: 88 santri, 88 wali, 4 guru, 6 kelas utama, Tahfizh A 30, Tahfizh B 27;
-- target pustaka Quran Learning: 37 surah dan 564 timing per qari, total 1.128 untuk Al-Husary dan Al-Minshawi;
-- angka 100% pada pustaka bukan progres santri;
-- video harus dikurasi manual.
+`v1.9.0 — TPA Launch Complete`
 
-Larangan:
-- jangan db:wipe, migrate:fresh, first-install.sh, atau ProductionSeeder pada produksi;
-- jangan meminta atau membagikan APP_KEY, DB_URL, password, dump DB, atau data key;
-- jangan mengubah startup NGINX Unit menjadi unitd langsung. Gunakan docker-entrypoint resmi;
-- jangan mengklaim pengujian production yang belum dilakukan.
-```
+It combines daily operations, guardian/reporting, and launch readiness. Migration is additive. Startup automatically migrates, seeds non-personal templates, verifies core systems, and starts Unit through the official entrypoint.
 
-## Berkas minimum
+## Important protected facts
 
-- `START-HERE.md`;
-- folder `docs/`;
-- `README.md`;
-- `CHANGELOG.md`;
-- `RELEASE`;
-- source yang akan diubah;
-- log error terbaru.
+- 88 students, 88 guardians, 4 teachers
+- Tahfizh A = Mustawa Awal A + Mustawa Tsani A
+- Tahfizh B = Mustawa Awal B + Mustawa Tsani B
+- Nurul: Tamhidi A/B
+- Jundi: Mustawa Awal A/B Tahsīn
+- Yanti: Mustawa Tsani A/B Tahsīn
+- Sofyan: Tahfizh A/B
+- Never expose initial account list or encrypted seed key
 
-## Format rilis
+## Next work
 
-```text
-Buat rilis vX.Y.Z untuk scope berikut: ...
-Pertahankan seluruh data produksi.
-Sertakan upgrade, rollback, test, dampak database, changelog, release marker, dan handover.
-Gunakan migration additive dan entrypoint NGINX Unit resmi.
-Bedakan source yang dibuat, hasil static test, hasil staging, dan hasil production.
-```
+1. Deploy v1.9.0 once.
+2. Run `scripts/smoke-test-v1.9.0.sh`.
+3. Test one complete admin → teacher → guardian workflow.
+4. Complete the launch checklist.
+5. Create stable backup and Git tag.
+6. Only then begin v2.0.0 Academy.

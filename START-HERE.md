@@ -1,63 +1,46 @@
 # START HERE — Sullamul Ḥifẓ
 
-Dokumen ini adalah pintu masuk resmi proyek ketika riwayat chat hilang atau pengembang berganti.
+## Current release candidate
 
-## Status rilis
+- Application package: **v1.9.0 — TPA Launch Complete**
+- Production baseline before upgrade: v1.6.1
+- Public site: `https://sullamulhifz.or.id`
+- Portal: `https://app.sullamulhifz.or.id`
+- First institution: TPA Al-Insyirah
+- Active data baseline: 88 santri, 88 wali, 4 guru, 6 main classes, 2 Tahfizh groups
 
-- **Produksi sebelum upgrade ini:** v1.6.0, Quran Learning Complete.
-- **Paket repository ini:** v1.6.1 — Qari Tahfizh.
-- **Website publik:** `https://sullamulhifz.or.id`.
-- **Portal aplikasi:** `https://app.sullamulhifz.or.id`.
-- **Domain lama:** `https://taysriulqurani.id`, masih dipertahankan sebagai cadangan transisi.
+## What v1.9.0 contains
 
-## Data yang harus dipertahankan
+- Academic Core and Quran Learning
+- Al-Husary and Al-Minshawi
+- Daily teacher operations
+- Bulk attendance
+- Detailed Tahsīn, Tahfizh, and Murāja‘ah records
+- Audio-linked homework
+- Guardian daily and monthly summaries
+- Report cards and CSV reports
+- Launch-readiness checklist
+- PWA/offline and friendly error pages
+- Security headers, login history, and activity log
 
-- 88 santri;
-- 88 wali;
-- 4 guru: Nurul, Jundi, Yanti, dan Sofyan;
-- 6 kelas utama;
-- Tahfizh A: 30 santri;
-- Tahfizh B: 27 santri.
+## First files to read
 
-## Fitur inti aktif
+1. `UPGRADE-V1.9.0.md`
+2. `docs/PHASES-v1.9.0.md`
+3. `docs/TEST-v1.9.0.md`
+4. `docs/ROLLBACK-v1.9.0.md`
+5. `docs/HANDOVER-NEXT-CHAT.md`
 
-- website publik dan referensi TPA Al-Insyirah;
-- portal admin, guru, dan wali;
-- Academic Core, target hafalan, observasi metode belajar;
-- Ikrar Santri;
-- pemisahan domain publik dan portal;
-- Quran Learning: audio Juz 30, pengulangan ayat/rentang/surah/halaman/rubu’, target santri, sesi latihan, dan video terkurasi.
+## Production safety
 
-## Urutan membaca
+Never run on production:
 
-1. `docs/CURRENT-STATE.md`
-2. `docs/QARI-TAHFIZH-v1.6.1.md`
-3. `UPGRADE-V1.6.1.md`
-4. `docs/QURAN-LEARNING-v1.6.0.md`
-5. `docs/TEST-v1.6.1.md`
-6. `docs/DATABASE-v1.6.1.md`
-7. `docs/QURAN-LEARNING-v1.6.0.md`
-8. `docs/ROLLBACK-v1.6.1.md`
-9. `docs/ROADMAP.md`
-10. `docs/ARCHITECTURE.md`
-11. `docs/HANDOVER-NEXT-CHAT.md`
-12. `CHANGELOG.md`
+```text
+php artisan migrate:fresh
+php artisan db:wipe
+scripts/first-install.sh
+InitialTpaDataSeeder
+ProductionSeeder
+```
 
-## Aturan keselamatan
-
-- Jangan menjalankan `db:wipe`, `migrate:fresh`, `scripts/first-install.sh`, atau `ProductionSeeder` pada produksi.
-- Migration yang sudah pernah berjalan tidak boleh diedit; tambahkan migration baru.
-- Backup database sebelum upgrade.
-- Jangan mengunggah `.env`, `APP_KEY`, `DB_URL`, password, dump database, atau `INITIAL_TPA_DATA_KEY`.
-- Jangan mengisi progres santri secara fiktif. Istilah 100% pada Pustaka Qur’an berarti 1.128 timing tersedia—564 untuk setiap qari—bukan progres santri.
-- Video hanya diterbitkan setelah sumber dan izin tayangnya diperiksa.
-
-## Sumber kebenaran
-
-1. kode pada commit yang benar-benar dideploy;
-2. deployment Coolify dan status migration;
-3. `RELEASE` dan `public/release.txt`;
-4. `docs/CURRENT-STATE.md`;
-5. dokumen rilis;
-6. `CHANGELOG.md`;
-7. riwayat chat.
+Private keys, account lists, APP_KEY, DB_URL, and child data must never enter the public repository.

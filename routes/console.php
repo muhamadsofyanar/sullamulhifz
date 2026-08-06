@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Services\QuranAudioSyncService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v1.6.1 — Qari Tahfizh: Al-Husary & Al-Minshawi.');
+    $this->info('Sullamul Hifz v1.9.0 — TPA Launch Complete.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -225,3 +225,27 @@ Artisan::command('sullam:verify-quran-learning', function (): int {
 
     return 0;
 })->purpose('Memeriksa dua sumber qari dan kelengkapan timing Juz 30 v1.6.1');
+
+Artisan::command('sullam:verify-launch', function (): int {
+    $requiredTables = [
+        'launch_checks', 'meetings', 'attendance_records', 'tahsin_records',
+        'memorization_records', 'murajaah_records', 'assignments', 'report_cards',
+        'login_histories', 'activity_logs',
+    ];
+    $missing = collect($requiredTables)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Struktur peluncuran belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $checks = \App\Models\LaunchCheck::count();
+    $this->table(['Komponen', 'Status'], [
+        ['Academic Core', Schema::hasTable('memorization_targets') ? 'Siap' : 'Belum'],
+        ['Quran Learning', Schema::hasTable('quran_ayah_timings') ? 'Siap' : 'Belum'],
+        ['Operasional Harian', Schema::hasColumn('meetings','meeting_type') ? 'Siap' : 'Belum'],
+        ['Rapor & Laporan', Schema::hasTable('report_cards') ? 'Siap' : 'Belum'],
+        ['Kesiapan Launch', $checks.' pemeriksaan'],
+    ]);
+    $this->info('TPA Launch Complete v1.9.0 siap. Checklist tetap harus diselesaikan melalui pengujian nyata.');
+    return 0;
+})->purpose('Memeriksa struktur TPA Launch Complete v1.9.0');

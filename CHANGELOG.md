@@ -1,5 +1,9 @@
 # Changelog
 
+## v1.9.0 — TPA Launch Complete
+
+See `docs/releases/v1.9.0.md`.
+
 ## v1.6.1 — Qari Tahfizh — 2026-08-06
 
 - Al-Husary menjadi qari utama tahfizh.

@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\QuranLibraryController;
 use App\Http\Controllers\Admin\GuardianController;
 use App\Http\Controllers\Admin\ImportController;
+use App\Http\Controllers\Admin\LaunchReadinessController;
 use App\Http\Controllers\Admin\ReportCardController;
 use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\Admin\AccountController;
@@ -25,6 +26,7 @@ use App\Http\Controllers\QuranPracticeController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\ClassroomController;
+use App\Http\Controllers\Teacher\DailyOperationsController;
 use App\Http\Controllers\Teacher\MeetingController;
 use App\Http\Controllers\Teacher\LearningPlanController;
 use Illuminate\Http\Request;
@@ -115,6 +117,9 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::post('/quran-library/videos', [QuranLibraryController::class, 'storeVideo'])->name('quran-library.videos.store');
             Route::put('/quran-library/videos/{video}', [QuranLibraryController::class, 'updateVideo'])->name('quran-library.videos.update');
 
+            Route::get('/launch-readiness', [LaunchReadinessController::class, 'index'])->name('launch-readiness.index');
+            Route::put('/launch-readiness/{launchCheck}', [LaunchReadinessController::class, 'update'])->name('launch-readiness.update');
+
             Route::get('/content', [AdminContentController::class, 'index'])->name('content.index');
             Route::post('/content/announcements', [AdminContentController::class, 'storeAnnouncement'])->name('content.announcements.store');
             Route::post('/content/friday', [AdminContentController::class, 'storeFriday'])->name('content.friday.store');
@@ -144,10 +149,13 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::get('/reports/tahsin.csv', [ReportController::class, 'tahsinCsv'])->name('reports.tahsin.csv');
             Route::get('/reports/memorization.csv', [ReportController::class, 'memorizationCsv'])->name('reports.memorization.csv');
             Route::get('/reports/murajaah.csv', [ReportController::class, 'murajaahCsv'])->name('reports.murajaah.csv');
+            Route::get('/reports/monthly.csv', [ReportController::class, 'monthlyCsv'])->name('reports.monthly.csv');
+            Route::get('/reports/tasks.csv', [ReportController::class, 'tasksCsv'])->name('reports.tasks.csv');
         });
     });
 
     Route::prefix('teacher')->name('teacher.')->middleware('role:teacher')->group(function (): void {
+        Route::get('/daily', [DailyOperationsController::class, 'index'])->name('daily.index');
         Route::get('/classes', [ClassroomController::class, 'index'])->name('classrooms.index');
         Route::get('/classes/{class}', [ClassroomController::class, 'showClass'])->name('classrooms.class');
         Route::get('/groups/{group}', [ClassroomController::class, 'showGroup'])->name('classrooms.group');
