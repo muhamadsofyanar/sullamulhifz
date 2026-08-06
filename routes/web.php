@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Admin\AcademicController;
+use App\Http\Controllers\Admin\AcademicCoreController;
+use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\GuardianController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\ReportCardController;
@@ -22,6 +24,7 @@ use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\ClassroomController;
 use App\Http\Controllers\Teacher\MeetingController;
+use App\Http\Controllers\Teacher\LearningPlanController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +81,14 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::post('/imports/{batch}/commit', [ImportController::class, 'commit'])->name('imports.commit');
             Route::resource('teachers', TeacherController::class)->only(['index','create','store']);
             Route::put('/accounts/{user}/password', [AccountController::class, 'resetPassword'])->name('accounts.password');
+
+            Route::get('/institution', [InstitutionController::class, 'edit'])->name('institution.edit');
+            Route::put('/institution', [InstitutionController::class, 'update'])->name('institution.update');
+
+            Route::get('/academic-core', [AcademicCoreController::class, 'index'])->name('academic-core.index');
+            Route::put('/academic-core/years/{year}', [AcademicCoreController::class, 'updateYear'])->name('academic-core.year.update');
+            Route::post('/academic-core/targets', [AcademicCoreController::class, 'storeTarget'])->name('academic-core.targets.store');
+            Route::put('/academic-core/targets/{target}', [AcademicCoreController::class, 'updateTarget'])->name('academic-core.targets.update');
 
             Route::get('/academic', [AcademicController::class, 'index'])->name('academic.index');
             Route::post('/academic/years', [AcademicController::class, 'storeYear'])->name('academic.years.store');
@@ -138,6 +149,11 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         Route::post('/meetings/{meeting}/memorization', [MeetingController::class, 'storeMemorization'])->name('meetings.memorization.store');
         Route::post('/meetings/{meeting}/murajaah', [MeetingController::class, 'storeMurajaah'])->name('meetings.murajaah.store');
         Route::put('/meetings/{meeting}/finish', [MeetingController::class, 'finish'])->name('meetings.finish');
+
+        Route::get('/learning-plan', [LearningPlanController::class, 'index'])->name('learning-plan.index');
+        Route::post('/learning-plan/targets', [LearningPlanController::class, 'storeTarget'])->name('learning-plan.targets.store');
+        Route::put('/learning-plan/targets/{target}', [LearningPlanController::class, 'updateTarget'])->name('learning-plan.targets.update');
+        Route::post('/learning-plan/observations', [LearningPlanController::class, 'storeObservation'])->name('learning-plan.observations.store');
 
         Route::resource('assignments', AssignmentController::class)->only(['index','create','store','show']);
         Route::put('/submissions/{submission}/review', [AssignmentController::class, 'review'])->name('submissions.review');

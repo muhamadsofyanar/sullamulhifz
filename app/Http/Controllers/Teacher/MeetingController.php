@@ -7,6 +7,7 @@ use App\Models\AttendanceRecord;
 use App\Models\LearningGroup;
 use App\Models\MarhalahType;
 use App\Models\Meeting;
+use App\Models\MemorizationTarget;
 use App\Models\MemorizationRecord;
 use App\Models\MurajaahRecord;
 use App\Models\QuranSurah;
@@ -63,6 +64,7 @@ class MeetingController extends Controller
             'students'=>$students,
             'surahs'=>QuranSurah::orderBy('id')->get(),
             'marhalah'=>MarhalahType::where('status','active')->orderBy('sequence')->get(),
+            'targets'=>MemorizationTarget::with(['student','rubu','surah','marhalah'])->whereIn('student_id',$students->pluck('id'))->whereIn('status',['active','in_progress','strengthening','paused'])->latest()->get(),
         ]);
     }
 
@@ -126,7 +128,17 @@ class MeetingController extends Controller
         $this->authorizeStudent($meeting,(int)$data['student_id']);
         $this->validateVerseRange((int)$data['surah_id'],(int)$data['end_verse']);
         MemorizationRecord::create([...$data,'institution_id'=>$meeting->institution_id,'meeting_id'=>$meeting->id,'teacher_id'=>$request->user()->teacher->id,'recorded_at'=>now()]);
-        return back()->with('success','Setoran hafalan berhasil disimpan.');
+        $target = MemorizationTarget::where('student_id',$data['student_id'])->where('surah_id',$data['surah_id'])->where('start_verse',$data['start_verse'])->where('end_verse',$data['end_verse'])->whereIn('status',['active','in_progress','strengthening','paused'])->latest()->first();
+        if ($target) {
+            $status = match ($data['result']) {
+                'fluent' => 'completed',
+                'fair' => 'in_progress',
+                'repeat_needed' => 'strengthening',
+                default => 'paused',
+            };
+            $target->update(['status'=>$status,'completed_at'=>$status==='completed'?now():null]);
+        }
+        return back()->with('success','Setoran hafalan berhasil disimpan dan target terkait diperbarui.');
     }
 
     public function storeMurajaah(Request $request, Meeting $meeting): RedirectResponse
@@ -146,7 +158,16 @@ class MeetingController extends Controller
         $this->authorizeStudent($meeting,(int)$data['student_id']);
         $this->validateVerseRange((int)$data['surah_id'],(int)$data['end_verse']);
         MurajaahRecord::create([...$data,'institution_id'=>$meeting->institution_id,'meeting_id'=>$meeting->id,'teacher_id'=>$request->user()->teacher->id,'recorded_at'=>now()]);
-        return back()->with('success','Catatan murāja‘ah berhasil disimpan.');
+        $target = MemorizationTarget::where('student_id',$data['student_id'])->where('surah_id',$data['surah_id'])->where('start_verse',$data['start_verse'])->where('end_verse',$data['end_verse'])->whereIn('status',['active','in_progress','strengthening','paused'])->latest()->first();
+        if ($target && in_array($target->target_type,['murajaah','initial_repetition'],true)) {
+            $status = match ($data['result']) {
+                'maintained' => 'completed',
+                'strengthening_needed' => 'strengthening',
+                default => 'in_progress',
+            };
+            $target->update(['status'=>$status,'completed_at'=>$status==='completed'?now():null]);
+        }
+        return back()->with('success','Catatan murāja‘ah berhasil disimpan dan target terkait diperbarui.');
     }
 
     public function finish(Request $request, Meeting $meeting): RedirectResponse

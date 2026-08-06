@@ -75,7 +75,7 @@ class StudentController extends Controller
     public function show(Request $request, Student $student): View
     {
         $this->guardInstitution($request, $student);
-        $student->load(['guardians.user','currentEnrollment.schoolClass','tahsinRecords.surah','memorizationRecords.surah','murajaahRecords.surah']);
+        $student->load(['guardians.user','currentEnrollment.schoolClass','tahsinRecords.surah','memorizationRecords.surah','memorizationTargets.rubu','memorizationTargets.surah','memorizationTargets.marhalah','learningObservations.teacher','murajaahRecords.surah']);
         return view('admin.students.show', compact('student'));
     }
 

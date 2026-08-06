@@ -20,4 +20,10 @@ class Institution extends Model
     public function users(): HasMany { return $this->hasMany(User::class); }
     public function students(): HasMany { return $this->hasMany(Student::class); }
     public function teachers(): HasMany { return $this->hasMany(Teacher::class); }
+    public function academicYears(): HasMany { return $this->hasMany(AcademicYear::class); }
+
+    public function setting(string $key, mixed $default = null): mixed
+    {
+        return data_get($this->settings ?: [], $key, $default);
+    }
 }

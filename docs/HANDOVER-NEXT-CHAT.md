@@ -66,3 +66,7 @@ Sertakan panduan upgrade, rollback, test, migration impact, changelog, release m
 Jangan memakai database wipe.
 Bedakan fitur yang baru dibuat, yang sudah diuji, dan yang sudah benar-benar dideploy.
 ```
+
+## Update v1.5.0 — Academic Core Complete
+
+Rilis ini menggabungkan profil lembaga, semester aktif, delapan rubu’ Juz 30, target hafalan personal, observasi metode belajar, integrasi portal wali, serta migration otomatis additive dalam satu upload dan satu redeploy. Lihat `UPGRADE-V1.5.0.md` dan `docs/PHASES-v1.5.0.md`.

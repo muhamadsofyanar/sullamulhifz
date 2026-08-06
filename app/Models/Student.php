@@ -26,4 +26,6 @@ class Student extends Model
     public function tahsinRecords(): HasMany { return $this->hasMany(TahsinRecord::class); }
     public function attendanceRecords(): HasMany { return $this->hasMany(AttendanceRecord::class); }
     public function reportCards(): HasMany { return $this->hasMany(ReportCard::class); }
+    public function memorizationTargets(): HasMany { return $this->hasMany(MemorizationTarget::class); }
+    public function learningObservations(): HasMany { return $this->hasMany(LearningObservation::class); }
 }

@@ -56,3 +56,7 @@ TPA Al-Insyirah kini memiliki profil publik lengkap sebagai implementasi pertama
 ## Portal Domain Separation v1.4.5
 
 Website publik tetap pada `sullamulhifz.or.id`, sedangkan login, dashboard, dan operasi privat diarahkan ke `app.sullamulhifz.or.id`. Domain lama dipertahankan sementara sebagai jalur transisi. Tidak ada perubahan database.
+
+## Update v1.5.0 — Academic Core Complete
+
+Rilis ini menggabungkan profil lembaga, semester aktif, delapan rubu’ Juz 30, target hafalan personal, observasi metode belajar, integrasi portal wali, serta migration otomatis additive dalam satu upload dan satu redeploy. Lihat `UPGRADE-V1.5.0.md` dan `docs/PHASES-v1.5.0.md`.

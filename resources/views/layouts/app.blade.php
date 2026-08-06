@@ -39,6 +39,12 @@
                 <a href="{{ route('admin.academic.index') }}" class="{{ request()->routeIs('admin.academic.*') ? 'active' : '' }}" @if(request()->routeIs('admin.academic.*')) aria-current="page" @endif>
                     <x-icon name="academic"/><span>Akademik</span>
                 </a>
+                <a href="{{ route('admin.academic-core.index') }}" class="{{ request()->routeIs('admin.academic-core.*') ? 'active' : '' }}">
+                    <x-icon name="guidance"/><span>Academic Core</span>
+                </a>
+                <a href="{{ route('admin.institution.edit') }}" class="{{ request()->routeIs('admin.institution.*') ? 'active' : '' }}">
+                    <x-icon name="community"/><span>Profil Lembaga</span>
+                </a>
             @endif
             @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']))
                 <a href="{{ route('admin.content.index') }}" class="{{ request()->routeIs('admin.content.*') ? 'active' : '' }}" @if(request()->routeIs('admin.content.*')) aria-current="page" @endif>
@@ -60,6 +66,9 @@
             @if(auth()->user()->hasRole('teacher'))
                 <a href="{{ route('teacher.classrooms.index') }}" class="{{ request()->routeIs('teacher.classrooms.*') || request()->routeIs('teacher.meetings.*') ? 'active' : '' }}">
                     <x-icon name="classroom"/><span>Kelas Saya</span>
+                </a>
+                <a href="{{ route('teacher.learning-plan.index') }}" class="{{ request()->routeIs('teacher.learning-plan.*') ? 'active' : '' }}">
+                    <x-icon name="guidance"/><span>Target & Profil</span>
                 </a>
                 <a href="{{ route('teacher.assignments.index') }}" class="{{ request()->routeIs('teacher.assignments.*') ? 'active' : '' }}">
                     <x-icon name="assignment"/><span>Tugas</span>

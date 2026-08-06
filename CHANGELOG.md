@@ -1,5 +1,16 @@
 # Changelog
 
+## v1.5.0 — Academic Core Complete
+
+- Added editable institution profile and academic readiness overview.
+- Added active semester and enrollment status to academic years.
+- Added eight Juz 30 rubu’ master records.
+- Added personal memorization targets and teacher learning observations.
+- Integrated matching memorization and murāja‘ah records with target status.
+- Added teacher target workspace and guardian target visibility.
+- Added additive automatic migration during container startup for one-upload deployment.
+- Added verification, smoke test, upgrade, rollback, and database documentation.
+
 ## v1.4.5 — Portal Domain Separation
 
 - Separated the public website and authenticated portal by hostname.

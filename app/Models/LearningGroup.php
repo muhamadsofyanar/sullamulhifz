@@ -16,4 +16,5 @@ class LearningGroup extends Model
     public function program(): BelongsTo { return $this->belongsTo(Program::class); }
     public function memberships(): HasMany { return $this->hasMany(GroupMembership::class); }
     public function activeMemberships(): HasMany { return $this->memberships()->where('status','active'); }
+    public function memorizationTargets(): HasMany { return $this->hasMany(MemorizationTarget::class); }
 }

@@ -21,6 +21,7 @@ class PortalController extends Controller
             'attendanceRecords'=>fn($q)=>$q->with('meeting')->latest()->limit(30),
             'tahsinRecords'=>fn($q)=>$q->with('surah')->latest()->limit(20),
             'memorizationRecords'=>fn($q)=>$q->with('surah')->latest('recorded_at')->limit(20),
+            'memorizationTargets'=>fn($q)=>$q->with(['rubu','surah','marhalah','academicYear'])->whereNotIn('status',['cancelled'])->latest()->limit(20),
             'murajaahRecords'=>fn($q)=>$q->with('surah')->latest('recorded_at')->limit(20),
             'reportCards'=>fn($q)=>$q->with('academicYear','items')->where('status','published')->latest('published_at'),
         ]);
