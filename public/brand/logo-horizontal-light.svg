@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 640 128" role="img" aria-labelledby="title desc">
+  <title id="title">Sullamul Hifz</title>
+  <desc id="desc">Logo terang Sullamul Hifz untuk latar hijau.</desc>
+  <g transform="translate(8 5) scale(.78)">
+    <path fill="#F8F4EA" d="M64 132C30 112 15 80 22 45c13 10 27 25 34 45 4 12 6 27 8 42Z"/>
+    <path fill="#F8F4EA" d="M64 132c34-20 49-52 42-87-13 10-27 25-34 45-4 12-6 27-8 42Z"/>
+    <path fill="#D3A13A" d="M64 8c15 17 18 34 0 53-18-19-15-36 0-53Z"/>
+    <circle cx="64" cy="78" r="11" fill="#D3A13A"/>
+    <path fill="#004B3F" d="M64 132c-8-22-9-45 0-65 9 20 8 43 0 65Z" opacity=".95"/>
+  </g>
+  <text x="118" y="82" fill="#F8F4EA" font-family="Georgia, 'Times New Roman', serif" font-size="62" letter-spacing="-1.8">Sullamul</text>
+  <text x="385" y="82" fill="#D3A13A" font-family="Georgia, 'Times New Roman', serif" font-size="62" letter-spacing="-1.8">Ḥifẓ</text>
+  <text x="123" y="108" fill="#DDE8E3" font-family="Arial, Helvetica, sans-serif" font-size="14" letter-spacing="2.8">BUKAN SEKADAR HAFAL, TAPI KUAT</text>
+</svg>

@@ -3,7 +3,7 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-echo "=== Sullamul Hifz v1.1.0: first installation ==="
+echo "=== Sullamul Hifz v1.2.0: first installation ==="
 
 if [ "${CONFIRM_DATABASE_WIPE:-}" != "YES" ]; then
     echo "ABORTED: This command deletes every table in the configured database."

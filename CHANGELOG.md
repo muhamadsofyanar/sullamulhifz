@@ -1,5 +1,10 @@
 # Changelog
 
+## v1.1.1 — Blade hotfix
+- Memperbaiki parse error `unexpected token endif` pada halaman Pembinaan Jumat.
+- Memisahkan directive Blade bersarang agar kompilasi view stabil di Laravel/PHP 8.4.
+- Mempertahankan seluruh data awal v1.1.0.
+
 ## v1.1.0 — Complete encrypted initial data
 - Menambahkan 88 santri dan 88 akun wali.
 - Menambahkan guru Nurul, Jundi, Yanti, dan Sofyan.
@@ -38,3 +43,12 @@ Stable deployment release for Coolify + MySQL.
 
 ## 0.1.3 - 2026-08-06
 - Shortened the `assignment_submissions` composite unique-index name for MySQL's 64-character identifier limit.
+
+## v1.2.0 — Official Branding
+
+- Mengintegrasikan logo resmi Sullamul Ḥifẓ pada login, sidebar, favicon, dan PWA.
+- Menambahkan icon system konsisten pada seluruh navigasi utama.
+- Memperbarui palet antarmuka ke Deep Emerald, Warm Gold, dan Ivory.
+- Memperbarui dashboard admin dengan kartu statistik dan akses cepat berikon.
+- Menyertakan `docs/BRAND-GUIDE.md` sebagai pedoman pengembangan berikutnya.
+- Mempertahankan hotfix MySQL, hotfix Blade Pembinaan Jumat, serta data awal terenkripsi.

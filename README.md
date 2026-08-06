@@ -1,5 +1,8 @@
 # Sullamul Ḥifẓ v1.1.0 — TPA Al-Insyirah
 
+> **v1.2.0 — Official Branding:** logo resmi, icon system, palet Deep Emerald–Warm Gold–Ivory, hotfix Pembinaan Jumat, dan data awal terenkripsi tetap dipertahankan. Lihat `UPGRADE-V1.2.0.md` untuk upgrade tanpa menghapus database.
+
+
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
 Aplikasi web responsif/PWA untuk pencatatan penting pembelajaran Al-Qur’an, tugas rumah, buku penghubung, pengumuman, dan Pembinaan Jumat. Implementasi pertama disiapkan untuk **TPA Al-Insyirah**.

@@ -1,8 +1,13 @@
 @extends('layouts.app')
 @section('content')
 <div class="auth-page">
+    <div class="auth-ornament auth-ornament-left" aria-hidden="true"></div>
+    <div class="auth-ornament auth-ornament-right" aria-hidden="true"></div>
     <div class="auth-card">
-        <div class="brand auth-brand"><span class="brand-mark">SH</span><span><strong>Sullamul Ḥifẓ</strong><small>Bukan Sekadar Hafal, Tapi KUAT</small></span></div>
+        <div class="auth-brand">
+            <img src="/brand/logo-horizontal.svg" alt="Sullamul Hifz — Bukan Sekadar Hafal, Tapi KUAT">
+        </div>
+        <span class="eyebrow">EKOSISTEM PENDIDIKAN AL-QUR'AN</span>
         <h1>Masuk ke aplikasi</h1>
         <p class="muted">Gunakan email atau nomor telepon yang terdaftar.</p>
         @if(session('success'))<div class="alert success">{{ session('success') }}</div>@endif
