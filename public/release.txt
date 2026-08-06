@@ -1,5 +1,5 @@
-Sullamul Hifz v1.0.0
-Release: stable
-Date: 2026-08-06
+Sullamul Hifz v1.1.0
+Release: complete-encrypted-data
 Migration fix: asgn_submission_recipient_attempt_uq
-PHP runtime: 8.4
+Initial data: encrypted, 88 students, 88 guardians, 4 teachers
+Tahfizh: A=30, B=27

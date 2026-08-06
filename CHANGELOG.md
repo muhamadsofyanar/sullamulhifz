@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.1.0 — Complete encrypted initial data
+- Menambahkan 88 santri dan 88 akun wali.
+- Menambahkan guru Nurul, Jundi, Yanti, dan Sofyan.
+- Menambahkan Kelas Tahfizh A (30 santri) dan B (27 santri).
+- Menambahkan penugasan guru sesuai kelas/program.
+- Menambahkan data awal terenkripsi AES-256-GCM.
+- Menambahkan perintah `sullam:reset-admin` dan `sullam:verify-installation`.
+- Mempertahankan perbaikan nama indeks MySQL dan PHP 8.4.
+
+
 ## 1.0.0 — 2026-08-06
 
 Stable deployment release for Coolify + MySQL.

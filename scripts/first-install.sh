@@ -3,12 +3,22 @@ set -eu
 
 cd "$(dirname "$0")/.."
 
-echo "=== Sullamul Hifz v1.0.0: first installation ==="
+echo "=== Sullamul Hifz v1.1.0: first installation ==="
 
 if [ "${CONFIRM_DATABASE_WIPE:-}" != "YES" ]; then
     echo "ABORTED: This command deletes every table in the configured database."
     echo "Run it only for a new/empty installation:"
     echo "CONFIRM_DATABASE_WIPE=YES sh scripts/first-install.sh"
+    exit 1
+fi
+
+if [ -z "${INITIAL_TPA_DATA_KEY:-}" ]; then
+    echo "ABORTED: INITIAL_TPA_DATA_KEY belum diisi di Environment Variables."
+    exit 1
+fi
+
+if [ ! -f database/data/initial_tpa_2026_2027.enc.json ]; then
+    echo "ABORTED: file data awal terenkripsi tidak ditemukan."
     exit 1
 fi
 
@@ -24,5 +34,6 @@ php artisan db:seed --class='Database\Seeders\ProductionSeeder' --force
 php artisan storage:link || true
 php artisan optimize
 php artisan migrate:status
+php artisan sullam:verify-installation
 
 echo "=== First installation completed ==="

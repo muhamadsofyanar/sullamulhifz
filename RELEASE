@@ -1,6 +1,3 @@
-SULLAMUL_HIFZ_VERSION=1.0.0
-RELEASE_DATE=2026-08-06
-RELEASE_CHANNEL=stable
-MIGRATION_INDEX_FIX=asgn_submission_recipient_attempt_uq
-PHP_RUNTIME=8.4
-MYSQL_IMAGE=mysql:8.0-bookworm
+Sullamul Hifz v1.1.0
+Release: complete-encrypted-data
+Data: 88 santri, 88 wali, 4 guru, Tahfizh A/B

@@ -26,7 +26,7 @@ Di project Coolify yang sama:
 
 1. **New Resource**.
 2. Pilih **Database → MySQL**.
-3. Gunakan MySQL 8.4 atau versi LTS yang tersedia.
+3. Gunakan image `mysql:8.0-bookworm` agar kompatibel dengan CPU VPS yang digunakan.
 4. Tentukan:
    - database name;
    - username;
@@ -76,7 +76,7 @@ APP_NAME="Sullamul Hifz"
 APP_ENV=production
 APP_KEY=base64:HASIL_KEY_ANDA
 APP_DEBUG=false
-APP_URL=https://DOMAIN-ANDA
+APP_URL=https://taysriulqurani.id
 APP_TIMEZONE=Asia/Jakarta
 APP_LOCALE=id
 APP_FALLBACK_LOCALE=id
@@ -109,6 +109,9 @@ INITIAL_ADMIN_NAME="Administrator TPA Al-Insyirah"
 INITIAL_ADMIN_EMAIL=EMAIL_ADMIN_ANDA
 INITIAL_ADMIN_PHONE=NOMOR_ADMIN_ANDA
 INITIAL_ADMIN_PASSWORD="PASSWORD_ADMIN_SANGAT_KUAT"
+INITIAL_TEACHER_PASSWORD="PASSWORD_AWAL_GURU"
+INITIAL_GUARDIAN_PASSWORD="PASSWORD_AWAL_WALI"
+SEED_INITIAL_TPA_DATA=true
 SEED_DEMO_DATA=false
 
 UPLOAD_MAX_KB=25600
@@ -120,7 +123,7 @@ MEDIA_RETENTION_DAYS=180
 Gunakan URL final dengan HTTPS, misalnya:
 
 ```env
-APP_URL=https://app.sullamulhifz.id
+APP_URL=https://taysriulqurani.id
 ```
 
 ## 6. Persistent storage
@@ -161,7 +164,7 @@ php artisan storage:link
 php artisan optimize
 ```
 
-Seeder produksi idempotent dan tidak membuat santri demo ketika `SEED_DEMO_DATA=false`.
+Seeder produksi idempotent. Dengan `SEED_INITIAL_TPA_DATA=true`, data 88 santri, 88 wali, 4 guru, serta Kelas Tahfizh A/B dibuat otomatis. `SEED_DEMO_DATA` harus tetap `false`.
 
 ## 8. Domain dan HTTPS
 
@@ -181,34 +184,52 @@ Tekan **Deploy** dan periksa tahap berikut:
 4. Post-deployment command berhasil.
 5. Health check `/up` berstatus sehat.
 
-## 10. Login pertama
+## 10. Instalasi database baru
 
-Buka domain aplikasi dan masuk memakai:
+Setelah redeploy berhasil, buka **Terminal aplikasi**, lalu jalankan satu perintah:
 
-```text
-Email:    nilai INITIAL_ADMIN_EMAIL
-Password: nilai INITIAL_ADMIN_PASSWORD
+```bash
+cd /var/www/html
+CONFIRM_DATABASE_WIPE=YES sh scripts/first-install.sh
 ```
 
-Setelah masuk, aplikasi otomatis mengarahkan admin ke halaman **Profil** untuk mengganti kata sandi awal. Setelah kata sandi berhasil diganti:
+Script akan menghapus tabel lama, menjalankan keempat migration, membuat data awal lengkap, dan memverifikasi jumlah data.
 
-1. Tambahkan guru.
-2. Atur penugasan guru.
-3. Masukkan santri dan wali.
-4. Masukkan santri ke Tahfizh Sesi A/B jika diperlukan.
-
-## 11. Urutan input awal
-
-Urutan aman:
+Target verifikasi:
 
 ```text
-Guru
-→ Penugasan Guru
-→ Jadwal
-→ Santri + Wali + Kelas Utama
-→ Anggota Kelompok Tahfizh
-→ Uji Login Guru
-→ Uji Login Wali
+Santri aktif       88
+Wali aktif         88
+Guru aktif          4
+Kelas Tahfizh A    30
+Kelas Tahfizh B    27
+```
+
+## 11. Login pertama
+
+Admin masuk memakai nilai `INITIAL_ADMIN_EMAIL` dan `INITIAL_ADMIN_PASSWORD`.
+
+Guru:
+
+```text
+nurul@taysriulqurani.id
+jundi@taysriulqurani.id
+yanti@taysriulqurani.id
+sofyan@taysriulqurani.id
+```
+
+Wali:
+
+```text
+wali001@taysriulqurani.id sampai wali088@taysriulqurani.id
+```
+
+Semua akun awal wajib mengganti password saat login pertama. Daftar akun wali dibuat berurutan `wali001` sampai `wali088`; pemetaan lengkap mengikuti data kelas yang diberikan.
+
+Jika password admin lupa, ubah `INITIAL_ADMIN_PASSWORD` di Coolify lalu jalankan:
+
+```bash
+php artisan sullam:reset-admin
 ```
 
 ## 12. Pemeriksaan setelah deployment
@@ -275,7 +296,7 @@ Persistent storage belum dipasang atau destination path salah. Gunakan:
 Pastikan:
 
 ```env
-APP_URL=https://DOMAIN-ANDA
+APP_URL=https://taysriulqurani.id
 SESSION_SECURE_COOKIE=true
 ```
 

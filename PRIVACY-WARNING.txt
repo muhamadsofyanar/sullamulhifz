@@ -1,0 +1,18 @@
+PERINGATAN DATA PRIVAT
+
+Paket source ini menyimpan data 88 santri dalam bentuk AES-256-GCM terenkripsi.
+Kunci dekripsi TIDAK disertakan di dalam ZIP source dan harus dimasukkan melalui
+Environment Variable INITIAL_TPA_DATA_KEY di Coolify.
+
+WAJIB:
+1. Jangan unggah file kunci data ke GitHub.
+2. Jangan menaruh INITIAL_TPA_DATA_KEY di source code atau commit.
+3. Repository private tetap lebih disarankan.
+4. Ganti seluruh password awal melalui Environment Variables Coolify.
+5. Wajibkan guru dan wali mengganti password saat login pertama.
+
+Kelas Tahfizh:
+- Kelas Tahfizh A: Mustawa Awal A + Mustawa Tsani A = 30 santri.
+- Kelas Tahfizh B: Mustawa Awal B + Mustawa Tsani B = 27 santri.
+- Guru Tahfizh: Sofyan.
+- Tamhidi belum masuk kelompok Tahfizh sesuai pembagian yang diberikan.

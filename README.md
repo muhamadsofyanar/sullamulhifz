@@ -1,4 +1,4 @@
-# Sullamul Ḥifẓ MVP
+# Sullamul Ḥifẓ v1.1.0 — TPA Al-Insyirah
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
@@ -51,7 +51,7 @@ Aplikasi web responsif/PWA untuk pencatatan penting pembelajaran Al-Qur’an, tu
 
 ## Teknologi
 
-- PHP 8.3+
+- PHP 8.4+
 - Laravel 13
 - Blade + CSS/JavaScript mandiri, tanpa proses build Node wajib
 - MySQL 8 / MariaDB kompatibel
@@ -87,31 +87,41 @@ INITIAL_ADMIN_PASSWORD="Ganti-Segera-2026!"
 
 **Wajib ubah email dan kata sandi awal sebelum deployment.** Pada login pertama, aplikasi memaksa pengguna mengganti kata sandi awal. Seeder bersifat idempotent. Password environment hanya dipakai ketika akun admin pertama kali dibuat; perubahan password melalui aplikasi tidak ditimpa saat redeploy.
 
-## Data awal
+## Data awal lengkap TPA Al-Insyirah
 
-Seeder produksi membuat:
-- TPA Al-Insyirah;
-- tahun ajaran 2026/2027;
-- Tamhidi, Mustawa Awal, Mustawa Tsani;
-- enam kelas awal;
-- Tahfizh Sesi A dan B;
-- program tahsīn, tahfizh, murāja‘ah, Pembinaan Jumat, dan program bakat;
-- enam marhalah resmi;
-- daftar surah Juz 30;
-- role dan permission;
-- akun admin awal.
+Rilis privat v1.1.0 otomatis membuat data produksi berikut:
 
-Data guru, wali, dan santri demo hanya dibuat saat:
+- 88 santri dan pembagian ke 6 kelas utama;
+- 88 akun wali, satu akun awal per santri;
+- 4 akun guru: Nurul, Jundi, Yanti, dan Sofyan;
+- penugasan guru sesuai kelas/program;
+- **Kelas Tahfizh A**: Mustawa Awal A + Mustawa Tsani A = 30 santri;
+- **Kelas Tahfizh B**: Mustawa Awal B + Mustawa Tsani B = 27 santri;
+- guru Tahfizh A dan B: Sofyan;
+- tahun ajaran 2026/2027, program, marhalah, dan surah Juz 30.
 
-```env
-SEED_DEMO_DATA=true
+Santri Tamhidi tetap berada di Tamhidi A/B dan belum dimasukkan ke kelompok Tahfizh karena pembagian Tahfizh yang diberikan hanya mencakup kelas Mustawa.
+
+Akun wali dibuat berurutan:
+
+```text
+wali001@taysriulqurani.id
+...
+wali088@taysriulqurani.id
 ```
 
-Untuk produksi gunakan:
+Password wali dan guru dibaca dari environment variables:
 
 ```env
+INITIAL_GUARDIAN_PASSWORD="PASSWORD-AWAL-WALI"
+INITIAL_TEACHER_PASSWORD="PASSWORD-AWAL-GURU"
+SEED_INITIAL_TPA_DATA=true
 SEED_DEMO_DATA=false
 ```
+
+Password hanya digunakan saat akun pertama kali dibuat. Seeder berikutnya tidak menimpa password yang sudah diganti.
+
+> **PENTING:** data santri disimpan terenkripsi. Jangan pernah mengunggah file kunci data ke GitHub; repository Private tetap disarankan.
 
 ## Menjalankan secara lokal dengan Docker
 
@@ -194,7 +204,7 @@ sh scripts/deploy.sh
 ```
 
 8. Hubungkan domain dan aktifkan HTTPS.
-9. Deploy.
+9. Untuk database baru, jalankan `CONFIRM_DATABASE_WIPE=YES sh scripts/first-install.sh` dari Terminal aplikasi.
 
 ## Pengujian
 

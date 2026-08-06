@@ -1,0 +1,22 @@
+SULLAMUL HIFZ v1.1.0 — INSTALASI RINGKAS
+
+1. Upload seluruh isi ZIP source ke root repository GitHub.
+2. JANGAN upload file sullamul-hifz-v1.1.0-data-key.txt atau daftar akun rahasia.
+3. Di Coolify Environment Variables, isi:
+   INITIAL_TPA_DATA_KEY=<nilai dari file key>
+   INITIAL_ADMIN_EMAIL=<email admin>
+   INITIAL_ADMIN_PASSWORD=<password admin baru>
+   INITIAL_TEACHER_PASSWORD=<password awal semua guru>
+   INITIAL_GUARDIAN_PASSWORD=<password awal semua wali>
+   SEED_INITIAL_TPA_DATA=true
+   SEED_DEMO_DATA=false
+4. Redeploy aplikasi.
+5. Di Terminal aplikasi jalankan:
+   cd /var/www/html
+   CONFIRM_DATABASE_WIPE=YES sh scripts/first-install.sh
+6. Verifikasi target:
+   88 santri, 88 wali, 4 guru, Tahfizh A=30, Tahfizh B=27.
+7. Login admin. Jika lupa password:
+   php artisan sullam:reset-admin
+
+PENTING: first-install.sh menghapus seluruh tabel database. Jalankan hanya untuk instalasi awal.

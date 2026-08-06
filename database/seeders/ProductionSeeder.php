@@ -125,9 +125,20 @@ class ProductionSeeder extends Seeder
         ];
         foreach ($classDefinitions as $class) {
             $level = Level::where('institution_id', $institution->id)->where('code', $class['level'])->firstOrFail();
+            $classNotes = str_starts_with($class['code'], 'TAMHIDI')
+                ? 'Jam KBM 13.00–15.00 WIB. Hari pertemuan mengikuti kalender TPA.'
+                : 'Jam KBM 15.30–17.30 WIB. Hari pertemuan mengikuti kalender TPA.';
+
             SchoolClass::updateOrCreate(
                 ['academic_year_id' => $year->id, 'code' => $class['code']],
-                ['institution_id' => $institution->id, 'level_id' => $level->id, 'name' => $class['name'], 'capacity' => $class['capacity'], 'status' => 'active']
+                [
+                    'institution_id' => $institution->id,
+                    'level_id' => $level->id,
+                    'name' => $class['name'],
+                    'capacity' => $class['capacity'],
+                    'status' => 'active',
+                    'notes' => $classNotes,
+                ]
             );
         }
 
@@ -146,7 +157,7 @@ class ProductionSeeder extends Seeder
         }
 
         $tahfizh = Program::where('institution_id',$institution->id)->where('code','TAHFIZH')->firstOrFail();
-        foreach ([['Tahfizh Sesi A','TAHFIZH-A',30],['Tahfizh Sesi B','TAHFIZH-B',27]] as [$name,$code,$capacity]) {
+        foreach ([['Kelas Tahfizh A','TAHFIZH-A',30],['Kelas Tahfizh B','TAHFIZH-B',27]] as [$name,$code,$capacity]) {
             LearningGroup::updateOrCreate(['academic_year_id'=>$year->id,'code'=>$code], ['institution_id'=>$institution->id,'program_id'=>$tahfizh->id,'name'=>$name,'capacity'=>$capacity,'status'=>'active']);
         }
 
@@ -175,6 +186,10 @@ class ProductionSeeder extends Seeder
         ];
         foreach ($surahs as [$id,$arabic,$latin,$verses]) {
             QuranSurah::updateOrCreate(['id'=>$id], ['name_arabic'=>$arabic,'name_latin'=>$latin,'revelation_place'=>null,'verse_count'=>$verses,'sequence'=>$id]);
+        }
+
+        if (filter_var(env('SEED_INITIAL_TPA_DATA', true), FILTER_VALIDATE_BOOL)) {
+            $this->call(InitialTpaDataSeeder::class);
         }
 
         if (filter_var(env('SEED_DEMO_DATA', false), FILTER_VALIDATE_BOOL)) {
