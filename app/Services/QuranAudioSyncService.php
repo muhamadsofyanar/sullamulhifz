@@ -187,6 +187,15 @@ class QuranAudioSyncService
                         ->filter(fn ($row): bool => (int) ($row['ayah'] ?? 0) <= (int) $surah->verse_count)
                         ->keyBy(fn (array $row): int => (int) $row['ayah']);
 
+                    // Sebagian read MP3Quran mempunyai anomali timing pada ayat terakhir
+                    // (contoh Al-Fatihah Al-Husary: endpoint saat ini hanya menyediakan 1–6).
+                    // Jangan membuang timing satu surah penuh hanya karena penanda akhir hilang.
+                    // Jika tepat ayat terakhir yang hilang, lanjutkan dari end_time ayat sebelumnya
+                    // sampai file audio berakhir. Event `ended` pada browser menjadi batas final sebenarnya.
+                    if ($rows->count() !== (int) $surah->verse_count) {
+                        $rows = $this->repairTrailingTimingGap($rows, $surah);
+                    }
+
                     if ($rows->count() !== (int) $surah->verse_count) {
                         $failed[] = (int) $surahId;
                         continue;
@@ -237,6 +246,52 @@ class QuranAudioSyncService
             'failed_surahs' => array_values(array_unique($failed)),
             'saved_operations' => $saved,
         ];
+    }
+
+
+    /**
+     * MP3Quran timing data can occasionally omit only the final ayah marker while
+     * the surah MP3 itself is complete. In that narrow case we can safely start
+     * the final ayah where the preceding timing ends and let the HTML5 `ended`
+     * event determine the actual end of the surah file.
+     */
+    private function repairTrailingTimingGap(\Illuminate\Support\Collection $rows, QuranSurah $surah): \Illuminate\Support\Collection
+    {
+        $expected = (int) $surah->verse_count;
+        if ($expected < 2 || $rows->count() !== $expected - 1 || $rows->has($expected)) {
+            return $rows;
+        }
+
+        foreach (range(1, $expected - 1) as $ayahNumber) {
+            if (! $rows->has($ayahNumber)) {
+                return $rows;
+            }
+        }
+
+        $previous = $rows->get($expected - 1);
+        if (! is_array($previous)) {
+            return $rows;
+        }
+
+        $startMs = max(0, (int) ($previous['end_time'] ?? 0));
+        if ($startMs < 1) {
+            return $rows;
+        }
+
+        $rows->put($expected, [
+            'ayah' => $expected,
+            'start_time' => $startMs,
+            // Deliberately beyond realistic ayah duration. Browser `ended`
+            // closes the segment at the true end of the MP3 file.
+            'end_time' => $startMs + 180000,
+            'page' => $previous['page'] ?? null,
+            'polygon' => null,
+            'x' => null,
+            'y' => null,
+            '_sullam_fallback' => 'trailing_ayah_until_audio_end',
+        ]);
+
+        return $rows->sortKeys();
     }
 
     /** @return array<string, Response|null> */

@@ -119,9 +119,16 @@ window.addEventListener('DOMContentLoaded', () => {
       audio.play().then(() => {
         player.playing = true;
         $('[data-player-toggle]').textContent='❚❚';
+        const note = $('[data-audio-sync-note]');
+        if (note && current.audio_ready) note.hidden = true;
       }).catch(() => {
         player.playing = false;
         $('[data-player-toggle]').textContent='▶';
+        const note = $('[data-audio-sync-note]');
+        if (note) {
+          note.textContent = 'Audio belum dapat diputar oleh browser. Coba tekan Putar lagi atau pilih qari lain.';
+          note.hidden = false;
+        }
       });
     };
 
@@ -194,6 +201,15 @@ window.addEventListener('DOMContentLoaded', () => {
     if(current?.audio_ready && audio.currentTime >= Number(current.end_seconds)-0.05) segmentFinished();
   });
   audio?.addEventListener('ended', segmentFinished);
+  audio?.addEventListener('error', () => {
+    player.playing = false;
+    if ($('[data-player-toggle]')) $('[data-player-toggle]').textContent = '▶';
+    const note = $('[data-audio-sync-note]');
+    if (note) {
+      note.textContent = 'Sumber audio gagal dimuat. Pilih qari lain atau minta admin menyinkronkan ulang audio ini.';
+      note.hidden = false;
+    }
+  });
 
   const startSession = async () => {
     player.startedAt = Date.now();
