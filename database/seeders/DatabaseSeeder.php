@@ -13,6 +13,7 @@ class DatabaseSeeder extends Seeder
             PlatformFoundationV210Seeder::class,
             AcademyExpansionV220Seeder::class,
             IntegratedLearningEcosystemV230Seeder::class,
+            TahfizhLearningEngineV250Seeder::class,
         ]);
     }
 }

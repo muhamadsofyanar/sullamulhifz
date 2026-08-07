@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class MemorizationTarget extends Model
@@ -28,4 +29,6 @@ class MemorizationTarget extends Model
     public function rubu(): BelongsTo { return $this->belongsTo(QuranRubu::class, 'quran_rubu_id'); }
     public function surah(): BelongsTo { return $this->belongsTo(QuranSurah::class, 'surah_id'); }
     public function marhalah(): BelongsTo { return $this->belongsTo(MarhalahType::class, 'marhalah_type_id'); }
+    public function learningCycles(): HasMany { return $this->hasMany(TahfizhLearningCycle::class); }
+    public function reviewPlans(): HasMany { return $this->hasMany(MemorizationReviewPlan::class); }
 }

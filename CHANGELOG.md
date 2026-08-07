@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.5.0 — Tahfizh Learning Engine — 2026-08-07
+- Menambahkan siklus belajar target → persiapan → setoran → penguatan → Murāja‘ah.
+- Menambahkan talaqqi/tasmi‘ sebagai cara belajar/setoran yang tercatat.
+- Menambahkan jadwal penjagaan yang ditentukan guru dan dapat diselesaikan oleh catatan Murāja‘ah.
+- Menambahkan fokus koreksi terstruktur tanpa ranking atau label negatif.
+- Menambahkan prompt guru, koreksi mandiri, dan Murāja‘ah berikutnya pada catatan.
+- Menambahkan dashboard Perjalanan Tahfizh guru dan ringkasan penjagaan untuk wali.
+- Menambahkan verifikasi Fase 3 dan checklist validasi produksi konservatif.
+
 ## v2.4.0 — Full Qur’an & Mushaf Engine — 2026-08-07
 - Full Quran corpus: 114 surah, 6.236 ayat, 30 juz, 604 halaman, 240 Rubu‘ al-Hizb.
 - Academy mushaf + active ayah highlighting, full-selection player, bookmark ayah/preset, reading progress and resume.

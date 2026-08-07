@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v2.4.0 — Full Qur’an & Mushaf Engine**.
+Rilis kandidat: **v2.5.0 — Tahfizh Learning Engine**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajaran Al-Qur’an, operasional lembaga, tugas rumah, komunikasi guru–wali, dan perjalanan perkembangan santri. TPA Al-Insyirah menjadi implementasi pertama, sementara fondasinya disiapkan untuk cabang dan lembaga lain.
 
@@ -35,11 +35,11 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 ## Mulai dari sini
 
 1. [`START-HERE.md`](START-HERE.md)
-2. [`UPGRADE-V2.4.0.md`](UPGRADE-V2.4.0.md)
-3. [`DEPLOY-QUICK-V2.4.0.txt`](DEPLOY-QUICK-V2.4.0.txt)
+2. [`UPGRADE-V2.5.0.md`](UPGRADE-V2.5.0.md)
+3. [`DEPLOY-QUICK-V2.5.0.txt`](DEPLOY-QUICK-V2.5.0.txt)
 4. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
-5. [`docs/ROADMAP-10-PHASES-V2.4.0.md`](docs/ROADMAP-10-PHASES-V2.4.0.md)
-6. [`docs/releases/v2.4.0.md`](docs/releases/v2.4.0.md)
+5. [`docs/ROADMAP-10-PHASES-V2.5.0.md`](docs/ROADMAP-10-PHASES-V2.5.0.md)
+6. [`docs/releases/v2.5.0.md`](docs/releases/v2.5.0.md)
 
 ## Aturan produksi
 
@@ -50,4 +50,4 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - pertahankan persistent volume `storage/app` saat mengganti image/container;
 - aktifkan SMTP agar reset kata sandi dapat dikirim melalui email.
 
-Migration v2.4.0 bersifat additive. Delapan milestone Juz 30 lama tetap dipertahankan sebagai bagian khusus Sullamul Ḥifẓ, sementara Quran Learning diperluas ke seluruh 30 juz.
+Migration v2.5.0 bersifat additive. Data Tahsīn, Tahfizh, Murāja‘ah, target, Quran Learning dan Academy lama tetap dipertahankan; v2.5 menambahkan siklus belajar, jadwal penjagaan dan fokus koreksi.

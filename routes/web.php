@@ -37,6 +37,7 @@ use App\Http\Controllers\Teacher\ClassroomController;
 use App\Http\Controllers\Teacher\DailyOperationsController;
 use App\Http\Controllers\Teacher\MeetingController;
 use App\Http\Controllers\Teacher\LearningPlanController;
+use App\Http\Controllers\Teacher\TahfizhController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -273,6 +274,14 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         Route::post('/learning-plan/targets', [LearningPlanController::class, 'storeTarget'])->middleware('permission:learning.manage')->name('learning-plan.targets.store');
         Route::put('/learning-plan/targets/{target}', [LearningPlanController::class, 'updateTarget'])->middleware('permission:learning.manage')->name('learning-plan.targets.update');
         Route::post('/learning-plan/observations', [LearningPlanController::class, 'storeObservation'])->middleware('permission:learning.manage')->name('learning-plan.observations.store');
+
+        Route::get('/tahfizh', [TahfizhController::class, 'index'])->middleware('permission:learning.manage')->name('tahfizh.index');
+        Route::get('/tahfizh/students/{student}', [TahfizhController::class, 'student'])->middleware('permission:learning.manage')->name('tahfizh.student');
+        Route::post('/tahfizh/cycles', [TahfizhController::class, 'storeCycle'])->middleware('permission:learning.manage')->name('tahfizh.cycles.store');
+        Route::put('/tahfizh/cycles/{cycle}', [TahfizhController::class, 'updateCycle'])->middleware('permission:learning.manage')->name('tahfizh.cycles.update');
+        Route::post('/tahfizh/reviews', [TahfizhController::class, 'storeReviewPlan'])->middleware('permission:learning.manage')->name('tahfizh.reviews.store');
+        Route::put('/tahfizh/reviews/{plan}', [TahfizhController::class, 'updateReviewPlan'])->middleware('permission:learning.manage')->name('tahfizh.reviews.update');
+        Route::put('/tahfizh/errors/{error}/resolve', [TahfizhController::class, 'resolveError'])->middleware('permission:learning.manage')->name('tahfizh.errors.resolve');
 
         Route::get('/assignments', [AssignmentController::class, 'index'])->middleware('permission:assignments.view')->name('assignments.index');
         Route::get('/assignments/create', [AssignmentController::class, 'create'])->middleware('permission:assignments.manage')->name('assignments.create');

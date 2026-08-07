@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="/css/app-v220.css?v={{ @filemtime(public_path('css/app-v220.css')) ?: '220' }}">
     <link rel="stylesheet" href="/css/app-v230.css?v={{ @filemtime(public_path('css/app-v230.css')) ?: '230' }}">
     <link rel="stylesheet" href="/css/app-v240.css?v={{ @filemtime(public_path('css/app-v240.css')) ?: '240' }}">
+    <link rel="stylesheet" href="/css/app-v250.css?v={{ @filemtime(public_path('css/app-v250.css')) ?: '250' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
@@ -100,6 +101,9 @@
                 </a>
                 <a href="{{ route('teacher.classrooms.index') }}" class="{{ request()->routeIs('teacher.classrooms.*') || request()->routeIs('teacher.meetings.*') ? 'active' : '' }}">
                     <x-icon name="classroom"/><span>Kelas Saya</span>
+                </a>
+                <a href="{{ route('teacher.tahfizh.index') }}" class="{{ request()->routeIs('teacher.tahfizh.*') ? 'active' : '' }}">
+                    <x-icon name="preservation"/><span>Perjalanan Tahfizh</span>
                 </a>
                 <a href="{{ route('teacher.learning-plan.index') }}" class="{{ request()->routeIs('teacher.learning-plan.*') ? 'active' : '' }}">
                     <x-icon name="guidance"/><span>Target & Profil</span>

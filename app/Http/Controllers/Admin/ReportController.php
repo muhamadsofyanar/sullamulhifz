@@ -58,13 +58,13 @@ class ReportController extends Controller
     public function memorizationCsv(Request $request): StreamedResponse
     {
         $records=MemorizationRecord::with(['student','surah'])->where('institution_id',$request->user()->institution_id)->latest('recorded_at')->get();
-        return $this->csv('tahfizh',['Tanggal','Santri','Jenis','Surah','Ayat awal','Ayat akhir','Hasil','Bantuan','Tindak lanjut','Catatan'],function($out)use($records):void{foreach($records as $r)fputcsv($out,[optional($r->recorded_at)->format('Y-m-d H:i'),$r->student?->full_name,$r->record_type,$r->surah?->name_latin,$r->start_verse,$r->end_verse,$r->result,$r->assistance_level,$r->follow_up,$r->teacher_notes]);});
+        return $this->csv('tahfizh',['Tanggal','Santri','Jenis','Cara penyampaian','Surah','Ayat awal','Ayat akhir','Hasil','Bantuan','Prompt guru','Koreksi mandiri','Murajaah berikutnya','Tindak lanjut','Catatan'],function($out)use($records):void{foreach($records as $r)fputcsv($out,[optional($r->recorded_at)->format('Y-m-d H:i'),$r->student?->full_name,$r->record_type,$r->delivery_mode,$r->surah?->name_latin,$r->start_verse,$r->end_verse,$r->result,$r->assistance_level,$r->prompt_count,$r->self_correction_count,optional($r->next_review_date)->format('Y-m-d'),$r->follow_up,$r->teacher_notes]);});
     }
 
     public function murajaahCsv(Request $request): StreamedResponse
     {
         $records=MurajaahRecord::with(['student','surah'])->where('institution_id',$request->user()->institution_id)->latest('recorded_at')->get();
-        return $this->csv('murajaah',['Tanggal','Santri','Jenis','Surah','Ayat awal','Ayat akhir','Hasil','Bantuan','Review berikutnya','Catatan'],function($out)use($records):void{foreach($records as $r)fputcsv($out,[optional($r->recorded_at)->format('Y-m-d H:i'),$r->student?->full_name,$r->murajaah_type,$r->surah?->name_latin,$r->start_verse,$r->end_verse,$r->result,$r->assistance_level,optional($r->next_review_date)->format('Y-m-d'),$r->teacher_notes]);});
+        return $this->csv('murajaah',['Tanggal','Santri','Jenis','Surah','Ayat awal','Ayat akhir','Hasil','Bantuan','Prompt guru','Koreksi mandiri','Review berikutnya','Rekomendasi','Catatan'],function($out)use($records):void{foreach($records as $r)fputcsv($out,[optional($r->recorded_at)->format('Y-m-d H:i'),$r->student?->full_name,$r->murajaah_type,$r->surah?->name_latin,$r->start_verse,$r->end_verse,$r->result,$r->assistance_level,$r->prompt_count,$r->self_correction_count,optional($r->next_review_date)->format('Y-m-d'),$r->review_recommendation,$r->teacher_notes]);});
     }
 
 

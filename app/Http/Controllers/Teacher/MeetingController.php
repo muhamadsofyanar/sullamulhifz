@@ -9,11 +9,13 @@ use App\Models\LearningGroup;
 use App\Models\MarhalahType;
 use App\Models\Meeting;
 use App\Models\MemorizationRecord;
+use App\Models\MemorizationReviewPlan;
 use App\Models\MemorizationTarget;
 use App\Models\MurajaahRecord;
 use App\Models\QuranSurah;
 use App\Models\SchoolClass;
 use App\Models\TahsinRecord;
+use App\Services\TahfizhLearningService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -22,6 +24,10 @@ use Illuminate\View\View;
 
 class MeetingController extends Controller
 {
+    public function __construct(private readonly TahfizhLearningService $tahfizh)
+    {
+    }
+
     public function create(Request $request): View
     {
         $targetType = $request->string('target_type')->toString();
@@ -77,6 +83,12 @@ class MeetingController extends Controller
                 ->whereIn('student_id', $students->pluck('id'))
                 ->whereIn('status', ['active','in_progress','strengthening','paused'])
                 ->latest()->get(),
+            'reviewPlans' => MemorizationReviewPlan::with(['student','surah','target'])
+                ->where('institution_id', $meeting->institution_id)
+                ->whereIn('student_id', $students->pluck('id'))
+                ->where('status', 'scheduled')
+                ->whereDate('review_date', '<=', today())
+                ->orderBy('review_date')->get(),
         ]);
     }
 
@@ -134,14 +146,25 @@ class MeetingController extends Controller
             'focus_categories.*' => ['string', 'max:50'],
             'teacher_notes' => ['nullable', 'string'],
             'follow_up' => ['nullable', 'string', 'max:190'],
+            'error_categories' => ['nullable', 'array'],
+            'error_categories.*' => ['string', 'max:50'],
+            'error_ayah' => ['nullable', 'integer', 'min:1'],
+            'error_note' => ['nullable', 'string', 'max:1000'],
         ]);
         $this->authorizeStudent($meeting, (int) $data['student_id']);
+        $recordData = $data;
+        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note']);
         $record = TahsinRecord::create([
-            ...$data,
+            ...$recordData,
             'institution_id' => $meeting->institution_id,
             'meeting_id' => $meeting->id,
             'teacher_id' => $request->user()->teacher->id,
         ]);
+        $this->tahfizh->recordErrors(
+            'tahsin', $record->id, (int) $meeting->institution_id, (int) $data['student_id'],
+            (int) $request->user()->teacher->id, (int) $meeting->id, $data['error_categories'] ?? [],
+            $data['error_ayah'] ?? null, $data['error_note'] ?? null,
+        );
         $this->log($request, 'tahsin.recorded', $record, ['student_id' => $data['student_id']]);
         return back()->with('success', 'Catatan Tahsīn berhasil disimpan.');
     }
@@ -154,6 +177,7 @@ class MeetingController extends Controller
             'memorization_target_id' => ['nullable', 'exists:memorization_targets,id'],
             'marhalah_type_id' => ['nullable', 'exists:marhalah_types,id'],
             'record_type' => ['required', Rule::in(['new_memorization','initial_repetition','home_submission','class_submission','tasmi','exam'])],
+            'delivery_mode' => ['required', Rule::in(['talaqqi','individual_submission','group_tasmi','home_submission','exam'])],
             'surah_id' => ['required', 'exists:quran_surahs,id'],
             'start_verse' => ['required', 'integer', 'min:1'],
             'end_verse' => ['required', 'integer', 'gte:start_verse'],
@@ -161,10 +185,17 @@ class MeetingController extends Controller
             'fluency_status' => ['nullable', Rule::in(['strong','developing','needs_repetition'])],
             'tajwid_status' => ['nullable', Rule::in(['strong','developing','needs_correction'])],
             'error_count' => ['nullable', 'integer', 'min:0', 'max:999'],
+            'prompt_count' => ['nullable', 'integer', 'min:0', 'max:999'],
+            'self_correction_count' => ['nullable', 'integer', 'min:0', 'max:999'],
             'assistance_level' => ['required', Rule::in(['none','little','several','much'])],
             'follow_up' => ['nullable', 'string', 'max:190'],
-            'review_recommendation' => ['nullable', 'string', 'max:80'],
+            'review_recommendation' => ['nullable', 'string', 'max:190'],
+            'next_review_date' => ['nullable', 'date', 'after_or_equal:today'],
             'teacher_notes' => ['nullable', 'string'],
+            'error_categories' => ['nullable', 'array'],
+            'error_categories.*' => ['string', 'max:50'],
+            'error_ayah' => ['nullable', 'integer', 'min:1'],
+            'error_note' => ['nullable', 'string', 'max:1000'],
         ]);
         $this->authorizeStudent($meeting, (int) $data['student_id']);
         $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
@@ -184,14 +215,35 @@ class MeetingController extends Controller
             ->whereIn('status', ['active','in_progress','strengthening','paused'])
             ->latest()->first();
 
+        $cycle = $this->tahfizh->resolveCycle(
+            (int) $meeting->institution_id, (int) $data['student_id'], $request->user()->teacher, $target,
+            in_array($data['record_type'], ['tasmi','exam'], true) ? $data['record_type'] : 'new_memorization',
+            match ($data['delivery_mode']) {
+                'talaqqi' => 'talaqqi',
+                'home_submission' => 'mixed',
+                'group_tasmi' => 'teach_back',
+                default => 'reading_repetition',
+            },
+        );
+        $recordData = $data;
+        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note']);
         $record = MemorizationRecord::create([
-            ...$data,
+            ...$recordData,
             'memorization_target_id' => $target?->id,
+            'learning_cycle_id' => $cycle->id,
             'institution_id' => $meeting->institution_id,
             'meeting_id' => $meeting->id,
             'teacher_id' => $request->user()->teacher->id,
             'recorded_at' => now(),
         ]);
+
+        $this->tahfizh->applyMemorizationOutcome($cycle, $record);
+        $this->tahfizh->scheduleReviewFromMemorization($record, $request->user()->teacher);
+        $this->tahfizh->recordErrors(
+            'memorization', $record->id, (int) $meeting->institution_id, (int) $data['student_id'],
+            (int) $request->user()->teacher->id, (int) $meeting->id, $data['error_categories'] ?? [],
+            $data['error_ayah'] ?? null, $data['error_note'] ?? null,
+        );
 
         if ($target) {
             $status = match ($data['result']) {
@@ -212,6 +264,7 @@ class MeetingController extends Controller
         $this->authorizeMeeting($request, $meeting);
         $data = $request->validate([
             'student_id' => ['required', 'exists:students,id'],
+            'review_plan_id' => ['nullable', 'exists:memorization_review_plans,id'],
             'murajaah_type' => ['required', Rule::in(['scheduled','random_recall','continuation','tasmi','home'])],
             'surah_id' => ['required', 'exists:quran_surahs,id'],
             'start_verse' => ['required', 'integer', 'min:1'],
@@ -219,20 +272,34 @@ class MeetingController extends Controller
             'result' => ['required', Rule::in(['maintained','strengthening_needed','reactivation_needed'])],
             'strength_status' => ['nullable', Rule::in(['strong','fair','weak','recall_needed'])],
             'assistance_level' => ['required', Rule::in(['none','little','several','much'])],
+            'prompt_count' => ['nullable', 'integer', 'min:0', 'max:999'],
+            'self_correction_count' => ['nullable', 'integer', 'min:0', 'max:999'],
             'next_review_date' => ['nullable', 'date', 'after_or_equal:today'],
-            'review_recommendation' => ['nullable', 'string', 'max:80'],
+            'review_recommendation' => ['nullable', 'string', 'max:190'],
             'teacher_notes' => ['nullable', 'string'],
+            'error_categories' => ['nullable', 'array'],
+            'error_categories.*' => ['string', 'max:50'],
+            'error_ayah' => ['nullable', 'integer', 'min:1'],
+            'error_note' => ['nullable', 'string', 'max:1000'],
         ]);
         $this->authorizeStudent($meeting, (int) $data['student_id']);
         $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
 
-        $record = MurajaahRecord::create([
-            ...$data,
-            'institution_id' => $meeting->institution_id,
-            'meeting_id' => $meeting->id,
-            'teacher_id' => $request->user()->teacher->id,
-            'recorded_at' => now(),
-        ]);
+        $reviewPlan = null;
+        if (! empty($data['review_plan_id'])) {
+            $reviewPlan = MemorizationReviewPlan::query()
+                ->where('institution_id', $meeting->institution_id)
+                ->where('student_id', $data['student_id'])
+                ->where('status', 'scheduled')
+                ->findOrFail($data['review_plan_id']);
+            abort_if(
+                (int) $reviewPlan->surah_id !== (int) $data['surah_id']
+                || (int) $reviewPlan->start_verse !== (int) $data['start_verse']
+                || (int) $reviewPlan->end_verse !== (int) $data['end_verse'],
+                422,
+                'Jadwal Murāja‘ah yang dipilih tidak sama dengan rentang ayat yang dicatat.',
+            );
+        }
 
         $target = MemorizationTarget::where('institution_id', $meeting->institution_id)
             ->where('student_id', $data['student_id'])
@@ -241,6 +308,28 @@ class MeetingController extends Controller
             ->where('end_verse', $data['end_verse'])
             ->whereIn('status', ['active','in_progress','strengthening','paused'])
             ->latest()->first();
+        $cycle = $this->tahfizh->resolveCycle(
+            (int) $meeting->institution_id, (int) $data['student_id'], $request->user()->teacher, $target, 'murajaah', 'reading_repetition'
+        );
+        $recordData = $data;
+        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note']);
+        $record = MurajaahRecord::create([
+            ...$recordData,
+            'learning_cycle_id' => $cycle->id,
+            'review_plan_id' => $reviewPlan?->id,
+            'institution_id' => $meeting->institution_id,
+            'meeting_id' => $meeting->id,
+            'teacher_id' => $request->user()->teacher->id,
+            'recorded_at' => now(),
+        ]);
+        $this->tahfizh->completeReviewPlan($reviewPlan, $record);
+        $this->tahfizh->scheduleNextReview($record, $request->user()->teacher);
+        $this->tahfizh->applyMurajaahOutcome($cycle, $record);
+        $this->tahfizh->recordErrors(
+            'murajaah', $record->id, (int) $meeting->institution_id, (int) $data['student_id'],
+            (int) $request->user()->teacher->id, (int) $meeting->id, $data['error_categories'] ?? [],
+            $data['error_ayah'] ?? null, $data['error_note'] ?? null,
+        );
 
         if ($target && in_array($target->target_type, ['murajaah','initial_repetition'], true)) {
             $status = match ($data['result']) {

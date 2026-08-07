@@ -53,13 +53,37 @@ class RoadmapStatusService
             3 => $this->phase(
                 3,
                 'Tahfizh Learning Engine',
-                'Tahsīn, hafalan baru, murāja‘ah, target, talaqqi/tasmi‘, bantuan guru, preset audio dan histori penjagaan.',
-                $this->tableCriteria([
+                'Tahsīn, hafalan baru, murāja‘ah, target, siklus belajar, talaqqi/tasmi‘, fokus koreksi, jadwal penjagaan dan alur guru–wali.',
+                array_merge($this->tableCriteria([
                     'tahsin_records', 'memorization_records', 'murajaah_records', 'memorization_targets',
+                    'tahfizh_learning_cycles', 'memorization_review_plans', 'quran_learning_error_items',
                     'quran_practice_presets', 'quran_practice_sessions', 'meetings', 'attendance_records',
+                ]), [[
+                    'label' => 'Setoran menyimpan cara penyampaian dan jadwal review',
+                    'passed' => Schema::hasColumn('memorization_records', 'delivery_mode')
+                        && Schema::hasColumn('memorization_records', 'next_review_date')
+                        && Schema::hasColumn('memorization_records', 'learning_cycle_id'),
+                ], [
+                    'label' => 'Murāja‘ah terhubung dengan jadwal penjagaan',
+                    'passed' => Schema::hasColumn('murajaah_records', 'review_plan_id')
+                        && Schema::hasColumn('murajaah_records', 'learning_cycle_id'),
+                ], [
+                    'label' => 'Mesin siklus dan progres Tahfizh tersedia',
+                    'passed' => class_exists(\App\Services\TahfizhLearningService::class)
+                        && class_exists(\App\Services\TahfizhProgressService::class),
+                ], [
+                    'label' => 'Dashboard perjalanan Tahfizh guru tersedia',
+                    'passed' => is_file(resource_path('views/teacher/tahfizh/index.blade.php'))
+                        && is_file(resource_path('views/teacher/tahfizh/student.blade.php')),
+                ], [
+                    'label' => 'Ringkasan penjagaan tersedia untuk wali',
+                    'passed' => is_file(resource_path('views/guardian/child.blade.php')),
+                ]]),
+                $this->manualCriteria($institutionId, [
+                    'phase3_teacher_flow', 'phase3_guardian_flow', 'phase3_talaqqi_tasmi',
+                    'phase3_review_followup', 'phase3_mobile_workflow',
                 ]),
-                $this->manualCriteria($institutionId, ['learning_teacher', 'learning_guardian']),
-                'Lengkapi workflow talaqqi/tasmi‘ dan uji alur guru–wali pada data nyata.',
+                'Uji alur guru–wali pada data nyata: talaqqi/tasmi‘, setoran, fokus koreksi, jadwal Murāja‘ah, tindak lanjut dan mobile.',
             ),
             4 => $this->phase(
                 4,

@@ -13,6 +13,7 @@ use App\Models\QuranRubu;
 use App\Models\QuranSurah;
 use App\Models\Student;
 use App\Models\TeacherAssignment;
+use App\Services\TahfizhLearningService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -21,6 +22,10 @@ use Illuminate\View\View;
 
 class LearningPlanController extends Controller
 {
+    public function __construct(private readonly TahfizhLearningService $tahfizh)
+    {
+    }
+
     public function index(Request $request): View
     {
         $teacher = $request->user()->teacher;
@@ -62,14 +67,25 @@ class LearningPlanController extends Controller
         $this->authorizeStudent($request, (int) $data['student_id']);
         $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
 
-        MemorizationTarget::create([
+        $target = MemorizationTarget::create([
             ...$data,
             'institution_id' => $request->user()->institution_id,
             'academic_year_id' => $activeYear->id,
             'assigned_by_teacher_id' => $teacher->id,
             'status' => 'active',
         ]);
-        return back()->with('success', 'Target hafalan berhasil diberikan.');
+        $cycle = $this->tahfizh->resolveCycle(
+            (int) $request->user()->institution_id,
+            (int) $data['student_id'],
+            $teacher,
+            $target,
+            $data['target_type'],
+            'talaqqi',
+        );
+        if (! empty($data['notes'])) {
+            $cycle->update(['teacher_guidance' => $data['notes']]);
+        }
+        return back()->with('success', 'Target hafalan berhasil diberikan dan siklus belajar telah disiapkan.');
     }
 
     public function updateTarget(Request $request, MemorizationTarget $target): RedirectResponse

@@ -1,0 +1,19 @@
+SULLAMUL HIFZ v2.5.0 — DEPLOY CEPAT
+
+1. Backup database + persistent storage.
+2. Upload ISI folder sullamulhifz-v2.5.0 ke root repository GitHub.
+3. Commit ke main.
+4. Coolify -> Redeploy.
+5. Tunggu "Rolling update completed".
+6. Buka app.sullamulhifz.or.id lalu login guru.
+7. Menu baru: Perjalanan Tahfizh.
+8. Jalankan validasi Fase 3 sebelum menandai checklist 100%.
+
+Environment utama tetap:
+AUTO_MIGRATE=true
+BOOTSTRAP_PRODUCTION=false
+APP_DEBUG=false
+SESSION_DOMAIN=.sullamulhifz.or.id
+SESSION_SECURE_COOKIE=true
+
+Tidak ada environment variable baru yang wajib untuk v2.5.0.

@@ -9,6 +9,7 @@ use App\Models\AcademyRecommendation;
 use App\Models\Student;
 use App\Models\MediaAsset;
 use App\Services\MediaStorageService;
+use App\Services\TahfizhProgressService;
 use App\Support\Feature;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -19,8 +20,10 @@ use Illuminate\View\View;
 
 class PortalController extends Controller
 {
-    public function __construct(private readonly MediaStorageService $media)
-    {
+    public function __construct(
+        private readonly MediaStorageService $media,
+        private readonly TahfizhProgressService $tahfizhProgress,
+    ) {
     }
     public function child(Request $request, Student $student): View
     {
@@ -76,6 +79,20 @@ class PortalController extends Controller
             'completed_tasks' => \App\Models\AssignmentRecipient::where('student_id',$student->id)->where('status','completed')->whereBetween('completed_at',[$monthStart,$monthEnd])->count(),
         ];
 
+        $tahfizhSummary = $this->tahfizhProgress->student($student);
+        $tahfizhCycles = \App\Models\TahfizhLearningCycle::query()
+            ->with('target.surah')
+            ->where('institution_id', $institutionId)
+            ->where('student_id', $student->id)
+            ->whereIn('status', ['preparing','ready','submitted','strengthening','paused'])
+            ->latest()->limit(8)->get();
+        $reviewPlans = \App\Models\MemorizationReviewPlan::query()
+            ->with('surah')
+            ->where('institution_id', $institutionId)
+            ->where('student_id', $student->id)
+            ->where('status', 'scheduled')
+            ->orderBy('review_date')->limit(8)->get();
+
         $academyRecommendations = $academyEnabled
             ? AcademyRecommendation::query()
                 ->with(['lesson.module.program','creator'])
@@ -95,6 +112,9 @@ class PortalController extends Controller
             'academyEnabled',
             'quranEnabled',
             'reportCardsEnabled',
+            'tahfizhSummary',
+            'tahfizhCycles',
+            'reviewPlans',
         ));
     }
 

@@ -49,6 +49,9 @@ class Student extends Model
     public function enrollments(): HasMany { return $this->hasMany(ClassEnrollment::class); }
     public function groupMemberships(): HasMany { return $this->hasMany(GroupMembership::class); }
     public function currentEnrollment() { return $this->hasOne(ClassEnrollment::class)->where('status', 'active')->latestOfMany(); }
+    public function tahfizhLearningCycles(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(TahfizhLearningCycle::class); }
+    public function memorizationReviewPlans(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(MemorizationReviewPlan::class); }
+    public function quranLearningErrors(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(QuranLearningErrorItem::class); }
     public function memorizationRecords(): HasMany { return $this->hasMany(MemorizationRecord::class); }
     public function murajaahRecords(): HasMany { return $this->hasMany(MurajaahRecord::class); }
     public function tahsinRecords(): HasMany { return $this->hasMany(TahsinRecord::class); }

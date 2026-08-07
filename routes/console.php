@@ -21,7 +21,7 @@ use App\Services\QuranCorpusSyncService;
 use App\Services\RoadmapStatusService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v2.4.0 — Full Qur’an & Mushaf Engine.');
+    $this->info('Sullamul Hifz v2.5.0 — Tahfizh Learning Engine.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -276,6 +276,44 @@ Artisan::command('sullam:verify-quran-learning', function (): int {
     // Struktur valid berarti container boleh tetap hidup. Kelengkapan data dilaporkan lewat roadmap, bukan mematikan aplikasi.
     return 0;
 })->purpose('Memeriksa korpus 30 juz dan dua sumber qari Full Qur’an v2.4.0');
+
+Artisan::command('sullam:verify-tahfizh', function (): int {
+    $required = [
+        'tahsin_records','memorization_records','murajaah_records','memorization_targets',
+        'tahfizh_learning_cycles','memorization_review_plans','quran_learning_error_items',
+        'meetings','attendance_records',
+    ];
+    $missing = collect($required)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Struktur Tahfizh Learning Engine belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $columnsReady = Schema::hasColumn('memorization_records', 'delivery_mode')
+        && Schema::hasColumn('memorization_records', 'learning_cycle_id')
+        && Schema::hasColumn('memorization_records', 'next_review_date')
+        && Schema::hasColumn('murajaah_records', 'review_plan_id');
+
+    $institutions = Institution::query()->where('status', 'active')->get();
+    $rows = [];
+    foreach ($institutions as $institution) {
+        $rows[] = [
+            $institution->name,
+            \App\Models\TahfizhLearningCycle::query()->where('institution_id', $institution->id)->count(),
+            \App\Models\MemorizationReviewPlan::query()->where('institution_id', $institution->id)->where('status', 'scheduled')->count(),
+            \App\Models\QuranLearningErrorItem::query()->where('institution_id', $institution->id)->whereNull('resolved_at')->count(),
+            \App\Models\MemorizationRecord::query()->where('institution_id', $institution->id)->count(),
+            \App\Models\MurajaahRecord::query()->where('institution_id', $institution->id)->count(),
+        ];
+    }
+    $this->table(['Lembaga','Siklus','Review terjadwal','Fokus koreksi','Setoran','Murāja‘ah'], $rows);
+    if (! $columnsReady) {
+        $this->error('Kolom penghubung siklus/jadwal Tahfizh belum lengkap.');
+        return 1;
+    }
+    $this->info('Tahfizh Learning Engine v2.5.0 siap untuk validasi guru–wali. Implementasi tidak dianggap 100% fase sampai launch checks Fase 3 selesai.');
+    return 0;
+})->purpose('Memeriksa fondasi siklus Tahfizh, setoran, Murāja‘ah, fokus koreksi dan jadwal penjagaan v2.5.0');
 
 Artisan::command('sullam:roadmap-status {--institution=}', function (): int {
     $query = Institution::query()->where('status', 'active');

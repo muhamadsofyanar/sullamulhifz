@@ -1,0 +1,50 @@
+Sullamul Hifz v2.5.0 — Changed Files vs v2.4.1
+
+Added (18):
+  + DEPLOY-QUICK-V2.5.0.txt
+  + UPGRADE-V2.5.0.md
+  + app/Http/Controllers/Teacher/TahfizhController.php
+  + app/Models/MemorizationReviewPlan.php
+  + app/Models/QuranLearningErrorItem.php
+  + app/Models/TahfizhLearningCycle.php
+  + app/Services/TahfizhLearningService.php
+  + app/Services/TahfizhProgressService.php
+  + database/migrations/2026_08_07_001300_tahfizh_learning_engine_v250.php
+  + database/seeders/TahfizhLearningEngineV250Seeder.php
+  + docs/PHASE-03-TAHFIZH-LEARNING-V2.5.0.md
+  + docs/ROADMAP-10-PHASES-V2.5.0.md
+  + docs/releases/v2.5.0.md
+  + public/css/app-v250.css
+  + resources/views/teacher/tahfizh/index.blade.php
+  + resources/views/teacher/tahfizh/student.blade.php
+  + scripts/container-start-v2.5.0.sh
+  + tests/Feature/TahfizhLearningEngineV250Test.php
+
+Changed (25):
+  * CHANGELOG.md
+  * Dockerfile
+  * README.md
+  * RELEASE
+  * START-HERE.md
+  * app/Http/Controllers/Admin/ReportController.php
+  * app/Http/Controllers/Guardian/PortalController.php
+  * app/Http/Controllers/Teacher/LearningPlanController.php
+  * app/Http/Controllers/Teacher/MeetingController.php
+  * app/Models/MemorizationRecord.php
+  * app/Models/MemorizationTarget.php
+  * app/Models/MurajaahRecord.php
+  * app/Models/Student.php
+  * app/Services/RoadmapStatusService.php
+  * database/seeders/DatabaseSeeder.php
+  * docs/CURRENT-STATE.md
+  * docs/ROADMAP.md
+  * public/release.txt
+  * public/service-worker.js
+  * resources/views/guardian/child.blade.php
+  * resources/views/layouts/app.blade.php
+  * resources/views/teacher/daily/index.blade.php
+  * resources/views/teacher/meetings/show.blade.php
+  * routes/console.php
+  * routes/web.php
+
+Removed (0):

@@ -2,7 +2,7 @@
 @section('content')
 <div class="hero launch-hero">
     <div><span class="eyebrow">OPERASIONAL PEMBELAJARAN</span><h1>Hari ini bersama {{ $teacher->nickname ?: $teacher->full_name }}</h1><p>Buka pertemuan, lengkapi absensi, catat pembelajaran, lalu bagikan ringkasan kepada wali.</p></div>
-    <a class="button primary" href="{{ route('teacher.assignments.create') }}">+ Tugas Rumah</a>
+    <div class="actions"><a class="button secondary" href="{{ route('teacher.tahfizh.index') }}">Perjalanan Tahfizh</a><a class="button primary" href="{{ route('teacher.assignments.create') }}">+ Tugas Rumah</a></div>
 </div>
 
 <div class="stats-grid four">
