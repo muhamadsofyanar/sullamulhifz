@@ -1,3 +1,8 @@
+# v2.0.2 — Academy View Hotfix
+
+- Memperbaiki ParseError pada halaman Kelola Academy.
+- Tidak ada perubahan database.
+
 ## v2.0.1 — Premium Mobile UX & Academy Domain
 
 - PWA mobile diperhalus menjadi tampilan modern, eksklusif, dan lebih ramah pengguna berusia lanjut.
