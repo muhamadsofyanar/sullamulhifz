@@ -17,6 +17,7 @@
             <label>Kata sandi<input type="password" name="password" required autocomplete="current-password"></label>
             <label class="check"><input type="checkbox" name="remember" value="1"> Ingat saya</label>
             <button class="button primary wide" type="submit">Masuk</button>
+            <a class="text-link center" href="{{ route('password.request') }}">Lupa kata sandi?</a>
         </form>
         <p class="auth-note">Pembinaan berlangsung di dunia nyata. Aplikasi menjaga jejak, komunikasi, dan kesinambungannya.</p>
         <p class="auth-back"><a href="{{ config('sullam.public_url') ?: route('public.home') }}">← Kembali ke website utama</a></p>

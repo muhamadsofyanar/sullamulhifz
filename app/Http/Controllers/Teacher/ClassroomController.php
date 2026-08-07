@@ -16,7 +16,10 @@ class ClassroomController extends Controller
         $teacher=$request->user()->teacher;
         abort_unless($teacher,403);
         $assignments=TeacherAssignment::with(['schoolClass.level','schoolClass.activeEnrollments','learningGroup.program','learningGroup.activeMemberships','program'])
-            ->where('teacher_id',$teacher->id)->where('status','active')->get();
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('teacher_id', $teacher->id)
+            ->currentlyActive()
+            ->get();
         return view('teacher.classrooms.index',compact('assignments','teacher'));
     }
 
@@ -38,13 +41,23 @@ class ClassroomController extends Controller
     {
         $teacher=$request->user()->teacher;
         abort_unless($teacher && $class->institution_id===$request->user()->institution_id,404);
-        return TeacherAssignment::where('teacher_id',$teacher->id)->where('class_id',$class->id)->where('status','active')->firstOrFail();
+        return TeacherAssignment::query()
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('teacher_id', $teacher->id)
+            ->where('class_id', $class->id)
+            ->currentlyActive()
+            ->firstOrFail();
     }
 
     public static function groupAssignment(Request $request, LearningGroup $group): TeacherAssignment
     {
         $teacher=$request->user()->teacher;
         abort_unless($teacher && $group->institution_id===$request->user()->institution_id,404);
-        return TeacherAssignment::where('teacher_id',$teacher->id)->where('learning_group_id',$group->id)->where('status','active')->firstOrFail();
+        return TeacherAssignment::query()
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('teacher_id', $teacher->id)
+            ->where('learning_group_id', $group->id)
+            ->currentlyActive()
+            ->firstOrFail();
     }
 }

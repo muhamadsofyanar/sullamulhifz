@@ -34,17 +34,39 @@ class AcademyRecommendationController extends Controller
         $teacher=$request->user()->teacher; abort_unless($teacher,403);
         $data=$request->validate(['student_id'=>['required','integer','exists:students,id'],'academy_lesson_id'=>['required','integer','exists:academy_lessons,id'],'message'=>['nullable','string','max:1000']]);
         $students=$this->students($teacher->id,$request->user()->institution_id); abort_unless($students->contains('id',(int)$data['student_id']),403);
-        $lesson=AcademyLesson::with('module.program')->findOrFail($data['academy_lesson_id']);
-        abort_unless((int)$lesson->module->program->institution_id===(int)$request->user()->institution_id && in_array($lesson->module->program->audience,['guardian','all'],true),403);
+        $lesson = AcademyLesson::with('module.program')->findOrFail($data['academy_lesson_id']);
+        abort_unless(
+            $lesson->status === 'published'
+            && $lesson->module?->status === 'published'
+            && (int) $lesson->module?->program?->institution_id === (int) $request->user()->institution_id
+            && $lesson->module?->program?->status === 'published'
+            && in_array($lesson->module?->program?->audience, ['guardian', 'all'], true),
+            403,
+        );
         AcademyRecommendation::create([...$data,'institution_id'=>$request->user()->institution_id,'created_by_user_id'=>$request->user()->id,'status'=>'active','recommended_at'=>now()]);
         return back()->with('success','Materi Academy sudah direkomendasikan kepada wali santri.');
     }
 
     private function students(int $teacherId,int $institutionId)
     {
-        $assignments=TeacherAssignment::where('teacher_id',$teacherId)->where('status','active')->get();
-        $ids=ClassEnrollment::whereIn('class_id',$assignments->pluck('class_id')->filter())->where('status','active')->pluck('student_id')
-            ->merge(GroupMembership::whereIn('learning_group_id',$assignments->pluck('learning_group_id')->filter())->where('status','active')->pluck('student_id'))->unique();
+        $assignments = TeacherAssignment::query()
+            ->where('institution_id', $institutionId)
+            ->where('teacher_id', $teacherId)
+            ->currentlyActive()
+            ->get();
+        $ids = ClassEnrollment::query()
+            ->whereIn('class_id', $assignments->pluck('class_id')->filter())
+            ->where('status', 'active')
+            ->where(fn ($query) => $query->whereNull('ended_at')->orWhereDate('ended_at', '>=', today()))
+            ->pluck('student_id')
+            ->merge(
+                GroupMembership::query()
+                    ->whereIn('learning_group_id', $assignments->pluck('learning_group_id')->filter())
+                    ->where('status', 'active')
+                    ->where(fn ($query) => $query->whereNull('ended_at')->orWhereDate('ended_at', '>=', today()))
+                    ->pluck('student_id')
+            )
+            ->unique();
         return Student::where('institution_id',$institutionId)->whereIn('id',$ids)->where('status','active')->orderBy('full_name')->get();
     }
 }

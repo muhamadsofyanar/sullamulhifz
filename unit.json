@@ -4,16 +4,26 @@
       "pass": "routes",
       "forwarded": {
         "protocol": "X-Forwarded-Proto",
-        "source": ["0.0.0.0/0"]
+        "source": [
+          "127.0.0.1",
+          "10.0.0.0/8",
+          "172.16.0.0/12",
+          "192.168.0.0/16",
+          "100.64.0.0/10"
+        ]
       }
     }
   },
   "routes": [
     {
-      "match": { "uri": "!/index.php" },
+      "match": {
+        "uri": "!/index.php"
+      },
       "action": {
         "share": "/var/www/html/public$uri",
-        "fallback": { "pass": "applications/laravel" }
+        "fallback": {
+          "pass": "applications/laravel"
+        }
       }
     }
   ],

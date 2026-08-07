@@ -44,10 +44,10 @@
                     <p>{{ $item->home_follow_up }}</p>
                 </div>
             @endif
-            @if ($item->media_url || $item->worksheet_path)
+            @if ($item->media_url || $item->worksheet_media_id || $item->worksheet_path)
                 <div class="form-actions">
                     @if($item->media_url)<a class="button secondary small" href="{{ $item->media_url }}" target="_blank" rel="noopener">Buka audio/video</a>@endif
-                    @if($item->worksheet_path)<a class="button secondary small" href="{{ asset('storage/'.$item->worksheet_path) }}" target="_blank">Lembar aktivitas</a>@endif
+                    @if($item->worksheet_media_id || $item->worksheet_path)<a class="button secondary small" href="{{ route('media.friday',$item) }}" target="_blank" rel="noopener">Lembar aktivitas</a>@endif
                 </div>
             @endif
         </article>

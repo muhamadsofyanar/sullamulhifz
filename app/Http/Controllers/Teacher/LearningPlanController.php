@@ -31,13 +31,14 @@ class LearningPlanController extends Controller
         return view('teacher.learning-plan.index', [
             'teacher' => $teacher,
             'activeYear' => $activeYear,
-            'students' => Student::with('currentEnrollment.schoolClass')->whereIn('id', $studentIds)->orderBy('full_name')->get(),
+            'students' => Student::with('currentEnrollment.schoolClass')->where('institution_id', $request->user()->institution_id)->whereIn('id', $studentIds)->orderBy('full_name')->get(),
             'rubus' => QuranRubu::where('status', 'active')->orderBy('rubu_number')->get(),
             'surahs' => QuranSurah::whereBetween('id', [78,114])->orderByDesc('id')->get(),
             'marhalah' => MarhalahType::where('status', 'active')->orderBy('sequence')->get(),
             'targets' => MemorizationTarget::with(['student.currentEnrollment.schoolClass','rubu','surah','marhalah'])
+                ->where('institution_id', $request->user()->institution_id)
                 ->whereIn('student_id', $studentIds)->latest()->limit(60)->get(),
-            'observations' => LearningObservation::with('student')->where('teacher_id', $teacher->id)->latest('observed_at')->limit(30)->get(),
+            'observations' => LearningObservation::with('student')->where('institution_id', $request->user()->institution_id)->where('teacher_id', $teacher->id)->latest('observed_at')->limit(30)->get(),
         ]);
     }
 
@@ -73,7 +74,8 @@ class LearningPlanController extends Controller
 
     public function updateTarget(Request $request, MemorizationTarget $target): RedirectResponse
     {
-        $this->authorizeStudent($request, $target->student_id);
+        abort_unless((int) $target->institution_id === (int) $request->user()->institution_id, 404);
+        $this->authorizeStudent($request, (int) $target->student_id);
         $data = $request->validate([
             'status' => ['required', Rule::in(['active','in_progress','strengthening','completed','paused','cancelled'])],
             'notes' => ['nullable','string','max:2000'],
@@ -114,12 +116,28 @@ class LearningPlanController extends Controller
     {
         $teacher = $request->user()->teacher;
         abort_unless($teacher, 403);
-        $assignments = TeacherAssignment::where('teacher_id', $teacher->id)->where('status', 'active')->get();
+        $assignments = TeacherAssignment::query()
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('teacher_id', $teacher->id)
+            ->where('status', 'active')
+            ->where(function ($query): void {
+                $query->whereNull('valid_from')->orWhereDate('valid_from', '<=', today());
+            })
+            ->where(function ($query): void {
+                $query->whereNull('valid_until')->orWhereDate('valid_until', '>=', today());
+            })
+            ->get();
         $classIds = $assignments->pluck('class_id')->filter();
         $groupIds = $assignments->pluck('learning_group_id')->filter();
 
-        $fromClasses = ClassEnrollment::whereIn('class_id', $classIds)->where('status', 'active')->pluck('student_id');
-        $fromGroups = GroupMembership::whereIn('learning_group_id', $groupIds)->where('status', 'active')->pluck('student_id');
+        $fromClasses = ClassEnrollment::query()
+            ->whereIn('class_id', $classIds)
+            ->where('status', 'active')
+            ->pluck('student_id');
+        $fromGroups = GroupMembership::query()
+            ->whereIn('learning_group_id', $groupIds)
+            ->where('status', 'active')
+            ->pluck('student_id');
         return $fromClasses->merge($fromGroups)->unique()->values();
     }
 

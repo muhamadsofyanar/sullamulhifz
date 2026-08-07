@@ -10,7 +10,7 @@ RUN composer install \
 FROM unit:1.34.2-php8.4
 
 LABEL org.opencontainers.image.title="Sullamul Hifz" \
-      org.opencontainers.image.version="2.0.4" \
+      org.opencontainers.image.version="2.1.0" \
       org.opencontainers.image.description="Platform pembinaan Al-Quran Sullamul Hifz"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -50,4 +50,4 @@ RUN mkdir -p \
     && chmod +x scripts/*.sh
 
 EXPOSE 8000
-CMD ["sh", "scripts/container-start-v2.0.4.sh"]
+CMD ["sh", "scripts/container-start-v2.1.0.sh"]

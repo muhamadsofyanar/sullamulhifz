@@ -18,20 +18,23 @@ class DailyOperationsController extends Controller
         abort_unless($teacher, 403, 'Profil guru belum terhubung.');
 
         $assignments = TeacherAssignment::with(['schoolClass', 'learningGroup', 'program'])
+            ->where('institution_id', $request->user()->institution_id)
             ->where('teacher_id', $teacher->id)
-            ->where('status', 'active')
+            ->currentlyActive()
             ->get();
 
         $targetClassIds = $assignments->pluck('class_id')->filter();
         $targetGroupIds = $assignments->pluck('learning_group_id')->filter();
 
         $todayMeetings = Meeting::with(['schoolClass', 'learningGroup', 'attendanceRecords'])
+            ->where('institution_id', $request->user()->institution_id)
             ->where('teacher_id', $teacher->id)
             ->whereDate('meeting_date', today())
             ->latest('started_at')
             ->get();
 
         $openMeetings = Meeting::with(['schoolClass', 'learningGroup'])
+            ->where('institution_id', $request->user()->institution_id)
             ->where('teacher_id', $teacher->id)
             ->whereIn('status', ['draft', 'ongoing'])
             ->latest('meeting_date')
@@ -50,7 +53,9 @@ class DailyOperationsController extends Controller
             ->get();
 
         $pendingSubmissions = AssignmentRecipient::with(['assignment', 'student'])
-            ->whereHas('assignment', fn ($query) => $query->where('created_by_teacher_id', $teacher->id))
+            ->whereHas('assignment', fn ($query) => $query
+                ->where('institution_id', $request->user()->institution_id)
+                ->where('created_by_teacher_id', $teacher->id))
             ->whereIn('status', ['submitted', 'reviewing', 'revision_needed'])
             ->latest()
             ->limit(8)

@@ -8,7 +8,6 @@ use App\Models\AcademyProgram;
 use App\Models\AcademyRecommendation;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Collection;
 use Illuminate\View\View;
 
 class AcademyController extends Controller
@@ -118,10 +117,19 @@ class AcademyController extends Controller
     private function audiencesFor(Request $request): array
     {
         $user = $request->user();
-        if ($user->hasAnyRole(['superadmin','institution_admin','head'])) return ['all','guardian','teacher','admin'];
-        if ($user->hasRole('teacher')) return ['all','teacher'];
-        if ($user->hasRole('guardian')) return ['all','guardian'];
-        return ['all'];
+        if ($user->hasAnyRole(['superadmin', 'institution_admin', 'head'])) {
+            return ['all', 'guardian', 'teacher', 'admin'];
+        }
+
+        $audiences = ['all'];
+        if ($user->hasRole('teacher')) {
+            $audiences[] = 'teacher';
+        }
+        if ($user->hasRole('guardian')) {
+            $audiences[] = 'guardian';
+        }
+
+        return array_values(array_unique($audiences));
     }
 
     private function authorizeProgram(Request $request, AcademyProgram $program): void

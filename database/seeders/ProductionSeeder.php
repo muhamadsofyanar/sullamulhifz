@@ -77,7 +77,7 @@ class ProductionSeeder extends Seeder
             $role->permissions()->sync($ids);
         }
 
-        $adminEmail = env('INITIAL_ADMIN_EMAIL', 'admin@sullamulhifz.id');
+        $adminEmail = env('INITIAL_ADMIN_EMAIL', 'admin@sullamulhifz.or.id');
         $admin = User::where('email', $adminEmail)->first();
         if (! $admin) {
             $admin = User::create([
@@ -85,7 +85,7 @@ class ProductionSeeder extends Seeder
                 'name' => env('INITIAL_ADMIN_NAME', 'Administrator TPA Al-Insyirah'),
                 'email' => $adminEmail,
                 'phone' => env('INITIAL_ADMIN_PHONE'),
-                'password' => Hash::make(env('INITIAL_ADMIN_PASSWORD', 'Ganti-Segera-2026!')),
+                'password' => Hash::make($this->requiredPassword('INITIAL_ADMIN_PASSWORD')),
                 'status' => 'active',
                 'must_change_password' => true,
                 'email_verified_at' => now(),
@@ -188,7 +188,7 @@ class ProductionSeeder extends Seeder
             QuranSurah::updateOrCreate(['id'=>$id], ['name_arabic'=>$arabic,'name_latin'=>$latin,'revelation_place'=>null,'verse_count'=>$verses,'sequence'=>$id]);
         }
 
-        if (filter_var(env('SEED_INITIAL_TPA_DATA', true), FILTER_VALIDATE_BOOL)) {
+        if (filter_var(env('SEED_INITIAL_TPA_DATA', false), FILTER_VALIDATE_BOOL)) {
             $this->call(InitialTpaDataSeeder::class);
         }
 
@@ -196,4 +196,23 @@ class ProductionSeeder extends Seeder
             $this->call(DemoDataSeeder::class);
         }
     }
+
+    private function requiredPassword(string $key): string
+    {
+        $password = (string) env($key, '');
+
+        if ($password === '') {
+            throw new \RuntimeException("{$key} wajib diisi ketika membuat akun awal. Akun yang sudah ada tidak diubah.");
+        }
+
+        if (strlen($password) < 12
+            || ! preg_match('/[A-Z]/', $password)
+            || ! preg_match('/[a-z]/', $password)
+            || ! preg_match('/[0-9]/', $password)) {
+            throw new \RuntimeException("{$key} minimal 12 karakter dan wajib memuat huruf besar, huruf kecil, serta angka.");
+        }
+
+        return $password;
+    }
+
 }

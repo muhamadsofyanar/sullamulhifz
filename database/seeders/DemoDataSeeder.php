@@ -15,19 +15,27 @@ use App\Models\TeacherAssignment;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
+use RuntimeException;
 
 class DemoDataSeeder extends Seeder
 {
     public function run(): void
     {
         $institution = Institution::where('code', env('INITIAL_INSTITUTION_CODE', 'ALINSYIRAH'))->firstOrFail();
-        $password = Hash::make('SullamDemo2026!');
+        $plainPassword = (string) env('DEMO_PASSWORD', '');
+        if ($plainPassword === '' || strlen($plainPassword) < 12
+            || ! preg_match('/[A-Z]/', $plainPassword)
+            || ! preg_match('/[a-z]/', $plainPassword)
+            || ! preg_match('/[0-9]/', $plainPassword)) {
+            throw new RuntimeException('DEMO_PASSWORD wajib diisi, minimal 12 karakter, serta memuat huruf besar, huruf kecil, dan angka.');
+        }
+        $password = Hash::make($plainPassword);
 
-        $teacherUser = User::updateOrCreate(['email'=>'guru.demo@sullamulhifz.id'], ['institution_id'=>$institution->id,'name'=>'Guru Demo','phone'=>'6281200000001','password'=>$password,'status'=>'active','email_verified_at'=>now()]);
+        $teacherUser = User::updateOrCreate(['email'=>'guru.demo@sullamulhifz.or.id'], ['institution_id'=>$institution->id,'name'=>'Guru Demo','phone'=>'6281200000001','password'=>$password,'status'=>'active','email_verified_at'=>now()]);
         $teacherUser->roles()->syncWithoutDetaching([Role::where('name','teacher')->firstOrFail()->id => ['institution_id'=>$institution->id,'status'=>'active']]);
         $teacher = Teacher::updateOrCreate(['user_id'=>$teacherUser->id], ['institution_id'=>$institution->id,'employee_code'=>'GURU-DEMO','full_name'=>'Guru Demo','nickname'=>'Ustadz Demo','phone'=>$teacherUser->phone,'email'=>$teacherUser->email,'joined_at'=>now()->toDateString(),'specialization'=>'Tahfizh','status'=>'active']);
 
-        $parentUser = User::updateOrCreate(['email'=>'wali.demo@sullamulhifz.id'], ['institution_id'=>$institution->id,'name'=>'Wali Demo','phone'=>'6281200000002','password'=>$password,'status'=>'active','email_verified_at'=>now()]);
+        $parentUser = User::updateOrCreate(['email'=>'wali.demo@sullamulhifz.or.id'], ['institution_id'=>$institution->id,'name'=>'Wali Demo','phone'=>'6281200000002','password'=>$password,'status'=>'active','email_verified_at'=>now()]);
         $parentUser->roles()->syncWithoutDetaching([Role::where('name','guardian')->firstOrFail()->id => ['institution_id'=>$institution->id,'status'=>'active']]);
         $guardian = Guardian::updateOrCreate(['user_id'=>$parentUser->id], ['institution_id'=>$institution->id,'full_name'=>'Wali Demo','phone'=>$parentUser->phone,'email'=>$parentUser->email,'status'=>'active']);
 

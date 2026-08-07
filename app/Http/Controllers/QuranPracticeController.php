@@ -37,8 +37,7 @@ class QuranPracticeController extends Controller
             ->with(['source', 'rubu', 'startSurah', 'endSurah'])
             ->where('institution_id', $institutionId)
             ->where('status', 'active')
-            ->when($request->user()->hasRole('teacher'), fn ($query) => $query->whereIn('audience', ['all', 'teacher']))
-            ->when($request->user()->hasRole('guardian'), fn ($query) => $query->whereIn('audience', ['all', 'guardian']))
+            ->whereIn('audience', $this->audiencesFor($request))
             ->orderByDesc('is_featured')
             ->orderBy('title')
             ->get();
@@ -103,7 +102,11 @@ class QuranPracticeController extends Controller
         $institutionId = (int) $request->user()->institution_id;
 
         if (! empty($data['preset_id'])) {
-            $preset = QuranPracticePreset::query()->where('institution_id', $institutionId)->findOrFail($data['preset_id']);
+            $preset = QuranPracticePreset::query()
+                ->where('institution_id', $institutionId)
+                ->where('status', 'active')
+                ->findOrFail($data['preset_id']);
+            $this->authorizePreset($request, $preset);
             $payload = $builder->fromPreset($preset, isset($data['source_id']) ? (int) $data['source_id'] : null);
         } elseif (! empty($data['target_id'])) {
             $target = MemorizationTarget::query()->with('surah')->where('institution_id', $institutionId)->findOrFail($data['target_id']);
@@ -154,9 +157,11 @@ class QuranPracticeController extends Controller
         }
 
         if (! empty($data['preset_id'])) {
-            QuranPracticePreset::query()
+            $preset = QuranPracticePreset::query()
                 ->where('institution_id', $request->user()->institution_id)
+                ->where('status', 'active')
                 ->findOrFail($data['preset_id']);
+            $this->authorizePreset($request, $preset);
         }
 
         $session = QuranPracticeSession::query()->create([
@@ -203,49 +208,82 @@ class QuranPracticeController extends Controller
                 ->get();
         }
 
-        if ($user->hasRole('guardian')) {
-            return $user->guardian?->students()
-                ->where('students.status', 'active')
-                ->orderBy('students.full_name')
-                ->get() ?? collect();
+        $studentIds = collect();
+
+        if ($user->hasRole('guardian') && $user->guardian) {
+            $studentIds = $studentIds->merge(
+                $user->guardian->students()
+                    ->where('students.institution_id', $user->institution_id)
+                    ->where('students.status', 'active')
+                    ->pluck('students.id')
+            );
         }
 
-        if ($user->hasRole('teacher')) {
-            $teacher = $user->teacher;
-            if (! $teacher) {
-                return collect();
-            }
-
+        if ($user->hasRole('teacher') && $user->teacher) {
             $assignments = TeacherAssignment::query()
-                ->where('teacher_id', $teacher->id)
+                ->where('institution_id', $user->institution_id)
+                ->where('teacher_id', $user->teacher->id)
                 ->where('status', 'active')
+                ->where(function ($query): void {
+                    $query->whereNull('valid_from')->orWhereDate('valid_from', '<=', today());
+                })
+                ->where(function ($query): void {
+                    $query->whereNull('valid_until')->orWhereDate('valid_until', '>=', today());
+                })
                 ->get();
 
-            $studentIds = ClassEnrollment::query()
-                ->whereIn('class_id', $assignments->pluck('class_id')->filter())
-                ->where('status', 'active')
-                ->pluck('student_id')
+            $studentIds = $studentIds
+                ->merge(
+                    ClassEnrollment::query()
+                        ->whereIn('class_id', $assignments->pluck('class_id')->filter())
+                        ->where('status', 'active')
+                        ->pluck('student_id')
+                )
                 ->merge(
                     GroupMembership::query()
                         ->whereIn('learning_group_id', $assignments->pluck('learning_group_id')->filter())
                         ->where('status', 'active')
                         ->pluck('student_id')
-                )
-                ->unique();
-
-            return Student::query()
-                ->where('institution_id', $user->institution_id)
-                ->whereIn('id', $studentIds)
-                ->where('status', 'active')
-                ->orderBy('full_name')
-                ->get();
+                );
         }
 
-        return collect();
+        return Student::query()
+            ->where('institution_id', $user->institution_id)
+            ->whereIn('id', $studentIds->unique()->values())
+            ->where('status', 'active')
+            ->orderBy('full_name')
+            ->get();
+    }
+
+    private function audiencesFor(Request $request): array
+    {
+        $user = $request->user();
+        if ($user->hasAnyRole(['superadmin', 'institution_admin', 'head'])) {
+            return ['all', 'teacher', 'guardian', 'admin'];
+        }
+
+        $audiences = ['all'];
+        if ($user->hasRole('teacher')) {
+            $audiences[] = 'teacher';
+        }
+        if ($user->hasRole('guardian')) {
+            $audiences[] = 'guardian';
+        }
+
+        return array_values(array_unique($audiences));
+    }
+
+    private function authorizePreset(Request $request, QuranPracticePreset $preset): void
+    {
+        abort_unless((int) $preset->institution_id === (int) $request->user()->institution_id, 404);
+        abort_unless($preset->status === 'active', 404);
+        abort_unless(in_array($preset->audience, $this->audiencesFor($request), true), 403);
     }
 
     private function authorizeTarget(Request $request, MemorizationTarget $target): void
     {
+        abort_unless((int) $target->institution_id === (int) $request->user()->institution_id, 404);
+
         if ($request->user()->hasAnyRole(['superadmin', 'institution_admin', 'head'])) {
             return;
         }

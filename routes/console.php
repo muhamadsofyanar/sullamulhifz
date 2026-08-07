@@ -14,10 +14,11 @@ use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Schedule;
 use App\Services\QuranAudioSyncService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v2.0.1 — Premium Mobile UX & Academy Domain.');
+    $this->info('Sullamul Hifz v2.1.0 — Unified Platform & Secure Media.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -26,6 +27,14 @@ Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int
 
     if (! $email || ! $password) {
         $this->error('Email atau password admin belum tersedia. Isi INITIAL_ADMIN_EMAIL dan INITIAL_ADMIN_PASSWORD.');
+        return 1;
+    }
+
+    if (strlen((string) $password) < 12
+        || ! preg_match('/[A-Z]/', (string) $password)
+        || ! preg_match('/[a-z]/', (string) $password)
+        || ! preg_match('/[0-9]/', (string) $password)) {
+        $this->error('Password admin minimal 12 karakter dan wajib memuat huruf besar, huruf kecil, serta angka.');
         return 1;
     }
 
@@ -302,3 +311,5 @@ Artisan::command('sullam:verify-academy', function (): int {
     return 0;
 })->purpose('Memeriksa struktur dan konten awal Family Learning & Academy v2.0.0');
 
+
+Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();

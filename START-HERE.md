@@ -1,47 +1,17 @@
-# START HERE — Sullamul Ḥifẓ
+# Mulai di Sini — Sullamul Ḥifẓ v2.1.0
 
-## Current launch candidate
+Rilis aktif: **v2.1.0 Unified Platform & Secure Media**.
 
-- Version: **v2.0.1 — Premium Mobile UX & Academy Domain**
-- Public website: `https://sullamulhifz.or.id`
-- Authenticated portal: `https://app.sullamulhifz.or.id`
-- Academy entry: `https://academy.sullamulhifz.or.id` → landing Academy / portal Academy
-- First implementation: **TPA Al-Insyirah**
-- Product status: **Launch Candidate**, not stable until mobile, Academy, audio, access isolation, and backup/restore checks pass.
+## Jalur tercepat
 
-## What is included
+1. Backup database dan persistent volume `storage` di Coolify.
+2. Baca `DEPLOY-QUICK-V2.1.0.txt` dan `UPGRADE-V2.1.0.md`.
+3. Ekstrak paket dan salin **isi folder proyek** ke root repository GitHub.
+4. Jangan mengunggah `.env`, dump database, atau isi storage produksi.
+5. Pastikan `APP_KEY` lama tetap dipakai, `AUTO_MIGRATE=true`, `BOOTSTRAP_PRODUCTION=false`, dan `APP_DEBUG=false`.
+6. Push ke branch yang dipakai Coolify, lalu redeploy satu kali.
+7. Tunggu log `Menjalankan NGINX Unit...`.
+8. Jalankan `scripts/smoke-test-v2.1.0.sh` dan uji login admin/guru/wali.
+9. Tambahkan Scheduled Task Coolify `php artisan schedule:run` setiap menit.
 
-- TPA operations and Academic Core
-- Quran Learning with Al-Husary and Al-Minshawi
-- Daily teacher workflow
-- Guardian portal and reporting
-- Parent Academy + Teacher Academy
-- Child → Quran practice → Academy recommendation → family follow-up flow
-- Mobile/PWA navigation
-- Premium mobile refinement v2.0.1
-- Launch-readiness checks and operational documentation
-
-## Read these first
-
-1. `UPGRADE-V2.0.1.md`
-2. `docs/V2-LAUNCH-CHECKLIST.md`
-3. `docs/ACADEMY-GUIDE.md`
-4. `docs/PWA-MOBILE-GUIDE.md`
-5. `docs/QURAN-PLAYER-V2.md`
-6. `docs/TEST-v2.0.0.md`
-7. `docs/ROLLBACK-v2.0.0.md`
-8. `docs/HANDOVER-NEXT-CHAT.md`
-
-## Production safety
-
-Never run on production:
-
-```text
-php artisan migrate:fresh
-php artisan db:wipe
-scripts/first-install.sh
-InitialTpaDataSeeder
-ProductionSeeder
-```
-
-Do not place child data, password lists, `APP_KEY`, `DB_URL`, or private seed keys in the public repository.
+Rilis ini tidak menjalankan `db:wipe` atau `migrate:fresh`. `ProductionSeeder` hanya dijalankan ketika `BOOTSTRAP_PRODUCTION=true`.

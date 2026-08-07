@@ -7,28 +7,43 @@ use App\Models\AssignmentRecipient;
 use App\Models\AssignmentSubmission;
 use App\Models\AcademyRecommendation;
 use App\Models\Student;
+use App\Models\MediaAsset;
+use App\Services\MediaStorageService;
+use App\Support\Feature;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\File;
 use Illuminate\View\View;
 
 class PortalController extends Controller
 {
+    public function __construct(private readonly MediaStorageService $media)
+    {
+    }
     public function child(Request $request, Student $student): View
     {
         $this->authorizeChild($request, $student);
         $monthStart = now()->startOfMonth();
         $monthEnd = now()->endOfMonth();
+        $institutionId = (int) $request->user()->institution_id;
+        $academyEnabled = Feature::enabled('parent_academy', $institutionId, true);
+        $quranEnabled = Feature::enabled('quran_audio', $institutionId, true);
+        $reportCardsEnabled = Feature::enabled('report_cards', $institutionId, true);
 
-        $student->load([
+        $relations = [
             'currentEnrollment.schoolClass',
             'attendanceRecords'=>fn($q)=>$q->with('meeting')->latest()->limit(30),
             'tahsinRecords'=>fn($q)=>$q->with('surah')->latest()->limit(20),
             'memorizationRecords'=>fn($q)=>$q->with(['surah','target'])->latest('recorded_at')->limit(20),
             'memorizationTargets'=>fn($q)=>$q->with(['rubu','surah','marhalah','academicYear'])->whereNotIn('status',['cancelled'])->latest()->limit(20),
             'murajaahRecords'=>fn($q)=>$q->with('surah')->latest('recorded_at')->limit(20),
-            'reportCards'=>fn($q)=>$q->with('academicYear','items')->where('status','published')->latest('published_at'),
-        ]);
+        ];
+        if ($reportCardsEnabled) {
+            $relations['reportCards'] = fn($q) => $q->with('academicYear','items')->where('status','published')->latest('published_at');
+        }
+        $student->load($relations);
 
         $monthAttendance = $student->attendanceRecords()
             ->whereHas('meeting', fn($q)=>$q->whereBetween('meeting_date',[$monthStart,$monthEnd]))
@@ -61,16 +76,26 @@ class PortalController extends Controller
             'completed_tasks' => \App\Models\AssignmentRecipient::where('student_id',$student->id)->where('status','completed')->whereBetween('completed_at',[$monthStart,$monthEnd])->count(),
         ];
 
-        $academyRecommendations = AcademyRecommendation::query()
-            ->with(['lesson.module.program','creator'])
-            ->where('institution_id', $request->user()->institution_id)
-            ->where('student_id', $student->id)
-            ->where('status', 'active')
-            ->latest('recommended_at')
-            ->limit(6)
-            ->get();
+        $academyRecommendations = $academyEnabled
+            ? AcademyRecommendation::query()
+                ->with(['lesson.module.program','creator'])
+                ->where('institution_id', $institutionId)
+                ->where('student_id', $student->id)
+                ->where('status', 'active')
+                ->latest('recommended_at')
+                ->limit(6)
+                ->get()
+            : collect();
 
-        return view('guardian.child',compact('student','publishedMeetings','monthlySummary','academyRecommendations'));
+        return view('guardian.child', compact(
+            'student',
+            'publishedMeetings',
+            'monthlySummary',
+            'academyRecommendations',
+            'academyEnabled',
+            'quranEnabled',
+            'reportCardsEnabled',
+        ));
     }
 
     public function tasks(Request $request): View
@@ -91,42 +116,79 @@ class PortalController extends Controller
 
     public function submit(Request $request, AssignmentRecipient $recipient): RedirectResponse
     {
-        $this->authorizeRecipient($request,$recipient);
+        $this->authorizeRecipient($request, $recipient);
         $recipient->loadMissing('assignment');
-        abort_if(in_array($recipient->status,['completed']),422,'Tugas sudah selesai.');
-        abort_if(! $recipient->assignment->allow_resubmission && $recipient->submissions()->exists(),422,'Tugas ini tidak menerima pengiriman ulang.');
-        $maxKb=config('sullam.upload_max_kb',25600);
-        $data=$request->validate([
-            'guardian_notes'=>['nullable','string','max:2000'],
-            'evidence'=>['nullable','file','max:'.$maxKb,'mimetypes:video/mp4,video/quicktime,audio/mpeg,audio/mp4,audio/wav,image/jpeg,image/png,image/webp'],
-            'text_evidence'=>['nullable','string','max:5000'],
-            'guardian_checklist_completed'=>['nullable','boolean'],
+        abort_if(in_array($recipient->status, ['completed'], true), 422, 'Tugas sudah selesai.');
+        abort_if(! $recipient->assignment->allow_resubmission && $recipient->submissions()->exists(), 422, 'Tugas ini tidak menerima pengiriman ulang.');
+
+        $maxKb = (int) config('sullam.upload_max_kb', 25600);
+        $data = $request->validate([
+            'guardian_notes' => ['nullable', 'string', 'max:2000'],
+            'evidence' => ['nullable', File::types(['jpg', 'jpeg', 'png', 'webp', 'mp3', 'm4a', 'wav', 'mp4', 'mov'])->max($maxKb)],
+            'text_evidence' => ['nullable', 'string', 'max:5000'],
+            'guardian_checklist_completed' => ['nullable', 'boolean'],
         ]);
 
-        $requested=collect($recipient->assignment->evidence_types ?: ['none']);
-        $fileType=null;
-        if($request->hasFile('evidence')){
-            $mime=(string)$request->file('evidence')->getMimeType();
-            $fileType=str_starts_with($mime,'video/')?'video':(str_starts_with($mime,'audio/')?'audio':(str_starts_with($mime,'image/')?'photo':null));
-            abort_unless($fileType && $requested->contains($fileType),422,'Jenis file tidak sesuai dengan bukti yang diminta guru.');
+        $requested = collect($recipient->assignment->evidence_types ?: ['none']);
+        $fileType = null;
+        if ($request->hasFile('evidence')) {
+            $mime = (string) $request->file('evidence')->getMimeType();
+            $fileType = str_starts_with($mime, 'video/')
+                ? 'video'
+                : (str_starts_with($mime, 'audio/') ? 'audio' : (str_starts_with($mime, 'image/') ? 'photo' : null));
+            abort_unless($fileType && $requested->contains($fileType), 422, 'Jenis file tidak sesuai dengan bukti yang diminta guru.');
         }
-        $hasMatchingEvidence=$fileType
-            || ($requested->contains('text') && filled($data['text_evidence']??null))
-            || ($requested->contains('guardian_checklist') && ((bool)($data['guardian_checklist_completed']??false) || filled($data['guardian_notes']??null)))
-            || $requested->contains('none');
-        abort_unless($hasMatchingEvidence,422,'Tambahkan jenis bukti yang diminta pada tugas ini.');
 
-        $attempt=(int)$recipient->submissions()->max('attempt_number')+1;
-        $fileData=['file_path'=>null,'original_name'=>null,'mime_type'=>null,'file_size'=>null];
-        if($request->hasFile('evidence')){
-            $file=$request->file('evidence');
-            $path=$file->store('assignments/'.$recipient->assignment_id.'/'.$recipient->student_id,'local');
-            $fileData=['file_path'=>$path,'original_name'=>$file->getClientOriginalName(),'mime_type'=>$file->getMimeType(),'file_size'=>$file->getSize()];
+        $hasMatchingEvidence = $fileType
+            || ($requested->contains('text') && filled($data['text_evidence'] ?? null))
+            || ($requested->contains('guardian_checklist') && ((bool) ($data['guardian_checklist_completed'] ?? false) || filled($data['guardian_notes'] ?? null)))
+            || $requested->contains('none');
+        abort_unless($hasMatchingEvidence, 422, 'Tambahkan jenis bukti yang diminta pada tugas ini.');
+
+        $asset = $request->hasFile('evidence')
+            ? $this->media->store(
+                $request->file('evidence'),
+                $request->user(),
+                'assignments/'.$recipient->assignment_id.'/'.$recipient->student_id,
+                'private',
+                (int) config('sullam.media_retention_days', 180),
+            )
+            : null;
+        $attempt = (int) $recipient->submissions()->max('attempt_number') + 1;
+        $notes = trim(($data['guardian_notes'] ?? '').(filled($data['text_evidence'] ?? null) ? "
+
+Bukti teks:
+".$data['text_evidence'] : ''));
+
+        try {
+            DB::transaction(function () use ($request, $recipient, $data, $asset, $attempt, $notes): void {
+                $submission = AssignmentSubmission::create([
+                    'assignment_recipient_id' => $recipient->id,
+                    'submitted_by_user_id' => $request->user()->id,
+                    'attempt_number' => $attempt,
+                    'guardian_notes' => $notes,
+                    'guardian_checklist_completed' => (bool) ($data['guardian_checklist_completed'] ?? false),
+                    'submitted_at' => now(),
+                    'review_status' => 'pending',
+                    'media_asset_id' => $asset?->id,
+                    'file_path' => null,
+                    'original_name' => $asset?->original_name,
+                    'mime_type' => $asset?->mime_type,
+                    'file_size' => $asset?->file_size,
+                ]);
+                if ($asset) {
+                    $this->media->link($asset, $submission, 'evidence');
+                }
+                $recipient->update(['status' => 'submitted']);
+            });
+        } catch (\Throwable $exception) {
+            if ($asset instanceof MediaAsset) {
+                $this->media->delete($asset);
+            }
+            throw $exception;
         }
-        $notes=trim(($data['guardian_notes']??'').(filled($data['text_evidence']??null)?"\n\nBukti teks:\n".$data['text_evidence']:''));
-        AssignmentSubmission::create([...$fileData,'assignment_recipient_id'=>$recipient->id,'submitted_by_user_id'=>$request->user()->id,'attempt_number'=>$attempt,'guardian_notes'=>$notes,'guardian_checklist_completed'=>(bool)($data['guardian_checklist_completed']??false),'submitted_at'=>now(),'review_status'=>'pending']);
-        $recipient->update(['status'=>'submitted']);
-        return back()->with('success','Bukti tugas berhasil dikirim.');
+
+        return back()->with('success', 'Bukti tugas berhasil dikirim.');
     }
 
     private function authorizeChild(Request $request,Student $student): void

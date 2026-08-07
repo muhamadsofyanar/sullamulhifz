@@ -42,8 +42,8 @@ class GuardianController extends Controller
         $this->guardInstitution($request, $guardian);
         $data = $request->validate([
             'full_name' => ['required','string','max:190'],
-            'phone' => ['nullable','string','max:30'],
-            'email' => ['nullable','email','max:190'],
+            'phone' => ['nullable','string','max:30', Rule::unique('users','phone')->ignore($guardian->user_id)],
+            'email' => ['nullable','email','max:190', Rule::unique('users','email')->ignore($guardian->user_id)],
             'occupation' => ['nullable','string','max:100'],
             'address' => ['nullable','string'],
             'status' => ['required', Rule::in(['active','inactive'])],

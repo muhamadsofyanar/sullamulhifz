@@ -1,0 +1,16 @@
+SULLAMUL HIFZ v2.1.0 — DEPLOY CEPAT
+
+1. Backup database + persistent volume storage.
+2. Ekstrak ZIP dan salin ISI folder proyek ke root repository GitHub.
+3. Pastikan environment produksi:
+   AUTO_MIGRATE=true
+   BOOTSTRAP_PRODUCTION=false
+   APP_DEBUG=false
+   APP_KEY tetap memakai nilai lama
+4. Push ke branch yang dipakai Coolify.
+5. Klik Redeploy satu kali.
+6. Tunggu log: Menjalankan NGINX Unit...
+7. Jalankan smoke test dan login admin.
+8. Tambahkan Scheduled Task: php artisan schedule:run (setiap menit).
+
+Jangan upload .env. Jangan jalankan db:wipe atau migrate:fresh.

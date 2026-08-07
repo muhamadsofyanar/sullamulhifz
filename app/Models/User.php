@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -32,27 +33,18 @@ class User extends Authenticatable
         ];
     }
 
-    public function institution(): BelongsTo
-    {
-        return $this->belongsTo(Institution::class);
-    }
+    public function institution(): BelongsTo { return $this->belongsTo(Institution::class); }
 
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_roles')
-            ->withPivot(['institution_id', 'status', 'valid_from', 'valid_until'])
+            ->withPivot(['institution_id', 'branch_id', 'status', 'valid_from', 'valid_until'])
             ->withTimestamps();
     }
 
-    public function teacher(): HasOne
-    {
-        return $this->hasOne(Teacher::class);
-    }
-
-    public function guardian(): HasOne
-    {
-        return $this->hasOne(Guardian::class);
-    }
+    public function teacher(): HasOne { return $this->hasOne(Teacher::class); }
+    public function guardian(): HasOne { return $this->hasOne(Guardian::class); }
+    public function accountInvitations(): HasMany { return $this->hasMany(AccountInvitation::class); }
 
     public function hasRole(string $role): bool
     {
@@ -64,9 +56,41 @@ class User extends Authenticatable
         return $this->activeRolesQuery()->whereIn('roles.name', $roles)->exists();
     }
 
+    public function hasPermission(string $permission): bool
+    {
+        if ($this->hasRole('superadmin')) {
+            return true;
+        }
+
+        $roleIds = $this->activeRolesQuery()->pluck('roles.id');
+
+        return Permission::query()
+            ->where('permissions.name', $permission)
+            ->whereHas('roles', fn ($query) => $query->whereIn('roles.id', $roleIds))
+            ->exists();
+    }
+
+    public function hasAnyPermission(array $permissions): bool
+    {
+        if ($this->hasRole('superadmin')) {
+            return true;
+        }
+
+        foreach ($permissions as $permission) {
+            if ($this->hasPermission($permission)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
     public function primaryRole(): ?string
     {
-        return $this->activeRolesQuery()->value('roles.name');
+        $priority = ['superadmin', 'institution_admin', 'head', 'teacher', 'guardian', 'student'];
+        $active = $this->activeRolesQuery()->pluck('roles.name');
+
+        return collect($priority)->first(fn (string $role): bool => $active->contains($role)) ?? $active->first();
     }
 
     private function activeRolesQuery()

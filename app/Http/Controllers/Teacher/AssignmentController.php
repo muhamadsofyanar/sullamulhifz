@@ -23,7 +23,9 @@ class AssignmentController extends Controller
     public function index(Request $request): View
     {
         $teacher = $request->user()->teacher;
+        abort_unless($teacher, 403);
         $assignments = Assignment::with(['schoolClass','learningGroup','recipients'])
+            ->where('institution_id', $request->user()->institution_id)
             ->where('created_by_teacher_id', $teacher->id)->latest()->paginate(15);
         return view('teacher.assignments.index', compact('assignments'));
     }
@@ -31,8 +33,18 @@ class AssignmentController extends Controller
     public function create(Request $request): View
     {
         $teacher = $request->user()->teacher;
+        abort_unless($teacher, 403);
         $teaching = TeacherAssignment::with(['schoolClass','learningGroup'])
-            ->where('teacher_id', $teacher->id)->where('status', 'active')->get();
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('teacher_id', $teacher->id)
+            ->where('status', 'active')
+            ->where(function ($query): void {
+                $query->whereNull('valid_from')->orWhereDate('valid_from', '<=', today());
+            })
+            ->where(function ($query): void {
+                $query->whereNull('valid_until')->orWhereDate('valid_until', '>=', today());
+            })
+            ->get();
         $audioSources = QuranAudioSource::where('institution_id', $teacher->institution_id)
             ->where('status', 'active')->orderByDesc('is_default')->get();
 
@@ -46,6 +58,7 @@ class AssignmentController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $teacher = $request->user()->teacher;
+        abort_unless($teacher, 403);
         $data = $request->validate([
             'target_type' => ['required', Rule::in(['class','group'])],
             'target_id' => ['required', 'integer'],
@@ -65,6 +78,11 @@ class AssignmentController extends Controller
             'due_at' => ['nullable', 'date', 'after:now'],
             'allow_resubmission' => ['nullable', 'boolean'],
         ]);
+
+        if (! empty($data['surah_id']) && ! empty($data['end_verse'])) {
+            $surah = QuranSurah::findOrFail((int) $data['surah_id']);
+            abort_if((int) $data['end_verse'] > (int) $surah->verse_count, 422, 'Rentang ayat melebihi jumlah ayat surah.');
+        }
 
         [$target, $teacherAssignment] = $this->resolveTarget($request, $data['target_type'], $data['target_id']);
         $year = AcademicYear::where('institution_id', $request->user()->institution_id)->where('is_active', true)->firstOrFail();
@@ -143,18 +161,38 @@ class AssignmentController extends Controller
     private function resolveTarget(Request $request, string $type, int $id): array
     {
         $teacher = $request->user()->teacher;
+        abort_unless($teacher, 403);
+        $institutionId = (int) $request->user()->institution_id;
+
+        $assignmentQuery = TeacherAssignment::query()
+            ->where('institution_id', $institutionId)
+            ->where('teacher_id', $teacher->id)
+            ->where('status', 'active')
+            ->where(function ($query): void {
+                $query->whereNull('valid_from')->orWhereDate('valid_from', '<=', today());
+            })
+            ->where(function ($query): void {
+                $query->whereNull('valid_until')->orWhereDate('valid_until', '>=', today());
+            });
+
         if ($type === 'class') {
-            $target = SchoolClass::findOrFail($id);
-            $assignment = TeacherAssignment::where('teacher_id', $teacher->id)->where('class_id', $id)->where('status', 'active')->firstOrFail();
+            $target = SchoolClass::query()->where('institution_id', $institutionId)->findOrFail($id);
+            $assignment = (clone $assignmentQuery)->where('class_id', $id)->firstOrFail();
             return [$target, $assignment];
         }
-        $target = LearningGroup::findOrFail($id);
-        $assignment = TeacherAssignment::where('teacher_id', $teacher->id)->where('learning_group_id', $id)->where('status', 'active')->firstOrFail();
+
+        $target = LearningGroup::query()->where('institution_id', $institutionId)->findOrFail($id);
+        $assignment = (clone $assignmentQuery)->where('learning_group_id', $id)->firstOrFail();
         return [$target, $assignment];
     }
 
     private function authorizeAssignment(Request $request, Assignment $assignment): void
     {
-        abort_unless($request->user()->teacher && $assignment->created_by_teacher_id === $request->user()->teacher->id, 403);
+        abort_unless((int) $assignment->institution_id === (int) $request->user()->institution_id, 404);
+        abort_unless(
+            $request->user()->teacher
+            && (int) $assignment->created_by_teacher_id === (int) $request->user()->teacher->id,
+            403,
+        );
     }
 }

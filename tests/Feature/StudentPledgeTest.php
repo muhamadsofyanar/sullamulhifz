@@ -12,6 +12,13 @@ class StudentPledgeTest extends TestCase
 {
     use RefreshDatabase;
 
+    protected function setUp(): void
+    {
+        parent::setUp();
+        putenv('INITIAL_ADMIN_PASSWORD=TestAdmin2026Secure');
+        putenv('SEED_INITIAL_TPA_DATA=false');
+    }
+
     public function test_public_pledge_uses_default_content(): void
     {
         $this->get('/ikrar-santri')

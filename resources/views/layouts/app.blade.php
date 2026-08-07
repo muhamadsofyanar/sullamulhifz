@@ -11,6 +11,7 @@
     <link rel="stylesheet" href="/css/app.css?v={{ @filemtime(public_path('css/app.css')) ?: '201' }}">
     <link rel="stylesheet" href="/css/app-v203.css?v={{ @filemtime(public_path('css/app-v203.css')) ?: '203' }}">
     <link rel="stylesheet" href="/css/app-v204.css?v={{ @filemtime(public_path('css/app-v204.css')) ?: '204' }}">
+    <link rel="stylesheet" href="/css/app-v210.css?v={{ @filemtime(public_path('css/app-v210.css')) ?: '210' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
@@ -43,34 +44,49 @@
                     <x-icon name="academic"/><span>Akademik</span>
                 </a>
                 <a href="{{ route('admin.academic-core.index') }}" class="{{ request()->routeIs('admin.academic-core.*') ? 'active' : '' }}">
-                    <x-icon name="guidance"/><span>Academic Core</span>
+                    <x-icon name="focus"/><span>Fondasi Pembelajaran</span>
                 </a>
                 <a href="{{ route('admin.institution.edit') }}" class="{{ request()->routeIs('admin.institution.*') ? 'active' : '' }}">
                     <x-icon name="community"/><span>Profil Lembaga</span>
                 </a>
+                <a href="{{ route('admin.platform.index') }}" class="{{ request()->routeIs('admin.platform.*') ? 'active' : '' }}">
+                    <x-icon name="growth"/><span>Fondasi Platform</span>
+                </a>
+                @if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))
                 <a href="{{ route('admin.quran-library.index') }}" class="{{ request()->routeIs('admin.quran-library.*') ? 'active' : '' }}">
                     <x-icon name="audio"/><span>Pustaka Qur’an</span>
                 </a>
+                @endif
+                @if(\App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id, true))
                 <a href="{{ route('admin.academy.index') }}" class="{{ request()->routeIs('admin.academy.*') ? 'active' : '' }}">
-                    <x-icon name="academic"/><span>Kelola Academy</span>
+                    <x-icon name="lesson"/><span>Kelola Academy</span>
                 </a>
+                @endif
                 <a href="{{ route('admin.launch-readiness.index') }}" class="{{ request()->routeIs('admin.launch-readiness.*') ? 'active' : '' }}">
-                    <x-icon name="report"/><span>Siap Launch</span>
+                    <x-icon name="achievement"/><span>Kesiapan Peluncuran</span>
                 </a>
             @endif
-            @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']))
+            @if(auth()->user()->hasAnyPermission(['announcements.manage','friday.manage']))
                 <a href="{{ route('admin.content.index') }}" class="{{ request()->routeIs('admin.content.*') ? 'active' : '' }}" @if(request()->routeIs('admin.content.*')) aria-current="page" @endif>
                     <x-icon name="guidance"/><span>Konten & Pembinaan</span>
                 </a>
+            @endif
+            @if(auth()->user()->hasPermission('institution.manage'))
                 <a href="{{ route('admin.student-pledge.edit') }}" class="{{ request()->routeIs('admin.student-pledge.*') ? 'active' : '' }}">
                     <x-icon name="values"/><span>Kelola Ikrar</span>
                 </a>
+            @endif
+            @if(auth()->user()->hasPermission('website.manage') && \App\Support\Feature::enabled('public_website', auth()->user()->institution_id, true))
                 <a href="{{ route('admin.website.index') }}" class="{{ request()->routeIs('admin.website.*') ? 'active' : '' }}">
                     <x-icon name="community"/><span>Website</span>
                 </a>
+            @endif
+            @if(auth()->user()->hasPermission('report_cards.manage') && \App\Support\Feature::enabled('report_cards', auth()->user()->institution_id, true))
                 <a href="{{ route('admin.report-cards.index') }}" class="{{ request()->routeIs('admin.report-cards.*') ? 'active' : '' }}">
                     <x-icon name="report"/><span>Rapor</span>
                 </a>
+            @endif
+            @if(auth()->user()->hasPermission('reports.view'))
                 <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" @if(request()->routeIs('admin.reports.*')) aria-current="page" @endif>
                     <x-icon name="report"/><span>Laporan</span>
                 </a>
@@ -85,9 +101,11 @@
                 <a href="{{ route('teacher.learning-plan.index') }}" class="{{ request()->routeIs('teacher.learning-plan.*') ? 'active' : '' }}">
                     <x-icon name="guidance"/><span>Target & Profil</span>
                 </a>
+                @if(\App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id))
                 <a href="{{ route('teacher.academy.index') }}" class="{{ request()->routeIs('teacher.academy.*') ? 'active' : '' }}">
-                    <x-icon name="academic"/><span>Academy & Keluarga</span>
+                    <x-icon name="lesson"/><span>Academy & Keluarga</span>
                 </a>
+                @endif
                 <a href="{{ route('teacher.assignments.index') }}" class="{{ request()->routeIs('teacher.assignments.*') ? 'active' : '' }}">
                     <x-icon name="assignment"/><span>Tugas</span>
                 </a>
@@ -96,9 +114,11 @@
                 <a href="{{ route('guardian.tasks.index') }}" class="{{ request()->routeIs('guardian.tasks.*') ? 'active' : '' }}">
                     <x-icon name="assignment"/><span>Tugas Anak</span>
                 </a>
+                @if(\App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id))
                 <a href="{{ route('academy.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}">
-                    <x-icon name="academic"/><span>Parent Academy</span>
+                    <x-icon name="lesson"/><span>Parent Academy</span>
                 </a>
+                @endif
             @endif
             <a href="{{ route('liaison.index') }}" class="{{ request()->routeIs('liaison.*') ? 'active' : '' }}" @if(request()->routeIs('liaison.*')) aria-current="page" @endif>
                 <x-icon name="discussion"/><span>Buku Penghubung</span>
@@ -109,16 +129,18 @@
             <a href="{{ route('feed.friday') }}" class="{{ request()->routeIs('feed.friday') ? 'active' : '' }}" @if(request()->routeIs('feed.friday')) aria-current="page" @endif>
                 <x-icon name="values"/><span>Pembinaan Jumat</span>
             </a>
+            @if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id))
             <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*') ? 'active' : '' }}" @if(request()->routeIs('quran-practice.*')) aria-current="page" @endif>
-                <x-icon name="audio"/><span>Latihan Al-Qur’an</span>
+                <x-icon name="listen"/><span>Latihan Al-Qur’an</span>
             </a>
-            @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']))
+            @endif
+            @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']) && \App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id))
             <a href="{{ route('academy.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}">
-                <x-icon name="academic"/><span>Lihat Academy</span>
+                <x-icon name="lesson"/><span>Lihat Academy</span>
             </a>
             @endif
             <a href="{{ route('feed.pledge') }}" class="{{ request()->routeIs('feed.pledge') ? 'active' : '' }}" @if(request()->routeIs('feed.pledge')) aria-current="page" @endif>
-                <x-icon name="academic"/><span>Ikrar Santri</span>
+                <x-icon name="values"/><span>Ikrar Santri</span>
             </a>
         </nav>
 
@@ -143,6 +165,15 @@
         </header>
         <div class="content-wrap">
             @if(session('success'))<div class="alert success">{{ session('success') }}</div>@endif
+            @if(session('activation_url'))
+                <div class="alert success">
+                    <strong>Tautan aktivasi siap dikirim.</strong>
+                    <div class="activation-link-box">
+                        <input type="text" value="{{ session('activation_url') }}" readonly data-copy-source aria-label="Tautan aktivasi akun">
+                        <button type="button" class="button secondary" data-copy-button>Salin tautan</button>
+                    </div>
+                </div>
+            @endif
             @if(session('error'))<div class="alert danger">{{ session('error') }}</div>@endif
             @if($errors->any())
                 <div class="alert danger"><strong>Periksa kembali isian:</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>
@@ -154,22 +185,38 @@
 <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
     @if(auth()->user()->hasRole('guardian'))
         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
-        <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*')?'active':'' }}"><x-icon name="audio"/><span>Qur’an</span></a>
-        <a href="{{ route('academy.index') }}" class="{{ request()->routeIs('academy.*')?'active':'' }}"><x-icon name="academic"/><span>Academy</span></a>
+        <a href="{{ route('dashboard') }}#anak-saya" class="{{ request()->routeIs('guardian.children.*')?'active':'' }}"><x-icon name="student"/><span>Anak</span></a>
+        <a href="{{ route('guardian.tasks.index') }}" class="{{ request()->routeIs('guardian.tasks.*')?'active':'' }}"><x-icon name="plan"/><span>Tugas</span></a>
         <a href="{{ route('liaison.index') }}" class="{{ request()->routeIs('liaison.*')?'active':'' }}"><x-icon name="discussion"/><span>Pesan</span></a>
-        <a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.*')?'active':'' }}"><x-icon name="profile"/><span>Profil</span></a>
+        <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>
     @elseif(auth()->user()->hasRole('teacher'))
-        <a href="{{ route('teacher.daily.index') }}" class="{{ request()->routeIs('teacher.daily.*')?'active':'' }}"><x-icon name="home"/><span>Hari Ini</span></a>
-        <a href="{{ route('teacher.classrooms.index') }}" class="{{ request()->routeIs('teacher.classrooms.*')?'active':'' }}"><x-icon name="classroom"/><span>Kelas</span></a>
-        <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*')?'active':'' }}"><x-icon name="audio"/><span>Qur’an</span></a>
-        <a href="{{ route('teacher.academy.index') }}" class="{{ request()->routeIs('teacher.academy.*')||request()->routeIs('academy.*')?'active':'' }}"><x-icon name="academic"/><span>Academy</span></a>
-        <a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.*')?'active':'' }}"><x-icon name="profile"/><span>Profil</span></a>
+        <a href="{{ route('teacher.daily.index') }}" class="{{ request()->routeIs('teacher.daily.*')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
+        <a href="{{ route('teacher.classrooms.index') }}" class="{{ request()->routeIs('teacher.classrooms.*')||request()->routeIs('teacher.meetings.*')?'active':'' }}"><x-icon name="lesson"/><span>Kelas</span></a>
+        <a href="{{ route('teacher.assignments.index') }}" class="{{ request()->routeIs('teacher.assignments.*')||request()->routeIs('teacher.submissions.*')?'active':'' }}"><x-icon name="plan"/><span>Tugas</span></a>
+        <a href="{{ route('liaison.index') }}" class="{{ request()->routeIs('liaison.*')?'active':'' }}"><x-icon name="discussion"/><span>Pesan</span></a>
+        <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>
+    @elseif(auth()->user()->hasAnyRole(['superadmin','institution_admin']))
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
+        <a href="{{ route('admin.academic.index') }}" class="{{ request()->routeIs('admin.academic.*')||request()->routeIs('admin.academic-core.*')?'active':'' }}"><x-icon name="schedule"/><span>Akademik</span></a>
+        <a href="{{ route('admin.students.index') }}" class="{{ request()->routeIs('admin.students.*')||request()->routeIs('admin.teachers.*')||request()->routeIs('admin.guardians.*')?'active':'' }}"><x-icon name="community"/><span>Pengguna</span></a>
+        <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*')||request()->routeIs('admin.report-cards.*')?'active':'' }}"><x-icon name="progress"/><span>Laporan</span></a>
+        <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>
+    @elseif(auth()->user()->hasRole('head'))
+        <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
+        <a href="{{ route('admin.content.index') }}" class="{{ request()->routeIs('admin.content.*')?'active':'' }}"><x-icon name="guidance"/><span>Pembinaan</span></a>
+        @if(\App\Support\Feature::enabled('report_cards', auth()->user()->institution_id, true))
+        <a href="{{ route('admin.report-cards.index') }}" class="{{ request()->routeIs('admin.report-cards.*')?'active':'' }}"><x-icon name="achievement"/><span>Rapor</span></a>
+        @else
+        <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*')?'active':'' }}"><x-icon name="progress"/><span>Laporan</span></a>
+        @endif
+        <a href="{{ route('liaison.index') }}" class="{{ request()->routeIs('liaison.*')?'active':'' }}"><x-icon name="discussion"/><span>Pesan</span></a>
+        <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>
     @else
         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
-        <a href="{{ route('admin.students.index') }}" class="{{ request()->routeIs('admin.students.*')?'active':'' }}"><x-icon name="student"/><span>Santri</span></a>
-        <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*')?'active':'' }}"><x-icon name="audio"/><span>Qur’an</span></a>
-        <a href="{{ route('admin.academy.index') }}" class="{{ request()->routeIs('admin.academy.*')||request()->routeIs('academy.*')?'active':'' }}"><x-icon name="academic"/><span>Academy</span></a>
-        <button type="button" data-sidebar-toggle><x-icon name="menu"/><span>Menu</span></button>
+        <a href="{{ route('feed.announcements') }}" class="{{ request()->routeIs('feed.announcements')?'active':'' }}"><x-icon name="community"/><span>Info</span></a>
+        <a href="{{ route('feed.friday') }}" class="{{ request()->routeIs('feed.friday')?'active':'' }}"><x-icon name="values"/><span>Pembinaan</span></a>
+        <a href="{{ route('profile.edit') }}" class="{{ request()->routeIs('profile.*')?'active':'' }}"><x-icon name="profile"/><span>Profil</span></a>
+        <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>
     @endif
 </nav>
 <div class="sidebar-backdrop" data-sidebar-toggle></div>

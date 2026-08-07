@@ -73,6 +73,7 @@ class MeetingController extends Controller
             'surahs' => QuranSurah::orderBy('id')->get(),
             'marhalah' => MarhalahType::where('status', 'active')->orderBy('sequence')->get(),
             'targets' => MemorizationTarget::with(['student','rubu','surah','marhalah'])
+                ->where('institution_id', $meeting->institution_id)
                 ->whereIn('student_id', $students->pluck('id'))
                 ->whereIn('status', ['active','in_progress','strengthening','paused'])
                 ->latest()->get(),
@@ -170,9 +171,13 @@ class MeetingController extends Controller
 
         $target = null;
         if (! empty($data['memorization_target_id'])) {
-            $target = MemorizationTarget::where('student_id', $data['student_id'])->findOrFail($data['memorization_target_id']);
+            $target = MemorizationTarget::query()
+                ->where('institution_id', $meeting->institution_id)
+                ->where('student_id', $data['student_id'])
+                ->findOrFail($data['memorization_target_id']);
         }
-        $target ??= MemorizationTarget::where('student_id', $data['student_id'])
+        $target ??= MemorizationTarget::where('institution_id', $meeting->institution_id)
+            ->where('student_id', $data['student_id'])
             ->where('surah_id', $data['surah_id'])
             ->where('start_verse', $data['start_verse'])
             ->where('end_verse', $data['end_verse'])
@@ -229,7 +234,8 @@ class MeetingController extends Controller
             'recorded_at' => now(),
         ]);
 
-        $target = MemorizationTarget::where('student_id', $data['student_id'])
+        $target = MemorizationTarget::where('institution_id', $meeting->institution_id)
+            ->where('student_id', $data['student_id'])
             ->where('surah_id', $data['surah_id'])
             ->where('start_verse', $data['start_verse'])
             ->where('end_verse', $data['end_verse'])
@@ -278,11 +284,15 @@ class MeetingController extends Controller
     private function resolveTarget(Request $request, string $type, int $id): array
     {
         if ($type === 'class') {
-            $target = SchoolClass::findOrFail($id);
+            $target = SchoolClass::query()
+                ->where('institution_id', $request->user()->institution_id)
+                ->findOrFail($id);
             return [$target, ClassroomController::classAssignment($request, $target)];
         }
         if ($type === 'group') {
-            $target = LearningGroup::findOrFail($id);
+            $target = LearningGroup::query()
+                ->where('institution_id', $request->user()->institution_id)
+                ->findOrFail($id);
             return [$target, ClassroomController::groupAssignment($request, $target)];
         }
         abort(422, 'Jenis target tidak sesuai.');
@@ -298,7 +308,12 @@ class MeetingController extends Controller
 
     private function authorizeMeeting(Request $request, Meeting $meeting): void
     {
-        abort_unless($request->user()->teacher && $meeting->teacher_id === $request->user()->teacher->id, 403);
+        abort_unless(
+            $request->user()->teacher
+            && (int) $meeting->institution_id === (int) $request->user()->institution_id
+            && (int) $meeting->teacher_id === (int) $request->user()->teacher->id,
+            403,
+        );
     }
 
     private function authorizeStudent(Meeting $meeting, int $studentId): void

@@ -39,7 +39,7 @@ class ImportController extends Controller
             $out = fopen('php://output', 'w');
             fwrite($out, "\xEF\xBB\xBF");
             fputcsv($out, self::HEADERS);
-            fputcsv($out, ['SAN-00001','Nama Santri','Nama Panggilan','male','Bandung','2018-01-01','Alamat','TAMHIDI-A','Nama Wali','wali@example.test','628000000001','ayah','GantiPasswordAwal!']);
+            fputcsv($out, ['SAN-00001','Nama Santri','Nama Panggilan','male','Bandung','2018-01-01','Alamat','TAMHIDI-A','Nama Wali','wali@example.test','628000000001','ayah','GantiPasswordAwal2026!']);
             fclose($out);
         }, 'template-impor-santri-wali.csv', ['Content-Type' => 'text/csv; charset=UTF-8']);
     }
@@ -140,10 +140,23 @@ class ImportController extends Controller
                     $student->update(['student_code' => 'SAN-'.str_pad((string) $student->id, 5, '0', STR_PAD_LEFT)]);
                 }
 
-                $student->currentEnrollment?->update(['status' => 'moved', 'ended_at' => now()->toDateString()]);
+                $previousEnrollment = ClassEnrollment::query()
+                    ->where('student_id', $student->id)
+                    ->where('status', 'active')
+                    ->latest('enrolled_at')
+                    ->first();
+                ClassEnrollment::query()
+                    ->where('student_id', $student->id)
+                    ->where('status', 'active')
+                    ->update(['status' => 'moved', 'ended_at' => now()->toDateString()]);
                 ClassEnrollment::updateOrCreate(
                     ['class_id'=>$class->id,'student_id'=>$student->id,'academic_year_id'=>$class->academic_year_id],
-                    ['enrolled_at'=>now()->toDateString(),'ended_at'=>null,'status'=>'active']
+                    [
+                        'enrolled_at'=>now()->toDateString(),
+                        'ended_at'=>null,
+                        'status'=>'active',
+                        'previous_enrollment_id'=>$previousEnrollment?->id,
+                    ]
                 );
 
                 if (filled($p['guardian_name']) && filled($p['guardian_phone'])) {
@@ -194,7 +207,12 @@ class ImportController extends Controller
         if (filled($row['gender'] ?? null) && ! in_array($row['gender'], ['male','female'], true)) $errors[] = 'Gender harus male/female.';
         if (filled($row['birth_date'] ?? null) && strtotime($row['birth_date']) === false) $errors[] = 'Tanggal lahir tidak valid.';
         if (filled($row['guardian_name'] ?? null) xor filled($row['guardian_phone'] ?? null)) $errors[] = 'Nama dan nomor wali harus diisi bersama.';
-        if (filled($row['guardian_name'] ?? null) && mb_strlen((string) ($row['guardian_password'] ?? '')) < 10) $errors[] = 'Password wali minimal 10 karakter.';
+        if (filled($row['guardian_name'] ?? null)) {
+            $password = (string) ($row['guardian_password'] ?? '');
+            if (mb_strlen($password) < 12 || ! preg_match('/[A-Z]/', $password) || ! preg_match('/[a-z]/', $password) || ! preg_match('/[0-9]/', $password)) {
+                $errors[] = 'Password wali minimal 12 karakter dan memuat huruf besar, huruf kecil, serta angka.';
+            }
+        }
         return $errors;
     }
 

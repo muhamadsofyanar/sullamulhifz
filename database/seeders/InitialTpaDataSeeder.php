@@ -86,8 +86,8 @@ class InitialTpaDataSeeder extends Seeder
         $teacherRole = Role::where('name', 'teacher')->firstOrFail();
         $guardianRole = Role::where('name', 'guardian')->firstOrFail();
 
-        $teacherPassword = env('INITIAL_TEACHER_PASSWORD', 'GantiGuru-2026!');
-        $guardianPassword = env('INITIAL_GUARDIAN_PASSWORD', 'GantiWali-2026!');
+        $teacherPassword = $this->requiredPassword('INITIAL_TEACHER_PASSWORD');
+        $guardianPassword = $this->requiredPassword('INITIAL_GUARDIAN_PASSWORD');
 
         $classes = $data['classes'];
         $expectedClassCounts = $data['class_counts'];
@@ -382,4 +382,19 @@ class InitialTpaDataSeeder extends Seeder
             "Data awal TPA selesai: 88 santri, 88 wali, 4 guru, Tahfizh A={$tahfizhACount}, Tahfizh B={$tahfizhBCount}."
         );
     }
+
+    private function requiredPassword(string $key): string
+    {
+        $password = (string) env($key, '');
+
+        if ($password === '' || strlen($password) < 12
+            || ! preg_match('/[A-Z]/', $password)
+            || ! preg_match('/[a-z]/', $password)
+            || ! preg_match('/[0-9]/', $password)) {
+            throw new RuntimeException("{$key} wajib diisi, minimal 12 karakter, serta memuat huruf besar, huruf kecil, dan angka sebelum seeder data awal dijalankan.");
+        }
+
+        return $password;
+    }
+
 }

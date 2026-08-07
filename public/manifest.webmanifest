@@ -1,1 +1,22 @@
-{"name":"Sullamul Hifz — Family Learning","short_name":"Sullamul","description":"Portal TPA, latihan Al-Qur’an, Parent Academy, dan komunikasi keluarga Sullamul Hifz.","id":"/dashboard","start_url":"/dashboard","scope":"/","display":"standalone","orientation":"any","background_color":"#f8f4ea","theme_color":"#004b3f","categories":["education","productivity","family"],"icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}],"shortcuts":[{"name":"Latihan Al-Qur’an","short_name":"Qur’an","url":"/latihan-quran","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml"}]},{"name":"Academy","short_name":"Academy","url":"/academy/belajar","icons":[{"src":"/icon.svg","sizes":"any","type":"image/svg+xml"}]}]}
+{
+  "name": "Sullamul Hifz — Bukan Sekadar Hafal, Tapi KUAT",
+  "short_name": "Sullamul",
+  "description": "Portal pembinaan Al-Qur'an, tugas, komunikasi keluarga, audio Qur'an, dan Academy.",
+  "id": "/dashboard",
+  "start_url": "/dashboard",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#fbf8f1",
+  "theme_color": "#004b3f",
+  "categories": ["education", "productivity", "family"],
+  "icons": [
+    {"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
+  ],
+  "shortcuts": [
+    {"name": "Beranda", "short_name": "Beranda", "url": "/dashboard", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
+    {"name": "Buku Penghubung", "short_name": "Pesan", "url": "/buku-penghubung", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
+    {"name": "Latihan Al-Qur'an", "short_name": "Qur'an", "url": "/latihan-quran", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
+    {"name": "Parent Academy", "short_name": "Academy", "url": "/academy/belajar", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]}
+  ]
+}

@@ -7,7 +7,7 @@
         <h1>Latihan Al-Qur’an</h1>
         <p>Dengarkan bacaan, ulangi sesuai kebutuhan, lalu dampingi anak tanpa terburu-buru.</p>
     </div>
-    @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']))
+    @if(auth()->user()->hasPermission('quran.manage'))
         <a class="quran-library-link" href="{{ route('admin.quran-library.index') }}"><x-icon name="audio" size="18"/><span>Pustaka Qur’an</span></a>
     @endif
 </section>

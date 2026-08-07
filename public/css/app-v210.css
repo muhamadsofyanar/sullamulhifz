@@ -1,0 +1,13 @@
+/* Sullamul Hifz v2.1.0 — unified brand, icon and mobile navigation layer */
+:root{--brand-emerald:#004b3f;--brand-emerald-2:#006451;--brand-gold:#d4a23f;--brand-ivory:#fbf8f1;--icon-accent:#d4a23f}
+.app-icon{display:inline-block;flex:0 0 auto;vertical-align:middle;color:currentColor;overflow:visible}
+.nav-list a .app-icon,.mobile-bottom-nav .app-icon{color:var(--brand-emerald)}
+.nav-list a.active .app-icon,.mobile-bottom-nav .active .app-icon{color:var(--brand-emerald-2)}
+.feature-section-label{margin:14px 12px 6px;color:#76817e;font-size:.71rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.activation-link-box{display:grid;grid-template-columns:1fr auto;gap:8px;align-items:center;margin-top:10px}.activation-link-box input{min-width:0;font-size:.82rem}
+.connection-banner{position:fixed;left:50%;bottom:82px;z-index:1000;transform:translateX(-50%);padding:9px 14px;border-radius:999px;background:#7a2d20;color:#fff;font-size:.82rem;font-weight:750;box-shadow:0 8px 28px rgba(0,0,0,.18)}
+.target-picker-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:12px}.target-picker-grid>[hidden]{display:none!important}
+.icon-system-card{background:linear-gradient(145deg,#fff,#fbf8f1);border:1px solid rgba(0,75,63,.1);border-radius:20px;box-shadow:0 10px 30px rgba(0,75,63,.06)}
+.mobile-more-label{font-size:.68rem;white-space:nowrap}
+@media(max-width:780px){.main-content{padding-bottom:86px}.mobile-bottom-nav{grid-template-columns:repeat(5,minmax(0,1fr))}.mobile-bottom-nav a,.mobile-bottom-nav button{gap:3px}.mobile-bottom-nav span{font-size:.66rem}.mobile-bottom-nav .app-icon{width:22px;height:22px}.activation-link-box{grid-template-columns:1fr}.connection-banner{bottom:94px;max-width:calc(100% - 30px);white-space:nowrap}}
+.switch{display:inline-flex;align-items:center}.switch input{position:absolute;opacity:0}.switch span{width:46px;height:26px;border-radius:999px;background:#cfd8d5;position:relative;transition:.2s}.switch span:after{content:"";position:absolute;top:3px;left:3px;width:20px;height:20px;border-radius:50%;background:#fff;box-shadow:0 2px 5px rgba(0,0,0,.18);transition:.2s}.switch input:checked+span{background:var(--brand-emerald)}.switch input:checked+span:after{transform:translateX(20px)}.list-row.inset{margin-left:14px;padding-left:14px;border-left:3px solid rgba(212,162,63,.35)}

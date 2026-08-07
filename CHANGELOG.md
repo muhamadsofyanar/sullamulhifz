@@ -1,3 +1,15 @@
+# Changelog
+
+## v2.1.0 — Unified Platform & Secure Media — 2026-08-07
+
+- Menggabungkan source v2.0.4 dengan PRD, sitemap, wireframe, ERD, brand strategy, dan icon system terbaru.
+- Menambahkan cabang, periode akademik, target konten, histori marhalah, invitation, feature flag, serta pusat media privat.
+- Menutup cache respons privat, memperketat upload, tenant isolation, permission, trusted proxy, dan audit media.
+- Menambahkan aktivasi akun dan reset kata sandi dengan aturan kata sandi kuat.
+- Menyelaraskan navigasi mobile dan icon system solid-organic emerald–gold.
+- Mempertahankan Audio Qur’an, Parent Academy/LMS, rapor, website, dan pendaftaran sebagai modul terkontrol.
+- Menambahkan API starter, staging noindex, startup satu-redeploy, migration additive, serta utilitas pengamanan media lama.
+
 # v2.0.3 — Academy Experience & Video
 
 - Fix Kelola Academy 500.
@@ -21,7 +33,6 @@
 - `academy.sullamulhifz.or.id` didukung sebagai pintu masuk Academy pada resource Coolify yang sama.
 - Tidak ada perubahan database.
 
-# Changelog
 
 ## v2.0.0 — Family Learning & Academy Launch
 - PWA mobile-first dan bottom navigation per peran.

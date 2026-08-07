@@ -15,7 +15,18 @@ class Guardian extends Model
     public function students(): BelongsToMany
     {
         return $this->belongsToMany(Student::class, 'student_guardians')
-            ->withPivot(['relationship','is_primary_contact','can_receive_notifications','can_submit_assignments','can_view_learning_records'])
+            ->withPivot([
+                'relationship', 'is_primary_contact', 'can_receive_notifications',
+                'can_submit_assignments', 'can_view_learning_records', 'started_at', 'ended_at',
+            ])
+            ->where(function ($query): void {
+                $query->whereNull('student_guardians.started_at')
+                    ->orWhereDate('student_guardians.started_at', '<=', today());
+            })
+            ->where(function ($query): void {
+                $query->whereNull('student_guardians.ended_at')
+                    ->orWhereDate('student_guardians.ended_at', '>=', today());
+            })
             ->withTimestamps();
     }
 }

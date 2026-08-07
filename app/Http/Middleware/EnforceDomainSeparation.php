@@ -20,6 +20,22 @@ class EnforceDomainSeparation
         $publicHost = $this->hostFromUrl(config('sullam.public_url'));
         $publicHosts = $this->publicHosts($publicHost);
         $academyHost = $this->academyHost();
+        $apiHost = $this->apiHost();
+        $stagingHost = $this->stagingHost();
+
+        if ($apiHost && $host === $apiHost) {
+            $path = trim($request->path(), '/');
+            if ($path === '' || $path === 'up' || $path === 'api' || str_starts_with($path, 'api/')) {
+                return $next($request);
+            }
+
+            return response()->json(['message' => 'Endpoint tidak ditemukan.'], 404);
+        }
+
+        if ($stagingHost && $host === $stagingHost && ! config('sullam.staging_enabled')) {
+            return response('Staging belum diaktifkan pada resource ini.', 404)
+                ->header('X-Robots-Tag', 'noindex, nofollow, noarchive');
+        }
 
         if (! $portalHost || ! $publicHost) {
             return $next($request);
@@ -88,6 +104,20 @@ class EnforceDomainSeparation
         return redirect()->away($url, $status);
     }
 
+
+    private function apiHost(): ?string
+    {
+        $configured = trim((string) config('sullam.api_host'));
+
+        return $configured !== '' ? strtolower($configured) : null;
+    }
+
+    private function stagingHost(): ?string
+    {
+        $configured = trim((string) config('sullam.staging_host'));
+
+        return $configured !== '' ? strtolower($configured) : null;
+    }
 
     private function academyHost(): ?string
     {

@@ -21,6 +21,9 @@ class Institution extends Model
     public function students(): HasMany { return $this->hasMany(Student::class); }
     public function teachers(): HasMany { return $this->hasMany(Teacher::class); }
     public function academicYears(): HasMany { return $this->hasMany(AcademicYear::class); }
+    public function branches(): HasMany { return $this->hasMany(Branch::class); }
+    public function featureFlags(): HasMany { return $this->hasMany(FeatureFlag::class); }
+    public function mediaAssets(): HasMany { return $this->hasMany(MediaAsset::class); }
 
     public function setting(string $key, mixed $default = null): mixed
     {

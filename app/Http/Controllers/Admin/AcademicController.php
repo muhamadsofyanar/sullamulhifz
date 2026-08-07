@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
+use App\Models\Branch;
 use App\Models\GroupMembership;
 use App\Models\LearningGroup;
 use App\Models\Level;
@@ -27,12 +29,13 @@ class AcademicController extends Controller
             'year'=>AcademicYear::where('institution_id',$institutionId)->where('is_active',true)->first(),
             'years'=>AcademicYear::where('institution_id',$institutionId)->latest('start_date')->get(),
             'levels'=>Level::where('institution_id',$institutionId)->orderBy('sequence')->get(),
-            'classes'=>SchoolClass::with(['level','activeEnrollments'])->where('institution_id',$institutionId)->orderBy('name')->get(),
-            'groups'=>LearningGroup::with(['program','activeMemberships'])->where('institution_id',$institutionId)->orderBy('name')->get(),
+            'branches'=>Branch::where('institution_id',$institutionId)->where('status','active')->orderByDesc('is_main')->orderBy('name')->get(),
+            'classes'=>SchoolClass::with(['level','branch','activeEnrollments'])->where('institution_id',$institutionId)->orderBy('name')->get(),
+            'groups'=>LearningGroup::with(['program','branch','activeMemberships'])->where('institution_id',$institutionId)->orderBy('name')->get(),
             'programs'=>Program::where('institution_id',$institutionId)->where('status','active')->orderBy('name')->get(),
             'teachers'=>Teacher::where('institution_id',$institutionId)->where('status','active')->orderBy('full_name')->get(),
             'assignments'=>TeacherAssignment::with(['teacher','schoolClass','learningGroup','program'])->where('institution_id',$institutionId)->where('status','active')->get(),
-            'schedules'=>Schedule::with(['schoolClass','learningGroup','program','teacherAssignment.teacher'])->where('institution_id',$institutionId)->where('status','active')->orderBy('day_of_week')->orderBy('start_time')->get(),
+            'schedules'=>Schedule::with(['branch','schoolClass','learningGroup','program','teacherAssignment.teacher'])->where('institution_id',$institutionId)->where('status','active')->orderBy('day_of_week')->orderBy('start_time')->get(),
         ]);
     }
 
@@ -49,8 +52,15 @@ class AcademicController extends Controller
         if ((bool)($data['is_active'] ?? false)) {
             AcademicYear::where('institution_id',$institutionId)->update(['is_active'=>false,'status'=>'closed']);
         }
-        AcademicYear::create([...$data,'institution_id'=>$institutionId,'is_active'=>(bool)($data['is_active']??false),'status'=>(bool)($data['is_active']??false)?'active':'draft']);
-        return back()->with('success','Tahun ajaran berhasil ditambahkan.');
+        $year = AcademicYear::create([...$data,'institution_id'=>$institutionId,'is_active'=>(bool)($data['is_active']??false),'status'=>(bool)($data['is_active']??false)?'active':'draft']);
+        AcademicPeriod::create([
+            'academic_year_id' => $year->id,
+            'name' => 'Periode Utama',
+            'start_date' => $year->start_date,
+            'end_date' => $year->end_date,
+            'status' => $year->is_active ? 'active' : 'draft',
+        ]);
+        return back()->with('success','Tahun ajaran dan periode utama berhasil ditambahkan.');
     }
 
     public function storeLevel(Request $request): RedirectResponse
@@ -84,6 +94,7 @@ class AcademicController extends Controller
         $institutionId = $request->user()->institution_id;
         $data = $request->validate([
             'academic_year_id'=>['required','exists:academic_years,id'],
+            'branch_id'=>['nullable','exists:branches,id'],
             'level_id'=>['required','exists:levels,id'],
             'name'=>['required','string','max:190'],
             'code'=>['required','string','max:50',Rule::unique('classes')->where('academic_year_id',$request->integer('academic_year_id'))],
@@ -91,6 +102,7 @@ class AcademicController extends Controller
         ]);
         abort_unless(AcademicYear::where('institution_id',$institutionId)->whereKey($data['academic_year_id'])->exists(),403);
         abort_unless(Level::where('institution_id',$institutionId)->whereKey($data['level_id'])->exists(),403);
+        $data['branch_id'] = $this->resolveBranchId($institutionId, $data['branch_id'] ?? null);
         SchoolClass::create([...$data,'institution_id'=>$institutionId,'status'=>'active']);
         return back()->with('success','Kelas berhasil ditambahkan.');
     }
@@ -100,6 +112,7 @@ class AcademicController extends Controller
         $institutionId = $request->user()->institution_id;
         $data = $request->validate([
             'academic_year_id'=>['required','exists:academic_years,id'],
+            'branch_id'=>['nullable','exists:branches,id'],
             'program_id'=>['required','exists:programs,id'],
             'name'=>['required','string','max:190'],
             'code'=>['required','string','max:50',Rule::unique('learning_groups')->where('academic_year_id',$request->integer('academic_year_id'))],
@@ -107,6 +120,7 @@ class AcademicController extends Controller
         ]);
         abort_unless(AcademicYear::where('institution_id',$institutionId)->whereKey($data['academic_year_id'])->exists(),403);
         abort_unless(Program::where('institution_id',$institutionId)->whereKey($data['program_id'])->exists(),403);
+        $data['branch_id'] = $this->resolveBranchId($institutionId, $data['branch_id'] ?? null);
         LearningGroup::create([...$data,'institution_id'=>$institutionId,'status'=>'active']);
         return back()->with('success','Kelompok belajar berhasil ditambahkan.');
     }
@@ -168,11 +182,24 @@ class AcademicController extends Controller
         Schedule::create([
             ...$data,
             'institution_id'=>$institutionId,
+            'branch_id'=>$teacherAssignment->schoolClass?->branch_id ?? $teacherAssignment->learningGroup?->branch_id ?? $this->resolveBranchId($institutionId),
             'class_id'=>$teacherAssignment->class_id,
             'learning_group_id'=>$teacherAssignment->learning_group_id,
             'program_id'=>$teacherAssignment->program_id,
             'status'=>'active',
         ]);
         return back()->with('success','Jadwal berhasil disimpan.');
+    }
+
+    private function resolveBranchId(int $institutionId, ?int $branchId = null): int
+    {
+        if ($branchId) {
+            return Branch::where('institution_id', $institutionId)->where('status', 'active')->findOrFail($branchId)->id;
+        }
+
+        return Branch::where('institution_id', $institutionId)
+            ->where('status', 'active')
+            ->orderByDesc('is_main')
+            ->value('id') ?? abort(422, 'Cabang utama belum tersedia.');
     }
 }
