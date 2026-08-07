@@ -9,6 +9,7 @@ use App\Models\LaunchCheck;
 use App\Models\LoginHistory;
 use App\Models\Meeting;
 use App\Models\QuranAudioSource;
+use App\Models\QuranAyah;
 use App\Models\QuranAyahTiming;
 use App\Models\Student;
 use App\Models\User;
@@ -34,8 +35,8 @@ class LaunchReadinessController extends Controller
 
         $sources = QuranAudioSource::where('institution_id', $institutionId)
             ->where('status', 'active')->get();
-        $timingCount = QuranAyahTiming::whereIn('quran_audio_source_id', $sources->pluck('id'))
-            ->whereBetween('surah_id', [78, 114])->count();
+        $timingCount = QuranAyahTiming::whereIn('quran_audio_source_id', $sources->pluck('id'))->count();
+        $corpusAyahs = QuranAyah::query()->count();
 
         return view('admin.launch-readiness.index', [
             'checks' => $checks,
@@ -46,6 +47,7 @@ class LaunchReadinessController extends Controller
                 'completedMeetings' => Meeting::where('institution_id', $institutionId)->where('status', 'completed')->count(),
                 'pendingTasks' => AssignmentRecipient::whereHas('assignment', fn ($q) => $q->where('institution_id', $institutionId))->whereIn('status', ['assigned','submitted','revision_needed'])->count(),
                 'qariSources' => $sources->count(),
+                'quranAyahs' => $corpusAyahs,
                 'quranTimings' => $timingCount,
             ],
             'recentLogins' => LoginHistory::with('user')->where('institution_id', $institutionId)->latest('logged_in_at')->limit(12)->get(),

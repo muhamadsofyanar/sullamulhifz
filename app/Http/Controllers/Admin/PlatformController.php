@@ -7,6 +7,8 @@ use App\Models\AcademicPeriod;
 use App\Models\AcademicYear;
 use App\Models\Branch;
 use App\Models\FeatureFlag;
+use App\Models\Institution;
+use App\Services\RoadmapStatusService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -24,7 +26,7 @@ class PlatformController extends Controller
             'years' => AcademicYear::query()->where('institution_id', $institutionId)->with('periods')->orderByDesc('start_date')->get(),
             'features' => FeatureFlag::query()->where('institution_id', $institutionId)->orderBy('feature_key')->get(),
             'featureCatalog' => $this->featureCatalog(),
-            'roadmapPhases' => $this->roadmapPhases(),
+            'roadmapPhases' => app(RoadmapStatusService::class)->phases(Institution::query()->findOrFail($institutionId)),
         ]);
     }
 
@@ -114,7 +116,7 @@ class PlatformController extends Controller
         return [
             'core_academic' => ['Fondasi akademik', 'Tahun ajaran, kelas, jadwal, pertemuan dan pembelajaran inti.'],
             'academy_portal' => ['Portal Academy', 'Portal LMS mandiri pada academy.sullamulhifz.or.id.'],
-            'quran_audio' => ['Quran Learning', 'Player Academy, playlist, qari, preset dan riwayat latihan.'],
+            'quran_audio' => ['Full Qur’an Learning', 'Mushaf 30 juz, dua qari, playlist, repeat, preset, bookmark dan riwayat baca.'],
             'parent_academy' => ['Parent Academy / LMS', 'Materi, modul, video dan progres keluarga.'],
             'teacher_academy' => ['Teacher Academy', 'Microlearning dan pengembangan kompetensi guru.'],
             'stifin_learning' => ['STIFIn Learning', 'STIFIn sebagai informasi pendamping, bukan label atau penentu kemampuan.'],
@@ -136,19 +138,4 @@ class PlatformController extends Controller
         ];
     }
 
-    private function roadmapPhases(): array
-    {
-        return [
-            1 => ['Fondasi Platform', 'ready'],
-            2 => ['Operasional TPA', 'ready'],
-            3 => ['Quran Learning', 'ready'],
-            4 => ['Sullamul Hifz Academy', 'ready'],
-            5 => ['Family Learning', 'ready'],
-            6 => ['Teacher Academy', 'ready'],
-            7 => ['Personalisasi & Marhalah', 'foundation'],
-            8 => ['Character & Talent', 'foundation'],
-            9 => ['Portfolio & Insight', 'foundation'],
-            10 => ['Ekosistem & Ekspansi', 'foundation'],
-        ];
-    }
 }

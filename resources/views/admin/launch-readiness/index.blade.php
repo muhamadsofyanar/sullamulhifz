@@ -1,13 +1,13 @@
 @extends('layouts.app',['pageTitle'=>'Kesiapan Peluncuran'])
 @section('content')
-<div class="page-head"><div><span class="eyebrow">V2.0.0 FAMILY LEARNING & ACADEMY</span><h1>Kesiapan Peluncuran</h1><p>Semua pemeriksaan harus berdasarkan pengujian nyata, bukan sekadar ditandai selesai.</p></div><span class="launch-score">{{ $completion }}%</span></div>
+<div class="page-head"><div><span class="eyebrow">V2.4.0 · RELEASE GATE 10 FASE</span><h1>Kesiapan Peluncuran</h1><p>Semua pemeriksaan harus berdasarkan pengujian nyata, bukan sekadar ditandai selesai.</p></div><span class="launch-score">{{ $completion }}%</span></div>
 <div class="launch-progress"><span style="width:{{ $completion }}%"></span></div>
 
 <div class="stats-grid four">
     <div class="stat-card"><span>Santri aktif</span><strong>{{ $stats['students'] }}</strong></div>
     <div class="stat-card"><span>Akun aktif</span><strong>{{ $stats['activeUsers'] }}</strong></div>
     <div class="stat-card"><span>Pertemuan selesai</span><strong>{{ $stats['completedMeetings'] }}</strong></div>
-    <div class="stat-card"><span>Timing dua qari</span><strong>{{ $stats['quranTimings'] }}/1128</strong></div>
+    <div class="stat-card"><span>Korpus / audio Full Qur’an</span><strong>{{ $stats['quranAyahs'] }}/6236 · {{ $stats['quranTimings'] }}/12472</strong></div>
 </div>
 
 @foreach($checks as $category=>$items)

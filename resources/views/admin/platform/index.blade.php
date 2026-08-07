@@ -2,17 +2,46 @@
 @section('content')
 <div class="page-head">
     <div>
-        <span class="eyebrow">SULLAMUL ḤIFẒ V2.3</span>
+        <span class="eyebrow">SULLAMUL ḤIFẒ V2.4</span>
         <h1>Fondasi Platform</h1>
         <p>Kelola cabang, periode akademik, dan modul pengembangan tanpa mengubah source code.</p>
     </div>
 </div>
 
-<section class="card" style="margin-bottom:18px">
-    <div class="section-head"><div><h2>Roadmap 10 Fase</h2><p class="muted">Fase 1–6 sudah memiliki implementasi yang dapat dipakai. Fase 7–10 memiliki fondasi data dan feature flag agar pengembangan berikutnya tidak perlu membongkar arsitektur.</p></div><span class="badge">v2.3</span></div>
-    <div class="admin-roadmap-grid">
-        @foreach($roadmapPhases as $number=>$phase)
-            <div class="admin-roadmap-phase {{ $phase[1] }}"><b>{{ $number }}</b><div><small>{{ $phase[1]==='ready'?'SIAP':'FONDASI' }}</small><strong>{{ $phase[0] }}</strong></div></div>
+<section class="card roadmap-dashboard" style="margin-bottom:18px">
+    <div class="section-head">
+        <div>
+            <h2>Roadmap Pengembangan 10 Fase</h2>
+            <p class="muted">Status dihitung dari implementasi nyata dan verifikasi produksi. Fase tidak akan tampil 100% hanya karena menu atau tabelnya sudah ada.</p>
+        </div>
+        <a class="button secondary" href="{{ route('admin.launch-readiness.index') }}">Verifikasi Produksi</a>
+    </div>
+    <div class="roadmap-status-grid">
+        @foreach($roadmapPhases as $phase)
+            <article class="roadmap-status-card {{ $phase['status'] }}">
+                <div class="roadmap-status-head">
+                    <span class="roadmap-number">{{ $phase['number'] }}</span>
+                    <div><small>FASE {{ $phase['number'] }}</small><strong>{{ $phase['name'] }}</strong></div>
+                    <b>{{ $phase['percent'] }}%</b>
+                </div>
+                <div class="roadmap-progress" aria-label="Progres {{ $phase['percent'] }} persen"><span style="width:{{ $phase['percent'] }}%"></span></div>
+                <p>{{ $phase['purpose'] }}</p>
+                <div class="roadmap-metrics"><span>Implementasi <b>{{ $phase['implementation_pct'] }}%</b></span><span>Validasi <b>{{ $phase['validation_pct'] }}%</b></span></div>
+                <details>
+                    <summary>Lihat kriteria</summary>
+                    <div class="roadmap-criteria">
+                        <strong>Implementasi</strong>
+                        @foreach($phase['implementation'] as $criterion)
+                            <span class="{{ $criterion['passed'] ? 'pass' : 'pending' }}">{{ $criterion['passed'] ? '✓' : '○' }} {{ $criterion['label'] }}</span>
+                        @endforeach
+                        <strong>Validasi produksi</strong>
+                        @foreach($phase['validation'] as $criterion)
+                            <span class="{{ $criterion['passed'] ? 'pass' : 'pending' }}">{{ $criterion['passed'] ? '✓' : '○' }} {{ $criterion['label'] }}</span>
+                        @endforeach
+                    </div>
+                </details>
+                @if($phase['percent'] < 100)<small class="roadmap-next"><b>Berikutnya:</b> {{ $phase['next'] }}</small>@else<small class="roadmap-next complete">Fase ini telah memenuhi seluruh kriteria implementasi dan validasi.</small>@endif
+            </article>
         @endforeach
     </div>
 </section>

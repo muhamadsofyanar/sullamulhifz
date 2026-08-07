@@ -14,6 +14,7 @@
     <link rel="stylesheet" href="/css/app-v210.css?v={{ @filemtime(public_path('css/app-v210.css')) ?: '210' }}">
     <link rel="stylesheet" href="/css/app-v220.css?v={{ @filemtime(public_path('css/app-v220.css')) ?: '220' }}">
     <link rel="stylesheet" href="/css/app-v230.css?v={{ @filemtime(public_path('css/app-v230.css')) ?: '230' }}">
+    <link rel="stylesheet" href="/css/app-v240.css?v={{ @filemtime(public_path('css/app-v240.css')) ?: '240' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>

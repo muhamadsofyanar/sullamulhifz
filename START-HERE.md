@@ -1,18 +1,21 @@
-# Mulai di Sini — Sullamul Ḥifẓ v2.3.0
+# Mulai di Sini — Sullamul Ḥifẓ v2.4.0
 
-Rilis aktif: **v2.3.0 Integrated Learning Ecosystem**.
+Rilis kandidat: **v2.4.0 Full Qur’an & Mushaf Engine**.
 
-## Jalur tercepat
-
+## Sebelum deploy
 1. Backup database dan persistent volume `storage` di Coolify.
-2. Baca `DEPLOY-QUICK-V2.3.0.txt` dan `UPGRADE-V2.3.0.md`.
-3. Ekstrak paket dan salin **isi folder proyek** ke root repository GitHub.
-4. Jangan mengunggah `.env`, dump database, atau isi storage produksi.
-5. Pertahankan `APP_KEY` lama; gunakan `AUTO_MIGRATE=true`, `BOOTSTRAP_PRODUCTION=false`, dan `APP_DEBUG=false`.
-6. Pastikan `ACADEMY_PORTAL_URL=https://academy.sullamulhifz.or.id` dan `SESSION_DOMAIN=.sullamulhifz.or.id`.
-7. Push ke branch yang dipakai Coolify lalu redeploy satu kali.
-8. Tunggu log `Ekosistem v2.3.0 siap` dan `Menjalankan NGINX Unit...`.
-9. Uji App dan Academy, terutama `/audio`, `/jalur-belajar`, bookmark, refleksi, dan Admin → Fondasi Platform.
-10. Tambahkan Scheduled Task Coolify `php artisan schedule:run` setiap menit bila belum ada.
+2. Baca `DEPLOY-QUICK-V2.4.0.txt` dan `UPGRADE-V2.4.0.md`.
+3. Salin **isi folder proyek** ke root repository GitHub; jangan upload folder pembungkus.
+4. Jangan upload `.env`, dump database, atau isi storage produksi.
+5. Pertahankan `APP_KEY` lama dan gunakan `AUTO_MIGRATE=true`, `BOOTSTRAP_PRODUCTION=false`, `APP_DEBUG=false`.
+6. Push branch `main`, lalu Redeploy Coolify sekali.
 
-Rilis ini tidak menjalankan `db:wipe` atau `migrate:fresh`. Seeder startup dibuat idempoten dan tidak boleh menimpa perubahan konten/feature flag yang telah dilakukan admin.
+Web tidak menunggu seluruh audio selesai. Full Qur’an corpus dan dua qari dilengkapi di background dan dapat dilanjutkan pada redeploy berikutnya tanpa menghapus bagian yang sudah lengkap.
+
+## Setelah deploy
+- cek **Admin → Pustaka Qur’an**;
+- cek **Academy → Audio Qur’an**;
+- cek **Admin → Fondasi Platform** untuk status resmi 10 fase;
+- gunakan **Admin → Kesiapan Peluncuran** untuk menyimpan bukti validasi produksi.
+
+Launch penuh belum direkomendasikan sampai seluruh 10 fase mencapai 100%.

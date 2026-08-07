@@ -6,9 +6,11 @@ use App\Models\ClassEnrollment;
 use App\Models\GroupMembership;
 use App\Models\MemorizationTarget;
 use App\Models\QuranAudioSource;
+use App\Models\QuranAyah;
 use App\Models\QuranAyahTiming;
 use App\Models\QuranPracticePreset;
 use App\Models\QuranPracticeSession;
+use App\Models\QuranReadingProgress;
 use App\Models\QuranRubu;
 use App\Models\QuranSurah;
 use App\Models\QuranVideoResource;
@@ -65,19 +67,15 @@ class QuranPracticeController extends Controller
                 ->latest()
                 ->limit(50)
                 ->get(),
-            'surahs' => QuranSurah::query()->whereBetween('id', [78, 114])->orderByDesc('id')->get(),
+            'surahs' => QuranSurah::query()->orderBy('id')->get(),
             'rubus' => QuranRubu::query()->where('juz_number', 30)->where('status', 'active')->orderBy('rubu_number')->get(),
-            'pages' => $defaultSource
-                ? QuranAyahTiming::query()
-                    ->where('quran_audio_source_id', $defaultSource->id)
-                    ->whereNotNull('page_number')
-                    ->distinct()
-                    ->orderBy('page_number')
-                    ->pluck('page_number')
-                : collect(),
+            'pages' => QuranAyah::query()->whereNotNull('page_number')->distinct()->orderBy('page_number')->pluck('page_number'),
+            'juzs' => QuranAyah::query()->whereNotNull('juz_number')->distinct()->orderBy('juz_number')->pluck('juz_number'),
+            'hizbQuarters' => QuranAyah::query()->whereNotNull('hizb_quarter')->distinct()->orderBy('hizb_quarter')->pluck('hizb_quarter'),
             'timingCount' => $defaultSource
-                ? QuranAyahTiming::query()->where('quran_audio_source_id', $defaultSource->id)->whereBetween('surah_id', [78, 114])->count()
+                ? QuranAyahTiming::query()->where('quran_audio_source_id', $defaultSource->id)->count()
                 : 0,
+            'quranAyahCount' => QuranAyah::query()->count(),
         ]);
     }
 
@@ -87,9 +85,11 @@ class QuranPracticeController extends Controller
             'preset_id' => ['nullable', 'integer', 'exists:quran_practice_presets,id'],
             'target_id' => ['nullable', 'integer', 'exists:memorization_targets,id'],
             'source_id' => ['nullable', 'integer', 'exists:quran_audio_sources,id'],
-            'mode' => ['nullable', Rule::in(['ayah', 'range', 'surah', 'page', 'rubu'])],
+            'mode' => ['nullable', Rule::in(['ayah', 'range', 'surah', 'page', 'juz', 'hizb_quarter', 'rubu'])],
             'rubu_id' => ['nullable', 'integer', 'exists:quran_rubus,id'],
             'page_number' => ['nullable', 'integer', 'min:1', 'max:604'],
+            'juz_number' => ['nullable', 'integer', 'min:1', 'max:30'],
+            'hizb_quarter' => ['nullable', 'integer', 'min:1', 'max:240'],
             'surah_id' => ['nullable', 'integer', 'exists:quran_surahs,id'],
             'start_verse' => ['nullable', 'integer', 'min:1'],
             'end_verse' => ['nullable', 'integer', 'min:1'],
@@ -119,6 +119,8 @@ class QuranPracticeController extends Controller
                 'mode' => $data['mode'] ?? 'range',
                 'rubu_id' => $data['rubu_id'] ?? null,
                 'page_number' => $data['page_number'] ?? null,
+                'juz_number' => $data['juz_number'] ?? null,
+                'hizb_quarter' => $data['hizb_quarter'] ?? null,
                 'start_surah_id' => $data['surah_id'] ?? null,
                 'end_surah_id' => $data['surah_id'] ?? null,
                 'start_verse' => $data['start_verse'] ?? 1,
@@ -147,7 +149,7 @@ class QuranPracticeController extends Controller
         $data = $request->validate([
             'student_id' => ['nullable', 'integer', 'exists:students,id'],
             'preset_id' => ['nullable', 'integer', 'exists:quran_practice_presets,id'],
-            'mode' => ['required', Rule::in(['ayah', 'range', 'surah', 'page', 'rubu'])],
+            'mode' => ['required', Rule::in(['ayah', 'range', 'surah', 'page', 'juz', 'hizb_quarter', 'rubu'])],
             'selection' => ['required', 'array'],
             'repeat_target' => ['required', 'integer', 'min:0', 'max:100'],
         ]);
@@ -189,9 +191,47 @@ class QuranPracticeController extends Controller
             'repeat_completed' => ['required', 'integer', 'min:0', 'max:1000'],
             'duration_seconds' => ['required', 'integer', 'min:0', 'max:86400'],
             'status' => ['required', Rule::in(['completed', 'stopped'])],
+            'last_surah_id' => ['nullable', 'integer', 'exists:quran_surahs,id'],
+            'last_verse_number' => ['nullable', 'integer', 'min:1'],
+            'last_global_number' => ['nullable', 'integer', 'min:1', 'max:6236'],
+            'last_juz_number' => ['nullable', 'integer', 'min:1', 'max:30'],
+            'last_page_number' => ['nullable', 'integer', 'min:1', 'max:604'],
+            'last_hizb_quarter' => ['nullable', 'integer', 'min:1', 'max:240'],
+            'source_id' => ['nullable', 'integer', 'exists:quran_audio_sources,id'],
         ]);
 
-        $session->update([...$data, 'completed_at' => now()]);
+        if (! empty($data['source_id'])) {
+            abort_unless(QuranAudioSource::query()
+                ->where('institution_id', $request->user()->institution_id)
+                ->whereKey($data['source_id'])
+                ->exists(), 403, 'Sumber audio tidak termasuk lembaga ini.');
+        }
+
+        $session->update([
+            'repeat_completed' => $data['repeat_completed'],
+            'duration_seconds' => $data['duration_seconds'],
+            'status' => $data['status'],
+            'completed_at' => now(),
+        ]);
+
+        if (! empty($data['last_surah_id']) && ! empty($data['last_verse_number'])) {
+            $progress = QuranReadingProgress::query()->firstOrNew([
+                'institution_id' => $request->user()->institution_id,
+                'user_id' => $request->user()->id,
+            ]);
+            $progress->fill([
+                'surah_id' => $data['last_surah_id'],
+                'verse_number' => $data['last_verse_number'],
+                'global_number' => $data['last_global_number'] ?? null,
+                'juz_number' => $data['last_juz_number'] ?? null,
+                'page_number' => $data['last_page_number'] ?? null,
+                'hizb_quarter' => $data['last_hizb_quarter'] ?? null,
+                'quran_audio_source_id' => $data['source_id'] ?? null,
+                'last_read_at' => now(),
+                'visit_count' => ((int) ($progress->visit_count ?? 0)) + 1,
+            ]);
+            $progress->save();
+        }
 
         return response()->json(['saved' => true]);
     }

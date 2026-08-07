@@ -1,0 +1,20 @@
+SULLAMUL HIFZ v2.4.0 — DEPLOY CEPAT
+
+1. Backup database + volume storage.
+2. Upload ISI folder sullamulhifz-v2.4.0 ke root repository GitHub.
+3. Environment penting:
+   AUTO_MIGRATE=true
+   BOOTSTRAP_PRODUCTION=false
+   APP_DEBUG=false
+   DOMAIN_SEPARATION_ENABLED=true
+   ACADEMY_HOST=academy.sullamulhifz.or.id
+   ACADEMY_PORTAL_URL=https://academy.sullamulhifz.or.id
+   SESSION_DOMAIN=.sullamulhifz.or.id
+   SESSION_SECURE_COOKIE=true
+   QURAN_AUDIO_AUTO_SYNC=true
+4. Commit main dan Redeploy Coolify satu kali.
+5. Web akan hidup lebih dahulu; sync 30 juz + dua qari berjalan di background.
+6. Cek Admin > Pustaka Qur'an dan Admin > Fondasi Platform.
+7. Fase 2 JANGAN ditandai 100% sebelum dashboard data lengkap dan 4 gate validasi produksi diuji.
+
+Build report: BUILD-REPORT-V2.4.0.md

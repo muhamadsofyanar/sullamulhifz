@@ -2,11 +2,18 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademyBookmark;
 use App\Models\QuranAudioSource;
+use App\Models\QuranAyah;
 use App\Models\QuranAyahTiming;
 use App\Models\QuranPracticePreset;
+use App\Models\QuranPracticeSession;
+use App\Models\QuranReadingProgress;
 use App\Models\QuranRubu;
 use App\Models\QuranSurah;
+use App\Services\QuranAudioSyncService;
+use App\Services\QuranCorpusSyncService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -39,37 +46,88 @@ class AcademyQuranController extends QuranPracticeController
             ->orderBy('title')
             ->get();
 
-        $pages = $defaultSource
-            ? QuranAyahTiming::query()
-                ->where('quran_audio_source_id', $defaultSource->id)
-                ->whereNotNull('page_number')
-                ->distinct()
-                ->orderBy('page_number')
-                ->pluck('page_number')
-            : collect();
+        $corpusStatus = app(QuranCorpusSyncService::class)->status();
+        $readingProgress = QuranReadingProgress::query()
+            ->with(['surah', 'source'])
+            ->where('institution_id', $institutionId)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        $defaultMushaf = collect();
+        if ((int) ($corpusStatus['ayahs'] ?? 0) > 0) {
+            $defaultSurahId = $readingProgress?->surah_id ?: 1;
+            $defaultMushaf = QuranAyah::query()
+                ->with('surah')
+                ->where('surah_id', $defaultSurahId)
+                ->orderBy('verse_number')
+                ->limit(20)
+                ->get();
+        }
 
         return view('academy.audio-player', [
-            'pageTitle' => 'Audio & Latihan Al-Qur’an',
+            'pageTitle' => 'Mushaf & Audio Al-Qur’an',
             'sources' => $sources,
             'defaultSource' => $defaultSource,
             'presets' => $presets,
             'featuredPresets' => $presets->where('is_featured', true)->values(),
-            'surahs' => QuranSurah::query()->whereBetween('id', [78, 114])->orderByDesc('id')->get(),
+            'surahs' => QuranSurah::query()->orderBy('id')->get(),
             'rubus' => QuranRubu::query()->where('juz_number', 30)->where('status', 'active')->orderBy('rubu_number')->get(),
-            'pages' => $pages,
+            'pages' => QuranAyah::query()->whereNotNull('page_number')->distinct()->orderBy('page_number')->pluck('page_number'),
+            'juzs' => QuranAyah::query()->whereNotNull('juz_number')->distinct()->orderBy('juz_number')->pluck('juz_number'),
+            'hizbQuarters' => QuranAyah::query()->whereNotNull('hizb_quarter')->distinct()->orderBy('hizb_quarter')->pluck('hizb_quarter'),
             'timingCount' => $defaultSource
-                ? QuranAyahTiming::query()->where('quran_audio_source_id', $defaultSource->id)->whereBetween('surah_id', [78, 114])->count()
+                ? QuranAyahTiming::query()->where('quran_audio_source_id', $defaultSource->id)->count()
                 : 0,
-            'recentSessions' => \App\Models\QuranPracticeSession::query()
+            'expectedTimingCount' => QuranAudioSyncService::FULL_QURAN_AYAH_COUNT,
+            'corpusStatus' => $corpusStatus,
+            'readingProgress' => $readingProgress,
+            'defaultMushaf' => $defaultMushaf,
+            'recentSessions' => QuranPracticeSession::query()
                 ->where('user_id', $request->user()->id)
                 ->latest('started_at')
                 ->limit(6)
                 ->get(),
-            'bookmarkedPresetIds' => \App\Models\AcademyBookmark::query()
+            'bookmarkedPresetIds' => AcademyBookmark::query()
                 ->where('institution_id', $institutionId)
                 ->where('user_id', $request->user()->id)
                 ->where('bookmark_type', 'quran_preset')
                 ->pluck('bookmark_id'),
+            'bookmarkedAyahGlobals' => AcademyBookmark::query()
+                ->where('institution_id', $institutionId)
+                ->where('user_id', $request->user()->id)
+                ->where('bookmark_type', 'quran_ayah')
+                ->pluck('bookmark_id'),
         ]);
+    }
+
+    public function toggleAyahBookmark(Request $request, int $globalNumber): JsonResponse
+    {
+        $ayah = QuranAyah::query()->with('surah')->where('global_number', $globalNumber)->firstOrFail();
+        $query = AcademyBookmark::query()
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('user_id', $request->user()->id)
+            ->where('bookmark_type', 'quran_ayah')
+            ->where('bookmark_id', $globalNumber);
+
+        if ($query->exists()) {
+            $query->delete();
+            return response()->json(['saved' => false, 'global_number' => $globalNumber]);
+        }
+
+        AcademyBookmark::query()->create([
+            'institution_id' => $request->user()->institution_id,
+            'user_id' => $request->user()->id,
+            'bookmark_type' => 'quran_ayah',
+            'bookmark_id' => $globalNumber,
+            'label' => ($ayah->surah?->name_latin ?? 'Surah').' ayat '.$ayah->verse_number,
+            'context' => [
+                'surah_id' => $ayah->surah_id,
+                'verse_number' => $ayah->verse_number,
+                'juz_number' => $ayah->juz_number,
+                'page_number' => $ayah->page_number,
+            ],
+        ]);
+
+        return response()->json(['saved' => true, 'global_number' => $globalNumber]);
     }
 }

@@ -33,7 +33,7 @@ class LearningPlanController extends Controller
             'activeYear' => $activeYear,
             'students' => Student::with('currentEnrollment.schoolClass')->where('institution_id', $request->user()->institution_id)->whereIn('id', $studentIds)->orderBy('full_name')->get(),
             'rubus' => QuranRubu::where('status', 'active')->orderBy('rubu_number')->get(),
-            'surahs' => QuranSurah::whereBetween('id', [78,114])->orderByDesc('id')->get(),
+            'surahs' => QuranSurah::orderBy('id')->get(),
             'marhalah' => MarhalahType::where('status', 'active')->orderBy('sequence')->get(),
             'targets' => MemorizationTarget::with(['student.currentEnrollment.schoolClass','rubu','surah','marhalah'])
                 ->where('institution_id', $request->user()->institution_id)

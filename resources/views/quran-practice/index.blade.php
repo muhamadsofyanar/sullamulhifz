@@ -17,7 +17,7 @@
 @endif
 
 @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']))
-<div class="quran-admin-readiness" aria-label="Status pustaka Al-Qur'an"><span><b>{{ $timingCount }}/564</b> ayat</span><span><b>{{ $presets->count() }}</b> latihan</span><span><b>{{ $sources->count() }}</b> qari</span></div>
+<div class="quran-admin-readiness" aria-label="Status pustaka Al-Qur'an"><span><b>{{ $timingCount }}/6236</b> ayat</span><span><b>{{ $presets->count() }}</b> latihan</span><span><b>{{ $sources->count() }}</b> qari</span></div>
 @endif
 
 @if($targets->isNotEmpty())
@@ -95,12 +95,14 @@
             </label>
 
             <div class="form-grid quran-primary-fields">
-                <label class="senior-field">Jenis latihan<select name="mode" data-quran-mode><option value="ayah">Satu ayat</option><option value="range" selected>Beberapa ayat</option><option value="surah">Satu surah</option><option value="page">Satu halaman</option><option value="rubu">Satu rubu’ Juz 30</option></select></label>
+                <label class="senior-field">Jenis latihan<select name="mode" data-quran-mode><option value="ayah">Satu ayat</option><option value="range" selected>Beberapa ayat</option><option value="surah">Satu surah</option><option value="juz">Satu juz</option><option value="page">Satu halaman</option><option value="hizb_quarter">Satu Rubu‘ al-Hizb</option><option value="rubu">Milestone Juz 30 Sullam</option></select></label>
                 <label class="senior-field" data-quran-surah>Surah<select name="surah_id">@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
             </div>
 
             <div class="quran-verse-pair" data-quran-verses><label>Ayat mulai<input type="number" name="start_verse" min="1" value="1"></label><span>sampai</span><label>Ayat akhir<input type="number" name="end_verse" min="1" value="5"></label></div>
             <label class="senior-field" data-quran-page hidden>Halaman Mushaf<select name="page_number"><option value="">Pilih halaman</option>@foreach($pages as $page)<option value="{{ $page }}">Halaman {{ $page }}</option>@endforeach</select></label>
+            <label class="senior-field" data-quran-juz hidden>Juz<select name="juz_number"><option value="">Pilih juz</option>@foreach($juzs as $juz)<option value="{{ $juz }}">Juz {{ $juz }}</option>@endforeach</select></label>
+            <label class="senior-field" data-quran-hizb-quarter hidden>Rubu‘ al-Hizb<select name="hizb_quarter"><option value="">Pilih rubu‘</option>@foreach($hizbQuarters as $quarter)<option value="{{ $quarter }}">Rubu‘ {{ $quarter }}/240</option>@endforeach</select></label>
             <label class="senior-field" data-quran-rubu hidden>Rubu’ Juz 30<select name="rubu_id"><option value="">Pilih rubu’</option>@foreach($rubus as $rubu)<option value="{{ $rubu->id }}">{{ $rubu->name }}</option>@endforeach</select></label>
 
             <div class="quran-repeat-box"><span>Jumlah pengulangan</span><div class="quran-repeat-stepper"><button type="button" data-repeat-minus aria-label="Kurangi pengulangan">−</button><strong data-repeat-label>10×</strong><button type="button" data-repeat-plus aria-label="Tambah pengulangan">+</button></div><select name="repeat_count" data-repeat-select aria-label="Jumlah pengulangan"><option value="1">1×</option><option value="3">3×</option><option value="5">5×</option><option value="10" selected>10×</option><option value="20">20×</option><option value="0">Tanpa batas</option></select></div>
@@ -123,7 +125,7 @@
 <script>
 window.addEventListener('DOMContentLoaded',()=>{
 const csrf=document.querySelector('meta[name="csrf-token"]')?.content||'';const form=document.getElementById('quran-builder');const audio=document.getElementById('quran-audio');const mode=form?.querySelector('[data-quran-mode]');const player={payload:null,index:0,itemRepeat:0,cycle:0,playing:false,startedAt:null,sessionId:null,timer:null,segmentEnding:false};const el=s=>document.querySelector(s);
-const showMode=()=>{const m=mode.value;el('[data-quran-surah]').hidden=['page','rubu'].includes(m);el('[data-quran-verses]').hidden=['surah','page','rubu'].includes(m);el('[data-quran-page]').hidden=m!=='page';el('[data-quran-rubu]').hidden=m!=='rubu';if(m==='ayah'){form.end_verse.value=form.start_verse.value||1}};
+const showMode=()=>{const m=mode.value;el('[data-quran-surah]').hidden=['page','juz','hizb_quarter','rubu'].includes(m);el('[data-quran-verses]').hidden=['surah','page','juz','hizb_quarter','rubu'].includes(m);el('[data-quran-page]').hidden=m!=='page';el('[data-quran-juz]').hidden=m!=='juz';el('[data-quran-hizb-quarter]').hidden=m!=='hizb_quarter';el('[data-quran-rubu]').hidden=m!=='rubu';if(m==='ayah'){form.end_verse.value=form.start_verse.value||1}};
 const qariSource=form?.querySelector('[data-qari-source]');const showQari=()=>{const option=qariSource?.selectedOptions?.[0];if(el('[data-qari-description]'))el('[data-qari-description]').textContent=option?.dataset.description||option?.dataset.role||''};qariSource?.addEventListener('change',showQari);showQari();mode?.addEventListener('change',showMode);form?.start_verse.addEventListener('input',()=>{if(mode.value==='ayah')form.end_verse.value=form.start_verse.value});showMode();
 const repeatSelect=form?.querySelector('[data-repeat-select]');const repeatValues=['1','3','5','10','20','0'];const updateRepeat=()=>{const value=repeatSelect?.value||'10';if(el('[data-repeat-label]'))el('[data-repeat-label]').textContent=value==='0'?'∞':value+'×'};document.querySelector('[data-repeat-minus]')?.addEventListener('click',()=>{let i=Math.max(0,repeatValues.indexOf(repeatSelect.value)-1);repeatSelect.value=repeatValues[i];updateRepeat()});document.querySelector('[data-repeat-plus]')?.addEventListener('click',()=>{let current=repeatValues.indexOf(repeatSelect.value);let i=Math.min(repeatValues.length-1,current+1);repeatSelect.value=repeatValues[i];updateRepeat()});repeatSelect?.addEventListener('change',updateRepeat);updateRepeat();
 const requestPlaylist=async params=>{const response=await fetch(`{{ route('quran-practice.playlist') }}?${new URLSearchParams(params)}`,{headers:{Accept:'application/json'}});const json=await response.json();if(!response.ok)throw new Error(Object.values(json.errors||{}).flat().join(' ')||json.message||'Latihan belum dapat dimuat.');return json};

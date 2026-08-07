@@ -82,6 +82,7 @@ Route::domain((string) config('sullam.academy_host'))
         Route::get('/tersimpan', [AcademyExperienceController::class, 'bookmarks'])->name('bookmarks');
         Route::post('/materi/{lesson}/simpan', [AcademyExperienceController::class, 'toggleBookmark'])->name('lesson.bookmark');
         Route::post('/audio/preset/{preset}/simpan', [AcademyExperienceController::class, 'togglePresetBookmark'])->middleware('feature:quran_audio')->name('audio.preset.bookmark');
+        Route::post('/audio/ayah/{globalNumber}/simpan', [AcademyQuranController::class, 'toggleAyahBookmark'])->middleware('feature:quran_audio')->whereNumber('globalNumber')->name('audio.ayah.bookmark');
         Route::post('/materi/{lesson}/refleksi', [AcademyExperienceController::class, 'storeReflection'])->middleware('feature:academy_reflections')->name('lesson.reflection');
         Route::get('/ekosistem', [AcademyExperienceController::class, 'ecosystem'])->name('ecosystem');
         Route::get('/artikel', [AcademyController::class, 'articles'])->name('articles');
@@ -207,6 +208,7 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::delete('/academy/path-items/{item}', [AdminAcademyController::class, 'destroyPathItem'])->middleware(['permission:academy.manage','feature:learning_paths'])->name('academy.path-items.destroy');
 
             Route::get('/quran-library', [QuranLibraryController::class, 'index'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.index');
+            Route::post('/quran-library/sync-corpus', [QuranLibraryController::class, 'syncCorpus'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.sync-corpus');
             Route::post('/quran-library/sync', [QuranLibraryController::class, 'sync'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.sync');
             Route::post('/quran-library/videos', [QuranLibraryController::class, 'storeVideo'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.videos.store');
             Route::put('/quran-library/videos/{video}', [QuranLibraryController::class, 'updateVideo'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.videos.update');

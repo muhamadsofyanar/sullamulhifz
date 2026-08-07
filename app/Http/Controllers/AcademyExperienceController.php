@@ -7,9 +7,12 @@ use App\Models\AcademyLearningPath;
 use App\Models\AcademyLesson;
 use App\Models\AcademyLessonProgress;
 use App\Models\AcademyReflection;
+use App\Models\QuranAyah;
 use App\Models\QuranPracticePreset;
 use App\Models\QuranPracticeSession;
 use App\Support\Feature;
+use App\Services\RoadmapStatusService;
+use App\Models\Institution;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -77,11 +80,13 @@ class AcademyExperienceController extends Controller
 
         $lessonIds = $rows->where('bookmark_type', 'lesson')->pluck('bookmark_id');
         $presetIds = $rows->where('bookmark_type', 'quran_preset')->pluck('bookmark_id');
+        $ayahGlobals = $rows->where('bookmark_type', 'quran_ayah')->pluck('bookmark_id');
 
         return view('academy.bookmarks', [
             'rows' => $rows,
             'lessons' => AcademyLesson::query()->with('module.program')->whereIn('id', $lessonIds)->get()->keyBy('id'),
             'presets' => QuranPracticePreset::query()->where('institution_id', $request->user()->institution_id)->whereIn('id', $presetIds)->get()->keyBy('id'),
+            'ayahs' => QuranAyah::query()->with('surah')->whereIn('global_number', $ayahGlobals)->get()->keyBy('global_number'),
         ]);
     }
 
@@ -175,18 +180,8 @@ class AcademyExperienceController extends Controller
     public function ecosystem(Request $request): View
     {
         $institutionId = (int) $request->user()->institution_id;
-        $phases = collect([
-            ['phase' => 1, 'title' => 'Fondasi Platform', 'status' => 'ready', 'features' => ['Keamanan & tenant', 'Permission', 'Media privat', 'PWA & deployment']],
-            ['phase' => 2, 'title' => 'Operasional TPA', 'status' => 'ready', 'features' => ['Akademik', 'Pertemuan', 'Tahsīn/Tahfizh/Murāja‘ah', 'Tugas & buku penghubung']],
-            ['phase' => 3, 'title' => 'Quran Learning', 'status' => 'ready', 'features' => ['Al-Husary', 'Al-Minshawi', 'Player Academy', 'Preset & riwayat latihan']],
-            ['phase' => 4, 'title' => 'Sullamul Hifz Academy', 'status' => 'ready', 'features' => ['Program', 'Modul', 'Materi', 'Progres & learning path']],
-            ['phase' => 5, 'title' => 'Family Learning', 'status' => 'ready', 'features' => ['Parent Academy', 'STIFIn Parenting', 'Aktivitas keluarga', 'Refleksi']],
-            ['phase' => 6, 'title' => 'Teacher Academy', 'status' => 'ready', 'features' => ['Orientasi guru', 'Personalisasi', 'Rekomendasi wali', 'Microlearning']],
-            ['phase' => 7, 'title' => 'Personalisasi & Marhalah', 'status' => 'foundation', 'features' => ['Marhalah', 'Observasi metode', 'Learning insight', 'STIFIn proporsional']],
-            ['phase' => 8, 'title' => 'Character & Talent', 'status' => 'foundation', 'features' => ['Pembinaan Jumat', 'Public speaking', 'Kreativitas', 'Olahraga & kerja sama']],
-            ['phase' => 9, 'title' => 'Portfolio & Insight', 'status' => 'foundation', 'features' => ['Portofolio anak', 'Insight berbasis bukti', 'Rapor berkembang', 'AI Assist tetap opsional']],
-            ['phase' => 10, 'title' => 'Ekosistem & Ekspansi', 'status' => 'foundation', 'features' => ['Community moderasi', 'API & integrasi', 'Multi-cabang/lembaga', 'Pembayaran opsional']],
-        ]);
+        $institution = Institution::query()->findOrFail($institutionId);
+        $phases = collect(app(RoadmapStatusService::class)->phases($institution));
 
         $enabled = \App\Models\FeatureFlag::query()
             ->where('institution_id', $institutionId)

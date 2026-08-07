@@ -6,6 +6,7 @@ use App\Models\Guardian;
 use App\Models\Institution;
 use App\Models\LearningGroup;
 use App\Models\QuranAudioSource;
+use App\Models\QuranAyah;
 use App\Models\QuranAyahTiming;
 use App\Models\QuranRubu;
 use App\Models\Student;
@@ -16,9 +17,11 @@ use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Schedule;
 use App\Services\QuranAudioSyncService;
+use App\Services\QuranCorpusSyncService;
+use App\Services\RoadmapStatusService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v2.3.0 — Integrated Learning Ecosystem.');
+    $this->info('Sullamul Hifz v2.4.0 — Full Qur’an & Mushaf Engine.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -113,10 +116,46 @@ Artisan::command('sullam:verify-academic-core', function (): int {
 })->purpose('Memeriksa tabel dan master data Academic Core v1.5.0');
 
 
+Artisan::command('sullam:ensure-quran-corpus {--force}', function (): int {
+    if (! Schema::hasTable('quran_ayahs')) {
+        $this->error('Tabel quran_ayahs belum tersedia. Jalankan migration terlebih dahulu.');
+        return 1;
+    }
+
+    try {
+        $result = app(QuranCorpusSyncService::class)->sync((bool) $this->option('force'));
+        $this->table(['Korpus', 'Jumlah', 'Target'], [
+            ['Surah', $result['surahs'], 114],
+            ['Ayat', $result['ayahs'], 6236],
+            ['Juz', $result['juz'], 30],
+            ['Halaman', $result['pages'], 604],
+            ['Rubu‘ al-Hizb', $result['rubus'], 240],
+        ]);
+        $this->info(($result['changed'] ? 'Korpus Full Qur’an diperbarui' : 'Korpus Full Qur’an sudah lengkap').'. Sumber: '.$result['source'].'.');
+        return $result['complete'] ? 0 : 1;
+    } catch (Throwable $exception) {
+        report($exception);
+        $this->warn('Korpus Full Qur’an belum lengkap — '.$exception->getMessage());
+        return 1;
+    }
+})->purpose('Mengisi 114 surah, 6.236 ayat, 30 juz, 604 halaman dan 240 Rubu al-Hizb');
+
 Artisan::command('sullam:ensure-quran-audio {--institution=}', function (): int {
     if (! Schema::hasTable('quran_audio_sources') || ! Schema::hasTable('quran_ayah_timings')) {
         $this->error('Tabel Quran Learning belum tersedia. Jalankan migration terlebih dahulu.');
         return 1;
+    }
+
+    $corpus = app(QuranCorpusSyncService::class);
+    if (! $corpus->isComplete()) {
+        $this->info('Korpus 30 juz belum lengkap; sinkronisasi korpus dijalankan lebih dahulu...');
+        try {
+            $corpus->sync();
+        } catch (Throwable $exception) {
+            report($exception);
+            $this->warn('Audio belum dapat disinkronkan karena korpus belum lengkap — '.$exception->getMessage());
+            return 1;
+        }
     }
 
     $query = Institution::query()->where('status', 'active');
@@ -144,32 +183,28 @@ Artisan::command('sullam:ensure-quran-audio {--institution=}', function (): int 
         $complete = $sources->count() === $requiredIds->count()
             && $sources->every(fn (QuranAudioSource $source): bool => QuranAyahTiming::query()
                 ->where('quran_audio_source_id', $source->id)
-                ->whereBetween('surah_id', [78, 114])
-                ->count() >= QuranAudioSyncService::JUZ_30_AYAH_COUNT);
+                ->count() >= QuranAudioSyncService::FULL_QURAN_AYAH_COUNT);
 
         if ($complete) {
             $defaultSource = $sources->firstWhere('is_default', true) ?: $sources->first();
             $service->seedPresets($institution, $defaultSource);
             foreach ($sources->sortByDesc('is_default') as $source) {
-                $count = QuranAyahTiming::query()
-                    ->where('quran_audio_source_id', $source->id)
-                    ->whereBetween('surah_id', [78, 114])
-                    ->count();
-                $this->info("{$institution->name}: {$source->reciter_name} lengkap ({$count}/564)." . ($source->is_default ? ' [utama]' : ''));
+                $count = QuranAyahTiming::query()->where('quran_audio_source_id', $source->id)->count();
+                $this->info("{$institution->name}: {$source->reciter_name} lengkap ({$count}/6236)." . ($source->is_default ? ' [utama]' : ''));
             }
             continue;
         }
 
-        $this->info("{$institution->name}: sinkronisasi dua qari Juz 30 dimulai...");
+        $this->info("{$institution->name}: sinkronisasi dua qari untuk 30 juz dimulai/resume...");
         try {
             $result = $service->syncInstitution($institution);
             foreach ($result['sources'] as $sourceResult) {
-                $this->info("{$institution->name}: {$sourceResult['reciter_name']} {$sourceResult['timings']}/564 timing." . ($sourceResult['is_default'] ? ' [utama]' : ''));
+                $this->info("{$institution->name}: {$sourceResult['reciter_name']} {$sourceResult['timings']}/6236 timing." . ($sourceResult['is_default'] ? ' [utama]' : ''));
             }
-            $this->info("Total: {$result['total_timings']}/{$result['expected_timings']} timing, {$result['pages']} halaman, {$result['presets']} preset.");
+            $this->info("Total: {$result['total_timings']}/{$result['expected_timings']} timing; {$result['presets']} preset.");
             if ($result['failed_surahs']) {
                 $hasFailure = true;
-                $this->warn('Bagian yang perlu dicoba ulang: '.implode('; ', $result['failed_surahs']));
+                $this->warn('Surah yang perlu dicoba ulang: '.implode('; ', $result['failed_surahs']));
             }
         } catch (Throwable $exception) {
             report($exception);
@@ -179,25 +214,32 @@ Artisan::command('sullam:ensure-quran-audio {--institution=}', function (): int 
     }
 
     return $hasFailure ? 1 : 0;
-})->purpose('Mengisi timing Juz 30 untuk Al-Husary dan Al-Minshawi secara idempoten');
+})->purpose('Mengisi timing Full Qur’an untuk Al-Husary dan Al-Minshawi secara idempoten/resume-safe');
 
 Artisan::command('sullam:verify-quran-learning', function (): int {
     $required = [
-        'quran_audio_sources',
-        'quran_ayah_timings',
-        'quran_video_resources',
-        'quran_practice_presets',
-        'quran_practice_sessions',
+        'quran_surahs', 'quran_ayahs', 'quran_reading_progress',
+        'quran_audio_sources', 'quran_ayah_timings', 'quran_video_resources',
+        'quran_practice_presets', 'quran_practice_sessions',
     ];
     $missing = collect($required)->reject(fn (string $table): bool => Schema::hasTable($table));
 
     if ($missing->isNotEmpty()) {
-        $this->error('Tabel Quran Learning belum lengkap: '.$missing->implode(', '));
+        $this->error('Struktur Full Qur’an belum lengkap: '.$missing->implode(', '));
         return 1;
     }
 
+    $corpus = app(QuranCorpusSyncService::class)->status();
+    $this->table(['Korpus', 'Tersedia', 'Target'], [
+        ['Surah', $corpus['surahs'], 114],
+        ['Ayat Uthmani', $corpus['ayahs'], 6236],
+        ['Juz', $corpus['juz'], 30],
+        ['Halaman', $corpus['pages'], 604],
+        ['Rubu‘ al-Hizb', $corpus['rubus'], 240],
+    ]);
+
     $rows = [];
-    $allComplete = true;
+    $allComplete = (bool) $corpus['complete'];
     foreach (Institution::query()->where('status', 'active')->get() as $institution) {
         $sources = QuranAudioSource::query()
             ->where('institution_id', $institution->id)
@@ -211,31 +253,46 @@ Artisan::command('sullam:verify-quran-learning', function (): int {
         }
 
         foreach ($sources as $source) {
-            $timings = QuranAyahTiming::query()
-                ->where('quran_audio_source_id', $source->id)
-                ->whereBetween('surah_id', [78, 114])
-                ->count();
-            $complete = $timings >= 564;
+            $timings = QuranAyahTiming::query()->where('quran_audio_source_id', $source->id)->count();
+            $complete = $timings >= QuranAudioSyncService::FULL_QURAN_AYAH_COUNT;
             $allComplete = $allComplete && $complete;
             $rows[] = [
                 $institution->name,
                 $source->reciter_name,
-                $source->is_default ? 'Utama' : 'Tambahan',
-                $timings.'/564',
-                $complete ? 'Lengkap' : 'Perlu sinkronisasi',
+                $source->is_default ? 'Utama' : 'Murāja‘ah',
+                $timings.'/6236',
+                $complete ? 'Lengkap' : 'Sedang dilengkapi',
             ];
         }
     }
 
     $this->table(['Lembaga', 'Qari', 'Peran', 'Timing', 'Status'], $rows);
-    $this->info('Struktur Quran Learning v1.6.1 siap: Al-Husary sebagai qari utama dan Al-Minshawi sebagai pilihan murajaah.');
-
-    if (! $allComplete) {
-        $this->warn('Timing belum lengkap. Aplikasi tetap dijalankan dan sinkronisasi dilanjutkan di latar belakang.');
+    if ($allComplete) {
+        $this->info('Full Qur’an Engine: korpus 30 juz dan dua qari telah lengkap.');
+    } else {
+        $this->warn('Full Qur’an Engine belum 100% secara data. Aplikasi tetap hidup; sinkronisasi dapat dilanjutkan di latar belakang.');
     }
 
+    // Struktur valid berarti container boleh tetap hidup. Kelengkapan data dilaporkan lewat roadmap, bukan mematikan aplikasi.
     return 0;
-})->purpose('Memeriksa dua sumber qari dan kelengkapan timing Juz 30 v1.6.1');
+})->purpose('Memeriksa korpus 30 juz dan dua sumber qari Full Qur’an v2.4.0');
+
+Artisan::command('sullam:roadmap-status {--institution=}', function (): int {
+    $query = Institution::query()->where('status', 'active');
+    if ($id = $this->option('institution')) {
+        $query->whereKey($id);
+    }
+
+    foreach ($query->get() as $institution) {
+        $this->newLine();
+        $this->info('Roadmap '.$institution->name);
+        $rows = collect(app(RoadmapStatusService::class)->phases($institution))->map(fn (array $phase): array => [
+            $phase['number'], $phase['name'], $phase['implementation_pct'].'%', $phase['validation_pct'].'%', $phase['percent'].'%', strtoupper($phase['status']),
+        ])->values()->all();
+        $this->table(['Fase', 'Pengembangan', 'Implementasi', 'Validasi', 'Total', 'Status'], $rows);
+    }
+    return 0;
+})->purpose('Menampilkan progres jujur 10 fase; 100% hanya setelah implementasi dan validasi lulus');
 
 Artisan::command('sullam:verify-launch', function (): int {
     $requiredTables = [
@@ -344,7 +401,7 @@ Artisan::command('sullam:verify-ecosystem', function (): int {
         $rows[] = [$institution->name, $programs, $paths, $features, $community, $paths >= 3 ? 'Siap' : 'Perlu seeder'];
     }
     $this->table(['Lembaga', 'Program Academy', 'Learning Path', 'Feature Flag', 'Community Draft', 'Status'], $rows);
-    $this->info('Ekosistem v2.3.0 siap: fase 1–6 operasional, fase 7–10 memiliki fondasi data dan feature flag.');
+    $this->info('Fondasi data ekosistem v2.3.0 tersedia. Status 10 fase ditentukan terpisah oleh sullam:roadmap-status dan tidak otomatis 100%.');
     return 0;
 })->purpose('Memeriksa fondasi roadmap 10 fase Sullamul Hifz v2.3.0');
 

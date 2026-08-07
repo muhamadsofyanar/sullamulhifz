@@ -1,16 +1,16 @@
 # Roadmap Sullamul Ḥifẓ
 
-## v2.0.0 — Family Learning & Academy Launch
-PWA mobile-first, Quran Player v2, Parent Academy, Teacher Academy, rekomendasi keluarga, dan launch readiness.
+Roadmap resmi terdiri dari 10 fase. Detail versi aktif ada di `ROADMAP-10-PHASES-V2.4.0.md`.
 
-## v2.0.x — Launch Stabilization
-Perbaikan hasil pilot, performa, aksesibilitas, dan incident kecil tanpa memperluas scope.
+1. Platform Core
+2. Full Qur’an Engine
+3. Tahfizh Learning Engine
+4. Marhalah & Milestone
+5. Academy LMS 2.0
+6. Family & Teacher Ecosystem
+7. Personal Learning System
+8. Character, Talent & Portfolio
+9. Insight, Automation & AI Assist
+10. Ecosystem / SaaS
 
-## v2.1.x — Family Ecosystem
-Community termoderasi, portofolio anak, dan konsultasi yang lebih matang.
-
-## v2.5+ — Personalization
-Observasi metode, bank strategi, STIFIn proporsional, dan asesmen kesiapan setelah cukup data nyata.
-
-## v3.x — Expansion
-Multi-cabang, penggunaan lembaga lain, pelatihan guru, standardisasi, kontrol mutu, dan lisensi bila diperlukan.
+Aturan utama: **100% bukan berarti menu tersedia.** Sebuah fase mencapai 100% hanya setelah implementasi lengkap dan validasi produksi lengkap. Launch penuh menunggu semua fase 100%.

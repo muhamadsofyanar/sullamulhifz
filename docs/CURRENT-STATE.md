@@ -1,17 +1,11 @@
 # Current State
 
-## Current candidate: v2.1.0
+## Current candidate: v2.4.0
 
-Fondasi aktif:
+Fokus aktif: **Fase 2 — Full Qur’an Engine**.
 
-- Laravel 13 / PHP 8.4 / MySQL / NGINX Unit / Coolify;
-- website publik, portal admin/guru/wali, PWA;
-- akademik, pertemuan, absensi, tahsīn, tahfizh, murāja‘ah, tugas dan buku penghubung;
-- Audio Qur’an, Parent Academy/LMS, rapor, pendaftaran dan website;
-- media terpusat dengan akses terautentikasi;
-- tenant-aware data access dan permission granular;
-- cabang, periode akademik, feature flag, invitation dan reset password;
-- icon system emerald–gold dan navigasi mobile sesuai peran;
-- API starter pada `/api/health` dan `/api/v1/meta`.
+Fondasi platform mencakup Laravel 13 / PHP 8.4 / MySQL / NGINX Unit / Coolify, website publik, portal operasional, Academy, PWA, permission granular, media privat, audit, cabang/periode, feature flag, Academy/LMS, dan Quran Learning.
 
-Fitur eksperimental seperti community tetap nonaktif secara default dan dapat diaktifkan dari **Admin → Fondasi Platform** setelah moderasi siap.
+v2.4.0 menaikkan Quran Learning dari Juz 30 menjadi struktur 30 juz: 114 surah, 6.236 ayat Uthmani, 604 halaman, 240 Rubu‘ al-Hizb, mushaf Academy, dua qari penuh, bookmark dan riwayat baca.
+
+Status roadmap tidak lagi memakai label “siap” statis. **Admin → Fondasi Platform** menghitung persentase implementasi dan validasi. Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100%.

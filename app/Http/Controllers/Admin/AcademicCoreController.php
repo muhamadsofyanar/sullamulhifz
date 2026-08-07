@@ -28,7 +28,7 @@ class AcademicCoreController extends Controller
             'years' => AcademicYear::where('institution_id', $institutionId)->latest('start_date')->get(),
             'students' => Student::with('currentEnrollment.schoolClass')->where('institution_id', $institutionId)->where('status', 'active')->orderBy('full_name')->get(),
             'rubus' => QuranRubu::with(['startSurah','endSurah'])->where('status', 'active')->orderBy('rubu_number')->get(),
-            'surahs' => QuranSurah::whereBetween('id', [78,114])->orderByDesc('id')->get(),
+            'surahs' => QuranSurah::orderBy('id')->get(),
             'marhalah' => MarhalahType::where('status', 'active')->orderBy('sequence')->get(),
             'targets' => MemorizationTarget::with(['student.currentEnrollment.schoolClass','rubu','surah','marhalah','assignedByTeacher'])
                 ->where('institution_id', $institutionId)->latest()->limit(40)->get(),
