@@ -18,5 +18,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;installButtons.forEach(btn=>btn.hidden=false)});
   installButtons.forEach(btn=>btn.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;installButtons.forEach(item=>item.hidden=true)}));
   window.addEventListener('appinstalled',()=>installButtons.forEach(btn=>btn.hidden=true));
-  if('serviceWorker'in navigator){navigator.serviceWorker.register('/service-worker.js?v=203').catch(()=>{})}
+  if('serviceWorker'in navigator){navigator.serviceWorker.register('/service-worker.js?v=204').catch(()=>{})}
 });

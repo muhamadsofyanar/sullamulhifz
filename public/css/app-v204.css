@@ -1,0 +1,33 @@
+/* Sullamul Hifz v2.0.4 — Academy Full Video & Focus Player */
+.academy-premium-lesson{max-width:1120px}
+.academy-video-stage{position:relative;margin:0 0 24px;padding:14px;background:linear-gradient(145deg,#052f28,#071b17);border:1px solid rgba(255,255,255,.08);border-radius:24px;box-shadow:0 22px 60px rgba(3,42,35,.18)}
+.academy-video-toolbar{display:flex;align-items:center;justify-content:space-between;gap:14px;color:#fff;padding:2px 2px 12px}
+.academy-video-toolbar strong,.academy-video-toolbar small{display:block}.academy-video-toolbar strong{font-size:14px}.academy-video-toolbar small{margin-top:2px;color:rgba(255,255,255,.68);font-size:11px}
+.academy-video-fullscreen{min-height:40px;padding:9px 13px;border:1px solid rgba(255,255,255,.18);border-radius:12px;background:rgba(255,255,255,.1);color:#fff;font:800 12px/1 inherit;cursor:pointer;transition:.18s ease}.academy-video-fullscreen:hover{background:rgba(255,255,255,.17)}
+.academy-video-stage .academy-video-shell{margin:0 auto;width:100%;max-width:100%;border-radius:17px;overflow:hidden;background:#000;box-shadow:none}
+.academy-video-stage .academy-video-shell.is-short{width:min(100%,520px);max-width:520px;aspect-ratio:9/16;height:auto}
+.academy-video-stage .academy-video-shell:not(.is-short){aspect-ratio:16/9}
+.academy-video-stage .academy-video-shell iframe{display:block;width:100%;height:100%;border:0;background:#000}
+.academy-video-note{margin:10px 4px 0;text-align:center;color:rgba(255,255,255,.66);font-size:11px;line-height:1.45}
+
+/* Fullscreen: preserve the original aspect ratio. No cover/cropping. */
+.academy-video-stage:fullscreen{width:100vw;height:100vh;margin:0;padding:0;border:0;border-radius:0;background:#000;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.academy-video-stage:fullscreen .academy-video-toolbar{position:absolute;z-index:3;top:max(12px,env(safe-area-inset-top));right:max(12px,env(safe-area-inset-right));padding:0}
+.academy-video-stage:fullscreen .academy-video-toolbar>div{display:none}
+.academy-video-stage:fullscreen .academy-video-fullscreen{background:rgba(0,0,0,.55);backdrop-filter:blur(10px)}
+.academy-video-stage:fullscreen .academy-video-note{display:none}
+.academy-video-stage.is-short-stage:fullscreen .academy-video-shell{width:auto;height:100vh;max-width:100vw;max-height:100vh;aspect-ratio:9/16;border-radius:0}
+.academy-video-stage:not(.is-short-stage):fullscreen .academy-video-shell{width:min(100vw,calc(100vh * 16 / 9));height:auto;max-height:100vh;aspect-ratio:16/9;border-radius:0}
+
+@media(max-width:780px){
+  .academy-premium-lesson{max-width:none}
+  .academy-video-stage{margin-left:-4px;margin-right:-4px;padding:10px;border-radius:20px}
+  .academy-video-toolbar{padding:2px 2px 9px}
+  .academy-video-stage .academy-video-shell.is-short{width:100%;max-width:520px}
+  .academy-video-fullscreen{min-height:44px;padding:10px 13px}
+}
+@media(max-width:430px){
+  .academy-video-stage{margin-left:-8px;margin-right:-8px;border-radius:18px;padding:8px}
+  .academy-video-toolbar strong{font-size:13px}.academy-video-toolbar small{font-size:10px}
+  .academy-video-fullscreen{font-size:11px}
+}
