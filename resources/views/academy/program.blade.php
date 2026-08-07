@@ -1,26 +1,40 @@
 @extends('layouts.app',['pageTitle'=>'Academy'])
 @section('content')
-<div class="page-head academy-program-head"><div><a class="back-link" href="{{ route('academy.index') }}">← Academy</a><span class="eyebrow">{{ strtoupper($program->audience==='guardian'?'PARENT ACADEMY':'ACADEMY GURU') }}</span><h1>{{ $program->title }}</h1><p>{{ $program->description ?: $program->summary }}</p></div></div>
-@php($allLessons=$program->modules->flatMap->lessons)
-@php($done=$progress->where('status','completed')->count())
-@php($percent=$allLessons->count() ? (int)round(($done/$allLessons->count())*100) : 0)
-<div class="card academy-overall-progress"><div><strong>{{ $percent }}%</strong><span>Progress Anda</span></div><div class="academy-progress"><span style="width:{{ $percent }}%"></span></div><small>{{ $done }} dari {{ $allLessons->count() }} materi selesai. Tidak perlu terburu-buru.</small></div>
+<?php
+$allLessons = $program->modules->flatMap->lessons;
+$done = $progress->where('status', 'completed')->count();
+$percent = $allLessons->count() ? (int) round(($done / $allLessons->count()) * 100) : 0;
+$audienceLabel = $program->audience === 'guardian' ? 'Parent Academy' : ($program->audience === 'teacher' ? 'Academy Guru' : 'Academy');
+?>
+<div class="academy-course-toolbar">
+    <a class="academy-course-back" href="{{ route('academy.index') }}">← Kembali ke Academy</a>
+    <span class="academy-course-chip"><?= e($audienceLabel) ?></span>
+</div>
+<header class="academy-course-head">
+    <h1>{{ $program->title }}</h1>
+    <p>{{ $program->description ?: $program->summary }}</p>
+</header>
+<div class="academy-course-progress card">
+    <div class="academy-course-progress-top"><strong>{{ $percent }}%</strong><div><span>Progress Anda</span><small>{{ $done }} dari {{ $allLessons->count() }} materi selesai</small></div></div>
+    <div class="academy-progress"><span style="width:{{ $percent }}%"></span></div>
+    <p>Tidak perlu terburu-buru. Ambil satu materi yang paling relevan untuk keluarga hari ini.</p>
+</div>
 
-<div class="academy-module-stack">
-@foreach($program->modules as $module)
-<section class="card academy-module-card">
-    <div class="section-head"><div><h2>{{ $module->title }}</h2><p class="hint">{{ $module->summary }}</p></div><span class="badge">{{ $module->lessons->count() }} materi</span></div>
-    <div class="academy-lesson-list">
-    @foreach($module->lessons as $lesson)
-        @php($item=$progress->get($lesson->id))
-        <a class="academy-lesson-row {{ $item?->status==='completed'?'completed':'' }}" href="{{ route('academy.lesson',$lesson) }}">
-            <span class="academy-lesson-state">{{ $item?->status==='completed'?'✓':($loop->iteration) }}</span>
-            <div><strong>{{ $lesson->title }}</strong><small>{{ ['article'=>'Bacaan','activity'=>'Aktivitas','checklist'=>'Checklist','video'=>'Video','audio'=>'Audio','pdf'=>'PDF','link'=>'Tautan'][$lesson->lesson_type] ?? ucfirst($lesson->lesson_type) }} · ± {{ $lesson->duration_minutes ?? 5 }} menit</small></div>
-            <span>→</span>
+<div class="academy-course-modules">
+<?php foreach ($program->modules as $module): ?>
+<section class="academy-course-module card">
+    <header><div><span>MODUL</span><h2><?= e($module->title) ?></h2><p><?= e($module->summary) ?></p></div><b><?= e($module->lessons->count()) ?> materi</b></header>
+    <div class="academy-course-lessons">
+    <?php foreach ($module->lessons as $index => $lesson): ?>
+        <?php $item = $progress->get($lesson->id); ?>
+        <a class="academy-course-lesson <?= $item?->status === 'completed' ? 'completed' : '' ?>" href="<?= e(route('academy.lesson', $lesson)) ?>">
+            <span class="academy-course-number"><?= $item?->status === 'completed' ? '✓' : e($index + 1) ?></span>
+            <div><strong><?= e($lesson->title) ?></strong><small><?= e(['article'=>'Bacaan','activity'=>'Aktivitas','checklist'=>'Checklist','video'=>'Video','audio'=>'Audio','pdf'=>'PDF','link'=>'Tautan'][$lesson->lesson_type] ?? ucfirst($lesson->lesson_type)) ?> · ± <?= e($lesson->duration_minutes ?? 5) ?> menit</small></div>
+            <span class="academy-course-arrow">→</span>
         </a>
-    @endforeach
+    <?php endforeach; ?>
     </div>
 </section>
-@endforeach
+<?php endforeach; ?>
 </div>
 @endsection

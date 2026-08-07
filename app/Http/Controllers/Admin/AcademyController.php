@@ -19,12 +19,24 @@ class AcademyController extends Controller
     public function index(Request $request): View
     {
         $institutionId = $request->user()->institution_id;
-        $programs = AcademyProgram::with(['modules.lessons'])->where('institution_id',$institutionId)->orderBy('sort_order')->get();
+        $programs = AcademyProgram::query()
+            ->with(['modules.lessons'])
+            ->where('institution_id', $institutionId)
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get();
+
+        $lessonCount = $programs->sum(function (AcademyProgram $program): int {
+            return $program->modules->sum(function (AcademyModule $module): int {
+                return $module->lessons->count();
+            });
+        });
+
         return view('admin.academy.index', [
-            'programs'=>$programs,
-            'progressCount'=>AcademyLessonProgress::where('institution_id',$institutionId)->where('status','completed')->count(),
-            'recommendationCount'=>AcademyRecommendation::where('institution_id',$institutionId)->where('status','active')->count(),
-            'lessonCount'=>AcademyLesson::whereHas('module.program', fn($q)=>$q->where('institution_id',$institutionId))->count(),
+            'programs' => $programs,
+            'progressCount' => AcademyLessonProgress::where('institution_id', $institutionId)->where('status', 'completed')->count(),
+            'recommendationCount' => AcademyRecommendation::where('institution_id', $institutionId)->where('status', 'active')->count(),
+            'lessonCount' => $lessonCount,
         ]);
     }
 
@@ -79,7 +91,17 @@ class AcademyController extends Controller
     public function updateLesson(Request $request, AcademyLesson $lesson): RedirectResponse
     {
         $lesson->load('module.program'); $this->own($request,$lesson->module->program);
-        $data=$request->validate(['status'=>['required',Rule::in(['draft','published','archived'])],'title'=>['required','string','max:180'],'summary'=>['nullable','string','max:1000']]);
+        $data = $request->validate([
+            'title' => ['required','string','max:180'],
+            'lesson_type' => ['required', Rule::in(['article','video','audio','pdf','activity','checklist','link'])],
+            'summary' => ['nullable','string','max:1000'],
+            'body' => ['nullable','string','max:30000'],
+            'media_url' => ['nullable','url','max:2000'],
+            'duration_minutes' => ['nullable','integer','min:1','max:600'],
+            'status' => ['required', Rule::in(['draft','published','archived'])],
+            'requires_action' => ['nullable','boolean'],
+        ]);
+        $data['requires_action'] = $request->boolean('requires_action');
         $lesson->update($data);
         return back()->with('success','Materi Academy diperbarui.');
     }

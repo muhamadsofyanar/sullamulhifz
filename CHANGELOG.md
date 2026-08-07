@@ -1,3 +1,11 @@
+# v2.0.3 — Academy Experience & Video
+
+- Fix Kelola Academy 500.
+- Premium Academy desktop/mobile.
+- Embedded YouTube/Shorts lesson support.
+- Sample Academy video.
+- Full lesson editing from admin.
+
 # v2.0.2 — Academy View Hotfix
 
 - Memperbaiki ParseError pada halaman Kelola Academy.

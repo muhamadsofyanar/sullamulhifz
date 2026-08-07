@@ -9,6 +9,7 @@
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/css/app.css?v={{ @filemtime(public_path('css/app.css')) ?: '201' }}">
+    <link rel="stylesheet" href="/css/app-v203.css?v={{ @filemtime(public_path('css/app-v203.css')) ?: '203' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
 </head>
 <body class="app-body @auth role-{{ auth()->user()->primaryRole() }} @endauth">
