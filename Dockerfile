@@ -1,16 +1,26 @@
 FROM composer:2.8 AS vendor
 WORKDIR /app
 COPY . .
-RUN composer install \
+
+# composer.lock is strongly recommended. Until it is committed, Composer will
+# resolve dependencies during the build. Application bootstrap must therefore
+# be safe to execute without runtime-only secrets or a database connection.
+RUN COMPOSER_ALLOW_SUPERUSER=1 composer install \
     --no-dev \
     --no-interaction \
+    --no-progress \
     --prefer-dist \
     --optimize-autoloader
+
+# Fail fast at image-build time if Laravel cannot bootstrap or routes cannot be
+# registered. This catches bootstrap regressions before Coolify swaps containers.
+RUN php artisan package:discover --ansi \
+    && php artisan route:list --no-ansi > /tmp/sullam-routes.txt
 
 FROM unit:1.34.2-php8.4
 
 LABEL org.opencontainers.image.title="Sullamul Hifz" \
-      org.opencontainers.image.version="2.1.0" \
+      org.opencontainers.image.version="2.1.1" \
       org.opencontainers.image.description="Platform pembinaan Al-Quran Sullamul Hifz"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \

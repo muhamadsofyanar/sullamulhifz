@@ -1,5 +1,11 @@
 # Changelog
 
+## v2.1.1 — Coolify bootstrap hotfix
+- Fix `Target class [config] does not exist` during Composer package discovery.
+- Trusted proxies are parsed before Application construction without `config()`.
+- Add Docker build smoke-check for Laravel bootstrap and route registration.
+- Clarify runtime-only environment variables for Coolify.
+
 ## v2.1.0 — Unified Platform & Secure Media — 2026-08-07
 
 - Menggabungkan source v2.0.4 dengan PRD, sitemap, wireframe, ERD, brand strategy, dan icon system terbaru.

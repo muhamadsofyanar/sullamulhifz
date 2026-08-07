@@ -1,0 +1,20 @@
+SULLAMUL HIFZ v2.1.1 - HOTFIX COOLIFY
+
+1. Backup database + persistent storage.
+2. Salin ISI folder sullamulhifz-v2.1.1 ke ROOT repo GitHub (bukan folder pembungkusnya).
+3. Commit + push ke branch main.
+4. Coolify: jika tersedia, ubah APP_ENV, APP_KEY, DB_PASSWORD dan INITIAL_* secret menjadi Runtime only / non-Build Variable.
+5. Pastikan APP_KEY lama tetap sama.
+6. Gunakan minimal:
+   APP_ENV=production
+   APP_DEBUG=false
+   AUTO_MIGRATE=true
+   BOOTSTRAP_PRODUCTION=false
+   STAGING_ENABLED=false
+7. Redeploy.
+8. Build yang sehat harus melewati Composer package:discover dan route:list.
+9. Startup sehat berakhir pada log: "Menjalankan NGINX Unit..."
+
+ROOT CAUSE v2.1.0:
+bootstrap/app.php memanggil config() terlalu awal saat Composer package:discover.
+Bukan masalah DNS/Cloudflare.
