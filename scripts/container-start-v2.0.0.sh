@@ -3,7 +3,7 @@ set -eu
 
 cd /var/www/html
 
-echo "=== Sullamul Hifz v2.0.0 Family Learning & Academy Launch startup ==="
+echo "=== Sullamul Hifz v2.0.1 Premium Mobile UX & Academy Domain startup ==="
 
 if [ "${AUTO_MIGRATE:-true}" = "true" ]; then
     attempt=1

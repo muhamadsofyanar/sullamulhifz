@@ -17,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Services\QuranAudioSyncService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v2.0.0 — Family Learning & Academy Launch.');
+    $this->info('Sullamul Hifz v2.0.1 — Premium Mobile UX & Academy Domain.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {

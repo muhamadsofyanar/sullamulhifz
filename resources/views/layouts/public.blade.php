@@ -25,8 +25,8 @@
     <meta name="twitter:card" content="summary_large_image">
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/css/public.css">
-    <script defer src="/js/public.js"></script>
+    <link rel="stylesheet" href="/css/public.css?v={{ @filemtime(public_path('css/public.css')) ?: '201' }}">
+    <script defer src="/js/public.js?v={{ @filemtime(public_path('js/public.js')) ?: '201' }}"></script>
 </head>
 <body class="public-body">
 <a class="skip-link" href="#konten">Lewati ke konten utama</a>

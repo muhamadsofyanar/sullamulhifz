@@ -1,48 +1,36 @@
 # START HERE — Sullamul Ḥifẓ
 
 ## Current launch candidate
-- Version: `v2.0.0`
-- Public: `https://sullamulhifz.or.id`
-- Portal: `https://app.sullamulhifz.or.id`
-- Fokus: Family Learning + Academy + mobile/PWA + Quran Player v2
-- Status: Launch Candidate, belum disebut stable sebelum checklist dan pilot selesai.
 
-Dokumen utama: `UPGRADE-V2.0.0.md`, `docs/V2-LAUNCH-CHECKLIST.md`, `docs/ACADEMY-GUIDE.md`.
+- Version: **v2.0.1 — Premium Mobile UX & Academy Domain**
+- Public website: `https://sullamulhifz.or.id`
+- Authenticated portal: `https://app.sullamulhifz.or.id`
+- Academy entry: `https://academy.sullamulhifz.or.id` → landing Academy / portal Academy
+- First implementation: **TPA Al-Insyirah**
+- Product status: **Launch Candidate**, not stable until mobile, Academy, audio, access isolation, and backup/restore checks pass.
 
----
+## What is included
 
-# START HERE — Sullamul Ḥifẓ
+- TPA operations and Academic Core
+- Quran Learning with Al-Husary and Al-Minshawi
+- Daily teacher workflow
+- Guardian portal and reporting
+- Parent Academy + Teacher Academy
+- Child → Quran practice → Academy recommendation → family follow-up flow
+- Mobile/PWA navigation
+- Premium mobile refinement v2.0.1
+- Launch-readiness checks and operational documentation
 
-## Current release candidate
+## Read these first
 
-- Application package: **v1.9.0 — TPA Launch Complete**
-- Production baseline before upgrade: v1.6.1
-- Public site: `https://sullamulhifz.or.id`
-- Portal: `https://app.sullamulhifz.or.id`
-- First institution: TPA Al-Insyirah
-- Active data baseline: 88 santri, 88 wali, 4 guru, 6 main classes, 2 Tahfizh groups
-
-## What v1.9.0 contains
-
-- Academic Core and Quran Learning
-- Al-Husary and Al-Minshawi
-- Daily teacher operations
-- Bulk attendance
-- Detailed Tahsīn, Tahfizh, and Murāja‘ah records
-- Audio-linked homework
-- Guardian daily and monthly summaries
-- Report cards and CSV reports
-- Launch-readiness checklist
-- PWA/offline and friendly error pages
-- Security headers, login history, and activity log
-
-## First files to read
-
-1. `UPGRADE-V1.9.0.md`
-2. `docs/PHASES-v1.9.0.md`
-3. `docs/TEST-v1.9.0.md`
-4. `docs/ROLLBACK-v1.9.0.md`
-5. `docs/HANDOVER-NEXT-CHAT.md`
+1. `UPGRADE-V2.0.1.md`
+2. `docs/V2-LAUNCH-CHECKLIST.md`
+3. `docs/ACADEMY-GUIDE.md`
+4. `docs/PWA-MOBILE-GUIDE.md`
+5. `docs/QURAN-PLAYER-V2.md`
+6. `docs/TEST-v2.0.0.md`
+7. `docs/ROLLBACK-v2.0.0.md`
+8. `docs/HANDOVER-NEXT-CHAT.md`
 
 ## Production safety
 
@@ -56,4 +44,4 @@ InitialTpaDataSeeder
 ProductionSeeder
 ```
 
-Private keys, account lists, APP_KEY, DB_URL, and child data must never enter the public repository.
+Do not place child data, password lists, `APP_KEY`, `DB_URL`, or private seed keys in the public repository.

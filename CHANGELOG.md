@@ -1,3 +1,13 @@
+## v2.0.1 — Premium Mobile UX & Academy Domain
+
+- PWA mobile diperhalus menjadi tampilan modern, eksklusif, dan lebih ramah pengguna berusia lanjut.
+- Sidebar mobile benar-benar keluar dari viewport saat tertutup; tidak lagi menyisakan strip hijau.
+- Asset CSS/JS memakai cache-busting agar PWA tidak menampilkan stylesheet versi lama.
+- Quran Player disederhanakan: target guru dan latihan siap pakai menjadi tindakan utama, pengaturan manual dipindahkan ke bagian sekunder.
+- Kartu latihan, tombol, player, dan bottom navigation diperbarui dengan area sentuh lebih besar.
+- `academy.sullamulhifz.or.id` didukung sebagai pintu masuk Academy pada resource Coolify yang sama.
+- Tidak ada perubahan database.
+
 # Changelog
 
 ## v2.0.0 — Family Learning & Academy Launch

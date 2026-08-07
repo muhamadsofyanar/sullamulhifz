@@ -19,9 +19,22 @@ class EnforceDomainSeparation
         $portalHost = $this->portalHost();
         $publicHost = $this->hostFromUrl(config('sullam.public_url'));
         $publicHosts = $this->publicHosts($publicHost);
+        $academyHost = $this->academyHost();
 
         if (! $portalHost || ! $publicHost) {
             return $next($request);
+        }
+
+        // Academy memakai resource aplikasi yang sama. Subdomainnya hanya pintu masuk
+        // yang rapi; konten publik tetap canonical di /academy dan ruang belajar di portal.
+        if ($academyHost && $host === $academyHost) {
+            $path = trim($request->path(), '/');
+
+            if ($path === 'belajar' || str_starts_with($path, 'belajar/')) {
+                return redirect()->away((string) config('sullam.academy_portal_url'), 302);
+            }
+
+            return redirect()->away((string) config('sullam.academy_public_url'), 302);
         }
 
         $routeName = (string) optional($request->route())->getName();
@@ -73,6 +86,14 @@ class EnforceDomainSeparation
         }
 
         return redirect()->away($url, $status);
+    }
+
+
+    private function academyHost(): ?string
+    {
+        $configured = trim((string) config('sullam.academy_host'));
+
+        return $configured !== '' ? strtolower($configured) : null;
     }
 
     private function portalHost(): ?string

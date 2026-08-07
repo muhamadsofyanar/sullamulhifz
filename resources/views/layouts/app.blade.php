@@ -8,8 +8,8 @@
     <title>{{ $title ?? config('app.name') }}</title>
     <link rel="manifest" href="/manifest.webmanifest">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
-    <link rel="stylesheet" href="/css/app.css">
-    <script defer src="/js/app.js"></script>
+    <link rel="stylesheet" href="/css/app.css?v={{ @filemtime(public_path('css/app.css')) ?: '201' }}">
+    <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
 </head>
 <body class="app-body @auth role-{{ auth()->user()->primaryRole() }} @endauth">
 @if(auth()->check())
