@@ -1,0 +1,27 @@
+SULLAMUL HIFZ v2.2.0 — SATU KALI REDEPLOY
+
+1. Backup database dan volume storage.
+2. Upload ISI folder sullamulhifz-v2.2.0 ke root repository GitHub.
+3. Jangan menghapus APP_KEY atau database lama.
+4. Pastikan Coolify domain mencakup:
+   sullamulhifz.or.id
+   www.sullamulhifz.or.id
+   app.sullamulhifz.or.id
+   academy.sullamulhifz.or.id
+   api.sullamulhifz.or.id
+   staging.sullamulhifz.or.id (opsional)
+5. Environment minimum:
+   DOMAIN_SEPARATION_ENABLED=true
+   ACADEMY_HOST=academy.sullamulhifz.or.id
+   ACADEMY_PORTAL_URL=https://academy.sullamulhifz.or.id
+   AUTO_MIGRATE=true
+   BOOTSTRAP_PRODUCTION=false
+6. Redeploy.
+7. Tunggu log: Menjalankan NGINX Unit...
+8. Tes:
+   https://sullamulhifz.or.id
+   https://app.sullamulhifz.or.id
+   https://academy.sullamulhifz.or.id
+   https://api.sullamulhifz.or.id
+
+AcademyExpansionV220Seeder dijalankan otomatis dan aman diulang.

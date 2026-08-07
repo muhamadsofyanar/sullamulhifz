@@ -40,9 +40,47 @@ use Illuminate\Support\Facades\Route;
 
 Route::domain((string) config('sullam.api_host'))->get('/', fn () => response()->json([
     'product' => 'Sullamul Hifz API',
+    'tagline' => 'Bukan Sekadar Hafal, Tapi KUAT',
     'status' => 'ready',
-    'health' => url('/api/health'),
+    'version' => 'v1',
+    'endpoints' => [
+        'health' => '/api/health',
+        'meta' => '/api/v1/meta',
+        'academy_preview' => '/api/v1/academy-preview',
+    ],
+    'note' => 'Endpoint publik hanya memuat metadata non-pribadi. API data pengguna membutuhkan autentikasi pada fase berikutnya.',
 ]))->name('api.root');
+
+Route::domain((string) config('sullam.staging_host'))->get('/', fn () => view('staging.index'))->name('staging.home');
+Route::domain((string) config('sullam.staging_host'))->get('/status', fn () => response()->json([
+    'product' => 'Sullamul Hifz Staging',
+    'status' => config('sullam.staging_enabled') ? 'enabled' : 'disabled',
+    'release' => trim((string) @file_get_contents(base_path('RELEASE'))) ?: 'unknown',
+]))->name('staging.status');
+
+// Academy memakai resource Laravel yang sama, tetapi memiliki portal dan navigasi
+// mandiri pada academy.sullamulhifz.or.id. Route domain diletakkan sebelum
+// route publik generik agar path '/' Academy tidak tertangkap website utama.
+Route::domain((string) config('sullam.academy_host'))
+    ->middleware(['auth', 'password.changed', 'permission:academy.view', 'feature:parent_academy'])
+    ->name('academy.portal.')
+    ->group(function (): void {
+        Route::get('/', [AcademyController::class, 'index'])->name('index');
+        Route::get('/program', [AcademyController::class, 'programs'])->name('programs');
+        Route::get('/kelas-saya', [AcademyController::class, 'classes'])->name('classes');
+        Route::get('/modul', [AcademyController::class, 'modules'])->name('modules');
+        Route::get('/materi', [AcademyController::class, 'materials'])->name('materials');
+        Route::get('/video', [AcademyController::class, 'videos'])->name('videos');
+        Route::get('/audio', [AcademyController::class, 'audio'])->name('audio');
+        Route::get('/artikel', [AcademyController::class, 'articles'])->name('articles');
+        Route::get('/progres', [AcademyController::class, 'progress'])->name('progress');
+        Route::get('/rekomendasi', [AcademyController::class, 'recommendations'])->name('recommendations');
+        Route::get('/profil', [AcademyController::class, 'profile'])->name('profile');
+        Route::put('/profil/kata-sandi', [ProfileController::class, 'updatePassword'])->name('profile.password');
+        Route::get('/program/{program}', [AcademyController::class, 'program'])->name('program');
+        Route::get('/materi/{lesson}', [AcademyController::class, 'lesson'])->name('lesson');
+        Route::post('/materi/{lesson}/selesai', [AcademyController::class, 'complete'])->name('lesson.complete');
+    });
 
 Route::get('/', [PublicSiteController::class, 'home'])->name('public.home');
 Route::get('/tentang', fn () => app(PublicSiteController::class)->page('tentang'))->name('public.about');

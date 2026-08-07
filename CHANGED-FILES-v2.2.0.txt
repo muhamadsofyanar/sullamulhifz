@@ -1,0 +1,44 @@
+.env.example
+BUILD-REPORT-V2.2.0.md
+CHANGED-FILES-v2.2.0.txt
+CHANGELOG.md
+DEPLOY-QUICK-V2.2.0.txt
+Dockerfile
+RELEASE
+UPGRADE-V2.2.0.md
+app/Http/Controllers/AcademyController.php
+app/Http/Controllers/AuthController.php
+app/Http/Middleware/EnforceDomainSeparation.php
+app/Http/Middleware/EnsurePasswordChanged.php
+config/session.php
+config/sullam.php
+database/seeders: AcademyExpansionV220Seeder.php
+database/seeders/AcademyLaunchV203Seeder.php
+database/seeders/DatabaseSeeder.php
+public: academy-manifest.webmanifest
+public/css: app-v220.css
+public/service-worker.js
+resources/views/academy: catalog.blade.php
+resources/views/academy: classes.blade.php
+resources/views/academy/index.blade.php
+resources/views/academy/lesson.blade.php
+resources/views/academy: modules.blade.php
+resources/views/academy: profile.blade.php
+resources/views/academy/program.blade.php
+resources/views/academy: programs.blade.php
+resources/views/academy: progress.blade.php
+resources/views/academy: recommendations.blade.php
+resources/views/admin/academy/index.blade.php
+resources/views/auth/login.blade.php
+resources/views/components/icon.blade.php
+resources/views/dashboard/guardian.blade.php
+resources/views/guardian/child.blade.php
+resources/views/layouts: academy.blade.php
+resources/views/layouts/app.blade.php
+resources/views/public/academy.blade.php
+resources/views: staging
+resources/views/teacher/academy/index.blade.php
+routes/api.php
+routes/console.php
+routes/web.php
+scripts: container-start-v2.2.0.sh

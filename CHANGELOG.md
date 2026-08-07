@@ -144,3 +144,15 @@ See `docs/releases/v1.9.0.md`.
 ## v1.3.0
 
 - Public website and host-based portal routing.
+
+## v2.2.0 — 2026-08-07
+
+- Menjadikan `academy.sullamulhifz.or.id` portal LMS mandiri, bukan redirect ke website utama.
+- Menambahkan navigasi Academy: program, kelas, modul, materi, video, audio, artikel, progres, rekomendasi, profil.
+- Menambahkan session lintas subdomain secara otomatis ketika domain separation aktif.
+- Menambahkan e-course contoh STIFIn, STIFIn Parenting, Al-Qur'an, dan Pendidikan Anak.
+- Mengganti video demo Academy dengan URL video contoh yang diberikan pengelola.
+- Menambahkan katalog audio yang terhubung ke pustaka Quran Learning.
+- Menambahkan endpoint API preview katalog Academy tanpa data pribadi.
+- Menambahkan landing staging yang hanya aktif jika `STAGING_ENABLED=true`.
+- Menambah verifikasi konten Academy v2.2 pada `sullam:verify-academy`.

@@ -41,16 +41,40 @@ class EnforceDomainSeparation
             return $next($request);
         }
 
-        // Academy memakai resource aplikasi yang sama. Subdomainnya hanya pintu masuk
-        // yang rapi; konten publik tetap canonical di /academy dan ruang belajar di portal.
+        // Academy v2.2 mempunyai portal mandiri pada subdomain academy. Route Academy
+        // dan route autentikasi boleh berjalan langsung di host ini. Route operasional
+        // lainnya tetap dikembalikan ke app.sullamulhifz.or.id agar pemisahan produk jelas.
         if ($academyHost && $host === $academyHost) {
-            $path = trim($request->path(), '/');
+            $routeName = (string) optional($request->route())->getName();
+            $academyRoute = str_starts_with($routeName, 'academy.portal.');
+            $authRoute = in_array($routeName, [
+                'login', 'login.store', 'password.request', 'password.email',
+                'password.reset', 'password.update', 'activation.show',
+                'activation.store', 'logout',
+            ], true);
 
-            if ($path === 'belajar' || str_starts_with($path, 'belajar/')) {
-                return redirect()->away((string) config('sullam.academy_portal_url'), 302);
+            if ($academyRoute || $authRoute) {
+                return $next($request);
             }
 
-            return redirect()->away((string) config('sullam.academy_public_url'), 302);
+            if (str_starts_with($routeName, 'public.')) {
+                return $this->redirectTo($this->publicBaseUrl(), $request->getPathInfo(), $request, 302);
+            }
+
+            if ($request->path() === 'academy' || $request->path() === 'academy/belajar') {
+                return redirect()->away('https://'.$academyHost, 302);
+            }
+
+            if ($routeName !== '') {
+                return $this->redirectTo(
+                    $this->portalBaseUrl(),
+                    $request->getPathInfo(),
+                    $request,
+                    $request->isMethodSafe() ? 302 : 307,
+                );
+            }
+
+            return $next($request);
         }
 
         $routeName = (string) optional($request->route())->getName();

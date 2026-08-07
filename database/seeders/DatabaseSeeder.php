@@ -11,6 +11,7 @@ class DatabaseSeeder extends Seeder
         $this->call([
             ProductionSeeder::class,
             PlatformFoundationV210Seeder::class,
+            AcademyExpansionV220Seeder::class,
         ]);
     }
 }

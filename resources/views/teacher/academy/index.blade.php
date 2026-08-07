@@ -1,6 +1,6 @@
 @extends('layouts.app',['pageTitle'=>'Academy & Keluarga'])
 @section('content')
-<div class="page-head"><div><span class="eyebrow">KEMITRAAN KELUARGA</span><h1>Rekomendasikan satu materi yang tepat.</h1><p>Jangan membanjiri orang tua dengan banyak materi. Pilih yang paling relevan dengan kebutuhan santri saat ini.</p></div><a class="button secondary" href="{{ route('academy.index') }}">Academy Guru</a></div>
+<div class="page-head"><div><span class="eyebrow">KEMITRAAN KELUARGA</span><h1>Rekomendasikan satu materi yang tepat.</h1><p>Jangan membanjiri orang tua dengan banyak materi. Pilih yang paling relevan dengan kebutuhan santri saat ini.</p></div><a class="button secondary" href="{{ route('academy.portal.index') }}">Academy Guru</a></div>
 <div class="grid two">
 <section class="card"><h2>Rekomendasi untuk wali</h2><form method="post" action="{{ route('teacher.academy.recommendations.store') }}" class="stack">@csrf
 <label>Santri<select name="student_id" required><option value="">Pilih santri</option>@foreach($students as $student)<option value="{{ $student->id }}">{{ $student->full_name }}</option>@endforeach</select></label>

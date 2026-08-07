@@ -32,7 +32,7 @@ class AcademyLaunchV203Seeder extends Seeder
                 continue;
             }
 
-            AcademyLesson::updateOrCreate(
+            AcademyLesson::firstOrCreate(
                 [
                     'academy_module_id' => $module->id,
                     'slug' => 'contoh-video-academy-shorts',
@@ -40,9 +40,9 @@ class AcademyLaunchV203Seeder extends Seeder
                 [
                     'title' => 'Contoh Video Academy — Materi Pendamping',
                     'lesson_type' => 'video',
-                    'summary' => 'Contoh integrasi video vertikal YouTube Shorts di dalam Academy. Judul, deskripsi, dan video dapat diganti dari menu Kelola Academy.',
+                    'summary' => 'Contoh integrasi video YouTube di dalam Academy. Judul, deskripsi, dan video dapat diganti dari menu Kelola Academy.',
                     'body' => "Video ini dipasang sebagai contoh tampilan LMS Academy.\n\nGunakan video singkat sebagai pengantar, lalu lanjutkan dengan satu pesan inti atau aktivitas keluarga yang jelas. Materi Academy sebaiknya membantu orang tua memahami langkah praktis, bukan menambah beban belajar.",
-                    'media_url' => 'https://www.youtube.com/shorts/x6AVimGaykM',
+                    'media_url' => 'https://www.youtube.com/watch?v=V_dovd7ezCA',
                     'duration_minutes' => 2,
                     'sort_order' => 3,
                     'requires_action' => false,

@@ -15,7 +15,7 @@ return [
     'portal_url' => env('PORTAL_URL', $portalBaseUrl.'/login'),
     'portal_host' => env('PORTAL_HOST', parse_url($portalBaseUrl, PHP_URL_HOST) ?: 'app.sullamulhifz.or.id'),
     'academy_public_url' => $academyPublicUrl,
-    'academy_portal_url' => env('ACADEMY_PORTAL_URL', $portalBaseUrl.'/academy/belajar'),
+    'academy_portal_url' => env('ACADEMY_PORTAL_URL', 'https://'.env('ACADEMY_HOST', 'academy.sullamulhifz.or.id')),
     'academy_host' => env('ACADEMY_HOST', 'academy.sullamulhifz.or.id'),
     'api_host' => env('API_HOST', 'api.sullamulhifz.or.id'),
     'staging_host' => env('STAGING_HOST', 'staging.sullamulhifz.or.id'),

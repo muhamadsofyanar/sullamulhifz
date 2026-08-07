@@ -12,6 +12,7 @@
     <link rel="stylesheet" href="/css/app-v203.css?v={{ @filemtime(public_path('css/app-v203.css')) ?: '203' }}">
     <link rel="stylesheet" href="/css/app-v204.css?v={{ @filemtime(public_path('css/app-v204.css')) ?: '204' }}">
     <link rel="stylesheet" href="/css/app-v210.css?v={{ @filemtime(public_path('css/app-v210.css')) ?: '210' }}">
+    <link rel="stylesheet" href="/css/app-v220.css?v={{ @filemtime(public_path('css/app-v220.css')) ?: '220' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
@@ -115,7 +116,7 @@
                     <x-icon name="assignment"/><span>Tugas Anak</span>
                 </a>
                 @if(\App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id))
-                <a href="{{ route('academy.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}">
+                <a href="{{ route('academy.portal.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}">
                     <x-icon name="lesson"/><span>Parent Academy</span>
                 </a>
                 @endif
@@ -135,7 +136,7 @@
             </a>
             @endif
             @if(auth()->user()->hasAnyRole(['superadmin','institution_admin','head']) && \App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id))
-            <a href="{{ route('academy.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}">
+            <a href="{{ route('academy.portal.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}">
                 <x-icon name="lesson"/><span>Lihat Academy</span>
             </a>
             @endif

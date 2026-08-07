@@ -8,10 +8,10 @@ $attendanceLabel=['present'=>'Hadir','late'=>'Terlambat','permission'=>'Izin','s
 <div class="stats-grid four"><div class="stat-card"><span>Pertemuan bulan ini</span><strong>{{ $monthlySummary['meetings'] }}</strong></div><div class="stat-card"><span>Kehadiran</span><strong>{{ $monthlySummary['attendance_percent'] !== null ? $monthlySummary['attendance_percent'].'%' : '-' }}</strong></div><div class="stat-card"><span>Setoran Tahfizh</span><strong>{{ $monthlySummary['memorization'] }}</strong></div><div class="stat-card"><span>Murāja‘ah</span><strong>{{ $monthlySummary['murajaah'] }}</strong></div></div>
 @if($academyEnabled && $academyRecommendations->isNotEmpty())
 <section class="card academy-family-strip">
-    <div class="section-head"><div><span class="eyebrow">Academy untuk keluarga</span><h2>Materi yang direkomendasikan untuk mendampingi {{ $student->full_name }}</h2></div><a class="button ghost" href="{{ route('academy.index') }}">Buka Parent Academy</a></div>
+    <div class="section-head"><div><span class="eyebrow">Academy untuk keluarga</span><h2>Materi yang direkomendasikan untuk mendampingi {{ $student->full_name }}</h2></div><a class="button ghost" href="{{ route('academy.portal.index') }}">Buka Parent Academy</a></div>
     <div class="academy-recommendation-grid">
         @foreach($academyRecommendations as $recommendation)
-            <a class="academy-recommendation-card" href="{{ route('academy.lesson',$recommendation->lesson) }}">
+            <a class="academy-recommendation-card" href="{{ route('academy.portal.lesson',$recommendation->lesson) }}">
                 <span class="academy-type-chip">{{ ['video'=>'Video','article'=>'Artikel','audio'=>'Audio','activity'=>'Aktivitas','checklist'=>'Checklist','quiz'=>'Kuis'][$recommendation->lesson?->lesson_type] ?? 'Materi' }}</span>
                 <strong>{{ $recommendation->lesson?->title }}</strong>
                 <small>{{ $recommendation->lesson?->module?->program?->title }}</small>

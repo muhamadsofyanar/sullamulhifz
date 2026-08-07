@@ -55,7 +55,12 @@ class AuthController extends Controller
             'logged_in_at' => now(),
         ]);
 
-        return redirect()->intended(route('dashboard'));
+        $academyHost = strtolower(trim((string) config('sullam.academy_host')));
+        $fallback = $academyHost !== '' && strtolower($request->getHost()) === $academyHost
+            ? route('academy.portal.index')
+            : route('dashboard');
+
+        return redirect()->intended($fallback);
     }
 
     public function logout(Request $request): RedirectResponse
@@ -63,6 +68,11 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        $academyHost = strtolower(trim((string) config('sullam.academy_host')));
+        if ($academyHost !== '' && strtolower($request->getHost()) === $academyHost) {
+            return redirect()->away('https://'.$academyHost.'/login')->with('success', 'Anda telah keluar dari Academy.');
+        }
 
         return redirect()->route('login')->with('success', 'Anda telah keluar dari aplikasi.');
     }

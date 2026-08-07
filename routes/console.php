@@ -296,18 +296,30 @@ Artisan::command('sullam:verify-academy', function (): int {
             ->whereHas('module', fn ($query) => $query->where('academy_program_id', $teacher->id))
             ->where('status', 'published')->count() : 0;
 
-        $ready = (bool) $parent && (bool) $teacher && $parentLessons >= 10 && $teacherLessons >= 5;
+        $requiredExpansionSlugs = [
+            'stifin-sebagai-informasi-pendamping',
+            'stifin-parenting-mendampingi-tanpa-membatasi',
+            'hidup-bersama-al-quran',
+            'pendidikan-anak-adab-keteladanan',
+        ];
+        $expansionCount = AcademyProgram::query()
+            ->where('institution_id', $institution->id)
+            ->where('status', 'published')
+            ->whereIn('slug', $requiredExpansionSlugs)
+            ->count();
+
+        $ready = (bool) $parent && (bool) $teacher && $parentLessons >= 10 && $teacherLessons >= 5 && $expansionCount === count($requiredExpansionSlugs);
         $failed = $failed || ! $ready;
-        $rows[] = [$institution->name, $parentLessons, $teacherLessons, $ready ? 'Siap' : 'Perlu diperiksa'];
+        $rows[] = [$institution->name, $parentLessons, $teacherLessons, $expansionCount.'/4', $ready ? 'Siap' : 'Perlu diperiksa'];
     }
 
-    $this->table(['Lembaga', 'Parent Academy', 'Teacher Academy', 'Status'], $rows);
+    $this->table(['Lembaga', 'Parent Academy', 'Teacher Academy', 'E-course v2.2', 'Status'], $rows);
     if ($failed) {
-        $this->warn('Academy belum memenuhi data awal v2.0.0. Jalankan AcademyLaunchV200Seeder.');
+        $this->warn('Academy belum memenuhi data awal v2.2.0. Jalankan AcademyLaunchV200Seeder dan AcademyExpansionV220Seeder.');
         return 1;
     }
 
-    $this->info('Family Learning & Academy v2.0.0 siap: Parent Academy, Teacher Academy, progress, dan rekomendasi keluarga tersedia.');
+    $this->info('Academy v2.2.0 siap: portal mandiri, Parent/Teacher Academy, STIFIn proporsional, Al-Qur’an, pendidikan anak, progress, dan rekomendasi tersedia.');
     return 0;
 })->purpose('Memeriksa struktur dan konten awal Family Learning & Academy v2.0.0');
 

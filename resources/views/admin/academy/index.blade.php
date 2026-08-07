@@ -7,7 +7,7 @@
         <h1>Kelola Academy</h1>
         <p>Susun materi orang tua dan guru dengan format singkat, rapi, dan mudah dipakai dari ponsel.</p>
     </div>
-    <a class="button secondary" href="{{ route('academy.index') }}">Lihat sebagai peserta</a>
+    <a class="button secondary" href="{{ route('academy.portal.index') }}">Lihat sebagai peserta</a>
 </div>
 
 <div class="academy-studio-stats">
@@ -105,7 +105,7 @@
                             <label>Isi materi<textarea name="body" rows="7"><?= e($lesson->body) ?></textarea></label>
                             <label>URL media<input type="url" name="media_url" value="<?= e($lesson->media_url) ?>" placeholder="https://..."></label>
                             <div class="form-grid"><label>Status<select name="status"><option value="draft" <?= $lesson->status === 'draft' ? 'selected' : '' ?>>Draf</option><option value="published" <?= $lesson->status === 'published' ? 'selected' : '' ?>>Terbit</option><option value="archived" <?= $lesson->status === 'archived' ? 'selected' : '' ?>>Arsip</option></select></label><label class="check"><input type="checkbox" name="requires_action" value="1" <?= $lesson->requires_action ? 'checked' : '' ?>> Ada tindak lanjut</label></div>
-                            <div class="academy-studio-edit-actions"><button class="button primary" type="submit">Simpan perubahan</button><?php if ($lesson->status === 'published'): ?><a class="button secondary" href="<?= e(route('academy.lesson', $lesson)) ?>">Pratinjau</a><?php endif; ?></div>
+                            <div class="academy-studio-edit-actions"><button class="button primary" type="submit">Simpan perubahan</button><?php if ($lesson->status === 'published'): ?><a class="button secondary" href="<?= e(route('academy.portal.lesson', $lesson)) ?>">Pratinjau</a><?php endif; ?></div>
                         </form>
                     </details>
                 <?php endforeach; ?>

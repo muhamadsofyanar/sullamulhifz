@@ -3,7 +3,7 @@
 <div class="family-dashboard-head"><span class="eyebrow">ORANG TUA / WALI</span><h1>Assalamu‘alaikum, {{ $guardian->full_name }}</h1><p>Yang penting hari ini: lihat kebutuhan anak, dampingi satu langkah, lalu lanjutkan dengan tenang.</p></div>
 
 @if($academyEnabled && $academyRecommendations->isNotEmpty())
-<section class="family-priority-card"><div class="family-priority-icon"><x-icon name="academic" size="30"/></div><div><small>REKOMENDASI GURU</small><h2>{{ $academyRecommendations->first()->lesson->title }}</h2><p>Untuk {{ $academyRecommendations->first()->student->full_name }} · {{ $academyRecommendations->first()->message ?: 'Materi pendamping untuk keluarga.' }}</p></div><a class="button primary" href="{{ route('academy.lesson',$academyRecommendations->first()->lesson) }}">Buka materi</a></section>
+<section class="family-priority-card"><div class="family-priority-icon"><x-icon name="academic" size="30"/></div><div><small>REKOMENDASI GURU</small><h2>{{ $academyRecommendations->first()->lesson->title }}</h2><p>Untuk {{ $academyRecommendations->first()->student->full_name }} · {{ $academyRecommendations->first()->message ?: 'Materi pendamping untuk keluarga.' }}</p></div><a class="button primary" href="{{ route('academy.portal.lesson',$academyRecommendations->first()->lesson) }}">Buka materi</a></section>
 @endif
 
 <section class="family-children-grid">
@@ -14,7 +14,7 @@
 
 <div class="family-action-grid">
 @if($quranEnabled)<a href="{{ route('quran-practice.index') }}" class="family-action primary"><x-icon name="audio" size="30"/><strong>Latihan Al-Qur’an</strong><span>Putar target atau murajaah</span></a>@endif
-@if($academyEnabled)<a href="{{ route('academy.index') }}" class="family-action"><x-icon name="academic" size="30"/><strong>Parent Academy</strong><span>Belajar mendampingi anak</span></a>@endif
+@if($academyEnabled)<a href="{{ route('academy.portal.index') }}" class="family-action"><x-icon name="academic" size="30"/><strong>Parent Academy</strong><span>Belajar mendampingi anak</span></a>@endif
 <a href="{{ route('guardian.tasks.index') }}" class="family-action"><x-icon name="assignment" size="30"/><strong>Tugas Anak</strong><span>{{ $activeTasks->count() }} tugas aktif</span></a>
 <a href="{{ route('liaison.index') }}" class="family-action"><x-icon name="discussion" size="30"/><strong>Buku Penghubung</strong><span>Pesan pribadi dengan guru</span></a>
 </div>
@@ -24,7 +24,7 @@
 @endif
 
 @if($academyEnabled && $academyFeatured)
-<section class="card family-academy-banner"><div><span class="eyebrow">PARENT ACADEMY</span><h2>{{ $academyFeatured->title }}</h2><p>{{ $academyFeatured->summary }}</p></div><a class="button primary" href="{{ route('academy.program',$academyFeatured) }}">Mulai belajar</a></section>
+<section class="card family-academy-banner"><div><span class="eyebrow">PARENT ACADEMY</span><h2>{{ $academyFeatured->title }}</h2><p>{{ $academyFeatured->summary }}</p></div><a class="button primary" href="{{ route('academy.portal.program',$academyFeatured) }}">Mulai belajar</a></section>
 @endif
 
 <div class="grid two family-secondary">
