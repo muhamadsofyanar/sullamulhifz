@@ -1,6 +1,10 @@
 document.addEventListener('DOMContentLoaded',()=>{
   const sidebar=document.getElementById('sidebar');
-  document.querySelectorAll('[data-sidebar-toggle]').forEach(el=>el.addEventListener('click',()=>{sidebar?.classList.toggle('open');document.querySelector('.sidebar-backdrop')?.classList.toggle('open')}));
+  const backdrop=document.querySelector('.sidebar-backdrop');
+  const setSidebar=open=>{sidebar?.classList.toggle('open',open);backdrop?.classList.toggle('open',open);document.body.classList.toggle('sidebar-is-open',open)};
+  document.querySelectorAll('[data-sidebar-toggle]').forEach(el=>el.addEventListener('click',()=>setSidebar(!sidebar?.classList.contains('open'))));
+  sidebar?.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{if(innerWidth<=780)setSidebar(false)}));
+  document.addEventListener('keydown',event=>{if(event.key==='Escape')setSidebar(false)});
   document.querySelector('[data-mark-all-present]')?.addEventListener('click',()=>document.querySelectorAll('[data-attendance-status]').forEach(select=>select.value='present'));
   document.querySelectorAll('form').forEach(form=>{
     const switcher=form.querySelector('[data-target-switch]');
@@ -10,5 +14,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     }
     form.addEventListener('submit',event=>{setTimeout(()=>{if(event.defaultPrevented)return;const submit=form.querySelector('button[type="submit"],button:not([type])');if(submit&&!submit.dataset.keepEnabled){submit.disabled=true;submit.dataset.originalText=submit.textContent;submit.textContent='Menyimpan…'}},0)});
   });
+  let installPrompt=null;const installButtons=[...document.querySelectorAll('[data-pwa-install]')];
+  window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;installButtons.forEach(btn=>btn.hidden=false)});
+  installButtons.forEach(btn=>btn.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;installButtons.forEach(item=>item.hidden=true)}));
+  window.addEventListener('appinstalled',()=>installButtons.forEach(btn=>btn.hidden=true));
   if('serviceWorker'in navigator){navigator.serviceWorker.register('/service-worker.js').catch(()=>{})}
 });

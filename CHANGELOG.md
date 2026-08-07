@@ -1,5 +1,14 @@
 # Changelog
 
+## v2.0.0 — Family Learning & Academy Launch
+- PWA mobile-first dan bottom navigation per peran.
+- Quran Player v2 yang lebih sederhana dan ramah orang tua.
+- Parent Academy dan Teacher Academy.
+- Progress materi dan rekomendasi guru ke wali berdasarkan santri yang diampu.
+- Admin Academy untuk program, modul, dan materi.
+- Integrasi rekomendasi Academy pada profil anak wali.
+- Migration additive dan startup/verification v2.0.0.
+
 ## v1.9.0 — TPA Launch Complete
 
 See `docs/releases/v1.9.0.md`.

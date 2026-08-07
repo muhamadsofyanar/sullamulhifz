@@ -1,3 +1,15 @@
+# Sullamul Ḥifẓ
+
+## Rilis aktif — v2.0.0 Family Learning & Academy Launch
+
+**Status:** Launch Candidate. Master brand Sullamul Ḥifẓ, implementasi pertama TPA Al-Insyirah.
+
+Fokus v2.0.0: PWA mobile-first, Quran Player senior-friendly, Parent Academy, Teacher Academy, rekomendasi materi keluarga, dan integrasi target anak dengan pembelajaran orang tua.
+
+Lihat `UPGRADE-V2.0.0.md`, `docs/V2-LAUNCH-CHECKLIST.md`, dan `docs/releases/v2.0.0.md`.
+
+---
+
 # Sullamul Ḥifẓ v1.9.0 — TPA Launch Complete
 
 > Current candidate release. Read `START-HERE.md` and `UPGRADE-V1.9.0.md` before deployment.

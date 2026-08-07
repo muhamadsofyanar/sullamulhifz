@@ -1,5 +1,7 @@
 <?php
 
+use App\Models\AcademyLesson;
+use App\Models\AcademyProgram;
 use App\Models\Guardian;
 use App\Models\Institution;
 use App\Models\LearningGroup;
@@ -15,7 +17,7 @@ use Illuminate\Support\Facades\Schema;
 use App\Services\QuranAudioSyncService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v1.9.0 — TPA Launch Complete.');
+    $this->info('Sullamul Hifz v2.0.0 — Family Learning & Academy Launch.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -246,6 +248,57 @@ Artisan::command('sullam:verify-launch', function (): int {
         ['Rapor & Laporan', Schema::hasTable('report_cards') ? 'Siap' : 'Belum'],
         ['Kesiapan Launch', $checks.' pemeriksaan'],
     ]);
-    $this->info('TPA Launch Complete v1.9.0 siap. Checklist tetap harus diselesaikan melalui pengujian nyata.');
+    $this->info('Fondasi TPA Launch v1.9.0 siap. v2.0.0 menambahkan Family Learning, mobile-first UX, dan Academy.');
     return 0;
 })->purpose('Memeriksa struktur TPA Launch Complete v1.9.0');
+
+Artisan::command('sullam:verify-academy', function (): int {
+    $requiredTables = [
+        'academy_programs', 'academy_modules', 'academy_lessons',
+        'academy_lesson_progress', 'academy_recommendations',
+    ];
+    $missing = collect($requiredTables)->reject(fn (string $table): bool => Schema::hasTable($table));
+
+    if ($missing->isNotEmpty()) {
+        $this->error('Struktur Academy belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $institutions = Institution::query()->where('status', 'active')->get();
+    $failed = false;
+    $rows = [];
+
+    foreach ($institutions as $institution) {
+        $parent = AcademyProgram::query()
+            ->where('institution_id', $institution->id)
+            ->where('slug', 'parent-academy-rumah-qurani')
+            ->where('status', 'published')
+            ->first();
+        $teacher = AcademyProgram::query()
+            ->where('institution_id', $institution->id)
+            ->where('slug', 'orientasi-guru-sullamul-hifz')
+            ->where('status', 'published')
+            ->first();
+
+        $parentLessons = $parent ? AcademyLesson::query()
+            ->whereHas('module', fn ($query) => $query->where('academy_program_id', $parent->id))
+            ->where('status', 'published')->count() : 0;
+        $teacherLessons = $teacher ? AcademyLesson::query()
+            ->whereHas('module', fn ($query) => $query->where('academy_program_id', $teacher->id))
+            ->where('status', 'published')->count() : 0;
+
+        $ready = (bool) $parent && (bool) $teacher && $parentLessons >= 10 && $teacherLessons >= 5;
+        $failed = $failed || ! $ready;
+        $rows[] = [$institution->name, $parentLessons, $teacherLessons, $ready ? 'Siap' : 'Perlu diperiksa'];
+    }
+
+    $this->table(['Lembaga', 'Parent Academy', 'Teacher Academy', 'Status'], $rows);
+    if ($failed) {
+        $this->warn('Academy belum memenuhi data awal v2.0.0. Jalankan AcademyLaunchV200Seeder.');
+        return 1;
+    }
+
+    $this->info('Family Learning & Academy v2.0.0 siap: Parent Academy, Teacher Academy, progress, dan rekomendasi keluarga tersedia.');
+    return 0;
+})->purpose('Memeriksa struktur dan konten awal Family Learning & Academy v2.0.0');
+

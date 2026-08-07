@@ -1,4 +1,4 @@
-const CACHE='sullam-static-v190';
+const CACHE='sullam-static-v200';
 const ASSETS=['/offline.html','/css/app.css','/css/public.css','/js/app.js','/js/public.js','/icon.svg','/brand/logo-mark.svg','/brand/logo-horizontal.svg','/brand/logo-horizontal-light.svg'];
 self.addEventListener('install',event=>{self.skipWaiting();event.waitUntil(caches.open(CACHE).then(cache=>cache.addAll(ASSETS)))});
 self.addEventListener('activate',event=>event.waitUntil(Promise.all([self.clients.claim(),caches.keys().then(keys=>Promise.all(keys.filter(key=>key!==CACHE).map(key=>caches.delete(key))))])));

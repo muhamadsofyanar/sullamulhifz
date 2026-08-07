@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Guardian;
 use App\Http\Controllers\Controller;
 use App\Models\AssignmentRecipient;
 use App\Models\AssignmentSubmission;
+use App\Models\AcademyRecommendation;
 use App\Models\Student;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -60,7 +61,16 @@ class PortalController extends Controller
             'completed_tasks' => \App\Models\AssignmentRecipient::where('student_id',$student->id)->where('status','completed')->whereBetween('completed_at',[$monthStart,$monthEnd])->count(),
         ];
 
-        return view('guardian.child',compact('student','publishedMeetings','monthlySummary'));
+        $academyRecommendations = AcademyRecommendation::query()
+            ->with(['lesson.module.program','creator'])
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('student_id', $student->id)
+            ->where('status', 'active')
+            ->latest('recommended_at')
+            ->limit(6)
+            ->get();
+
+        return view('guardian.child',compact('student','publishedMeetings','monthlySummary','academyRecommendations'));
     }
 
     public function tasks(Request $request): View

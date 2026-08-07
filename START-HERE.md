@@ -1,5 +1,18 @@
 # START HERE — Sullamul Ḥifẓ
 
+## Current launch candidate
+- Version: `v2.0.0`
+- Public: `https://sullamulhifz.or.id`
+- Portal: `https://app.sullamulhifz.or.id`
+- Fokus: Family Learning + Academy + mobile/PWA + Quran Player v2
+- Status: Launch Candidate, belum disebut stable sebelum checklist dan pilot selesai.
+
+Dokumen utama: `UPGRADE-V2.0.0.md`, `docs/V2-LAUNCH-CHECKLIST.md`, `docs/ACADEMY-GUIDE.md`.
+
+---
+
+# START HERE — Sullamul Ḥifẓ
+
 ## Current release candidate
 
 - Application package: **v1.9.0 — TPA Launch Complete**

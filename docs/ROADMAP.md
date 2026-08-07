@@ -1,32 +1,16 @@
-# Roadmap
+# Roadmap Sullamul Ḥifẓ
 
-## v1.9.0 — TPA Launch Complete
+## v2.0.0 — Family Learning & Academy Launch
+PWA mobile-first, Quran Player v2, Parent Academy, Teacher Academy, rekomendasi keluarga, dan launch readiness.
 
-- Daily operations
-- Guardian summaries
-- Report cards and reports
-- PWA and launch readiness
-- Security and operational documentation
+## v2.0.x — Launch Stabilization
+Perbaikan hasil pilot, performa, aksesibilitas, dan incident kecil tanpa memperluas scope.
 
-## v1.9.x — Stabilization
+## v2.1.x — Family Ecosystem
+Community termoderasi, portofolio anak, dan konsultasi yang lebih matang.
 
-- Fixes from pilot
-- Performance tuning
-- Form simplification based on teacher feedback
-- Storage and media-retention tuning
-- Accessibility improvements
+## v2.5+ — Personalization
+Observasi metode, bank strategi, STIFIn proporsional, dan asesmen kesiapan setelah cukup data nyata.
 
-## v2.0.0 — Academy MVP
-
-- Parent Academy
-- Teacher training modules
-- Video/article lessons
-- Course progress
-- Quizzes
-- Certificates where appropriate
-
-## Later
-
-- Multi-branch and multi-institution
-- Quality control and implementation audit
-- Native applications only if PWA is insufficient
+## v3.x — Expansion
+Multi-cabang, penggunaan lembaga lain, pelatihan guru, standardisasi, kontrol mutu, dan lisensi bila diperlukan.

@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Admin\AcademicController;
 use App\Http\Controllers\Admin\AcademicCoreController;
+use App\Http\Controllers\Admin\AcademyController as AdminAcademyController;
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\QuranLibraryController;
 use App\Http\Controllers\Admin\GuardianController;
@@ -16,6 +17,7 @@ use App\Http\Controllers\Admin\StudentPledgeController;
 use App\Http\Controllers\Admin\ReportController;
 use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\ContentFeedController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Guardian\PortalController;
@@ -25,6 +27,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuranPracticeController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\Teacher\AssignmentController;
+use App\Http\Controllers\Teacher\AcademyRecommendationController;
 use App\Http\Controllers\Teacher\ClassroomController;
 use App\Http\Controllers\Teacher\DailyOperationsController;
 use App\Http\Controllers\Teacher\MeetingController;
@@ -70,6 +73,11 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::post('/pengumuman/{announcement}/konfirmasi', [ContentFeedController::class, 'acknowledge'])->name('feed.announcements.acknowledge');
     Route::get('/pembinaan-jumat', [ContentFeedController::class, 'friday'])->name('feed.friday');
     Route::get('/nilai/ikrar-santri', [ContentFeedController::class, 'pledge'])->name('feed.pledge');
+    Route::get('/academy/belajar', [AcademyController::class, 'index'])->name('academy.index');
+    Route::get('/academy/program/{program}', [AcademyController::class, 'program'])->name('academy.program');
+    Route::get('/academy/materi/{lesson}', [AcademyController::class, 'lesson'])->name('academy.lesson');
+    Route::post('/academy/materi/{lesson}/selesai', [AcademyController::class, 'complete'])->name('academy.lesson.complete');
+
     Route::get('/latihan-quran', [QuranPracticeController::class, 'index'])->name('quran-practice.index');
     Route::get('/latihan-quran/playlist', [QuranPracticeController::class, 'playlist'])->name('quran-practice.playlist');
     Route::get('/latihan-quran/target/{target}', [QuranPracticeController::class, 'target'])->name('quran-practice.target');
@@ -112,6 +120,13 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         });
 
         Route::middleware('role:superadmin,institution_admin,head')->group(function (): void {
+            Route::get('/academy', [AdminAcademyController::class, 'index'])->name('academy.index');
+            Route::post('/academy/programs', [AdminAcademyController::class, 'storeProgram'])->name('academy.programs.store');
+            Route::put('/academy/programs/{program}', [AdminAcademyController::class, 'updateProgram'])->name('academy.programs.update');
+            Route::post('/academy/modules', [AdminAcademyController::class, 'storeModule'])->name('academy.modules.store');
+            Route::post('/academy/lessons', [AdminAcademyController::class, 'storeLesson'])->name('academy.lessons.store');
+            Route::put('/academy/lessons/{lesson}', [AdminAcademyController::class, 'updateLesson'])->name('academy.lessons.update');
+
             Route::get('/quran-library', [QuranLibraryController::class, 'index'])->name('quran-library.index');
             Route::post('/quran-library/sync', [QuranLibraryController::class, 'sync'])->name('quran-library.sync');
             Route::post('/quran-library/videos', [QuranLibraryController::class, 'storeVideo'])->name('quran-library.videos.store');
@@ -155,6 +170,9 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     });
 
     Route::prefix('teacher')->name('teacher.')->middleware('role:teacher')->group(function (): void {
+        Route::get('/academy', [AcademyRecommendationController::class, 'index'])->name('academy.index');
+        Route::post('/academy/recommendations', [AcademyRecommendationController::class, 'store'])->name('academy.recommendations.store');
+
         Route::get('/daily', [DailyOperationsController::class, 'index'])->name('daily.index');
         Route::get('/classes', [ClassroomController::class, 'index'])->name('classrooms.index');
         Route::get('/classes/{class}', [ClassroomController::class, 'showClass'])->name('classrooms.class');

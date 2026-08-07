@@ -1,6 +1,6 @@
 @extends('layouts.app',['pageTitle'=>'Kesiapan Peluncuran'])
 @section('content')
-<div class="page-head"><div><span class="eyebrow">V1.9.0 TPA LAUNCH COMPLETE</span><h1>Kesiapan Peluncuran</h1><p>Semua pemeriksaan harus berdasarkan pengujian nyata, bukan sekadar ditandai selesai.</p></div><span class="launch-score">{{ $completion }}%</span></div>
+<div class="page-head"><div><span class="eyebrow">V2.0.0 FAMILY LEARNING & ACADEMY</span><h1>Kesiapan Peluncuran</h1><p>Semua pemeriksaan harus berdasarkan pengujian nyata, bukan sekadar ditandai selesai.</p></div><span class="launch-score">{{ $completion }}%</span></div>
 <div class="launch-progress"><span style="width:{{ $completion }}%"></span></div>
 
 <div class="stats-grid four">

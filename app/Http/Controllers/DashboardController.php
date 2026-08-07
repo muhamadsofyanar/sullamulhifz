@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Announcement;
+use App\Models\AcademyProgram;
+use App\Models\AcademyRecommendation;
 use App\Models\AdmissionRegistration;
 use App\Models\AssignmentRecipient;
 use App\Models\AttendanceRecord;
@@ -81,6 +83,7 @@ class DashboardController extends Controller
             'pendingSubmissions' => AssignmentRecipient::whereHas('assignment', fn ($q) => $q->where('created_by_teacher_id', $teacher->id))
                 ->whereIn('status', ['submitted', 'reviewing','revision_needed'])->count(),
             'activeThreads' => LiaisonThread::where('assigned_teacher_id', $teacher->id)->whereIn('status', ['new', 'active', 'waiting'])->count(),
+            'academyProgramCount' => AcademyProgram::where('institution_id',$request->user()->institution_id)->where('status','published')->whereIn('audience',['teacher','all'])->count(),
         ]);
     }
 
@@ -112,6 +115,9 @@ class DashboardController extends Controller
                 ->latest('publish_at')->limit(5)->get(),
             'fridaySessions' => FridayDevelopmentSession::where('institution_id', $request->user()->institution_id)
                 ->where('status', 'published')->where(fn ($q) => $q->whereNull('class_id')->orWhereIn('class_id', $classIds))->latest('session_date')->limit(3)->get(),
+            'academyRecommendations' => AcademyRecommendation::with(['student','lesson.module.program'])
+                ->where('institution_id',$request->user()->institution_id)->whereIn('student_id',$studentIds)->where('status','active')->latest('recommended_at')->limit(4)->get(),
+            'academyFeatured' => AcademyProgram::where('institution_id',$request->user()->institution_id)->where('status','published')->whereIn('audience',['guardian','all'])->orderByDesc('is_featured')->orderBy('sort_order')->first(),
         ]);
     }
 
