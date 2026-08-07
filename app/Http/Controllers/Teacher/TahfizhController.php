@@ -63,7 +63,7 @@ class TahfizhController extends Controller
                 ->where('institution_id', $request->user()->institution_id)
                 ->where('student_id', $student->id)
                 ->latest('review_date')->limit(30)->get(),
-            'errors' => QuranLearningErrorItem::query()
+            'correctionItems' => QuranLearningErrorItem::query()
                 ->where('institution_id', $request->user()->institution_id)
                 ->where('student_id', $student->id)
                 ->latest()->limit(40)->get(),

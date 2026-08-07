@@ -29,4 +29,15 @@ class TahfizhLearningEngineV250Test extends TestCase
         $this->assertInstanceOf(TahfizhLearningService::class, app(TahfizhLearningService::class));
         $this->assertInstanceOf(TahfizhProgressService::class, app(TahfizhProgressService::class));
     }
+    public function test_tahfizh_student_view_does_not_shadow_laravel_validation_errors_bag(): void
+    {
+        $controller = file_get_contents(app_path('Http/Controllers/Teacher/TahfizhController.php'));
+        $view = file_get_contents(resource_path('views/teacher/tahfizh/student.blade.php'));
+
+        $this->assertStringNotContainsString("'errors' => QuranLearningErrorItem::query()", $controller);
+        $this->assertStringContainsString("'correctionItems' => QuranLearningErrorItem::query()", $controller);
+        $this->assertStringContainsString('$correctionItems->whereNull', $view);
+        $this->assertStringNotContainsString('@forelse($errors as $error)', $view);
+    }
+
 }

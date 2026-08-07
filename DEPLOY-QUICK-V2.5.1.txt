@@ -1,0 +1,11 @@
+SULLAMUL HIFZ v2.5.1 — PHASE 3 CLOSURE HOTFIX
+
+1. Backup database + persistent storage seperti biasa.
+2. Upload ISI folder sullamulhifz-v2.5.1 ke root repository GitHub.
+3. Commit ke main.
+4. Coolify -> Redeploy.
+5. Tunggu "Rolling update completed".
+6. Login guru -> Perjalanan Tahfizh -> buka detail salah satu santri.
+7. HTTP 500 `Collection::any` harus sudah hilang.
+
+Tidak ada migration baru dan tidak ada environment variable baru.
