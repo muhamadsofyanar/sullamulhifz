@@ -1,0 +1,74 @@
+SULLAMUL HIFZ v2.3.0 — QUICK DEPLOY GITHUB → COOLIFY
+======================================================
+
+1. BACKUP
+   - Database produksi
+   - Persistent volume storage
+
+2. GITHUB
+   - Ekstrak ZIP v2.3.0
+   - Buka folder sullamulhifz-v2.3.0
+   - Upload ISI folder tersebut ke ROOT repository GitHub
+   - Jangan upload folder pembungkus sebagai subfolder
+
+   Root repository harus tetap berisi:
+   app/
+   bootstrap/
+   config/
+   database/
+   public/
+   resources/
+   routes/
+   scripts/
+   Dockerfile
+   composer.json
+   artisan
+
+3. COOLIFY ENVIRONMENT
+   Pastikan:
+   AUTO_MIGRATE=true
+   BOOTSTRAP_PRODUCTION=false
+   APP_DEBUG=false
+   DOMAIN_SEPARATION_ENABLED=true
+   ACADEMY_HOST=academy.sullamulhifz.or.id
+   ACADEMY_PORTAL_URL=https://academy.sullamulhifz.or.id
+   SESSION_DOMAIN=.sullamulhifz.or.id
+   SESSION_SECURE_COOKIE=true
+
+   Pertahankan APP_KEY dan kredensial database lama.
+
+4. REDEPLOY
+   Push/commit ke main lalu Redeploy di Coolify.
+
+5. LOG YANG DIHARAPKAN
+   Migration berhasil
+   Seeder v2.3 berhasil
+   Ekosistem v2.3.0 siap
+   Configuration cached successfully
+   Blade templates cached successfully
+   Menjalankan NGINX Unit...
+   "laravel" application started
+
+6. SMOKE TEST
+   https://sullamulhifz.or.id
+   https://app.sullamulhifz.or.id
+   https://academy.sullamulhifz.or.id
+   https://academy.sullamulhifz.or.id/audio
+
+   Academy Audio harus tetap berada pada domain academy.sullamulhifz.or.id.
+
+7. ADMIN
+   Admin → Fondasi Platform:
+   - lihat Roadmap 10 Fase
+   - ON/OFF feature flag tanpa redeploy
+
+   Admin → Kelola Academy:
+   - tambah/edit program
+   - tambah modul/materi
+   - susun Learning Path
+   - gabungkan materi dengan preset Audio Qur'an
+
+PENTING
+- Jangan gunakan migrate:fresh atau db:wipe di produksi.
+- Seeder startup v2.3 tidak lagi menimpa pilihan feature flag/konten Academy yang sudah diedit admin.
+- composer.lock masih belum tersedia pada source ini; Docker build memiliki IPv4 + retry Composer seperti hotfix sebelumnya.

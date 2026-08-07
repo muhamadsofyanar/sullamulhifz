@@ -28,6 +28,7 @@
                 <input type="hidden" name="_token" value="{{ csrf_token() }}">
                 <label>Judul<input name="title" required placeholder="Contoh: Parent Academy — Tahfizh di Rumah"></label>
                 <label>Untuk<select name="audience"><option value="guardian">Orang tua / wali</option><option value="teacher">Guru</option><option value="all">Semua pengguna</option></select></label>
+                <div class="form-grid"><label>Kategori<select name="category"><option value="family">Family Learning</option><option value="teacher">Teacher Academy</option><option value="quran">Quran Learning</option><option value="personalization">Personalisasi</option><option value="parenting">Pendidikan Anak</option><option value="talent">Character & Talent</option><option value="general">Umum</option></select></label><label>Learning track<input name="learning_track" placeholder="contoh: parent, quran-life"></label></div>
                 <label>Ringkasan<textarea name="summary" rows="3" placeholder="Tujuan program dalam 1–2 kalimat"></textarea></label>
                 <label>Deskripsi<textarea name="description" rows="4"></textarea></label>
                 <div class="form-grid"><label>Status<select name="status"><option value="draft">Draf</option><option value="published">Terbit</option></select></label><label class="check"><input type="checkbox" name="is_featured" value="1"> Program utama</label></div>
@@ -61,7 +62,7 @@
                         <?php endforeach; ?>
                     <?php endforeach; ?>
                 </select></label>
-                <div class="form-grid"><label>Jenis<select name="lesson_type"><option value="article">Bacaan</option><option value="video">Video</option><option value="audio">Audio</option><option value="activity">Aktivitas keluarga</option><option value="checklist">Checklist</option><option value="pdf">PDF</option><option value="link">Tautan</option></select></label><label>Durasi<input type="number" name="duration_minutes" min="1" max="600" value="5"></label></div>
+                <div class="form-grid"><label>Jenis<select name="lesson_type"><option value="article">Bacaan</option><option value="video">Video</option><option value="audio">Audio</option><option value="activity">Aktivitas keluarga</option><option value="checklist">Checklist</option><option value="reflection">Refleksi</option><option value="pdf">PDF</option><option value="link">Tautan</option></select></label><label>Durasi<input type="number" name="duration_minutes" min="1" max="600" value="5"></label></div>
                 <label>Judul<input name="title" required></label>
                 <label>Ringkasan<textarea name="summary" rows="3"></textarea></label>
                 <label>Isi materi<textarea name="body" rows="7" placeholder="Gunakan paragraf pendek dan bahasa yang hangat."></textarea></label>
@@ -73,6 +74,59 @@
     </div>
 </section>
 
+<section class="card academy-path-studio" style="margin-top:18px">
+    <div class="section-head"><div><span class="eyebrow">LEARNING PATH STUDIO</span><h2>Susun jalur belajar tanpa redeploy</h2><p class="muted">Gabungkan materi Academy dan preset Audio Qur’an menjadi urutan belajar yang sederhana.</p></div><span class="badge">{{ $paths->count() }} jalur</span></div>
+    <div class="grid two">
+        <form method="post" action="{{ route('admin.academy.paths.store') }}" class="stack">
+            @csrf
+            <h3>Buat jalur baru</h3>
+            <label>Judul<input name="title" required placeholder="Contoh: Murāja‘ah dengan Tenang"></label>
+            <div class="form-grid"><label>Untuk<select name="audience"><option value="guardian">Orang tua</option><option value="teacher">Guru</option><option value="all">Semua</option></select></label><label>Kategori<input name="category" placeholder="quran / family / teacher"></label></div>
+            <label>Ringkasan<textarea name="summary" rows="3"></textarea></label>
+            <div class="form-grid"><label>Status<select name="status"><option value="draft">Draf</option><option value="published">Terbit</option></select></label><label class="check"><input type="checkbox" name="is_featured" value="1"> Tampilkan utama</label></div>
+            <button class="button primary" type="submit">Buat jalur</button>
+        </form>
+
+        <form method="post" action="{{ route('admin.academy.path-items.store') }}" class="stack" data-path-item-form>
+            @csrf
+            <h3>Tambahkan langkah</h3>
+            <label>Jalur<select name="academy_learning_path_id" required>@foreach($paths as $path)<option value="{{ $path->id }}">{{ $path->title }}</option>@endforeach</select></label>
+            <label>Jenis<select name="item_type" data-path-item-type><option value="lesson">Materi Academy</option><option value="quran_preset">Preset Audio Qur’an</option></select></label>
+            <label data-path-lessons>Materi<select name="item_id" data-path-lesson-select>@foreach($programs as $program)@foreach($program->modules as $module)@foreach($module->lessons as $lesson)<option value="{{ $lesson->id }}">{{ $program->title }} — {{ $lesson->title }}</option>@endforeach @endforeach @endforeach</select></label>
+            <label data-path-presets hidden>Preset Qur’an<select data-path-preset-select>@foreach($quranPresets as $preset)<option value="{{ $preset->id }}">{{ $preset->title }}</option>@endforeach</select></label>
+            <label>Judul alternatif, opsional<input name="title_override"></label>
+            <label>Arahan singkat<textarea name="instruction" rows="2"></textarea></label>
+            <label class="check"><input type="checkbox" name="is_required" value="1" checked> Langkah wajib</label>
+            <button class="button primary" type="submit" @disabled($paths->isEmpty())>Tambah langkah</button>
+        </form>
+    </div>
+
+    <div class="academy-path-admin-list">
+    @forelse($paths as $path)
+        <details class="academy-studio-panel">
+            <summary><span>{{ str_pad((string)$loop->iteration,2,'0',STR_PAD_LEFT) }}</span><div><strong>{{ $path->title }}</strong><small>{{ $path->audience }} · {{ $path->items->count() }} langkah · {{ $path->status }}</small></div></summary>
+            <div class="stack academy-path-admin-body">
+                <form method="post" action="{{ route('admin.academy.paths.update',$path) }}" class="stack">@csrf @method('put')
+                    <div class="form-grid"><label>Judul<input name="title" value="{{ $path->title }}" required></label><label>Untuk<select name="audience"><option value="guardian" @selected($path->audience==='guardian')>Orang tua</option><option value="teacher" @selected($path->audience==='teacher')>Guru</option><option value="all" @selected($path->audience==='all')>Semua</option></select></label></div>
+                    <div class="form-grid"><label>Kategori<input name="category" value="{{ $path->category }}"></label><label>Status<select name="status"><option value="draft" @selected($path->status==='draft')>Draf</option><option value="published" @selected($path->status==='published')>Terbit</option><option value="archived" @selected($path->status==='archived')>Arsip</option></select></label></div>
+                    <label>Ringkasan<textarea name="summary" rows="2">{{ $path->summary }}</textarea></label>
+                    <label class="check"><input type="checkbox" name="is_featured" value="1" @checked($path->is_featured)> Jalur utama</label>
+                    <button class="button secondary" type="submit">Simpan jalur</button>
+                </form>
+                @foreach($path->items as $item)
+                    <div class="list-row"><div><strong>{{ $item->title_override ?: strtoupper($item->item_type).' #'.$item->item_id }}</strong><small>{{ $item->instruction ?: ($item->is_required?'Wajib':'Opsional') }}</small></div><form method="post" action="{{ route('admin.academy.path-items.destroy',$item) }}">@csrf @method('delete')<button class="button secondary" type="submit">Hapus</button></form></div>
+                @endforeach
+                @if($path->status==='published')<a class="button secondary" href="{{ route('academy.portal.path',$path) }}">Pratinjau jalur</a>@endif
+            </div>
+        </details>
+    @empty<p class="muted">Belum ada jalur belajar.</p>@endforelse
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded',()=>{const form=document.querySelector('[data-path-item-form]');if(!form)return;const type=form.querySelector('[data-path-item-type]');const lessonWrap=form.querySelector('[data-path-lessons]');const presetWrap=form.querySelector('[data-path-presets]');const lessonSelect=form.querySelector('[data-path-lesson-select]');const presetSelect=form.querySelector('[data-path-preset-select]');const sync=()=>{const q=type.value==='quran_preset';lessonWrap.hidden=q;presetWrap.hidden=!q;if(q){lessonSelect.removeAttribute('name');presetSelect.setAttribute('name','item_id')}else{presetSelect.removeAttribute('name');lessonSelect.setAttribute('name','item_id')}};type.addEventListener('change',sync);sync();});
+</script>
+
 <div class="academy-studio-library">
 <?php foreach ($programs as $program): ?>
     <section class="academy-studio-program card">
@@ -80,6 +134,18 @@
             <div><span class="academy-studio-audience"><?= e($program->audience === 'guardian' ? 'PARENT ACADEMY' : ($program->audience === 'teacher' ? 'ACADEMY GURU' : 'SEMUA PENGGUNA')) ?></span><h2><?= e($program->title) ?></h2><p><?= e($program->summary) ?></p></div>
             <span class="badge"><?= e($program->status) ?></span>
         </header>
+        <details class="academy-program-settings">
+            <summary>Pengaturan program</summary>
+            <form method="post" action="<?= e(route('admin.academy.programs.update',$program)) ?>" class="stack academy-studio-edit">
+                <input type="hidden" name="_token" value="<?= e(csrf_token()) ?>"><input type="hidden" name="_method" value="PUT">
+                <label>Judul<input name="title" required value="<?= e($program->title) ?>"></label>
+                <div class="form-grid"><label>Untuk<select name="audience"><option value="guardian" <?= $program->audience==='guardian'?'selected':'' ?>>Orang tua</option><option value="teacher" <?= $program->audience==='teacher'?'selected':'' ?>>Guru</option><option value="all" <?= $program->audience==='all'?'selected':'' ?>>Semua</option></select></label><label>Kategori<input name="category" value="<?= e($program->category) ?>"></label></div>
+                <label>Learning track<input name="learning_track" value="<?= e($program->learning_track) ?>"></label>
+                <label>Ringkasan<textarea name="summary" rows="2"><?= e($program->summary) ?></textarea></label><label>Deskripsi<textarea name="description" rows="3"><?= e($program->description) ?></textarea></label>
+                <div class="form-grid"><label>Status<select name="status"><option value="draft" <?= $program->status==='draft'?'selected':'' ?>>Draf</option><option value="published" <?= $program->status==='published'?'selected':'' ?>>Terbit</option><option value="archived" <?= $program->status==='archived'?'selected':'' ?>>Arsip</option></select></label><label class="check"><input type="checkbox" name="is_featured" value="1" <?= $program->is_featured?'checked':'' ?>> Program utama</label></div>
+                <button class="button secondary" type="submit">Simpan program</button>
+            </form>
+        </details>
 
         <?php foreach ($program->modules as $module): ?>
             <div class="academy-studio-module">
@@ -97,7 +163,7 @@
                             <input type="hidden" name="_method" value="PUT">
                             <label>Judul<input name="title" required value="<?= e($lesson->title) ?>"></label>
                             <div class="form-grid"><label>Jenis<select name="lesson_type">
-                                <?php foreach (['article'=>'Bacaan','video'=>'Video','audio'=>'Audio','activity'=>'Aktivitas','checklist'=>'Checklist','pdf'=>'PDF','link'=>'Tautan'] as $value=>$label): ?>
+                                <?php foreach (['article'=>'Bacaan','video'=>'Video','audio'=>'Audio','activity'=>'Aktivitas','checklist'=>'Checklist','reflection'=>'Refleksi','pdf'=>'PDF','link'=>'Tautan'] as $value=>$label): ?>
                                     <option value="<?= e($value) ?>" <?= $lesson->lesson_type === $value ? 'selected' : '' ?>><?= e($label) ?></option>
                                 <?php endforeach; ?>
                             </select></label><label>Durasi<input type="number" name="duration_minutes" min="1" max="600" value="<?= e($lesson->duration_minutes ?? 5) ?>"></label></div>

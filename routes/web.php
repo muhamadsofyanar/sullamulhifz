@@ -21,6 +21,8 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountInvitationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AcademyController;
+use App\Http\Controllers\AcademyExperienceController;
+use App\Http\Controllers\AcademyQuranController;
 use App\Http\Controllers\ContentFeedController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Guardian\PortalController;
@@ -62,7 +64,7 @@ Route::domain((string) config('sullam.staging_host'))->get('/status', fn () => r
 // mandiri pada academy.sullamulhifz.or.id. Route domain diletakkan sebelum
 // route publik generik agar path '/' Academy tidak tertangkap website utama.
 Route::domain((string) config('sullam.academy_host'))
-    ->middleware(['auth', 'password.changed', 'permission:academy.view', 'feature:parent_academy'])
+    ->middleware(['auth', 'password.changed', 'permission:academy.view', 'feature:academy_portal'])
     ->name('academy.portal.')
     ->group(function (): void {
         Route::get('/', [AcademyController::class, 'index'])->name('index');
@@ -71,7 +73,17 @@ Route::domain((string) config('sullam.academy_host'))
         Route::get('/modul', [AcademyController::class, 'modules'])->name('modules');
         Route::get('/materi', [AcademyController::class, 'materials'])->name('materials');
         Route::get('/video', [AcademyController::class, 'videos'])->name('videos');
-        Route::get('/audio', [AcademyController::class, 'audio'])->name('audio');
+        Route::get('/audio', [AcademyQuranController::class, 'index'])->middleware('feature:quran_audio')->name('audio');
+        Route::get('/audio/playlist', [AcademyQuranController::class, 'playlist'])->middleware('feature:quran_audio')->name('audio.playlist');
+        Route::post('/audio/sesi', [AcademyQuranController::class, 'startSession'])->middleware('feature:quran_audio')->name('audio.sessions.start');
+        Route::put('/audio/sesi/{session}/selesai', [AcademyQuranController::class, 'completeSession'])->middleware('feature:quran_audio')->name('audio.sessions.complete');
+        Route::get('/jalur-belajar', [AcademyExperienceController::class, 'paths'])->middleware('feature:learning_paths')->name('paths');
+        Route::get('/jalur-belajar/{path}', [AcademyExperienceController::class, 'path'])->middleware('feature:learning_paths')->name('path');
+        Route::get('/tersimpan', [AcademyExperienceController::class, 'bookmarks'])->name('bookmarks');
+        Route::post('/materi/{lesson}/simpan', [AcademyExperienceController::class, 'toggleBookmark'])->name('lesson.bookmark');
+        Route::post('/audio/preset/{preset}/simpan', [AcademyExperienceController::class, 'togglePresetBookmark'])->middleware('feature:quran_audio')->name('audio.preset.bookmark');
+        Route::post('/materi/{lesson}/refleksi', [AcademyExperienceController::class, 'storeReflection'])->middleware('feature:academy_reflections')->name('lesson.reflection');
+        Route::get('/ekosistem', [AcademyExperienceController::class, 'ecosystem'])->name('ecosystem');
         Route::get('/artikel', [AcademyController::class, 'articles'])->name('articles');
         Route::get('/progres', [AcademyController::class, 'progress'])->name('progress');
         Route::get('/rekomendasi', [AcademyController::class, 'recommendations'])->name('recommendations');
@@ -126,10 +138,10 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::post('/pengumuman/{announcement}/konfirmasi', [ContentFeedController::class, 'acknowledge'])->middleware('permission:announcements.view')->name('feed.announcements.acknowledge');
     Route::get('/pembinaan-jumat', [ContentFeedController::class, 'friday'])->middleware('permission:friday.view')->name('feed.friday');
     Route::get('/nilai/ikrar-santri', [ContentFeedController::class, 'pledge'])->name('feed.pledge');
-    Route::get('/academy/belajar', [AcademyController::class, 'index'])->middleware(['permission:academy.view','feature:parent_academy'])->name('academy.index');
-    Route::get('/academy/program/{program}', [AcademyController::class, 'program'])->middleware(['permission:academy.view','feature:parent_academy'])->name('academy.program');
-    Route::get('/academy/materi/{lesson}', [AcademyController::class, 'lesson'])->middleware(['permission:academy.view','feature:parent_academy'])->name('academy.lesson');
-    Route::post('/academy/materi/{lesson}/selesai', [AcademyController::class, 'complete'])->middleware(['permission:academy.view','feature:parent_academy'])->name('academy.lesson.complete');
+    Route::get('/academy/belajar', [AcademyController::class, 'index'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.index');
+    Route::get('/academy/program/{program}', [AcademyController::class, 'program'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.program');
+    Route::get('/academy/materi/{lesson}', [AcademyController::class, 'lesson'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.lesson');
+    Route::post('/academy/materi/{lesson}/selesai', [AcademyController::class, 'complete'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.lesson.complete');
 
     Route::get('/latihan-quran', [QuranPracticeController::class, 'index'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.index');
     Route::get('/latihan-quran/playlist', [QuranPracticeController::class, 'playlist'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.playlist');
@@ -183,12 +195,16 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         });
 
         Route::middleware('role:superadmin,institution_admin,head')->group(function (): void {
-            Route::get('/academy', [AdminAcademyController::class, 'index'])->middleware(['permission:academy.manage','feature:parent_academy'])->name('academy.index');
-            Route::post('/academy/programs', [AdminAcademyController::class, 'storeProgram'])->middleware(['permission:academy.manage','feature:parent_academy'])->name('academy.programs.store');
-            Route::put('/academy/programs/{program}', [AdminAcademyController::class, 'updateProgram'])->middleware(['permission:academy.manage','feature:parent_academy'])->name('academy.programs.update');
-            Route::post('/academy/modules', [AdminAcademyController::class, 'storeModule'])->middleware(['permission:academy.manage','feature:parent_academy'])->name('academy.modules.store');
-            Route::post('/academy/lessons', [AdminAcademyController::class, 'storeLesson'])->middleware(['permission:academy.manage','feature:parent_academy'])->name('academy.lessons.store');
-            Route::put('/academy/lessons/{lesson}', [AdminAcademyController::class, 'updateLesson'])->middleware(['permission:academy.manage','feature:parent_academy'])->name('academy.lessons.update');
+            Route::get('/academy', [AdminAcademyController::class, 'index'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.index');
+            Route::post('/academy/programs', [AdminAcademyController::class, 'storeProgram'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.programs.store');
+            Route::put('/academy/programs/{program}', [AdminAcademyController::class, 'updateProgram'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.programs.update');
+            Route::post('/academy/modules', [AdminAcademyController::class, 'storeModule'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.modules.store');
+            Route::post('/academy/lessons', [AdminAcademyController::class, 'storeLesson'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.lessons.store');
+            Route::put('/academy/lessons/{lesson}', [AdminAcademyController::class, 'updateLesson'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.lessons.update');
+            Route::post('/academy/paths', [AdminAcademyController::class, 'storePath'])->middleware(['permission:academy.manage','feature:learning_paths'])->name('academy.paths.store');
+            Route::put('/academy/paths/{path}', [AdminAcademyController::class, 'updatePath'])->middleware(['permission:academy.manage','feature:learning_paths'])->name('academy.paths.update');
+            Route::post('/academy/path-items', [AdminAcademyController::class, 'storePathItem'])->middleware(['permission:academy.manage','feature:learning_paths'])->name('academy.path-items.store');
+            Route::delete('/academy/path-items/{item}', [AdminAcademyController::class, 'destroyPathItem'])->middleware(['permission:academy.manage','feature:learning_paths'])->name('academy.path-items.destroy');
 
             Route::get('/quran-library', [QuranLibraryController::class, 'index'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.index');
             Route::post('/quran-library/sync', [QuranLibraryController::class, 'sync'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.sync');

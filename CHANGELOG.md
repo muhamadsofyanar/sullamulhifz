@@ -1,5 +1,15 @@
 # Changelog
 
+## v2.3.0 — Integrated Learning Ecosystem — 2026-08-07
+- Audio Qur’an Academy kini memiliki player internal; pengguna tidak lagi berpindah ke UI aplikasi TPA.
+- Menambahkan learning path, bookmark materi/preset Qur’an, refleksi privat, riwayat latihan, dan filter program Academy.
+- Menambahkan contoh e-course Teacher Academy, pendidikan anak, karakter & bakat; konten STIFIn tetap proporsional sebagai informasi pendamping.
+- Menambahkan fondasi data fase 7–10: portofolio santri, learning insight, community moderasi, dan koneksi integrasi.
+- Menambahkan roadmap 10 fase serta feature flag yang dapat diubah admin tanpa redeploy.
+- Memperbaiki seeder agar pilihan admin dan konten yang sudah diedit tidak ditimpa pada restart/redeploy.
+- Menambahkan startup verification `sullam:verify-ecosystem` dan aset PWA v2.3.
+
+
 ## v2.1.1 — Coolify bootstrap hotfix
 - Fix `Target class [config] does not exist` during Composer package discovery.
 - Trusted proxies are parsed before Application construction without `config()`.

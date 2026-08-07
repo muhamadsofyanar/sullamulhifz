@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\Schedule;
 use App\Services\QuranAudioSyncService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v2.1.0 — Unified Platform & Secure Media.');
+    $this->info('Sullamul Hifz v2.3.0 — Integrated Learning Ecosystem.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -323,5 +323,29 @@ Artisan::command('sullam:verify-academy', function (): int {
     return 0;
 })->purpose('Memeriksa struktur dan konten awal Family Learning & Academy v2.0.0');
 
+
+Artisan::command('sullam:verify-ecosystem', function (): int {
+    $requiredTables = [
+        'academy_learning_paths', 'academy_learning_path_items', 'academy_bookmarks', 'academy_reflections',
+        'student_portfolios', 'community_spaces', 'community_posts', 'learning_insights', 'integration_connections',
+    ];
+    $missing = collect($requiredTables)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Fondasi ekosistem v2.3 belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $rows = [];
+    foreach (Institution::query()->where('status', 'active')->get() as $institution) {
+        $paths = \App\Models\AcademyLearningPath::query()->where('institution_id', $institution->id)->where('status', 'published')->count();
+        $programs = AcademyProgram::query()->where('institution_id', $institution->id)->where('status', 'published')->count();
+        $features = \App\Models\FeatureFlag::query()->where('institution_id', $institution->id)->count();
+        $community = \App\Models\CommunitySpace::query()->where('institution_id', $institution->id)->count();
+        $rows[] = [$institution->name, $programs, $paths, $features, $community, $paths >= 3 ? 'Siap' : 'Perlu seeder'];
+    }
+    $this->table(['Lembaga', 'Program Academy', 'Learning Path', 'Feature Flag', 'Community Draft', 'Status'], $rows);
+    $this->info('Ekosistem v2.3.0 siap: fase 1–6 operasional, fase 7–10 memiliki fondasi data dan feature flag.');
+    return 0;
+})->purpose('Memeriksa fondasi roadmap 10 fase Sullamul Hifz v2.3.0');
 
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();

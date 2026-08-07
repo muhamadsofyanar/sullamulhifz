@@ -21,8 +21,22 @@
 <section class="academy-quick-grid">
     <a class="academy-quick-card" href="{{ route('academy.portal.programs') }}"><x-icon name="lesson"/><strong>Program</strong><span>Lihat seluruh e-course yang tersedia.</span></a>
     <a class="academy-quick-card" href="{{ route('academy.portal.videos') }}"><x-icon name="video"/><strong>Video</strong><span>Materi video singkat sebagai pengantar.</span></a>
-    <a class="academy-quick-card" href="{{ route('academy.portal.audio') }}"><x-icon name="listen"/><strong>Audio Qur’an</strong><span>Murattal dan latihan pengulangan.</span></a>
+    @if($quranAudioEnabled ?? true)<a class="academy-quick-card" href="{{ route('academy.portal.audio') }}"><x-icon name="listen"/><strong>Audio Qur’an</strong><span>Murattal dan latihan pengulangan.</span></a>@endif
     <a class="academy-quick-card" href="{{ route('academy.portal.articles') }}"><x-icon name="assignment"/><strong>Artikel & Aktivitas</strong><span>Bacaan praktis untuk rumah dan kelas.</span></a>
+    @if($learningPathsEnabled ?? true)<a class="academy-quick-card" href="{{ route('academy.portal.paths') }}"><x-icon name="continuity"/><strong>Jalur Belajar</strong><span>Urutan belajar yang lebih terarah.</span></a>@endif
+    <a class="academy-quick-card" href="{{ route('academy.portal.bookmarks') }}"><x-icon name="preservation"/><strong>Tersimpan</strong><span>{{ $bookmarkCount }} materi untuk dibuka kembali.</span></a>
+</section>
+@endif
+
+
+@if(($academyStandalone ?? false) && ($learningPathsEnabled ?? true) && $paths->isNotEmpty())
+<section class="academy-section-block academy-home-paths">
+    <div class="academy-section-heading"><div><span class="eyebrow">JALUR BELAJAR</span><h2>Mulai dari urutan yang sudah disiapkan</h2><p>Materi dan latihan disusun agar tidak terasa seperti katalog yang harus diselesaikan semuanya.</p></div><a class="button secondary" href="{{ route('academy.portal.paths') }}">Semua jalur</a></div>
+    <div class="academy-path-grid compact">
+        @foreach($paths as $path)
+            <a class="academy-path-card" href="{{ route('academy.portal.path',$path) }}"><div class="academy-path-top"><span class="academy-path-phase">{{ strtoupper($path->category ?? 'ACADEMY') }}</span><span>{{ $path->items->count() }} langkah</span></div><h3>{{ $path->title }}</h3><p>{{ $path->summary }}</p><span class="academy-open">Mulai jalur →</span></a>
+        @endforeach
+    </div>
 </section>
 @endif
 

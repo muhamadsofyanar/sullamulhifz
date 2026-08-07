@@ -122,10 +122,15 @@ class PlatformFoundationV210Seeder extends Seeder
         }
 
         foreach (Institution::query()->get() as $institution) {
-            $branch = Branch::updateOrCreate(
+            $branch = Branch::firstOrCreate(
                 ['institution_id' => $institution->id, 'code' => 'UTAMA'],
                 ['name' => 'Cabang Utama', 'status' => 'active', 'is_main' => true],
             );
+
+            // Jangan mengambil alih pilihan cabang utama yang sudah diatur admin.
+            if (! Branch::query()->where('institution_id', $institution->id)->where('status', 'active')->where('is_main', true)->exists()) {
+                $branch->update(['status' => 'active', 'is_main' => true]);
+            }
 
             foreach (['students', 'classes', 'learning_groups', 'schedules', 'user_roles'] as $tableName) {
                 if (Schema::hasColumn($tableName, 'branch_id')) {
@@ -146,14 +151,15 @@ class PlatformFoundationV210Seeder extends Seeder
                 'community' => false,
                 'multi_branch' => false,
             ] as $featureKey => $enabled) {
-                FeatureFlag::updateOrCreate(
+                // Seeder hanya memberikan default. Toggle admin harus bertahan setelah restart.
+                FeatureFlag::firstOrCreate(
                     ['institution_id' => $institution->id, 'feature_key' => $featureKey],
                     ['enabled' => $enabled],
                 );
             }
 
             foreach ($institution->academicYears as $year) {
-                AcademicPeriod::updateOrCreate(
+                AcademicPeriod::firstOrCreate(
                     ['academic_year_id' => $year->id, 'name' => 'Periode Utama'],
                     [
                         'start_date' => $year->start_date,

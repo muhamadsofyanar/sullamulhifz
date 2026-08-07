@@ -22,7 +22,7 @@ class LaunchTemplateV190Seeder extends Seeder
 
         foreach (Institution::where('status', 'active')->get() as $institution) {
             foreach ($templates as $key => $value) {
-                SystemSetting::updateOrCreate(
+                SystemSetting::firstOrCreate(
                     ['institution_id' => $institution->id, 'key' => 'v190.'.$key],
                     ['group' => 'launch_templates', 'value' => $value, 'type' => 'string']
                 );

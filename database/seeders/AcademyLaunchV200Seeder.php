@@ -15,7 +15,7 @@ class AcademyLaunchV200Seeder extends Seeder
     public function run(): void
     {
         foreach (Institution::query()->where('status', 'active')->get() as $institution) {
-            $parent = AcademyProgram::updateOrCreate(
+            $parent = AcademyProgram::firstOrCreate(
                 ['institution_id' => $institution->id, 'slug' => 'parent-academy-rumah-qurani'],
                 [
                     'title' => 'Parent Academy — Rumah yang Dekat dengan Al-Qur’an',
@@ -74,7 +74,7 @@ class AcademyLaunchV200Seeder extends Seeder
 
             $this->syncModules($parent, $parentModules);
 
-            $teacher = AcademyProgram::updateOrCreate(
+            $teacher = AcademyProgram::firstOrCreate(
                 ['institution_id' => $institution->id, 'slug' => 'orientasi-guru-sullamul-hifz'],
                 [
                     'title' => 'Orientasi Guru Sullamul Ḥifẓ',
@@ -123,7 +123,7 @@ class AcademyLaunchV200Seeder extends Seeder
                     ['mobile_senior','Perangkat','PWA diuji pada ponsel dengan tombol besar dan tanpa scroll horizontal'],
                     ['quran_simple','Pembelajaran','Quran Player mode sederhana diuji oleh wali tanpa bantuan teknis'],
                 ] as [$key,$category,$label]) {
-                    LaunchCheck::updateOrCreate(
+                    LaunchCheck::firstOrCreate(
                         ['institution_id'=>$institution->id,'check_key'=>$key],
                         ['category'=>$category,'label'=>$label,'status'=>'pending']
                     );
@@ -135,13 +135,13 @@ class AcademyLaunchV200Seeder extends Seeder
     private function syncModules(AcademyProgram $program, array $modules): void
     {
         foreach ($modules as $moduleIndex => $moduleData) {
-            $module = AcademyModule::updateOrCreate(
+            $module = AcademyModule::firstOrCreate(
                 ['academy_program_id' => $program->id, 'title' => $moduleData['title']],
                 ['summary' => $moduleData['summary'], 'sort_order' => $moduleIndex + 1, 'status' => 'published']
             );
 
             foreach ($moduleData['lessons'] as $lessonIndex => [$title,$type,$minutes,$body]) {
-                AcademyLesson::updateOrCreate(
+                AcademyLesson::firstOrCreate(
                     ['academy_module_id' => $module->id, 'slug' => Str::slug($title)],
                     [
                         'title' => $title,

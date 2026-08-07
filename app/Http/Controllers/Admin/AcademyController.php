@@ -5,9 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\AcademyLesson;
 use App\Models\AcademyLessonProgress;
+use App\Models\AcademyLearningPath;
+use App\Models\AcademyLearningPathItem;
 use App\Models\AcademyModule;
 use App\Models\AcademyProgram;
 use App\Models\AcademyRecommendation;
+use App\Models\QuranPracticePreset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -37,6 +40,8 @@ class AcademyController extends Controller
             'progressCount' => AcademyLessonProgress::where('institution_id', $institutionId)->where('status', 'completed')->count(),
             'recommendationCount' => AcademyRecommendation::where('institution_id', $institutionId)->where('status', 'active')->count(),
             'lessonCount' => $lessonCount,
+            'paths' => AcademyLearningPath::query()->with('items')->where('institution_id', $institutionId)->orderBy('sort_order')->orderBy('id')->get(),
+            'quranPresets' => QuranPracticePreset::query()->where('institution_id', $institutionId)->where('status', 'active')->orderByDesc('is_featured')->orderBy('title')->get(),
         ]);
     }
 
@@ -44,6 +49,7 @@ class AcademyController extends Controller
     {
         $data=$request->validate([
             'title'=>['required','string','max:160'], 'audience'=>['required',Rule::in(['guardian','teacher','all'])],
+            'category'=>['nullable','string','max:50'], 'learning_track'=>['nullable','string','max:50'],
             'summary'=>['nullable','string','max:1000'], 'description'=>['nullable','string','max:10000'],
             'status'=>['required',Rule::in(['draft','published','archived'])], 'is_featured'=>['nullable','boolean'],
         ]);
@@ -57,6 +63,7 @@ class AcademyController extends Controller
         $this->own($request,$program);
         $data=$request->validate([
             'title'=>['required','string','max:160'], 'audience'=>['required',Rule::in(['guardian','teacher','all'])],
+            'category'=>['nullable','string','max:50'], 'learning_track'=>['nullable','string','max:50'],
             'summary'=>['nullable','string','max:1000'], 'description'=>['nullable','string','max:10000'],
             'status'=>['required',Rule::in(['draft','published','archived'])], 'is_featured'=>['nullable','boolean'],
         ]);
@@ -76,7 +83,7 @@ class AcademyController extends Controller
     {
         $data=$request->validate([
             'academy_module_id'=>['required','integer','exists:academy_modules,id'],'title'=>['required','string','max:180'],
-            'lesson_type'=>['required',Rule::in(['article','video','audio','pdf','activity','checklist','link'])],
+            'lesson_type'=>['required',Rule::in(['article','video','audio','pdf','activity','checklist','reflection','link'])],
             'summary'=>['nullable','string','max:1000'],'body'=>['nullable','string','max:30000'],'media_url'=>['nullable','url','max:2000'],
             'duration_minutes'=>['nullable','integer','min:1','max:600'],'status'=>['required',Rule::in(['draft','published','archived'])],
             'requires_action'=>['nullable','boolean'],
@@ -93,7 +100,7 @@ class AcademyController extends Controller
         $lesson->load('module.program'); $this->own($request,$lesson->module->program);
         $data = $request->validate([
             'title' => ['required','string','max:180'],
-            'lesson_type' => ['required', Rule::in(['article','video','audio','pdf','activity','checklist','link'])],
+            'lesson_type' => ['required', Rule::in(['article','video','audio','pdf','activity','checklist','reflection','link'])],
             'summary' => ['nullable','string','max:1000'],
             'body' => ['nullable','string','max:30000'],
             'media_url' => ['nullable','url','max:2000'],
@@ -104,6 +111,87 @@ class AcademyController extends Controller
         $data['requires_action'] = $request->boolean('requires_action');
         $lesson->update($data);
         return back()->with('success','Materi Academy diperbarui.');
+    }
+
+
+    public function storePath(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'title' => ['required','string','max:160'],
+            'audience' => ['required', Rule::in(['guardian','teacher','all'])],
+            'category' => ['nullable','string','max:50'],
+            'summary' => ['nullable','string','max:1000'],
+            'status' => ['required', Rule::in(['draft','published','archived'])],
+            'is_featured' => ['nullable','boolean'],
+        ]);
+        $base = Str::slug($data['title']) ?: 'jalur-belajar';
+        $slug = $base; $i = 2;
+        while (AcademyLearningPath::query()->where('institution_id',$request->user()->institution_id)->where('slug',$slug)->exists()) {
+            $slug = $base.'-'.$i++;
+        }
+        AcademyLearningPath::create([
+            ...$data,
+            'institution_id' => $request->user()->institution_id,
+            'slug' => $slug,
+            'is_featured' => $request->boolean('is_featured'),
+            'sort_order' => (int) AcademyLearningPath::where('institution_id',$request->user()->institution_id)->max('sort_order') + 1,
+        ]);
+        return back()->with('success','Jalur belajar berhasil dibuat. Tambahkan materi atau preset Qur’an sebagai langkah berikutnya.');
+    }
+
+    public function updatePath(Request $request, AcademyLearningPath $path): RedirectResponse
+    {
+        abort_unless((int)$path->institution_id === (int)$request->user()->institution_id, 404);
+        $data = $request->validate([
+            'title' => ['required','string','max:160'],
+            'audience' => ['required', Rule::in(['guardian','teacher','all'])],
+            'category' => ['nullable','string','max:50'],
+            'summary' => ['nullable','string','max:1000'],
+            'status' => ['required', Rule::in(['draft','published','archived'])],
+            'is_featured' => ['nullable','boolean'],
+        ]);
+        $path->update([...$data, 'is_featured' => $request->boolean('is_featured')]);
+        return back()->with('success','Jalur belajar diperbarui.');
+    }
+
+    public function storePathItem(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'academy_learning_path_id' => ['required','integer','exists:academy_learning_paths,id'],
+            'item_type' => ['required', Rule::in(['lesson','quran_preset'])],
+            'item_id' => ['required','integer'],
+            'title_override' => ['nullable','string','max:160'],
+            'instruction' => ['nullable','string','max:1000'],
+            'is_required' => ['nullable','boolean'],
+        ]);
+        $path = AcademyLearningPath::findOrFail($data['academy_learning_path_id']);
+        abort_unless((int)$path->institution_id === (int)$request->user()->institution_id, 404);
+
+        if ($data['item_type'] === 'lesson') {
+            $lesson = AcademyLesson::with('module.program')->findOrFail($data['item_id']);
+            abort_unless((int)$lesson->module->program->institution_id === (int)$request->user()->institution_id, 404);
+        } else {
+            $preset = QuranPracticePreset::where('institution_id',$request->user()->institution_id)->findOrFail($data['item_id']);
+        }
+
+        AcademyLearningPathItem::updateOrCreate(
+            ['academy_learning_path_id'=>$path->id,'item_type'=>$data['item_type'],'item_id'=>$data['item_id']],
+            [
+                'title_override'=>$data['title_override'] ?? null,
+                'instruction'=>$data['instruction'] ?? null,
+                'is_required'=>$request->boolean('is_required'),
+                'sort_order'=>(int)$path->items()->max('sort_order')+1,
+            ]
+        );
+        return back()->with('success','Langkah jalur belajar berhasil ditambahkan.');
+    }
+
+    public function destroyPathItem(Request $request, AcademyLearningPathItem $item): RedirectResponse
+    {
+        $item->load('path');
+        abort_unless((int)$item->path->institution_id === (int)$request->user()->institution_id, 404);
+        $item->delete();
+        return back()->with('success','Langkah dihapus dari jalur belajar.');
     }
 
     private function own(Request $request, AcademyProgram $program): void { abort_unless((int)$program->institution_id===(int)$request->user()->institution_id,404); }

@@ -22,6 +22,14 @@ $isDirectAudio = $lesson->lesson_type === 'audio' && $mediaUrl !== '' && !$youtu
         <span class="academy-course-chip">{{ $typeLabels[$lesson->lesson_type] ?? strtoupper($lesson->lesson_type) }}</span>
     </div>
     <header class="academy-premium-lesson-head"><span class="eyebrow">{{ $lesson->module->program->title }}</span><h1>{{ $lesson->title }}</h1><p>{{ $lesson->summary }}</p><span>± {{ $lesson->duration_minutes ?? 5 }} menit</span></header>
+    @if($academyStandalone ?? false)
+    <div class="academy-lesson-utility-row">
+        <form method="post" action="{{ route('academy.portal.lesson.bookmark',$lesson) }}">@csrf
+            <button type="submit" class="button secondary"><x-icon name="preservation" size="18"/> {{ $isBookmarked ? 'Hapus dari tersimpan' : 'Simpan materi' }}</button>
+        </form>
+        @if($learningPathsEnabled ?? true)<a class="button secondary" href="{{ route('academy.portal.paths') }}"><x-icon name="continuity" size="18"/> Jalur belajar</a>@endif
+    </div>
+    @endif
 
     @if($embedUrl)
         <section class="academy-video-stage {{ $isShort ? 'is-short-stage' : '' }}" data-academy-video-stage aria-label="Video Academy">
@@ -37,6 +45,29 @@ $isDirectAudio = $lesson->lesson_type === 'audio' && $mediaUrl !== '' && !$youtu
 
     @if(count($paragraphs))<section class="academy-premium-reading card">@foreach($paragraphs as $paragraph)<p>{!! nl2br(e($paragraph)) !!}</p>@endforeach</section>@endif
     @if($lesson->requires_action)<section class="academy-premium-action"><x-icon name="values"/><div><strong>Satu langkah kecil sudah cukup.</strong><p>Pilih tindakan yang realistis. Academy membantu komunikasi dan pembinaan, bukan menambah tekanan.</p></div></section>@endif
+
+    @if(($academyStandalone ?? false) && ($reflectionEnabled ?? true))
+    <section class="academy-reflection-card">
+        <div><span class="eyebrow">REFLEKSI PRIBADI</span><h2>Apa yang ingin Anda bawa dari materi ini?</h2><p>Catatan ini bersifat pribadi. Simpan hal yang benar-benar berguna untuk tindakan berikutnya.</p></div>
+        <form method="post" action="{{ route('academy.portal.lesson.reflection',$lesson) }}" class="academy-reflection-form">
+            @csrf
+            @if($reflectionStudents->isNotEmpty())
+            <label>Terkait anak, opsional<select name="student_id"><option value="">Tidak memilih anak</option>@foreach($reflectionStudents as $student)<option value="{{ $student->id }}">{{ $student->full_name }}</option>@endforeach</select></label>
+            @endif
+            <label>Refleksi<textarea name="reflection" rows="4" maxlength="3000" required placeholder="Satu hal yang saya pahami atau ingin saya perbaiki..."></textarea></label>
+            <label>Tindak lanjut kecil, opsional<input name="follow_up" maxlength="255" placeholder="Contoh: latihan 10 menit setelah Magrib selama 3 hari"></label>
+            <button class="button secondary" type="submit">Simpan refleksi</button>
+        </form>
+        @if($reflections->isNotEmpty())
+        <div class="academy-reflection-history">
+            @foreach($reflections as $reflection)
+                <article><small>{{ $reflection->created_at?->format('d M Y · H:i') }}</small><p>{{ $reflection->reflection }}</p>@if($reflection->follow_up)<strong>Langkah kecil: {{ $reflection->follow_up }}</strong>@endif</article>
+            @endforeach
+        </div>
+        @endif
+    </section>
+    @endif
+
     <form method="post" action="{{ route($academyRoutePrefix.'lesson.complete',$lesson) }}" class="academy-complete-form">@csrf<button class="button primary wide academy-complete-button" type="submit">{{ $progress->status==='completed'?'✓ Materi sudah selesai':'Tandai selesai' }}</button></form>
     <nav class="academy-lesson-nav">
         @if($previous)<a href="{{ route($academyRoutePrefix.'lesson',$previous) }}">← Sebelumnya</a>@else<span></span>@endif

@@ -9,6 +9,7 @@ use App\Models\AcademyProgram;
 use App\Models\AcademyRecommendation;
 use App\Models\QuranAudioSource;
 use App\Models\QuranPracticePreset;
+use App\Support\Feature;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,20 +28,40 @@ class AcademyController extends Controller
             ->where('user_id', $request->user()->id)
             ->whereIn('academy_lesson_id', $allLessons->pluck('id'))
             ->count();
+        $institutionId = (int) $request->user()->institution_id;
+        $learningPathsEnabled = Feature::enabled('learning_paths', $institutionId, true);
+        $quranAudioEnabled = Feature::enabled('quran_audio', $institutionId, true);
+        $paths = $learningPathsEnabled
+            ? \App\Models\AcademyLearningPath::query()
+                ->with('items')
+                ->where('institution_id', $institutionId)
+                ->where('status', 'published')
+                ->whereIn('audience', $this->audiencesFor($request))
+                ->orderByDesc('is_featured')->orderBy('sort_order')->limit(3)->get()
+            : collect();
+        $bookmarkCount = \App\Models\AcademyBookmark::query()
+            ->where('user_id', $request->user()->id)
+            ->where('institution_id', $request->user()->institution_id)
+            ->count();
 
         return view('academy.index', array_merge(
-            compact('programs', 'completedIds', 'recommendations', 'allLessons', 'startedCount'),
+            compact('programs', 'completedIds', 'recommendations', 'allLessons', 'startedCount', 'paths', 'bookmarkCount', 'learningPathsEnabled', 'quranAudioEnabled'),
             $this->viewContext($request),
         ));
     }
 
     public function programs(Request $request): View
     {
-        $programs = $this->programsFor($request);
-        $completedIds = $this->completedLessonIds($request, $programs);
+        $allPrograms = $this->programsFor($request);
+        $tracks = $allPrograms->pluck('learning_track')->filter()->unique()->values();
+        $selectedTrack = trim((string) $request->query('track', ''));
+        $programs = $selectedTrack !== ''
+            ? $allPrograms->where('learning_track', $selectedTrack)->values()
+            : $allPrograms;
+        $completedIds = $this->completedLessonIds($request, $allPrograms);
 
         return view('academy.programs', array_merge(
-            compact('programs', 'completedIds'),
+            compact('programs', 'allPrograms', 'completedIds', 'tracks', 'selectedTrack'),
             $this->viewContext($request),
         ));
     }
@@ -214,9 +235,25 @@ class AcademyController extends Controller
         $position = max(0, $siblings->search(fn ($item) => $item->id === $lesson->id));
         $previous = $position > 0 ? $siblings[$position - 1] : null;
         $next = $position < $siblings->count() - 1 ? $siblings[$position + 1] : null;
+        $isBookmarked = \App\Models\AcademyBookmark::query()
+            ->where('user_id', $request->user()->id)
+            ->where('bookmark_type', 'lesson')
+            ->where('bookmark_id', $lesson->id)
+            ->exists();
+        $reflections = \App\Models\AcademyReflection::query()
+            ->where('user_id', $request->user()->id)
+            ->where('academy_lesson_id', $lesson->id)
+            ->latest()
+            ->limit(5)
+            ->get();
+        $reflectionStudents = $request->user()->hasRole('guardian') && $request->user()->guardian
+            ? $request->user()->guardian->students()->where('students.status', 'active')->orderBy('students.full_name')->get()
+            : collect();
+        $reflectionEnabled = Feature::enabled('academy_reflections', (int) $request->user()->institution_id, true);
+        $learningPathsEnabled = Feature::enabled('learning_paths', (int) $request->user()->institution_id, true);
 
         return view('academy.lesson', array_merge(
-            compact('lesson', 'progress', 'previous', 'next'),
+            compact('lesson', 'progress', 'previous', 'next', 'isBookmarked', 'reflections', 'reflectionStudents', 'reflectionEnabled', 'learningPathsEnabled'),
             $this->viewContext($request),
         ));
     }
@@ -279,18 +316,21 @@ class AcademyController extends Controller
 
     private function programsFor(Request $request): Collection
     {
-        return AcademyProgram::query()
+        $institutionId = (int) $request->user()->institution_id;
+        $programs = AcademyProgram::query()
             ->with([
                 'modules' => fn ($q) => $q->where('status', 'published')->orderBy('sort_order'),
                 'modules.lessons' => fn ($q) => $q->where('status', 'published')->orderBy('sort_order'),
             ])
-            ->where('institution_id', $request->user()->institution_id)
+            ->where('institution_id', $institutionId)
             ->where('status', 'published')
             ->whereIn('audience', $this->audiencesFor($request))
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get();
+
+        return $programs->filter(fn (AcademyProgram $program): bool => $this->programFeatureEnabled($program, $institutionId))->values();
     }
 
     private function completedLessonIds(Request $request, Collection $programs): Collection
@@ -344,6 +384,17 @@ class AcademyController extends Controller
         abort_unless((int) $program->institution_id === (int) $request->user()->institution_id, 404);
         abort_unless($program->status === 'published' || $request->user()->hasAnyRole(['superadmin', 'institution_admin', 'head']), 404);
         abort_unless(in_array($program->audience, $this->audiencesFor($request), true), 403);
+        abort_unless($this->programFeatureEnabled($program, (int) $request->user()->institution_id), 404);
+    }
+
+    private function programFeatureEnabled(AcademyProgram $program, int $institutionId): bool
+    {
+        if ($program->audience === 'guardian' && ! Feature::enabled('parent_academy', $institutionId, true)) return false;
+        if ($program->audience === 'teacher' && ! Feature::enabled('teacher_academy', $institutionId, true)) return false;
+        if (in_array($program->learning_track, ['stifin', 'stifin-parenting'], true) && ! Feature::enabled('stifin_learning', $institutionId, true)) return false;
+        if (in_array($program->category, ['family', 'parenting'], true) && ! Feature::enabled('family_learning', $institutionId, true)) return false;
+        if ($program->category === 'talent' && ! Feature::enabled('character_talent', $institutionId, true)) return false;
+        return true;
     }
 
     private function viewContext(Request $request): array

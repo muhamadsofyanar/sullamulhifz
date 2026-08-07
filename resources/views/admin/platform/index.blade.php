@@ -2,11 +2,20 @@
 @section('content')
 <div class="page-head">
     <div>
-        <span class="eyebrow">SULLAMUL ḤIFẒ V2.1</span>
+        <span class="eyebrow">SULLAMUL ḤIFẒ V2.3</span>
         <h1>Fondasi Platform</h1>
         <p>Kelola cabang, periode akademik, dan modul pengembangan tanpa mengubah source code.</p>
     </div>
 </div>
+
+<section class="card" style="margin-bottom:18px">
+    <div class="section-head"><div><h2>Roadmap 10 Fase</h2><p class="muted">Fase 1–6 sudah memiliki implementasi yang dapat dipakai. Fase 7–10 memiliki fondasi data dan feature flag agar pengembangan berikutnya tidak perlu membongkar arsitektur.</p></div><span class="badge">v2.3</span></div>
+    <div class="admin-roadmap-grid">
+        @foreach($roadmapPhases as $number=>$phase)
+            <div class="admin-roadmap-phase {{ $phase[1] }}"><b>{{ $number }}</b><div><small>{{ $phase[1]==='ready'?'SIAP':'FONDASI' }}</small><strong>{{ $phase[0] }}</strong></div></div>
+        @endforeach
+    </div>
+</section>
 
 <div class="grid two">
     <section class="card icon-system-card">

@@ -1,0 +1,52 @@
+Only in v2.3: CHANGED-FILES-V2.3.0.txt
+Files v2.2/CHANGELOG.md and v2.3/CHANGELOG.md differ
+Only in v2.3: DEPLOY-QUICK-V2.3.0.txt
+Files v2.2/Dockerfile and v2.3/Dockerfile differ
+Files v2.2/README.md and v2.3/README.md differ
+Files v2.2/RELEASE and v2.3/RELEASE differ
+Files v2.2/START-HERE.md and v2.3/START-HERE.md differ
+Only in v2.3: UPGRADE-V2.3.0.md
+Files v2.2/app/Http/Controllers/AcademyController.php and v2.3/app/Http/Controllers/AcademyController.php differ
+Only in v2.3/app/Http/Controllers: AcademyExperienceController.php
+Only in v2.3/app/Http/Controllers: AcademyQuranController.php
+Files v2.2/app/Http/Controllers/Admin/AcademyController.php and v2.3/app/Http/Controllers/Admin/AcademyController.php differ
+Files v2.2/app/Http/Controllers/Admin/PlatformController.php and v2.3/app/Http/Controllers/Admin/PlatformController.php differ
+Only in v2.3/app/Models: AcademyBookmark.php
+Only in v2.3/app/Models: AcademyLearningPath.php
+Only in v2.3/app/Models: AcademyLearningPathItem.php
+Files v2.2/app/Models/AcademyLesson.php and v2.3/app/Models/AcademyLesson.php differ
+Files v2.2/app/Models/AcademyModule.php and v2.3/app/Models/AcademyModule.php differ
+Files v2.2/app/Models/AcademyProgram.php and v2.3/app/Models/AcademyProgram.php differ
+Only in v2.3/app/Models: AcademyReflection.php
+Only in v2.3/app/Models: CommunityPost.php
+Only in v2.3/app/Models: CommunitySpace.php
+Only in v2.3/app/Models: IntegrationConnection.php
+Only in v2.3/app/Models: LearningInsight.php
+Only in v2.3/app/Models: StudentPortfolio.php
+Only in v2.3/database/migrations: 2026_08_07_001100_integrated_learning_ecosystem_v230.php
+Files v2.2/database/seeders/AcademyLaunchV200Seeder.php and v2.3/database/seeders/AcademyLaunchV200Seeder.php differ
+Files v2.2/database/seeders/DatabaseSeeder.php and v2.3/database/seeders/DatabaseSeeder.php differ
+Only in v2.3/database/seeders: IntegratedLearningEcosystemV230Seeder.php
+Files v2.2/database/seeders/LaunchTemplateV190Seeder.php and v2.3/database/seeders/LaunchTemplateV190Seeder.php differ
+Files v2.2/database/seeders/PlatformFoundationV210Seeder.php and v2.3/database/seeders/PlatformFoundationV210Seeder.php differ
+Only in v2.3/docs: ROADMAP-10-PHASES-V2.3.0.md
+Files v2.2/public/academy-manifest.webmanifest and v2.3/public/academy-manifest.webmanifest differ
+Only in v2.3/public/css: app-v230.css
+Only in v2.3/public/js: academy-quran.js
+Files v2.2/public/release.txt and v2.3/public/release.txt differ
+Files v2.2/public/service-worker.js and v2.3/public/service-worker.js differ
+Only in v2.3/resources/views/academy: audio-player.blade.php
+Only in v2.3/resources/views/academy: bookmarks.blade.php
+Only in v2.3/resources/views/academy: ecosystem.blade.php
+Files v2.2/resources/views/academy/index.blade.php and v2.3/resources/views/academy/index.blade.php differ
+Files v2.2/resources/views/academy/lesson.blade.php and v2.3/resources/views/academy/lesson.blade.php differ
+Only in v2.3/resources/views/academy: path.blade.php
+Only in v2.3/resources/views/academy: paths.blade.php
+Files v2.2/resources/views/academy/programs.blade.php and v2.3/resources/views/academy/programs.blade.php differ
+Files v2.2/resources/views/admin/academy/index.blade.php and v2.3/resources/views/admin/academy/index.blade.php differ
+Files v2.2/resources/views/admin/platform/index.blade.php and v2.3/resources/views/admin/platform/index.blade.php differ
+Files v2.2/resources/views/layouts/academy.blade.php and v2.3/resources/views/layouts/academy.blade.php differ
+Files v2.2/resources/views/layouts/app.blade.php and v2.3/resources/views/layouts/app.blade.php differ
+Files v2.2/routes/console.php and v2.3/routes/console.php differ
+Files v2.2/routes/web.php and v2.3/routes/web.php differ
+Only in v2.3/scripts: container-start-v2.3.0.sh

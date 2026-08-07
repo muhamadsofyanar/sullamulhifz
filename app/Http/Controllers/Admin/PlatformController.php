@@ -24,6 +24,7 @@ class PlatformController extends Controller
             'years' => AcademicYear::query()->where('institution_id', $institutionId)->with('periods')->orderByDesc('start_date')->get(),
             'features' => FeatureFlag::query()->where('institution_id', $institutionId)->orderBy('feature_key')->get(),
             'featureCatalog' => $this->featureCatalog(),
+            'roadmapPhases' => $this->roadmapPhases(),
         ]);
     }
 
@@ -112,13 +113,42 @@ class PlatformController extends Controller
     {
         return [
             'core_academic' => ['Fondasi akademik', 'Tahun ajaran, kelas, jadwal, pertemuan dan pembelajaran inti.'],
-            'quran_audio' => ['Audio & latihan Al-Qur’an', 'Player, playlist, qari dan sesi latihan.'],
+            'academy_portal' => ['Portal Academy', 'Portal LMS mandiri pada academy.sullamulhifz.or.id.'],
+            'quran_audio' => ['Quran Learning', 'Player Academy, playlist, qari, preset dan riwayat latihan.'],
             'parent_academy' => ['Parent Academy / LMS', 'Materi, modul, video dan progres keluarga.'],
+            'teacher_academy' => ['Teacher Academy', 'Microlearning dan pengembangan kompetensi guru.'],
+            'stifin_learning' => ['STIFIn Learning', 'STIFIn sebagai informasi pendamping, bukan label atau penentu kemampuan.'],
+            'family_learning' => ['Family Learning', 'Aktivitas keluarga, parenting, komunikasi, dan pendampingan rumah.'],
+            'learning_paths' => ['Jalur Belajar', 'Urutan materi dan latihan agar Academy tidak menjadi katalog yang membingungkan.'],
+            'academy_reflections' => ['Refleksi Academy', 'Catatan pribadi setelah materi dan tindak lanjut kecil.'],
+            'character_talent' => ['Character & Talent', 'Public speaking, kreativitas, olahraga, kerja sama, dan pembinaan karakter.'],
+            'student_portfolio' => ['Portofolio Anak', 'Jejak karya dan perkembangan yang bermakna tanpa ranking.'],
+            'learning_insights' => ['Learning Insight', 'Ringkasan berbasis bukti untuk membantu keputusan guru dan keluarga.'],
             'public_website' => ['Website publik', 'Halaman, artikel dan identitas lembaga.'],
             'report_cards' => ['Rapor perkembangan', 'Penyusunan dan publikasi rapor santri.'],
             'admissions' => ['Pendaftaran santri', 'Form pendaftaran dan tindak lanjut admin.'],
-            'community' => ['Community terbatas', 'Fondasi komunitas kelas/lembaga; tetap nonaktif sampai moderasi siap.'],
+            'api_integrations' => ['API & Integrasi', 'Fondasi API, email, WhatsApp, object storage, dan integrasi layanan.'],
+            'community' => ['Community terbatas', 'Ruang komunitas bermoderasi; nonaktif sampai kebijakan dan moderasi siap.'],
+            'ai_assist' => ['AI Assist', 'Asisten penyusunan draft/insight; tetap nonaktif sampai tata kelola dan validasi siap.'],
+            'payments' => ['Pembayaran', 'Fondasi pembayaran opsional untuk fase ekspansi.'],
             'multi_branch' => ['Multi-cabang', 'Mengaktifkan penggunaan cabang pada operasional harian.'],
+            'multi_institution' => ['Multi-lembaga', 'Ekspansi SaaS/lembaga lain setelah fondasi tenant diuji penuh.'],
+        ];
+    }
+
+    private function roadmapPhases(): array
+    {
+        return [
+            1 => ['Fondasi Platform', 'ready'],
+            2 => ['Operasional TPA', 'ready'],
+            3 => ['Quran Learning', 'ready'],
+            4 => ['Sullamul Hifz Academy', 'ready'],
+            5 => ['Family Learning', 'ready'],
+            6 => ['Teacher Academy', 'ready'],
+            7 => ['Personalisasi & Marhalah', 'foundation'],
+            8 => ['Character & Talent', 'foundation'],
+            9 => ['Portfolio & Insight', 'foundation'],
+            10 => ['Ekosistem & Ekspansi', 'foundation'],
         ];
     }
 }

@@ -13,10 +13,17 @@
     <link rel="stylesheet" href="/css/app-v204.css?v={{ @filemtime(public_path('css/app-v204.css')) ?: '204' }}">
     <link rel="stylesheet" href="/css/app-v210.css?v={{ @filemtime(public_path('css/app-v210.css')) ?: '210' }}">
     <link rel="stylesheet" href="/css/app-v220.css?v={{ @filemtime(public_path('css/app-v220.css')) ?: '220' }}">
+    <link rel="stylesheet" href="/css/app-v230.css?v={{ @filemtime(public_path('css/app-v230.css')) ?: '230' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
+    <script defer src="/js/academy-quran.js?v={{ @filemtime(public_path('js/academy-quran.js')) ?: '230' }}"></script>
 </head>
 <body class="academy-standalone-body role-{{ auth()->user()->primaryRole() }}">
+@php
+    $academyInstitutionId = (int) auth()->user()->institution_id;
+    $academyLearningPathsEnabled = \App\Support\Feature::enabled('learning_paths', $academyInstitutionId, true);
+    $academyQuranEnabled = \App\Support\Feature::enabled('quran_audio', $academyInstitutionId, true);
+@endphp
 <div class="academy-shell">
     <aside class="academy-sidebar" id="academy-sidebar">
         <div class="academy-brand-wrap">
@@ -30,13 +37,16 @@
             <a href="{{ route('academy.portal.index') }}" class="{{ request()->routeIs('academy.portal.index') ? 'active' : '' }}"><x-icon name="home"/><span>Beranda Academy</span></a>
             <a href="{{ route('academy.portal.programs') }}" class="{{ request()->routeIs('academy.portal.programs','academy.portal.program') ? 'active' : '' }}"><x-icon name="lesson"/><span>Program</span></a>
             <a href="{{ route('academy.portal.classes') }}" class="{{ request()->routeIs('academy.portal.classes') ? 'active' : '' }}"><x-icon name="community"/><span>Kelas Saya</span></a>
+            @if($academyLearningPathsEnabled)<a href="{{ route('academy.portal.paths') }}" class="{{ request()->routeIs('academy.portal.paths','academy.portal.path') ? 'active' : '' }}"><x-icon name="continuity"/><span>Jalur Belajar</span></a>@endif
             <a href="{{ route('academy.portal.modules') }}" class="{{ request()->routeIs('academy.portal.modules') ? 'active' : '' }}"><x-icon name="plan"/><span>Modul</span></a>
             <a href="{{ route('academy.portal.materials') }}" class="{{ request()->routeIs('academy.portal.materials','academy.portal.lesson') ? 'active' : '' }}"><x-icon name="academic"/><span>Materi</span></a>
             <a href="{{ route('academy.portal.videos') }}" class="{{ request()->routeIs('academy.portal.videos') ? 'active' : '' }}"><x-icon name="video"/><span>Video</span></a>
-            <a href="{{ route('academy.portal.audio') }}" class="{{ request()->routeIs('academy.portal.audio') ? 'active' : '' }}"><x-icon name="listen"/><span>Audio</span></a>
+            @if($academyQuranEnabled)<a href="{{ route('academy.portal.audio') }}" class="{{ request()->routeIs('academy.portal.audio') ? 'active' : '' }}"><x-icon name="listen"/><span>Audio</span></a>@endif
             <a href="{{ route('academy.portal.articles') }}" class="{{ request()->routeIs('academy.portal.articles') ? 'active' : '' }}"><x-icon name="assignment"/><span>Artikel</span></a>
             <a href="{{ route('academy.portal.progress') }}" class="{{ request()->routeIs('academy.portal.progress') ? 'active' : '' }}"><x-icon name="progress"/><span>Progres Belajar</span></a>
             <a href="{{ route('academy.portal.recommendations') }}" class="{{ request()->routeIs('academy.portal.recommendations') ? 'active' : '' }}"><x-icon name="guidance"/><span>Rekomendasi Guru</span></a>
+            <a href="{{ route('academy.portal.bookmarks') }}" class="{{ request()->routeIs('academy.portal.bookmarks') ? 'active' : '' }}"><x-icon name="preservation"/><span>Tersimpan</span></a>
+            <a href="{{ route('academy.portal.ecosystem') }}" class="{{ request()->routeIs('academy.portal.ecosystem') ? 'active' : '' }}"><x-icon name="growth"/><span>Ekosistem 10 Fase</span></a>
             <a href="{{ route('academy.portal.profile') }}" class="{{ request()->routeIs('academy.portal.profile') ? 'active' : '' }}"><x-icon name="profile"/><span>Profil</span></a>
         </nav>
 
