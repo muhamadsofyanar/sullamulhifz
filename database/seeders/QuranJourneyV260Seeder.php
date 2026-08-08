@@ -152,6 +152,7 @@ class QuranJourneyV260Seeder extends Seeder
 
         $checks = [
             ['phase4_marhalah_flow','Roadmap Fase 4','Marhalah mengikuti Juz: 30 Āyah, 29 Tsalātsiyyah, 28 Khamsiyyah, 27 Niṣfiyyah, 26 Ṣafḥah, lalu Juz 1–25 Ṣafḥatayn; tidak ada naik/turun level bebas.'],
+            ['phase4_mushaf_line_blocks','Roadmap Fase 4','Tsalātsiyyah dan Khamsiyyah telah diuji menggunakan blok slot fisik Mushaf Madinah 3/5 baris, termasuk halaman dengan nama surah/basmalah dan batas kata yang tepat.'],
             ['phase4_milestone_retention','Roadmap Fase 4','Milestone membedakan selesai hafalan, penguatan, dan terjaga; pemeriksaan penjagaan tersimpan sebagai histori.'],
             ['phase4_khatam_30','Roadmap Fase 4','Program Khatam 30 Hari diuji end-to-end dengan satu juz per langkah dan tanpa label gagal saat terlambat.'],
             ['phase4_fami_bisyauqin','Roadmap Fase 4','Program Fami Bisyauqin tujuh manzil diuji dari Fa sampai Qaf untuk tilawah/murāja‘ah.'],

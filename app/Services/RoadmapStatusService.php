@@ -98,7 +98,7 @@ class RoadmapStatusService
                     'marhalah_types', 'student_marhalah_histories', 'quran_journey_profiles', 'quran_journey_portions',
                     'memorization_milestones', 'memorization_retention_checks', 'quran_division_units',
                     'quran_program_templates', 'quran_program_steps', 'quran_program_enrollments', 'quran_program_progress',
-                    'quran_heritage_terms', 'memorization_targets',
+                    'quran_heritage_terms', 'memorization_targets', 'quran_mushaf_lines',
                 ]), [[
                     'label' => 'Enam Marhalah terikat pada wilayah Juz',
                     'passed' => \App\Models\MarhalahType::query()->where('status','active')->whereNotNull('juz_from')->whereNotNull('portion_unit')->count() >= 6,
@@ -108,6 +108,23 @@ class RoadmapStatusService
                         && Schema::hasColumn('memorization_targets','quran_journey_portion_id')
                         && Schema::hasColumn('memorization_targets','journey_juz_number')
                         && Schema::hasColumn('memorization_targets','portion_confirmed'),
+                ], [
+                    'label' => 'Mushaf Line Engine menyimpan batas halaman, baris fisik, dan kata pada target',
+                    'passed' => Schema::hasTable('quran_mushaf_lines')
+                        && Schema::hasColumn('quran_journey_portions','start_line_number')
+                        && Schema::hasColumn('quran_journey_portions','start_word_location')
+                        && Schema::hasColumn('memorization_targets','mushaf_page_number')
+                        && Schema::hasColumn('memorization_targets','start_word_location')
+                        && class_exists(\App\Services\MushafLineService::class),
+                ], [
+                    'label' => 'Layout Mushaf 604 halaman tersinkron untuk blok 3/5 baris',
+                    'passed' => Schema::hasTable('quran_mushaf_lines')
+                        && \App\Models\QuranMushafLine::query()->distinct()->count('page_number') >= 604,
+                ], [
+                    'label' => 'Juz 29 dan Juz 28 memiliki 15 slot fisik lengkap pada setiap halaman untuk blok 3/5 baris',
+                    'passed' => Schema::hasTable('quran_mushaf_lines')
+                        && app(\App\Services\MushafLineService::class)->coverageForJuz(29)['complete']
+                        && app(\App\Services\MushafLineService::class)->coverageForJuz(28)['complete'],
                 ], [
                     'label' => 'Pembagian mushaf nyata tersedia: 30 juz, 60 hizb, 240 rubu‘',
                     'passed' => Schema::hasTable('quran_division_units')
@@ -130,10 +147,10 @@ class RoadmapStatusService
                         && is_file(resource_path('views/quran-journey/academy.blade.php')),
                 ]]),
                 $this->manualCriteria($institutionId, [
-                    'phase4_marhalah_flow', 'phase4_milestone_retention', 'phase4_khatam_30',
+                    'phase4_marhalah_flow', 'phase4_mushaf_line_blocks', 'phase4_milestone_retention', 'phase4_khatam_30',
                     'phase4_fami_bisyauqin', 'phase4_heritage_terms', 'phase4_guardian_visibility', 'phase4_academy_journey', 'phase4_mobile_workflow',
                 ]),
-                'Validasi jalur Juz–Marhalah, milestone/penjagaan, dua program khatam, literasi mushaf, wali, dan mobile sebelum 100%.',
+                'Validasi jalur Juz–Marhalah, blok fisik 3/5 baris Mushaf, milestone/penjagaan, dua program khatam, literasi mushaf, wali, dan mobile sebelum 100%.',
             ),
             5 => $this->phase(
                 5,

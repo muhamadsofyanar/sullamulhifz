@@ -1,3 +1,14 @@
+# v2.6.1 — Mushaf Line Engine
+
+- Tsalātsiyyah (Juz 29) sekarang menggunakan blok fisik 3 slot Mushaf: 1–3, 4–6, 7–9, 10–12, 13–15.
+- Khamsiyyah (Juz 28) menggunakan blok fisik 5 slot: 1–5, 6–10, 11–15.
+- Nama surah dan basmalah tetap dihormati sebagai slot fisik layout halaman; batas porsi disimpan sampai lokasi kata.
+- Layout 604 halaman disinkronkan resume-safe dan dapat dimuat on-demand ketika guru membuka halaman.
+- Target Tahfizh menyimpan halaman/baris/batas kata sehingga porsi yang mulai/berakhir di tengah ayat tidak kehilangan batas Mushaf.
+- Target tunggal aktif diprioritaskan otomatis di Perjalanan Tahfizh.
+- Statistik memisahkan Juz selesai hafalan dari Juz terjaga; dropdown milestone mengikuti status aktual.
+- Catatan porsi tahap lama tidak dibawa ke Juz/Marhalah baru.
+
 # Changelog
 
 ## v2.6.0 — Qur’an Journey — 2026-08-08

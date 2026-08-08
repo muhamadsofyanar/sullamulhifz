@@ -156,6 +156,9 @@ class QuranJourneyService
                 'current_juz_number'=>$next,
                 'current_marhalah_type_id'=>$marhalah->id,
                 'stage_code'=>$rule['stage'],
+                // Catatan porsi lama dapat bertentangan dengan Marhalah baru (mis. "1 ayat" saat masuk 3 baris).
+                // Pola jadwal tetap dipertahankan, tetapi catatan spesifik porsi diminta ulang pada tahap baru.
+                'cadence_notes'=>null,
                 'updated_by_teacher_id'=>$teacher->id,
                 'foundation_completed_at'=>$currentJuz === 26 ? ($profile->foundation_completed_at ?: now()) : $profile->foundation_completed_at,
                 'status'=>'active',
@@ -327,6 +330,11 @@ class QuranJourneyService
             throw ValidationException::withMessages(['start_surah_id'=>'Santri sedang berada pada Juz '.$profile->current_juz_number.'. Porsi baru harus berada pada Juz aktif.']);
         }
         $rule = $this->ruleForJuz($juz);
+        if (($rule['unit'] ?? null) === 'line') {
+            throw ValidationException::withMessages([
+                'teacher_confirmed'=>'Tsalātsiyyah/Khamsiyyah wajib dibuat melalui Mushaf Line Engine agar batas 3/5 baris dan lokasi kata tersimpan tepat.',
+            ]);
+        }
         $marhalah = $this->marhalahForJuz($juz);
         if (! $marhalah) {
             throw ValidationException::withMessages(['start_surah_id'=>'Master Marhalah untuk Juz ini belum tersedia.']);
@@ -447,6 +455,7 @@ class QuranJourneyService
         $currentJuz = $profile?->current_juz_number;
         $currentMilestone = $currentJuz ? MemorizationMilestone::query()->where('student_id',$student->id)->where('unit_type','juz')->where('unit_key',(string)$currentJuz)->first() : null;
         $completedJuz = MemorizationMilestone::query()->where('student_id',$student->id)->where('unit_type','juz')->where('memorization_status','completed')->count();
+        $maintainedJuz = MemorizationMilestone::query()->where('student_id',$student->id)->where('unit_type','juz')->where('retention_status','maintained')->count();
         $foundationCompleted = MemorizationMilestone::query()->where('student_id',$student->id)->where('unit_type','foundation_five')->where('memorization_status','completed')->exists();
         $qaf = MemorizationMilestone::query()->where('student_id',$student->id)->where('unit_type','fami_manzil')->where('unit_key','7')->first();
 
@@ -456,6 +465,7 @@ class QuranJourneyService
             'currentMilestone'=>$currentMilestone,
             'nextJuz'=>$profile ? $this->nextJuz((int)$currentJuz) : null,
             'completedJuz'=>$completedJuz,
+            'maintainedJuz'=>$maintainedJuz,
             'foundationCompleted'=>$foundationCompleted,
             'qafMilestone'=>$qaf,
         ];

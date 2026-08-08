@@ -20,9 +20,10 @@ use App\Services\QuranAudioSyncService;
 use App\Services\QuranCorpusSyncService;
 use App\Services\RoadmapStatusService;
 use App\Services\QuranDivisionService;
+use App\Services\MushafLineService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v2.6.0 — Qur’an Journey.');
+    $this->info('Sullamul Hifz v2.6.1 — Mushaf Line Engine.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -334,11 +335,50 @@ Artisan::command('sullam:sync-quran-divisions', function (): int {
     return 0;
 })->purpose('Menyusun unit Juz, Hizb, Rubu, Ruku dan manzil Fami dari korpus Al-Qur’an');
 
+Artisan::command('sullam:ensure-mushaf-lines {--force}', function (): int {
+    if (! Schema::hasTable('quran_mushaf_lines')) {
+        $this->error('Tabel quran_mushaf_lines belum tersedia. Jalankan migration v2.6.1 terlebih dahulu.');
+        return 1;
+    }
+
+    $service = app(MushafLineService::class);
+    $before = $service->status();
+    $this->info('Mushaf Line Engine: '.$before['pages'].'/604 halaman sebelum sinkronisasi.');
+
+    try {
+        $result = $service->sync((bool) $this->option('force'));
+    } catch (\Throwable $exception) {
+        report($exception);
+        $this->error('Sinkronisasi Mushaf Line gagal: '.$exception->getMessage());
+        return 1;
+    }
+
+    $juz29 = $service->coverageForJuz(29);
+    $juz28 = $service->coverageForJuz(28);
+    $this->table(['Komponen','Nilai'], [
+        ['Layout',$result['layout']],
+        ['Sumber',$result['source']],
+        ['Metode',$result['method']],
+        ['Halaman',$result['pages'].'/604'],
+        ['Baris tersimpan',$result['lines']],
+        ['Juz 29 · halaman 15 slot',$juz29['complete_pages'].'/'.$juz29['expected_pages']],
+        ['Juz 28 · halaman 15 slot',$juz28['complete_pages'].'/'.$juz28['expected_pages']],
+    ]);
+
+    if (! $result['complete'] || ! $juz29['complete'] || ! $juz28['complete']) {
+        $this->warn('Layout belum 604/604 halaman. Sinkronisasi bersifat resume-safe dan halaman yang dibuka guru tetap dicoba on-demand.');
+        return 1;
+    }
+
+    $this->info('Mushaf Line Engine lengkap: 604 halaman tersedia untuk validasi pola 3/5 baris.');
+    return 0;
+})->purpose('Menyinkronkan layout 15 slot fisik Mushaf Madinah untuk Marhalah 3/5 baris');
+
 Artisan::command('sullam:verify-quran-journey', function (): int {
     $required = [
         'quran_journey_profiles','quran_journey_portions','memorization_milestones','memorization_retention_checks',
         'quran_division_units','quran_program_templates','quran_program_steps','quran_program_enrollments',
-        'quran_program_progress','quran_heritage_terms',
+        'quran_program_progress','quran_heritage_terms','quran_mushaf_lines',
     ];
     $missing = collect($required)->reject(fn(string $table): bool => Schema::hasTable($table));
     if ($missing->isNotEmpty()) {
@@ -351,6 +391,10 @@ Artisan::command('sullam:verify-quran-journey', function (): int {
     $famiSteps = \App\Models\QuranProgramTemplate::query()->where('code','fami-bisyauqin')->first()?->steps()->count() ?? 0;
     $divisions = app(QuranDivisionService::class)->sync();
     $terms = \App\Models\QuranHeritageTerm::query()->where('status','active')->count();
+    $lineService = app(MushafLineService::class);
+    $mushafLine = $lineService->status();
+    $juz29Line = $lineService->coverageForJuz(29);
+    $juz28Line = $lineService->coverageForJuz(28);
 
     $this->table(['Komponen','Tersedia','Target'], [
         ['Marhalah berbasis Juz',$marhalah,6],
@@ -360,19 +404,27 @@ Artisan::command('sullam:verify-quran-journey', function (): int {
         ['Ḥizb',$divisions['hizb'],60],
         ['Rubu‘ al-Ḥizb',$divisions['rubu'],240],
         ['Warisan Ulama',$terms,10],
+        ['Mushaf Line Engine',$mushafLine['pages'],604],
+        ['Juz 29 · line-slot lengkap',$juz29Line['complete_pages'],$juz29Line['expected_pages']],
+        ['Juz 28 · line-slot lengkap',$juz28Line['complete_pages'],$juz28Line['expected_pages']],
     ]);
 
     $portionReady = Schema::hasColumn('memorization_targets','quran_journey_portion_id')
-        && Schema::hasColumn('memorization_targets','portion_confirmed');
+        && Schema::hasColumn('memorization_targets','portion_confirmed')
+        && Schema::hasColumn('memorization_targets','mushaf_page_number')
+        && Schema::hasColumn('memorization_targets','start_word_location')
+        && Schema::hasColumn('quran_journey_portions','start_line_number')
+        && Schema::hasColumn('quran_journey_portions','start_word_location');
     $ready = $marhalah >= 6 && $khatamSteps >= 30 && $famiSteps >= 7 && $portionReady
-        && $divisions['juz'] >= 30 && $divisions['hizb'] >= 60 && $divisions['rubu'] >= 240 && $terms >= 10;
+        && $divisions['juz'] >= 30 && $divisions['hizb'] >= 60 && $divisions['rubu'] >= 240 && $terms >= 10
+        && $mushafLine['complete'] && $juz29Line['complete'] && $juz28Line['complete'];
     if (! $ready) {
         $this->warn('Implementasi Qur’an Journey belum lengkap. Validasi fase tidak boleh ditutup.');
         return 1;
     }
-    $this->info('Qur’an Journey v2.6.0 siap untuk validasi produksi. 100% tetap menunggu seluruh launch check Fase 4.');
+    $this->info('Qur’an Journey v2.6.1 + Mushaf Line Engine siap untuk validasi produksi. 100% tetap menunggu seluruh launch check Fase 4.');
     return 0;
-})->purpose('Memeriksa Marhalah, milestone, program khatam dan Peta Mushaf Fase 4');
+})->purpose('Memeriksa Marhalah, Mushaf Line Engine, milestone, program khatam dan Peta Mushaf Fase 4');
 
 Artisan::command('sullam:roadmap-status {--institution=}', function (): int {
     $query = Institution::query()->where('status', 'active');

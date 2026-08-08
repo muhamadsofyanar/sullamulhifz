@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v2.6.0 — Qur’an Journey**.
+Rilis kandidat: **v2.6.1 — Qur’an Journey**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajaran Al-Qur’an, operasional lembaga, tugas rumah, komunikasi guru–wali, dan perjalanan perkembangan santri. TPA Al-Insyirah menjadi implementasi pertama, sementara fondasinya disiapkan untuk cabang dan lembaga lain.
 
@@ -51,4 +51,4 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - pertahankan persistent volume `storage/app` saat mengganti image/container;
 - aktifkan SMTP agar reset kata sandi dapat dikirim melalui email.
 
-Migration v2.6.0 bersifat additive. Data Tahsīn, Tahfizh, Murāja‘ah, target, Quran Learning dan Academy lama tetap dipertahankan; v2.6 menambahkan Qur’an Journey tanpa menghapus histori Fase 3.
+Migration v2.6.1 bersifat additive. Data Tahsīn, Tahfizh, Murāja‘ah, target, Quran Learning dan Academy lama tetap dipertahankan; v2.6 menambahkan Qur’an Journey tanpa menghapus histori Fase 3.

@@ -15,6 +15,7 @@ use App\Models\QuranSurah;
 use App\Models\Student;
 use App\Models\TeacherAssignment;
 use App\Services\QuranJourneyService;
+use App\Services\MushafLineService;
 use App\Services\QuranProgramService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -27,6 +28,7 @@ class QuranJourneyController extends Controller
     public function __construct(
         private readonly QuranJourneyService $journey,
         private readonly QuranProgramService $programs,
+        private readonly MushafLineService $mushafLines,
     ) {
     }
 
@@ -51,6 +53,28 @@ class QuranJourneyController extends Controller
         $summary = $this->journey->summary($student);
         $student->load('currentEnrollment.schoolClass');
 
+        $lineStatus = $this->mushafLines->status();
+        $mushafPages = collect();
+        $selectedMushafPage = null;
+        $mushafLineBlocks = [];
+        $profile = $summary['profile'];
+        $rule = $summary['rule'];
+        if ($profile && ($rule['unit'] ?? null) === 'line') {
+            $juz = (int) $profile->current_juz_number;
+            $mushafPages = $this->mushafLines->pagesForJuz($juz);
+            $requestedPage = (int) $request->query('mushaf_page', 0);
+            $selectedMushafPage = $mushafPages->contains($requestedPage) ? $requestedPage : $mushafPages->first();
+            if ($selectedMushafPage) {
+                try {
+                    $this->mushafLines->syncPage((int) $selectedMushafPage);
+                    $mushafLineBlocks = $this->mushafLines->blocksForPage((int)$selectedMushafPage, (int)$rule['value'], $juz);
+                    $lineStatus = $this->mushafLines->status();
+                } catch (\Throwable $exception) {
+                    report($exception);
+                }
+            }
+        }
+
         return view('teacher.quran-journey.student', [
             'student'=>$student,
             'summary'=>$summary,
@@ -73,6 +97,10 @@ class QuranJourneyController extends Controller
             'portions'=>QuranJourneyPortion::query()->with(['marhalah','startSurah','endSurah','targets.surah'])
                 ->where('institution_id',$request->user()->institution_id)->where('student_id',$student->id)
                 ->latest()->limit(30)->get(),
+            'mushafLineStatus'=>$lineStatus,
+            'mushafPages'=>$mushafPages,
+            'selectedMushafPage'=>$selectedMushafPage,
+            'mushafLineBlocks'=>$mushafLineBlocks,
         ]);
     }
 
@@ -124,6 +152,26 @@ class QuranJourneyController extends Controller
             $data['scheduled_for'] ?? null,$data['due_date'] ?? null,$data['notes'] ?? null,
         );
         return back()->with('success','Porsi Marhalah dibuat. Jika rentangnya melewati pergantian surah, sistem memecah target setoran tanpa memecah makna satu porsi.');
+    }
+
+    public function storeLinePortion(Request $request, Student $student): RedirectResponse
+    {
+        $this->authorizeStudent($request,$student);
+        $teacher = $request->user()->teacher;
+        abort_unless($teacher,403);
+        $data = $request->validate([
+            'page_number'=>['required','integer','between:1,604'],
+            'start_line'=>['required','integer','between:1,15'],
+            'block_size'=>['required','integer',Rule::in([3,5])],
+            'scheduled_for'=>['nullable','date'],
+            'due_date'=>['nullable','date','after_or_equal:today'],
+            'notes'=>['nullable','string','max:3000'],
+        ]);
+        $portion = $this->mushafLines->createLinePortion(
+            $student,$teacher,(int)$data['page_number'],(int)$data['start_line'],(int)$data['block_size'],
+            $data['scheduled_for'] ?? null,$data['due_date'] ?? null,$data['notes'] ?? null,
+        );
+        return back()->with('success','Porsi Mushaf dibuat dari halaman '.$portion->start_page_number.' baris '.$portion->start_line_number.'–'.$portion->end_line_number.'. Target Tahfizh terhubung otomatis.');
     }
 
     public function milestone(Request $request, Student $student): RedirectResponse

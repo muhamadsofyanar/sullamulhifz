@@ -40,7 +40,7 @@ RUN php artisan package:discover --ansi \
 FROM unit:1.34.2-php8.4
 
 LABEL org.opencontainers.image.title="Sullamul Hifz" \
-      org.opencontainers.image.version="2.6.0" \
+      org.opencontainers.image.version="2.6.1" \
       org.opencontainers.image.description="Platform pembinaan Al-Quran Sullamul Hifz"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -80,4 +80,4 @@ RUN mkdir -p \
     && chmod +x scripts/*.sh
 
 EXPOSE 8000
-CMD ["sh", "scripts/container-start-v2.6.0.sh"]
+CMD ["sh", "scripts/container-start-v2.6.1.sh"]

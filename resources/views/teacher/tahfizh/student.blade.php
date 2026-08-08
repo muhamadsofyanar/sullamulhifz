@@ -2,6 +2,8 @@
 @section('content')
 @php
 $errorLabels=['makhraj'=>'Makhraj','tajwid'=>'Tajwid','mad'=>'Panjang-pendek','ghunnah'=>'Ghunnah','waqf_ibtida'=>'Waqaf & ibtida','fluency'=>'Kelancaran','hesitation'=>'Terhenti/ragu','omission'=>'Ayat/kata terlewat','substitution'=>'Pergantian lafaz','sequence'=>'Urutan','prompt_dependency'=>'Ketergantungan bantuan','other'=>'Lainnya'];
+$activeTargets = $student->memorizationTargets->whereIn('status',['active','in_progress','strengthening','paused']);
+$soleActiveTargetId = $activeTargets->count() === 1 ? $activeTargets->first()?->id : null;
 @endphp
 <div class="page-head">
     <div><span class="eyebrow">PERJALANAN INDIVIDUAL</span><h1>{{ $student->full_name }}</h1><p>{{ $student->currentEnrollment?->schoolClass?->name ?? 'Kelompok belajar' }} · jejak belajar tanpa perbandingan dengan santri lain.</p></div>
@@ -21,7 +23,7 @@ $errorLabels=['makhraj'=>'Makhraj','tajwid'=>'Tajwid','mad'=>'Panjang-pendek','g
 <h2>Mulai / lanjutkan siklus belajar</h2>
 <form class="stack compact" method="post" action="{{ route('teacher.tahfizh.cycles.store') }}">@csrf
 <input type="hidden" name="student_id" value="{{ $student->id }}">
-<label>Target terkait<select name="memorization_target_id"><option value="">Tanpa target khusus</option>@foreach($student->memorizationTargets->whereIn('status',['active','in_progress','strengthening','paused']) as $target)<option value="{{ $target->id }}">{{ $target->surah?->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }}</option>@endforeach</select></label>
+<label>Target terkait<select name="memorization_target_id"><option value="" @selected(!$soleActiveTargetId)>Tanpa target khusus</option>@foreach($activeTargets as $target)<option value="{{ $target->id }}" @selected($soleActiveTargetId===$target->id)>{{ $target->mushaf_page_number ? 'Hal. '.$target->mushaf_page_number.' · baris '.$target->mushaf_start_line.'–'.$target->mushaf_end_line.' · ' : '' }}{{ $target->surah?->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }}</option>@endforeach</select>@if($soleActiveTargetId)<small>Satu target aktif ditemukan, jadi diprioritaskan otomatis. “Tanpa target khusus” tetap tersedia untuk latihan bebas.</small>@endif</label>
 <div class="form-grid"><label>Jenis siklus<select name="cycle_type"><option value="new_memorization">Hafalan baru</option><option value="initial_repetition">Pengulangan awal</option><option value="murajaah">Murāja‘ah</option><option value="talaqqi">Talaqqi</option><option value="tasmi">Tasmi‘</option><option value="exam">Ujian</option></select></label><label>Persiapan<select name="preparation_method"><option value="talaqqi">Talaqqi</option><option value="audio_repetition">Audio berulang</option><option value="reading_repetition">Membaca berulang</option><option value="writing">Menulis</option><option value="word_arrangement">Susun kata</option><option value="movement">Gerak</option><option value="teach_back">Ajarkan kembali</option><option value="mixed">Campuran</option><option value="custom">Khusus</option></select></label></div>
 <label>Arahan guru<textarea name="teacher_guidance" rows="3"></textarea></label><label>Arahan keluarga<textarea name="guardian_guidance" rows="3"></textarea></label>
 <button class="button primary">Siapkan siklus</button></form>
@@ -30,7 +32,7 @@ $errorLabels=['makhraj'=>'Makhraj','tajwid'=>'Tajwid','mad'=>'Panjang-pendek','g
 <h2>Jadwalkan Murāja‘ah</h2><p class="hint">Guru menentukan tanggal berdasarkan kebutuhan nyata; tidak ada rumus interval wajib.</p>
 <form class="stack compact" method="post" action="{{ route('teacher.tahfizh.reviews.store') }}">@csrf
 <input type="hidden" name="student_id" value="{{ $student->id }}">
-<label>Target terkait<select name="memorization_target_id"><option value="">Opsional</option>@foreach($student->memorizationTargets as $target)<option value="{{ $target->id }}">{{ $target->surah?->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }}</option>@endforeach</select></label>
+<label>Target terkait<select name="memorization_target_id"><option value="">Opsional</option>@foreach($student->memorizationTargets as $target)<option value="{{ $target->id }}">{{ $target->mushaf_page_number ? 'Hal. '.$target->mushaf_page_number.' · baris '.$target->mushaf_start_line.'–'.$target->mushaf_end_line.' · ' : '' }}{{ $target->surah?->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }}</option>@endforeach</select></label>
 <label>Surah<select name="surah_id" required>@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
 <div class="form-grid"><label>Ayat awal<input type="number" min="1" name="start_verse" required></label><label>Ayat akhir<input type="number" min="1" name="end_verse" required></label></div>
 <div class="form-grid"><label>Tanggal<input type="date" name="review_date" value="{{ now()->addDay()->format('Y-m-d') }}" required></label><label>Jenis<select name="review_type"><option value="scheduled">Terjadwal</option><option value="random_recall">Pemanggilan acak</option><option value="continuation">Sambung ayat</option><option value="tasmi">Tasmi‘</option><option value="home">Di rumah</option></select></label></div>
@@ -44,7 +46,7 @@ $errorLabels=['makhraj'=>'Makhraj','tajwid'=>'Tajwid','mad'=>'Panjang-pendek','g
 <div id="catat-setoran" class="card soft-card">
 <h3>Catat Setoran Tahfizh</h3><p class="hint">Setoran akan langsung masuk ke riwayat, memperbarui siklus/target, membuat jadwal Murāja‘ah bila tanggal diisi, dan membuka fokus koreksi bila dipilih.</p>
 <form class="stack compact" method="post" action="{{ route('teacher.tahfizh.memorization.store',$student) }}">@csrf
-<label>Target terkait<select name="memorization_target_id" id="journey-target"><option value="">Cari otomatis dari surah dan ayat</option>@foreach($student->memorizationTargets->whereIn('status',['active','in_progress','strengthening','paused']) as $target)<option value="{{ $target->id }}" data-surah="{{ $target->surah_id }}" data-start="{{ $target->start_verse }}" data-end="{{ $target->end_verse }}" data-marhalah="{{ $target->marhalah_type_id }}">{{ $target->surah?->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }} · {{ $target->marhalah?->name ?? 'Tanpa marhalah' }}</option>@endforeach</select></label>
+<label>Target terkait<select name="memorization_target_id" id="journey-target"><option value="">Cari otomatis dari surah dan ayat</option>@foreach($activeTargets as $target)<option value="{{ $target->id }}" @selected($soleActiveTargetId===$target->id) data-surah="{{ $target->surah_id }}" data-start="{{ $target->start_verse }}" data-end="{{ $target->end_verse }}" data-marhalah="{{ $target->marhalah_type_id }}">{{ $target->mushaf_page_number ? 'Hal. '.$target->mushaf_page_number.' · baris '.$target->mushaf_start_line.'–'.$target->mushaf_end_line.' · ' : '' }}{{ $target->surah?->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }} · {{ $target->marhalah?->name ?? 'Tanpa marhalah' }}</option>@endforeach</select></label>
 <div class="form-grid"><label>Jenis<select name="record_type"><option value="new_memorization">Hafalan baru</option><option value="initial_repetition">Pengulangan awal</option><option value="home_submission">Setoran rumah</option><option value="class_submission">Setoran kelas</option><option value="tasmi">Tasmi‘</option><option value="exam">Ujian</option></select></label><label>Cara penyampaian<select name="delivery_mode"><option value="talaqqi">Talaqqi dengan guru</option><option value="individual_submission">Setoran individual</option><option value="group_tasmi">Tasmi‘ kelompok</option><option value="home_submission">Setoran dari rumah</option><option value="exam">Ujian</option></select></label></div>
 <div class="form-grid"><label>Marhalah<select name="marhalah_type_id" id="journey-marhalah"><option value="">Tidak dipilih</option>@foreach($marhalah as $item)<option value="{{ $item->id }}">{{ $item->name }}</option>@endforeach</select></label><label>Surah<select name="surah_id" id="journey-surah" required>@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label></div>
 <div class="form-grid"><label>Ayat awal<input id="journey-start" type="number" name="start_verse" min="1" required></label><label>Ayat akhir<input id="journey-end" type="number" name="end_verse" min="1" required></label></div>
@@ -88,7 +90,7 @@ $errorLabels=['makhraj'=>'Makhraj','tajwid'=>'Tajwid','mad'=>'Panjang-pendek','g
     function copyRange(selectId, surahId, startId, endId, marhalahId) {
         var select = document.getElementById(selectId);
         if (!select) return;
-        select.addEventListener('change', function () {
+        function applySelected() {
             var option = select.options[select.selectedIndex];
             if (!option || !option.dataset.surah) return;
             var surah = document.getElementById(surahId);
@@ -101,7 +103,9 @@ $errorLabels=['makhraj'=>'Makhraj','tajwid'=>'Tajwid','mad'=>'Panjang-pendek','g
                 var marhalah = document.getElementById(marhalahId);
                 if (marhalah && option.dataset.marhalah) marhalah.value = option.dataset.marhalah;
             }
-        });
+        }
+        select.addEventListener('change', applySelected);
+        applySelected();
     }
     copyRange('journey-target', 'journey-surah', 'journey-start', 'journey-end', 'journey-marhalah');
     copyRange('journey-review-plan', 'journey-review-surah', 'journey-review-start', 'journey-review-end');

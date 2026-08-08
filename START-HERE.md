@@ -1,6 +1,6 @@
-# MULAI DI SINI — v2.6.0
+# MULAI DI SINI — v2.6.1
 
-Rilis aktif untuk pengembangan adalah **v2.6.0 — Qur’an Journey**.
+Rilis aktif untuk pengembangan adalah **v2.6.1 — Qur’an Journey**.
 
 Baca berurutan:
 1. `UPGRADE-V2.6.0.md`

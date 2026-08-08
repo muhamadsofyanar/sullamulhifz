@@ -32,34 +32,102 @@ $purposeLabel = ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawa
     <div class="stat-card"><span>Juz aktif</span><strong>{{ $profile->current_juz_number }}</strong></div>
     <div class="stat-card"><span>Marhalah</span><strong>{{ $profile->marhalah?->name }}</strong></div>
     <div class="stat-card"><span>Porsi sesi</span><strong>{{ $rule['portion'] }}</strong></div>
-    <div class="stat-card"><span>Juz selesai</span><strong>{{ $summary['completedJuz'] }}/30</strong></div>
+    <div class="stat-card"><span>Hafalan selesai</span><strong>{{ $summary['completedJuz'] }}/30</strong><small>Terjaga {{ $summary['maintainedJuz'] }}/30</small></div>
 </div>
 
 <section class="card">
     <div class="section-head"><div><span class="eyebrow">MARHALAH AKTIF</span><h2>Juz {{ $profile->current_juz_number }} · {{ $profile->marhalah?->name }}</h2><p class="hint">{{ $profile->marhalah?->description }}</p></div><span class="badge">{{ $rule['portion'] }} / sesi</span></div>
-    <p><strong>Ritme:</strong> {{ ['flexible'=>'Fleksibel','daily'=>'Harian','weekly'=>'Mingguan','custom'=>'Khusus'][$profile->cadence_mode] ?? $profile->cadence_mode }}. Porsi ini tidak berarti santri wajib setor setiap hari.</p>
-    @if($profile->cadence_notes)<p>{{ $profile->cadence_notes }}</p>@endif
-    @if(in_array($rule['unit'],['line','page']))<div class="alert info">Untuk porsi {{ $rule['portion'] }}, guru memastikan rentang pada Mushaf Madinah. Metadata korpus saat ini mengetahui halaman tetapi belum memetakan posisi baris setiap ayat secara otomatis.</div>@endif
+    <p><strong>Pola jadwal:</strong> {{ ['flexible'=>'Fleksibel','daily'=>'Harian','weekly'=>'Mingguan','custom'=>'Khusus'][$profile->cadence_mode] ?? $profile->cadence_mode }}. Ini hanya pola pelaksanaan; porsi Marhalah tidak berarti santri wajib setor setiap hari.</p>
+    @if($profile->cadence_notes)<p><strong>Catatan jadwal:</strong> {{ $profile->cadence_notes }}</p>@endif
+    @if(($rule['unit'] ?? null)==='line')
+        <div class="alert info"><strong>Mushaf Line Engine aktif.</strong> Tsalātsiyyah/Khamsiyyah mengikuti slot fisik halaman Mushaf Madinah: blok 3/5 baris tetap. Nama surah atau basmalah yang menempati slot halaman tetap dihitung pada posisi fisiknya; batas hafalan disimpan sampai tingkat kata agar tidak dipaksa menjadi satu ayat penuh.</div>
+    @elseif(($rule['unit'] ?? null)==='page')
+        <div class="alert info">Porsi {{ $rule['portion'] }} mengikuti halaman Mushaf Madinah. Guru tetap memastikan titik awal/akhir sesuai halaman yang dipakai.</div>
+    @endif
 </section>
 
 <section class="card">
-    <div class="section-head"><div><span class="eyebrow">PORSI MARHALAH</span><h2>Rencanakan satu porsi hafalan baru</h2><p class="hint">Porsi mengikuti Juz aktif dan tidak berarti wajib setiap hari. Rentang boleh melewati pergantian surah selama tetap berada dalam Juz yang sama.</p></div><span class="badge">{{ $rule['portion'] }}</span></div>
-    <form class="stack compact" method="post" action="{{ route('teacher.quran-journey.portions.store',$student) }}">@csrf
-        <div class="form-grid">
-            <label>Mulai surah<select name="start_surah_id" required><option value="">Pilih surah</option>@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
-            <label>Ayat mulai<input type="number" min="1" name="start_verse" required value="1"></label>
-            <label>Sampai surah<select name="end_surah_id" required><option value="">Pilih surah</option>@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
-            <label>Ayat akhir<input type="number" min="1" name="end_verse" required value="1"></label>
+    <div class="section-head"><div><span class="eyebrow">PORSI MARHALAH</span><h2>Rencanakan satu porsi hafalan baru</h2><p class="hint">Porsi mengikuti Juz aktif dan tidak berarti wajib setiap hari. Satu porsi tidak melewati batas Juz.</p></div><span class="badge">{{ $rule['portion'] }}</span></div>
+
+    @if(($rule['unit'] ?? null)==='line')
+        <div class="stats-grid two" style="margin-bottom:14px">
+            <div class="stat-card"><span>Layout Mushaf</span><strong>{{ $mushafLineStatus['pages'] ?? 0 }}/604 halaman</strong><small>{{ ($mushafLineStatus['complete'] ?? false) ? 'Tersinkron penuh' : 'Sinkronisasi bertahap / on-demand' }}</small></div>
+            <div class="stat-card"><span>Pola blok</span><strong>{{ (int)$rule['value'] === 3 ? '1–3 · 4–6 · 7–9 · 10–12 · 13–15' : '1–5 · 6–10 · 11–15' }}</strong><small>15 slot fisik per halaman</small></div>
         </div>
-        <div class="form-grid"><label>Rencana mulai<input type="date" name="scheduled_for"></label><label>Batas fleksibel<input type="date" name="due_date"></label></div>
-        <label>Catatan<textarea name="notes" rows="2" placeholder="Contoh: setoran pekan ini; boleh selesai dalam beberapa pertemuan"></textarea></label>
-        <label class="checkbox-row"><input type="checkbox" name="teacher_confirmed" value="1" required><span>Saya sudah memastikan rentang ini sesuai porsi <strong>{{ $profile->marhalah?->name }} — {{ $rule['portion'] }}</strong> pada Mushaf Madinah. Untuk 3/5 baris, sistem tidak menebak posisi baris.</span></label>
-        <button class="button primary">Buat porsi & target setoran</button>
-    </form>
+
+        @if($mushafPages->isNotEmpty())
+        <form method="get" action="{{ route('teacher.quran-journey.student',$student) }}" class="inline-form" style="margin-bottom:14px">
+            <label style="flex:1">Halaman pada Juz {{ $profile->current_juz_number }}
+                <select name="mushaf_page" onchange="this.form.submit()">
+                    @foreach($mushafPages as $page)<option value="{{ $page }}" @selected((int)$selectedMushafPage===(int)$page)>Halaman {{ $page }}</option>@endforeach
+                </select>
+            </label>
+            <noscript><button class="button secondary">Tampilkan halaman</button></noscript>
+        </form>
+        @endif
+
+        @if(empty($mushafLineBlocks))
+            <div class="alert warning">Layout halaman ini belum tersedia. Sistem akan mencoba sinkronisasi halaman saat dibuka dan sinkronisasi 604 halaman berjalan di latar belakang setelah deploy.</div>
+        @else
+            <div class="cards-list">
+            @foreach($mushafLineBlocks as $block)
+                <div class="item-card static" style="display:block">
+                    <div class="section-head" style="margin-bottom:8px">
+                        <div><strong>Halaman {{ $block['page'] }} · Baris {{ $block['start_line'] }}–{{ $block['end_line'] }}</strong><small>{{ $block['ayah_line_count'] }} slot ayat @if($block['has_special_lines']) · ada header/basmalah pada blok fisik @endif</small></div>
+                        @if($block['available'])<span class="badge">Siap dipilih</span>@elseif($block['crosses_juz'])<span class="badge">Batas Juz</span>@else<span class="badge">Belum tersedia</span>@endif
+                    </div>
+                    <div style="border:1px solid var(--border,#dde5df);border-radius:14px;overflow:hidden;margin:8px 0 12px">
+                    @foreach($block['lines'] as $line)
+                        <div style="display:grid;grid-template-columns:46px 1fr;gap:10px;padding:8px 12px;border-bottom:1px solid var(--border,#edf1ee);align-items:center">
+                            <strong style="font-size:.82rem">{{ $line['line_number'] }}</strong>
+                            @if($line['type']==='surah_name')
+                                <div style="text-align:center"><strong>Nama Surah</strong> @if($line['text'])· {{ $line['text'] }}@endif</div>
+                            @elseif($line['type']==='basmallah')
+                                <div dir="rtl" style="text-align:center;font-size:1.35rem;line-height:1.8">{{ $line['text'] ?: '﷽' }}</div>
+                            @elseif($line['type']==='ayah')
+                                <div dir="rtl" style="text-align:right;font-size:1.25rem;line-height:1.9">{{ $line['text'] ?: 'Teks baris tersinkron; batas kata tersimpan.' }}</div>
+                            @else
+                                <div class="hint">Slot belum tersinkron.</div>
+                            @endif
+                        </div>
+                    @endforeach
+                    </div>
+                    @if($block['available'])
+                        <p class="hint">Batas presisi: {{ $block['first_word_location'] }} → {{ $block['last_word_location'] }}. Target Tahfizh tetap menampilkan rentang ayat untuk navigasi, sedangkan batas Mushaf disimpan sampai tingkat kata.</p>
+                        <form class="stack compact" method="post" action="{{ route('teacher.quran-journey.line-portions.store',$student) }}">@csrf
+                            <input type="hidden" name="page_number" value="{{ $block['page'] }}"><input type="hidden" name="start_line" value="{{ $block['start_line'] }}"><input type="hidden" name="block_size" value="{{ $block['slot_count'] }}">
+                            <div class="form-grid"><label>Rencana mulai<input type="date" name="scheduled_for"></label><label>Batas fleksibel<input type="date" name="due_date"></label></div>
+                            <label>Catatan<textarea name="notes" rows="2" placeholder="Opsional: arahan khusus untuk setoran porsi ini"></textarea></label>
+                            <button class="button primary">Gunakan Baris {{ $block['start_line'] }}–{{ $block['end_line'] }} & buat target Tahfizh</button>
+                        </form>
+                    @elseif($block['crosses_juz'])
+                        <div class="alert warning">Blok fisik ini menyentuh batas Juz. Sistem tidak membuat target otomatis; guru menyelesaikan batas Juz terlebih dahulu agar Marhalah tidak tercampur.</div>
+                    @else
+                        <div class="alert warning">Blok ini belum memiliki batas kata yang lengkap dan tidak dapat dipilih.</div>
+                    @endif
+                </div>
+            @endforeach
+            </div>
+        @endif
+    @else
+        <form class="stack compact" method="post" action="{{ route('teacher.quran-journey.portions.store',$student) }}">@csrf
+            <div class="form-grid">
+                <label>Mulai surah<select name="start_surah_id" required><option value="">Pilih surah</option>@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
+                <label>Ayat mulai<input type="number" min="1" name="start_verse" required value="1"></label>
+                <label>Sampai surah<select name="end_surah_id" required><option value="">Pilih surah</option>@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
+                <label>Ayat akhir<input type="number" min="1" name="end_verse" required value="1"></label>
+            </div>
+            <div class="form-grid"><label>Rencana mulai<input type="date" name="scheduled_for"></label><label>Batas fleksibel<input type="date" name="due_date"></label></div>
+            <label>Catatan<textarea name="notes" rows="2" placeholder="Contoh: setoran pekan ini; boleh selesai dalam beberapa pertemuan"></textarea></label>
+            <label class="checkbox-row"><input type="checkbox" name="teacher_confirmed" value="1" required><span>Saya sudah memastikan rentang ini sesuai porsi <strong>{{ $profile->marhalah?->name }} — {{ $rule['portion'] }}</strong> pada Mushaf Madinah.</span></label>
+            <button class="button primary">Buat porsi & target setoran</button>
+        </form>
+    @endif
+
     @if($portions->isNotEmpty())
     <div class="cards-list" style="margin-top:14px">
         @foreach($portions as $portion)
-        <div class="item-card static"><div><strong>{{ $portion->marhalah?->name }} · {{ $portion->portion_label }}</strong><small>Juz {{ $portion->journey_juz_number }} · {{ $portion->startSurah?->name_latin }} {{ $portion->start_verse }} → {{ $portion->endSurah?->name_latin }} {{ $portion->end_verse }} · {{ ucfirst(str_replace('_',' ',$portion->status)) }}</small><p>{{ $portion->targets->count() }} target setoran terhubung @if($portion->start_page_number) · halaman {{ $portion->start_page_number }}@if($portion->end_page_number && $portion->end_page_number!==$portion->start_page_number)–{{ $portion->end_page_number }}@endif @endif</p></div></div>
+        <div class="item-card static"><div><strong>{{ $portion->marhalah?->name }} · {{ $portion->portion_label }}</strong><small>Juz {{ $portion->journey_juz_number }} · {{ $portion->startSurah?->name_latin }} {{ $portion->start_verse }} → {{ $portion->endSurah?->name_latin }} {{ $portion->end_verse }} · {{ ucfirst(str_replace('_',' ',$portion->status)) }}</small><p>{{ $portion->targets->count() }} target setoran terhubung @if($portion->start_page_number) · halaman {{ $portion->start_page_number }}@if($portion->end_page_number && $portion->end_page_number!==$portion->start_page_number)–{{ $portion->end_page_number }}@endif @endif @if($portion->start_line_number) · baris {{ $portion->start_line_number }}–{{ $portion->end_line_number }} @endif</p>@if($portion->start_word_location)<small>Batas kata: {{ $portion->start_word_location }} → {{ $portion->end_word_location }}</small>@endif</div></div>
         @endforeach
     </div>
     @endif
@@ -70,7 +138,7 @@ $purposeLabel = ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawa
     @php($current = $summary['currentMilestone'])
     <div class="list-row"><div><strong>{{ $current?->label ?? 'Juz '.$profile->current_juz_number }}</strong><small>Hafalan: {{ $statusMem[$current?->memorization_status ?? 'in_progress'] ?? '-' }} · Penjagaan: {{ $statusRetention[$current?->retention_status ?? 'not_assessed'] ?? '-' }}</small><p>{{ $current?->notes }}</p></div></div>
     <form class="inline-form" method="post" action="{{ route('teacher.quran-journey.milestones.current-juz',$student) }}">@csrf
-        <select name="memorization_status"><option value="in_progress">Masih berjalan</option><option value="completed">Selesai hafalan Juz ini</option></select>
+        <select name="memorization_status"><option value="in_progress" @selected(($current?->memorization_status ?? 'in_progress')==='in_progress')>Masih berjalan</option><option value="completed" @selected(($current?->memorization_status ?? null)==='completed')>Selesai hafalan Juz ini</option></select>
         <input name="notes" placeholder="Bukti/pertimbangan guru">
         <button class="button secondary">Simpan milestone</button>
     </form>
