@@ -17,6 +17,7 @@
 @if($academyEnabled)<a href="{{ route('academy.portal.index') }}" class="family-action"><x-icon name="academic" size="30"/><strong>Parent Academy</strong><span>Belajar mendampingi anak</span></a>@endif
 <a href="{{ route('guardian.tasks.index') }}" class="family-action"><x-icon name="assignment" size="30"/><strong>Tugas Anak</strong><span>{{ $activeTasks->count() }} tugas aktif</span></a>
 <a href="{{ route('liaison.index') }}" class="family-action"><x-icon name="discussion" size="30"/><strong>Buku Penghubung</strong><span>Pesan pribadi dengan guru</span></a>
+@if(\App\Support\Feature::enabled('family_learning', auth()->user()->institution_id, true))<a href="{{ route('guardian.family-learning.index') }}" class="family-action"><x-icon name="community" size="30"/><strong>Aktivitas Keluarga</strong><span>Langkah pendampingan dari guru</span></a>@endif
 </div>
 
 @if($todayRecords->isNotEmpty())

@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AcademicController;
 use App\Http\Controllers\Admin\AcademicCoreController;
 use App\Http\Controllers\Admin\AcademyController as AdminAcademyController;
+use App\Http\Controllers\Admin\FamilyTeacherController as AdminFamilyTeacherController;
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\QuranLibraryController;
 use App\Http\Controllers\Admin\GuardianController;
@@ -27,6 +28,7 @@ use App\Http\Controllers\AcademyQuranController;
 use App\Http\Controllers\ContentFeedController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Guardian\PortalController;
+use App\Http\Controllers\Guardian\FamilyLearningController;
 use App\Http\Controllers\LiaisonController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
@@ -35,6 +37,7 @@ use App\Http\Controllers\QuranJourneyController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\AcademyRecommendationController;
+use App\Http\Controllers\Teacher\FamilyTeacherController;
 use App\Http\Controllers\Teacher\ClassroomController;
 use App\Http\Controllers\Teacher\DailyOperationsController;
 use App\Http\Controllers\Teacher\MeetingController;
@@ -231,6 +234,11 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::delete('/academy/quiz-questions/{question}', [AdminAcademyController::class, 'destroyQuizQuestion'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.quiz-questions.destroy');
             Route::post('/academy/worksheets', [AdminAcademyController::class, 'storeWorksheet'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.worksheets.store');
 
+            Route::get('/family-teacher', [AdminFamilyTeacherController::class, 'index'])->middleware(['permission:academy.manage','feature:family_learning'])->name('family-teacher.index');
+            Route::post('/family-teacher/competencies', [AdminFamilyTeacherController::class, 'storeCompetency'])->middleware(['permission:academy.manage','feature:family_learning'])->name('family-teacher.competencies.store');
+            Route::put('/family-teacher/competencies/{competency}', [AdminFamilyTeacherController::class, 'updateCompetency'])->middleware(['permission:academy.manage','feature:family_learning'])->name('family-teacher.competencies.update');
+            Route::put('/family-teacher/progress/{progress}/review', [AdminFamilyTeacherController::class, 'reviewProgress'])->middleware(['permission:academy.manage','feature:family_learning'])->name('family-teacher.progress.review');
+
             Route::get('/quran-library', [QuranLibraryController::class, 'index'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.index');
             Route::post('/quran-library/sync-corpus', [QuranLibraryController::class, 'syncCorpus'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.sync-corpus');
             Route::post('/quran-library/sync', [QuranLibraryController::class, 'sync'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.sync');
@@ -277,6 +285,10 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::prefix('teacher')->name('teacher.')->middleware('role:teacher')->group(function (): void {
         Route::get('/academy', [AcademyRecommendationController::class, 'index'])->middleware(['feature:parent_academy','permission:academy.view'])->name('academy.index');
         Route::post('/academy/recommendations', [AcademyRecommendationController::class, 'store'])->middleware(['feature:parent_academy','permission:academy.view'])->name('academy.recommendations.store');
+        Route::get('/family-learning', [FamilyTeacherController::class, 'index'])->middleware(['feature:family_learning','permission:academy.view'])->name('family-learning.index');
+        Route::post('/family-learning/activities', [FamilyTeacherController::class, 'storeActivity'])->middleware(['feature:family_learning','permission:academy.view'])->name('family-learning.activities.store');
+        Route::put('/family-learning/activities/{activity}/review', [FamilyTeacherController::class, 'reviewActivity'])->middleware(['feature:family_learning','permission:academy.view'])->name('family-learning.activities.review');
+        Route::put('/family-learning/competencies/{competency}', [FamilyTeacherController::class, 'submitCompetency'])->middleware(['feature:family_learning','permission:academy.view'])->name('family-learning.competencies.submit');
 
         Route::get('/daily', [DailyOperationsController::class, 'index'])->middleware('permission:academic.view')->name('daily.index');
         Route::get('/classes', [ClassroomController::class, 'index'])->middleware('permission:academic.view')->name('classrooms.index');
@@ -335,5 +347,7 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         Route::get('/tasks', [PortalController::class, 'tasks'])->middleware('permission:assignments.view')->name('tasks.index');
         Route::get('/tasks/{recipient}', [PortalController::class, 'task'])->middleware('permission:assignments.view')->name('tasks.show');
         Route::post('/tasks/{recipient}/submit', [PortalController::class, 'submit'])->middleware('permission:assignments.submit')->name('tasks.submit');
+        Route::get('/family-learning', [FamilyLearningController::class, 'index'])->middleware(['feature:family_learning','permission:academy.view'])->name('family-learning.index');
+        Route::put('/family-learning/{activity}/complete', [FamilyLearningController::class, 'complete'])->middleware(['feature:family_learning','permission:academy.view'])->name('family-learning.complete');
     });
 });

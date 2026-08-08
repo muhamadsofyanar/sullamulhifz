@@ -13,7 +13,8 @@ if ($mediaUrl !== '') {
     }
 }
 $embedUrl = $youtubeId ? 'https://www.youtube-nocookie.com/embed/'.$youtubeId.'?rel=0&modestbranding=1&playsinline=1' : null;
-$paragraphs = preg_split('/\R\R+/', trim((string) $lesson->body)) ?: [];
+$normalizedBody = str_replace(['\\r\\n','\\n','\\r'], "\n", (string) $lesson->body);
+$paragraphs = preg_split('/\R\R+/', trim($normalizedBody)) ?: [];
 $isDirectAudio = $lesson->lesson_type === 'audio' && $mediaUrl !== '' && !$youtubeId;
 ?>
 <article class="academy-premium-lesson">

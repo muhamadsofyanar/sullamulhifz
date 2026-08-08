@@ -1,0 +1,41 @@
+Sullamul Hifz v2.8.0 — Family & Teacher Ecosystem
+
+Runtime / database
+- database/migrations/2026_08_08_001900_family_teacher_ecosystem_v280.php
+- app/Models/FamilyLearningActivity.php
+- app/Models/TeacherCompetency.php
+- app/Models/TeacherCompetencyProgress.php
+- app/Http/Controllers/Admin/FamilyTeacherController.php
+- app/Http/Controllers/Teacher/FamilyTeacherController.php
+- app/Http/Controllers/Guardian/FamilyLearningController.php
+- routes/web.php
+- routes/console.php
+- scripts/container-start.sh
+- Dockerfile
+
+UI
+- resources/views/admin/family-teacher/index.blade.php
+- resources/views/teacher/family-teacher/index.blade.php
+- resources/views/guardian/family-learning/index.blade.php
+- resources/views/layouts/app.blade.php
+- resources/views/dashboard/teacher.blade.php
+- resources/views/dashboard/guardian.blade.php
+- resources/views/academy/lesson.blade.php
+
+Tests
+- tests/Feature/FamilyTeacherV280Test.php
+
+Release / documentation
+- RELEASE
+- public/release.txt
+- README.md
+- START-HERE.md
+- CHANGELOG.md
+- BUILD-REPORT-V2.8.0.md
+- UPGRADE-V2.8.0.md
+- DEPLOY-QUICK-V2.8.0.txt
+- docs/CURRENT-STATE.md
+- docs/ROADMAP.md
+- docs/PHASE-06-FAMILY-TEACHER-V2.8.0.md
+- docs/releases/v2.8.0.md
+- CHANGED-FILES-V2.8.0.txt

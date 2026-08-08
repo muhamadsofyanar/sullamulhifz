@@ -1,11 +1,13 @@
 # Current State
 
-## Current candidate: v2.7.0
+## Current candidate: v2.8.0
 
-Fokus pengembangan aktif: **Fase 5 — Academy LMS 2.0**.
+Fokus pengembangan aktif: **Fase 6 — Family & Teacher Ecosystem**.
 
-v2.7.0 menambah prerequisite lesson/path, kuis pilihan ganda dengan attempt dan passing score, worksheet/refleksi wajib, enforcement penyelesaian materi, serta sertifikat dengan kode verifikasi publik.
+v2.8.0 menambah aktivitas keluarga terstruktur dari guru ke wali beserta refleksi dan review tindak lanjut, serta kompetensi/pelatihan guru dengan refleksi, bukti naratif dan review tanpa skor/ranking.
 
-Implementasi Fase 5 dapat mencapai 100% setelah migration berjalan dan data minimum Academy tersedia, tetapi validasi produksinya tetap eksplisit melalui launch check `phase5_lms_resume`, `phase5_multimedia_learning`, dan `phase5_assessment_certificate`.
+Fase 5 tetap dipertahankan utuh dari v2.7.0. Smoke test manual prerequisite → quiz → worksheet → completion → unlock → certificate → public verification telah berhasil pada produksi saat pengembangan v2.8.0 dimulai; status dashboard tetap mengikuti launch check yang tersimpan di database.
+
+Fase 6 baru 100% setelah migration v2.8.0 berjalan dan alur nyata guru → aktivitas keluarga → refleksi wali → review guru serta kompetensi guru → refleksi → review lembaga telah divalidasi. Guardrail STIFIn juga wajib ditinjau manual agar tidak berubah menjadi label atau pembatas kemampuan anak.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.

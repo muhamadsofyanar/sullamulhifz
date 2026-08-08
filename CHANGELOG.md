@@ -1,3 +1,14 @@
+# v2.8.0 — Family & Teacher Ecosystem — 2026-08-08
+
+- Menambah aktivitas keluarga terstruktur: guru memilih santri, aktivitas, instruksi, tenggat opsional dan materi Parent Academy opsional.
+- Wali dapat menyelesaikan aktivitas dengan refleksi naratif; guru dapat mereview dan menulis tindak lanjut.
+- Menambah kompetensi/pelatihan guru yang dapat dikaitkan ke materi Teacher Academy.
+- Guru menyimpan proses, refleksi dan bukti praktik; admin/kepala mereview sebagai `demonstrated` atau `needs_follow_up` tanpa skor/ranking.
+- Menambah tenant/ownership guard untuk aktivitas anak, materi Academy terhubung, kompetensi dan review.
+- Menambah halaman Admin, Guru dan Wali untuk Fase 6 serta command `sullam:verify-family-teacher`.
+- Memperbaiki tampilan materi Academy lama yang menyimpan `\\n` literal agar kembali tampil sebagai paragraf/baris baru.
+- Menambah regression test struktur Fase 6 dan memastikan tabel progres tidak memiliki kolom score/rank.
+
 # v2.7.0 — Academy LMS 2.0 — 2026-08-08
 
 - Menambah prerequisite lesson/path dengan enforcement sebelum konten dibuka.

@@ -13,4 +13,4 @@ Roadmap resmi terdiri dari 10 fase. Detail definisi Fase 4 ada di `ROADMAP-10-PH
 9. Insight, Automation & AI Assist
 10. Ecosystem / SaaS
 
-Fokus source v2.7.0 adalah penyelesaian implementasi Fase 5 Academy LMS 2.0. **100% bukan berarti menu tersedia**; fase selesai hanya setelah implementasi dan validasi produksi lengkap.
+Fokus source v2.8.0 adalah implementasi Fase 6 Family & Teacher Ecosystem. **100% bukan berarti menu tersedia**; fase selesai hanya setelah implementasi dan validasi produksi lengkap.

@@ -58,6 +58,7 @@ if [ "${AUTO_MIGRATE:-true}" = "true" ]; then
     php artisan sullam:verify-launch || echo "PERINGATAN: checklist peluncuran belum sepenuhnya lulus."
     php artisan sullam:verify-academy || echo "PERINGATAN: verifikasi Academy belum sepenuhnya lulus."
     php artisan sullam:verify-academy-lms || echo "PERINGATAN: struktur Academy LMS 2.0 belum sepenuhnya siap."
+    php artisan sullam:verify-family-teacher || echo "PERINGATAN: struktur Family & Teacher Ecosystem belum sepenuhnya siap."
     php artisan sullam:verify-ecosystem || echo "PERINGATAN: verifikasi ekosistem v2.3 belum sepenuhnya lulus."
     php artisan sullam:roadmap-status || echo "PERINGATAN: status roadmap belum dapat dihitung."
     php artisan storage:link || true

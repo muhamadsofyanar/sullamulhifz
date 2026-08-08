@@ -1,14 +1,14 @@
-# MULAI DI SINI — v2.7.0
+# MULAI DI SINI — v2.8.0
 
-Rilis aktif adalah **v2.7.0 — Academy LMS 2.0**.
+Rilis aktif adalah **v2.8.0 — Family & Teacher Ecosystem**.
 
 Baca berurutan:
-1. `UPGRADE-V2.7.0.md`
-2. `DEPLOY-QUICK-V2.7.0.txt`
-3. `docs/PHASE-05-ACADEMY-LMS-V2.7.0.md`
+1. `UPGRADE-V2.8.0.md`
+2. `DEPLOY-QUICK-V2.8.0.txt`
+3. `docs/PHASE-06-FAMILY-TEACHER-V2.8.0.md`
 4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-v2.7.0 menyelesaikan blok implementasi Fase 5: prerequisite, quiz/worksheet terstruktur dan sertifikat. Fase 5 baru 100% setelah tiga launch check Fase 5 benar-benar divalidasi di produksi.
+v2.8.0 menutup gap implementasi utama Fase 6: aktivitas keluarga terstruktur dan kompetensi/pelatihan guru. Keduanya menggunakan refleksi dan status proses, bukan skor/ranking. Fase 6 baru 100% setelah alur Parent↔Teacher dan guardrail STIFIn benar-benar divalidasi di produksi.
 
 ---
 

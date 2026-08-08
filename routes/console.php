@@ -24,7 +24,7 @@ use App\Services\MushafLineService;
 
 Artisan::command('sullam:about', function (): void {
     $release = trim((string) @file_get_contents(base_path('RELEASE'))) ?: 'unknown';
-    $this->info('Sullamul Hifz '.$release.' — Academy LMS 2.0.');
+    $this->info('Sullamul Hifz '.$release.' — Family & Teacher Ecosystem.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -579,5 +579,23 @@ Artisan::command('sullam:verify-academy-lms', function (): int {
     $this->info('Struktur Academy LMS 2.0 v2.7.0 siap. Launch check produksi tetap harus divalidasi manual.');
     return 0;
 })->purpose('Memeriksa struktur Academy LMS 2.0 v2.7.0');
+
+Artisan::command('sullam:verify-family-teacher', function (): int {
+    $required = ['family_learning_activities','teacher_competencies','teacher_competency_progress'];
+    $missing = collect($required)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Family & Teacher Ecosystem belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $this->table(['Komponen','Jumlah'], [
+        ['Aktivitas keluarga', \App\Models\FamilyLearningActivity::query()->count()],
+        ['Aktivitas selesai/review', \App\Models\FamilyLearningActivity::query()->whereIn('status',['completed','reviewed'])->count()],
+        ['Kompetensi guru', \App\Models\TeacherCompetency::query()->where('status','active')->count()],
+        ['Refleksi kompetensi', \App\Models\TeacherCompetencyProgress::query()->whereIn('status',['reflection_submitted','needs_follow_up','demonstrated'])->count()],
+    ]);
+    $this->info('Struktur Family & Teacher Ecosystem v2.8.0 siap. Validasi alur Parent↔Teacher dan guardrail STIFIn tetap harus dilakukan manual di produksi.');
+    return 0;
+})->purpose('Memeriksa struktur Family & Teacher Ecosystem v2.8.0');
 
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();

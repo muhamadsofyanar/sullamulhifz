@@ -66,6 +66,11 @@
                     <x-icon name="lesson"/><span>Kelola Academy</span>
                 </a>
                 @endif
+                @if(\App\Support\Feature::enabled('family_learning', auth()->user()->institution_id, true))
+                <a href="{{ route('admin.family-teacher.index') }}" class="{{ request()->routeIs('admin.family-teacher.*') ? 'active' : '' }}">
+                    <x-icon name="community"/><span>Keluarga & Guru</span>
+                </a>
+                @endif
                 <a href="{{ route('admin.launch-readiness.index') }}" class="{{ request()->routeIs('admin.launch-readiness.*') ? 'active' : '' }}">
                     <x-icon name="achievement"/><span>Kesiapan Peluncuran</span>
                 </a>
@@ -118,6 +123,11 @@
                     <x-icon name="lesson"/><span>Academy & Keluarga</span>
                 </a>
                 @endif
+                @if(\App\Support\Feature::enabled('family_learning', auth()->user()->institution_id, true))
+                <a href="{{ route('teacher.family-learning.index') }}" class="{{ request()->routeIs('teacher.family-learning.*') ? 'active' : '' }}">
+                    <x-icon name="community"/><span>Aktivitas & Kompetensi</span>
+                </a>
+                @endif
                 <a href="{{ route('teacher.assignments.index') }}" class="{{ request()->routeIs('teacher.assignments.*') ? 'active' : '' }}">
                     <x-icon name="assignment"/><span>Tugas</span>
                 </a>
@@ -132,6 +142,11 @@
                 @if(\App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id))
                 <a href="{{ route('academy.portal.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}">
                     <x-icon name="lesson"/><span>Parent Academy</span>
+                </a>
+                @endif
+                @if(\App\Support\Feature::enabled('family_learning', auth()->user()->institution_id, true))
+                <a href="{{ route('guardian.family-learning.index') }}" class="{{ request()->routeIs('guardian.family-learning.*') ? 'active' : '' }}">
+                    <x-icon name="community"/><span>Aktivitas Keluarga</span>
                 </a>
                 @endif
             @endif

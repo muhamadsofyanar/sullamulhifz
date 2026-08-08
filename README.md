@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v2.7.0 — Academy LMS 2.0**.
+Rilis kandidat: **v2.8.0 — Family & Teacher Ecosystem**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajaran Al-Qur’an, operasional lembaga, tugas rumah, komunikasi guru–wali, dan perjalanan perkembangan santri. TPA Al-Insyirah menjadi implementasi pertama, sementara fondasinya disiapkan untuk cabang dan lembaga lain.
 
@@ -15,6 +15,7 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - Full Qur’an 30 juz: mushaf 114 surah/6.236 ayat, 604 halaman, 240 Rubu‘ al-Hizb, dua qari, bookmark, target latihan, dan riwayat baca;
 - Qur’an Journey: Marhalah berbasis Juz, milestone/penjagaan, Khatam 30 Hari, Fami Bisyauqin, dan Peta Mushaf & Warisan Ulama;
 - Academy LMS 2.0: program/modul/materi, learning path, prerequisite, kuis, worksheet, progress, bookmark, refleksi, dan sertifikat;
+- Family & Teacher Ecosystem: aktivitas keluarga guru→wali→guru, refleksi pendampingan, kompetensi/pelatihan guru berbasis bukti naratif tanpa ranking;
 - media terpusat, permission granular, feature flag, aktivasi akun, reset kata sandi, dan audit.
 
 ## Stack
@@ -36,11 +37,11 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 ## Mulai dari sini
 
 1. [`START-HERE.md`](START-HERE.md)
-2. [`UPGRADE-V2.7.0.md`](UPGRADE-V2.7.0.md)
-3. [`DEPLOY-QUICK-V2.7.0.txt`](DEPLOY-QUICK-V2.7.0.txt)
+2. [`UPGRADE-V2.8.0.md`](UPGRADE-V2.8.0.md)
+3. [`DEPLOY-QUICK-V2.8.0.txt`](DEPLOY-QUICK-V2.8.0.txt)
 4. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
 5. [`docs/ROADMAP-10-PHASES-V2.6.0.md`](docs/ROADMAP-10-PHASES-V2.6.0.md)
-6. [`docs/PHASE-05-ACADEMY-LMS-V2.7.0.md`](docs/PHASE-05-ACADEMY-LMS-V2.7.0.md)
+6. [`docs/PHASE-06-FAMILY-TEACHER-V2.8.0.md`](docs/PHASE-06-FAMILY-TEACHER-V2.8.0.md)
 
 ## Aturan produksi
 
@@ -51,4 +52,4 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - pertahankan persistent volume `storage/app` saat mengganti image/container;
 - aktifkan SMTP agar reset kata sandi dapat dikirim melalui email.
 
-Migration v2.7.0 bersifat additive. Data Academy lama tetap dipertahankan; tabel baru hanya menambah gate prerequisite, assessment/worksheet, attempt/submission, dan sertifikat.
+Migration v2.8.0 bersifat additive. Data Academy, Tahfizh, Qur’an Journey dan Family Learning lama tetap dipertahankan; tabel baru hanya menambah aktivitas keluarga terstruktur serta kompetensi/progres guru.
