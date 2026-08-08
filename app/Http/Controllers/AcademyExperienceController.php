@@ -12,6 +12,7 @@ use App\Models\QuranPracticePreset;
 use App\Models\QuranPracticeSession;
 use App\Support\Feature;
 use App\Services\RoadmapStatusService;
+use App\Services\AcademyLmsService;
 use App\Models\Institution;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -32,13 +33,19 @@ class AcademyExperienceController extends Controller
             ->get();
 
         $progress = $paths->mapWithKeys(fn (AcademyLearningPath $path) => [$path->id => $this->pathProgress($request, $path)]);
+        $lms = app(AcademyLmsService::class);
+        $lockedPathIds = $paths->filter(fn (AcademyLearningPath $path): bool => ! $lms->isUnlocked($request->user(), 'path', (int) $path->id))->pluck('id');
 
-        return view('academy.paths', compact('paths', 'progress'));
+        return view('academy.paths', compact('paths', 'progress', 'lockedPathIds'));
     }
 
-    public function path(Request $request, AcademyLearningPath $path): View
+    public function path(Request $request, AcademyLearningPath $path): View|RedirectResponse
     {
         $this->authorizePath($request, $path);
+        $lms = app(AcademyLmsService::class);
+        if (! $lms->isUnlocked($request->user(), 'path', (int) $path->id)) {
+            return redirect()->route('academy.portal.paths')->with('error', 'Jalur belajar masih terkunci. Selesaikan jalur prasyarat terlebih dahulu.');
+        }
         $path->load('items');
 
         $lessonIds = $path->items->where('item_type', 'lesson')->pluck('item_id');

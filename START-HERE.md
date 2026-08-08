@@ -1,14 +1,14 @@
-# MULAI DI SINI — v2.6.4
+# MULAI DI SINI — v2.7.0
 
-Rilis aktif adalah **v2.6.4 — Qur’an Journey Stabilization**.
+Rilis aktif adalah **v2.7.0 — Academy LMS 2.0**.
 
 Baca berurutan:
-1. `UPGRADE-V2.6.4.md`
-2. `DEPLOY-QUICK-V2.6.4.txt`
-3. `docs/PHASE-04-QURAN-JOURNEY-V2.6.0.md`
+1. `UPGRADE-V2.7.0.md`
+2. `DEPLOY-QUICK-V2.7.0.txt`
+3. `docs/PHASE-05-ACADEMY-LMS-V2.7.0.md`
 4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-v2.6.4 menstabilkan Fase 4 sebelum pengembangan Fase 5 dimulai. Fase 4 belum boleh disebut 100% sebelum seluruh launch check produksinya lulus.
+v2.7.0 menyelesaikan blok implementasi Fase 5: prerequisite, quiz/worksheet terstruktur dan sertifikat. Fase 5 baru 100% setelah tiga launch check Fase 5 benar-benar divalidasi di produksi.
 
 ---
 

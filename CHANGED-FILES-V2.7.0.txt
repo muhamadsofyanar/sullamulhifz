@@ -1,0 +1,28 @@
+SULLAMUL HIFZ v2.7.0 — CHANGED FILES
+
+Core:
+- database/migrations/2026_08_08_001800_academy_lms_v270.php
+- app/Services/AcademyLmsService.php
+- app/Http/Controllers/AcademyLmsController.php
+- app/Http/Controllers/AcademyController.php
+- app/Http/Controllers/AcademyExperienceController.php
+- app/Http/Controllers/Admin/AcademyController.php
+- app/Models/Academy*.php (model LMS baru + relasi lesson)
+- routes/web.php
+
+UI:
+- public/css/app-v203.css
+- resources/views/academy/program.blade.php
+- resources/views/academy/lesson.blade.php
+- resources/views/academy/progress.blade.php
+- resources/views/academy/paths.blade.php
+- resources/views/academy/certificate.blade.php
+- resources/views/public/certificate-verify.blade.php
+- resources/views/admin/academy/index.blade.php
+- resources/views/admin/launch-readiness/index.blade.php
+
+Validation/docs:
+- tests/Feature/AcademyLmsV270Test.php
+- RELEASE, public/release.txt, Dockerfile
+- UPGRADE-V2.7.0.md, DEPLOY-QUICK-V2.7.0.txt, BUILD-REPORT-V2.7.0.md
+- docs/PHASE-05-ACADEMY-LMS-V2.7.0.md, docs/releases/v2.7.0.md

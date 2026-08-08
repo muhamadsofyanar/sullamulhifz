@@ -68,7 +68,43 @@ $isDirectAudio = $lesson->lesson_type === 'audio' && $mediaUrl !== '' && !$youtu
     </section>
     @endif
 
-    <form method="post" action="{{ route($academyRoutePrefix.'lesson.complete',$lesson) }}" class="academy-complete-form">@csrf<button class="button primary wide academy-complete-button" type="submit">{{ $progress->status==='completed'?'✓ Materi sudah selesai':'Tandai selesai' }}</button></form>
+    @if($quiz)
+    @php($passedAttempt=$quizAttempts->first(fn($attempt)=>$attempt->passed))
+    <section class="card" style="margin-top:18px">
+        <div class="section-head"><div><span class="eyebrow">KUIS</span><h2>{{ $quiz->title }}</h2><p class="muted">{{ $quiz->instructions ?: 'Jawab pertanyaan untuk mengonfirmasi pemahaman materi.' }}</p></div><span class="badge">Lulus ≥ {{ $quiz->passing_percent }}%</span></div>
+        @if($passedAttempt)
+            <p><strong>✓ Lulus {{ $passedAttempt->percent }}%</strong> pada percobaan ke-{{ $passedAttempt->attempt_number }}.</p>
+        @elseif($quizAttempts->count() >= $quiz->max_attempts)
+            <p class="muted">Batas {{ $quiz->max_attempts }} percobaan sudah digunakan. Hubungi pengelola Academy bila perlu dibuka kembali.</p>
+        @else
+            <form method="post" action="{{ route($academyRoutePrefix.'quiz.submit',$quiz) }}" class="stack">@csrf
+                @foreach($quiz->questions as $question)
+                <fieldset class="card" style="margin:0"><legend><strong>{{ $loop->iteration }}. {{ $question->prompt }}</strong></legend>
+                    @foreach($question->options as $option)<label class="check"><input type="radio" name="answers[{{ $question->id }}]" value="{{ $option->id }}" required> {{ $option->label }}</label>@endforeach
+                </fieldset>
+                @endforeach
+                <button class="button secondary" type="submit" @disabled($quiz->questions->isEmpty())>Periksa jawaban</button>
+            </form>
+        @endif
+    </section>
+    @endif
+
+    @if($worksheet)
+    <section class="card" style="margin-top:18px">
+        <div class="section-head"><div><span class="eyebrow">WORKSHEET</span><h2>{{ $worksheet->title }}</h2><p class="muted">{{ $worksheet->instructions }}</p></div>@if($worksheet->is_required)<span class="badge">Wajib</span>@endif</div>
+        @if($worksheetSubmission?->status === 'completed')
+            <p><strong>✓ Worksheet selesai dan tersimpan.</strong></p>
+            @if($worksheetSubmission->response)<p>{{ $worksheetSubmission->response }}</p>@endif
+        @else
+            <form method="post" action="{{ route($academyRoutePrefix.'worksheet.submit',$worksheet) }}" class="stack">@csrf
+                @if($worksheet->completion_mode === 'reflection')<label>Jawaban/refleksi<textarea name="response" rows="5" maxlength="10000" required placeholder="Tuliskan jawaban atau tindak lanjut Anda..."></textarea></label>@else<input type="hidden" name="response" value="Sudah dipraktikkan">@endif
+                <button class="button secondary" type="submit">{{ $worksheet->completion_mode === 'reflection' ? 'Simpan worksheet' : 'Tandai sudah dipraktikkan' }}</button>
+            </form>
+        @endif
+    </section>
+    @endif
+
+    <form method="post" action="{{ route($academyRoutePrefix.'lesson.complete',$lesson) }}" class="academy-complete-form">@csrf<button class="button primary wide academy-complete-button" type="submit" @disabled(!$requirementsComplete && $progress->status!=='completed')>{{ $progress->status==='completed'?'✓ Materi sudah selesai':($requirementsComplete?'Tandai selesai':'Selesaikan kuis/worksheet dahulu') }}</button></form>
     <nav class="academy-lesson-nav">
         @if($previous)<a href="{{ route($academyRoutePrefix.'lesson',$previous) }}">← Sebelumnya</a>@else<span></span>@endif
         @if($next)<a href="{{ route($academyRoutePrefix.'lesson',$next) }}">Berikutnya →</a>@else<a href="{{ route($academyRoutePrefix.'program',$lesson->module->program) }}">Kembali ke program →</a>@endif

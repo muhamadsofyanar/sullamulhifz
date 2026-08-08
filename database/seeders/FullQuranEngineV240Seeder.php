@@ -20,6 +20,7 @@ class FullQuranEngineV240Seeder extends Seeder
             ['phase4_milestone_retention', 'Roadmap Fase 4', 'Milestone dan pemeriksaan penjagaan surah/rubu‘/juz telah diuji'],
             ['phase5_lms_resume', 'Roadmap Fase 5', 'Resume learning, prerequisite, progress dan penyelesaian LMS telah diuji'],
             ['phase5_multimedia_learning', 'Roadmap Fase 5', 'Video, audio, artikel, aktivitas/worksheet dan refleksi LMS telah diuji'],
+            ['phase5_assessment_certificate', 'Roadmap Fase 5', 'Quiz, worksheet wajib, passing rule dan sertifikat terverifikasi telah diuji end-to-end'],
             ['phase6_parent_teacher_flow', 'Roadmap Fase 6', 'Alur Parent Academy dan Teacher Academy telah diuji dengan pengguna nyata'],
             ['phase6_stifin_guardrail', 'Roadmap Fase 6', 'Materi STIFIn telah ditinjau agar tetap proporsional dan tidak menjadi label anak'],
             ['phase7_personalization_evidence', 'Roadmap Fase 7', 'Rekomendasi personal menggunakan observasi/perkembangan nyata sebagai bukti utama'],

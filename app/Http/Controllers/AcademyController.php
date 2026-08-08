@@ -7,8 +7,10 @@ use App\Models\AcademyLessonProgress;
 use App\Models\AcademyModule;
 use App\Models\AcademyProgram;
 use App\Models\AcademyRecommendation;
+use App\Models\AcademyCertificate;
 use App\Models\QuranAudioSource;
 use App\Models\QuranPracticePreset;
+use App\Services\AcademyLmsService;
 use App\Support\Feature;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
@@ -159,9 +161,16 @@ class AcademyController extends Controller
                 'percent' => $total ? (int) round(($done / $total) * 100) : 0,
             ];
         });
+        $certificates = AcademyCertificate::query()
+            ->with('program')
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('user_id', $request->user()->id)
+            ->where('status', 'issued')
+            ->latest('issued_at')
+            ->get();
 
         return view('academy.progress', array_merge(
-            compact('programs', 'rows', 'completed', 'total', 'percent', 'programProgress'),
+            compact('programs', 'rows', 'completed', 'total', 'percent', 'programProgress', 'certificates'),
             $this->viewContext($request),
         ));
     }
@@ -207,18 +216,34 @@ class AcademyController extends Controller
             ->whereIn('academy_lesson_id', $lessonIds)
             ->get()
             ->keyBy('academy_lesson_id');
+        $lms = app(AcademyLmsService::class);
+        $lockedLessonIds = $program->modules->flatMap->lessons
+            ->filter(fn (AcademyLesson $lesson): bool => ! $lms->isUnlocked($request->user(), 'lesson', (int) $lesson->id))
+            ->pluck('id');
+        $certificate = AcademyCertificate::query()
+            ->where('user_id', $request->user()->id)
+            ->where('academy_program_id', $program->id)
+            ->where('status', 'issued')
+            ->first();
 
         return view('academy.program', array_merge(
-            compact('program', 'progress'),
+            compact('program', 'progress', 'lockedLessonIds', 'certificate'),
             $this->viewContext($request),
         ));
     }
 
-    public function lesson(Request $request, AcademyLesson $lesson): View
+    public function lesson(Request $request, AcademyLesson $lesson): View|RedirectResponse
     {
         $lesson->load('module.program');
         $this->authorizeProgram($request, $lesson->module->program);
         abort_unless($lesson->status === 'published', 404);
+        $lms = app(AcademyLmsService::class);
+        $missingPrerequisites = $lms->missingPrerequisites($request->user(), 'lesson', (int) $lesson->id);
+        if (! $lms->isUnlocked($request->user(), 'lesson', (int) $lesson->id)) {
+            $context = $this->viewContext($request);
+            return redirect()->route($context['academyRoutePrefix'].'program', $lesson->module->program)
+                ->with('error', 'Materi masih terkunci. Selesaikan prasyarat: '.implode(', ', $missingPrerequisites).'.');
+        }
 
         $progress = AcademyLessonProgress::firstOrCreate(
             ['user_id' => $request->user()->id, 'academy_lesson_id' => $lesson->id],
@@ -251,9 +276,14 @@ class AcademyController extends Controller
             : collect();
         $reflectionEnabled = Feature::enabled('academy_reflections', (int) $request->user()->institution_id, true);
         $learningPathsEnabled = Feature::enabled('learning_paths', (int) $request->user()->institution_id, true);
+        $quiz = $lesson->quiz()->with('questions.options')->where('status', 'published')->first();
+        $quizAttempts = $quiz ? $quiz->attempts()->where('user_id', $request->user()->id)->latest('attempt_number')->get() : collect();
+        $worksheet = $lesson->worksheet()->where('status', 'published')->first();
+        $worksheetSubmission = $worksheet ? $worksheet->submissions()->where('user_id', $request->user()->id)->first() : null;
+        $requirementsComplete = $lms->lessonRequirementsComplete($request->user(), $lesson);
 
         return view('academy.lesson', array_merge(
-            compact('lesson', 'progress', 'previous', 'next', 'isBookmarked', 'reflections', 'reflectionStudents', 'reflectionEnabled', 'learningPathsEnabled'),
+            compact('lesson', 'progress', 'previous', 'next', 'isBookmarked', 'reflections', 'reflectionStudents', 'reflectionEnabled', 'learningPathsEnabled', 'quiz', 'quizAttempts', 'worksheet', 'worksheetSubmission', 'requirementsComplete'),
             $this->viewContext($request),
         ));
     }
@@ -262,6 +292,13 @@ class AcademyController extends Controller
     {
         $lesson->load('module.program');
         $this->authorizeProgram($request, $lesson->module->program);
+        $lms = app(AcademyLmsService::class);
+        if (! $lms->isUnlocked($request->user(), 'lesson', (int) $lesson->id)) {
+            return back()->with('error', 'Materi masih terkunci oleh prasyarat.');
+        }
+        if (! $lms->lessonRequirementsComplete($request->user(), $lesson)) {
+            return back()->with('error', 'Selesaikan kuis/worksheet wajib sebelum menandai materi selesai.');
+        }
 
         AcademyLessonProgress::updateOrCreate(
             ['user_id' => $request->user()->id, 'academy_lesson_id' => $lesson->id],
@@ -283,7 +320,11 @@ class AcademyController extends Controller
                 ->update(['status' => 'completed', 'completed_at' => now(), 'updated_at' => now()]);
         }
 
-        return back()->with('success', 'Materi ditandai selesai. Progres Academy sudah diperbarui.');
+        $certificate = $lms->issueCertificateIfEligible($request->user(), $lesson->module->program);
+
+        return back()->with('success', $certificate
+            ? 'Materi selesai. Program tuntas dan sertifikat Anda sudah tersedia.'
+            : 'Materi ditandai selesai. Progres Academy sudah diperbarui.');
     }
 
     private function catalog(Request $request, string $title, string $eyebrow, ?array $types, string $section, bool $render = true): View

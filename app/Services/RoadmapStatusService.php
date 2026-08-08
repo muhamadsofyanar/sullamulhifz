@@ -183,14 +183,15 @@ class RoadmapStatusService
                         'passed' => Schema::hasTable('academy_prerequisites'),
                     ], [
                         'label' => 'Quiz / worksheet terstruktur',
-                        'passed' => Schema::hasTable('academy_quizzes'),
+                        'passed' => Schema::hasTable('academy_quizzes') && Schema::hasTable('academy_worksheets')
+                            && Schema::hasTable('academy_quiz_attempts') && Schema::hasTable('academy_worksheet_submissions'),
                     ], [
                         'label' => 'Sertifikat penyelesaian',
-                        'passed' => Schema::hasTable('academy_certificates'),
+                        'passed' => Schema::hasTable('academy_certificates') && class_exists(\App\Services\AcademyLmsService::class),
                     ]],
                 ),
-                $this->manualCriteria($institutionId, ['phase5_lms_resume', 'phase5_multimedia_learning']),
-                'Tambahkan prerequisite, quiz/worksheet terstruktur dan sertifikat sebelum 100%.',
+                $this->manualCriteria($institutionId, ['phase5_lms_resume', 'phase5_multimedia_learning', 'phase5_assessment_certificate']),
+                'Validasi resume learning, gate prerequisite, quiz/worksheet, multimedia dan penerbitan sertifikat di produksi sebelum 100%.',
             ),
             6 => $this->phase(
                 6,

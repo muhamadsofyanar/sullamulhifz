@@ -123,6 +123,64 @@
     </div>
 </section>
 
+<section class="card" style="margin-top:18px">
+    <div class="section-head"><div><span class="eyebrow">LMS 2.0 · V2.7.0</span><h2>Prasyarat, kuis & worksheet</h2><p class="muted">Atur gate penyelesaian langsung dari Academy Studio tanpa mengubah source.</p></div><span class="badge">{{ $quizzes->count() }} kuis · {{ $worksheets->count() }} worksheet</span></div>
+    <div class="grid two">
+        <form method="post" action="{{ route('admin.academy.prerequisites.store') }}" class="stack">@csrf
+            <h3>Prasyarat materi</h3><input type="hidden" name="subject_type" value="lesson"><input type="hidden" name="required_type" value="lesson">
+            <label>Materi terkunci<select name="subject_id" required>@foreach($academyLessons as $lesson)<option value="{{ $lesson->id }}">{{ $lesson->module->program->title }} — {{ $lesson->title }}</option>@endforeach</select></label>
+            <label>Harus selesaikan terlebih dahulu<select name="required_id" required>@foreach($academyLessons as $lesson)<option value="{{ $lesson->id }}">{{ $lesson->module->program->title }} — {{ $lesson->title }}</option>@endforeach</select></label>
+            <button class="button secondary" type="submit">Simpan prasyarat materi</button>
+        </form>
+        <form method="post" action="{{ route('admin.academy.prerequisites.store') }}" class="stack">@csrf
+            <h3>Prasyarat jalur belajar</h3><input type="hidden" name="subject_type" value="path"><input type="hidden" name="required_type" value="path">
+            <label>Jalur terkunci<select name="subject_id" required>@foreach($paths as $path)<option value="{{ $path->id }}">{{ $path->title }}</option>@endforeach</select></label>
+            <label>Jalur yang harus selesai<select name="required_id" required>@foreach($paths as $path)<option value="{{ $path->id }}">{{ $path->title }}</option>@endforeach</select></label>
+            <button class="button secondary" type="submit" @disabled($paths->count()<2)>Simpan prasyarat jalur</button>
+        </form>
+    </div>
+    @if($prerequisites->isNotEmpty())<div class="cards-list" style="margin-top:16px">@foreach($prerequisites as $prerequisite)<div class="list-row"><div><strong>{{ ucfirst($prerequisite->subject_type) }} #{{ $prerequisite->subject_id }}</strong><small>memerlukan {{ $prerequisite->required_type }} #{{ $prerequisite->required_id }}</small></div><form method="post" action="{{ route('admin.academy.prerequisites.destroy',$prerequisite) }}">@csrf @method('delete')<button class="button secondary" type="submit">Hapus</button></form></div>@endforeach</div>@endif
+</section>
+
+<section class="card" style="margin-top:18px">
+    <div class="section-head"><div><span class="eyebrow">ASSESSMENT</span><h2>Kuis terstruktur</h2><p class="muted">Satu kuis per materi, dengan nilai lulus dan batas percobaan.</p></div></div>
+    <form method="post" action="{{ route('admin.academy.quizzes.store') }}" class="stack">@csrf
+        <label>Materi<select name="academy_lesson_id" required>@foreach($academyLessons as $lesson)<option value="{{ $lesson->id }}">{{ $lesson->module->program->title }} — {{ $lesson->title }}</option>@endforeach</select></label>
+        <div class="form-grid"><label>Judul<input name="title" value="Kuis pemahaman" required></label><label>Nilai lulus (%)<input type="number" name="passing_percent" min="1" max="100" value="70" required></label></div>
+        <label>Instruksi<textarea name="instructions" rows="2" placeholder="Pilih jawaban yang paling tepat."></textarea></label>
+        <div class="form-grid"><label>Maks. percobaan<input type="number" name="max_attempts" min="1" max="10" value="3" required></label><label>Status<select name="status"><option value="draft">Draf</option><option value="published">Terbit</option></select></label></div>
+        <button class="button primary" type="submit">Simpan kuis</button>
+    </form>
+    <div style="margin-top:18px">
+    @foreach($quizzes as $quiz)
+        <details class="academy-studio-panel"><summary><span>Q</span><div><strong>{{ $quiz->title }}</strong><small>{{ $quiz->lesson->title }} · {{ $quiz->questions->count() }} pertanyaan · lulus {{ $quiz->passing_percent }}%</small></div></summary>
+            <div class="stack academy-path-admin-body">
+                @foreach($quiz->questions as $question)<div class="list-row"><div><strong>{{ $loop->iteration }}. {{ $question->prompt }}</strong><small>{{ $question->points }} poin</small></div><form method="post" action="{{ route('admin.academy.quiz-questions.destroy',$question) }}">@csrf @method('delete')<button class="button secondary" type="submit">Hapus</button></form></div>@endforeach
+                <form method="post" action="{{ route('admin.academy.quiz-questions.store') }}" class="stack">@csrf<input type="hidden" name="academy_quiz_id" value="{{ $quiz->id }}">
+                    <label>Pertanyaan<textarea name="prompt" rows="2" required></textarea></label><input type="hidden" name="points" value="1">
+                    @for($i=0;$i<4;$i++)<label>Opsi {{ chr(65+$i) }}<input name="options[{{ $i }}]" required></label>@endfor
+                    <label>Jawaban benar<select name="correct_option"><option value="0">A</option><option value="1">B</option><option value="2">C</option><option value="3">D</option></select></label>
+                    <label>Penjelasan, opsional<textarea name="explanation" rows="2"></textarea></label>
+                    <button class="button secondary" type="submit">Tambah pertanyaan</button>
+                </form>
+            </div>
+        </details>
+    @endforeach
+    </div>
+</section>
+
+<section class="card" style="margin-top:18px">
+    <div class="section-head"><div><span class="eyebrow">AKTIVITAS</span><h2>Worksheet terstruktur</h2><p class="muted">Gunakan refleksi tertulis atau konfirmasi praktik sebagai syarat penyelesaian.</p></div></div>
+    <form method="post" action="{{ route('admin.academy.worksheets.store') }}" class="stack">@csrf
+        <label>Materi<select name="academy_lesson_id" required>@foreach($academyLessons as $lesson)<option value="{{ $lesson->id }}">{{ $lesson->module->program->title }} — {{ $lesson->title }}</option>@endforeach</select></label>
+        <label>Judul<input name="title" required placeholder="Refleksi & tindak lanjut"></label>
+        <label>Instruksi<textarea name="instructions" rows="3" placeholder="Tuliskan apa yang akan dipraktikkan setelah materi ini."></textarea></label>
+        <div class="form-grid"><label>Mode<select name="completion_mode"><option value="reflection">Refleksi tertulis</option><option value="self_check">Konfirmasi praktik</option></select></label><label>Status<select name="status"><option value="draft">Draf</option><option value="published">Terbit</option></select></label></div>
+        <label class="check"><input type="checkbox" name="is_required" value="1" checked> Wajib sebelum materi selesai</label>
+        <button class="button primary" type="submit">Simpan worksheet</button>
+    </form>
+</section>
+
 <script>
 document.addEventListener('DOMContentLoaded',()=>{const form=document.querySelector('[data-path-item-form]');if(!form)return;const type=form.querySelector('[data-path-item-type]');const lessonWrap=form.querySelector('[data-path-lessons]');const presetWrap=form.querySelector('[data-path-presets]');const lessonSelect=form.querySelector('[data-path-lesson-select]');const presetSelect=form.querySelector('[data-path-preset-select]');const sync=()=>{const q=type.value==='quran_preset';lessonWrap.hidden=q;presetWrap.hidden=!q;if(q){lessonSelect.removeAttribute('name');presetSelect.setAttribute('name','item_id')}else{presetSelect.removeAttribute('name');lessonSelect.setAttribute('name','item_id')}};type.addEventListener('change',sync);sync();});
 </script>

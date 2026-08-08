@@ -1,0 +1,12 @@
+SULLAMUL HIFZ v2.7.0 — ACADEMY LMS 2.0
+
+1. Backup database + persistent storage.
+2. Upload seluruh ISI paket v2.7.0 ke root repository GitHub branch main.
+3. Tunggu GitHub Actions Tests + Release Documentation Check hijau.
+4. Coolify: Post-deployment Command harus kosong; AUTO_MIGRATE=true.
+5. Redeploy SATU KALI.
+6. Cek /up = HTTP 200.
+7. Cek php artisan migrate:status -> 2026_08_08_001800_academy_lms_v270 = Ran.
+8. Smoke test Academy: prerequisite -> quiz -> worksheet -> selesai -> sertifikat.
+
+Jangan menjalankan migrate:fresh, db:wipe, atau rollback database produksi tanpa backup dan rencana pemulihan.

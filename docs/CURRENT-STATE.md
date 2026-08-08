@@ -1,11 +1,11 @@
 # Current State
 
-## Current candidate: v2.6.4
+## Current candidate: v2.7.0
 
-Fokus pengembangan aktif: **stabilisasi Fase 4 — Qur’an Journey**.
+Fokus pengembangan aktif: **Fase 5 — Academy LMS 2.0**.
 
-v2.6.4 memperbaiki regression Blade pada detail Qur’an Journey guru, menambahkan release gate untuk kompilasi/lint Blade, menguji route detail guru pada seluruh kelompok Marhalah, dan mencegah sinkronisasi jaringan Mushaf dari request GET halaman detail.
+v2.7.0 menambah prerequisite lesson/path, kuis pilihan ganda dengan attempt dan passing score, worksheet/refleksi wajib, enforcement penyelesaian materi, serta sertifikat dengan kode verifikasi publik.
 
-Pengembangan Fase 5 ditahan sampai validasi produksi Fase 4 selesai. Status implementasi tidak otomatis berarti validasi produksi 100%.
+Implementasi Fase 5 dapat mencapai 100% setelah migration berjalan dan data minimum Academy tersedia, tetapi validasi produksinya tetap eksplisit melalui launch check `phase5_lms_resume`, `phase5_multimedia_learning`, dan `phase5_assessment_certificate`.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.

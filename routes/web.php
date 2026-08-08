@@ -22,6 +22,7 @@ use App\Http\Controllers\AccountInvitationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\AcademyExperienceController;
+use App\Http\Controllers\AcademyLmsController;
 use App\Http\Controllers\AcademyQuranController;
 use App\Http\Controllers\ContentFeedController;
 use App\Http\Controllers\DashboardController;
@@ -90,6 +91,9 @@ Route::domain((string) config('sullam.academy_host'))
         Route::post('/audio/preset/{preset}/simpan', [AcademyExperienceController::class, 'togglePresetBookmark'])->middleware('feature:quran_audio')->name('audio.preset.bookmark');
         Route::post('/audio/ayah/{globalNumber}/simpan', [AcademyQuranController::class, 'toggleAyahBookmark'])->middleware('feature:quran_audio')->whereNumber('globalNumber')->name('audio.ayah.bookmark');
         Route::post('/materi/{lesson}/refleksi', [AcademyExperienceController::class, 'storeReflection'])->middleware('feature:academy_reflections')->name('lesson.reflection');
+        Route::post('/kuis/{quiz}/jawab', [AcademyLmsController::class, 'submitQuiz'])->name('quiz.submit');
+        Route::post('/worksheet/{worksheet}/selesai', [AcademyLmsController::class, 'submitWorksheet'])->name('worksheet.submit');
+        Route::get('/sertifikat/{certificate}', [AcademyLmsController::class, 'certificate'])->name('certificate');
         Route::get('/ekosistem', [AcademyExperienceController::class, 'ecosystem'])->name('ecosystem');
         Route::get('/artikel', [AcademyController::class, 'articles'])->name('articles');
         Route::get('/progres', [AcademyController::class, 'progress'])->name('progress');
@@ -106,6 +110,7 @@ Route::get('/tentang', fn () => app(PublicSiteController::class)->page('tentang'
 Route::get('/program', fn () => app(PublicSiteController::class)->page('program'))->name('public.programs');
 Route::get('/tpa', fn () => app(PublicSiteController::class)->page('tpa'))->name('public.tpa');
 Route::get('/academy', fn () => app(PublicSiteController::class)->page('academy'))->name('public.academy');
+Route::get('/sertifikat/verify/{verificationCode}', [AcademyLmsController::class, 'verify'])->name('certificate.verify');
 Route::get('/kontak', fn () => app(PublicSiteController::class)->page('kontak'))->name('public.contact');
 Route::get('/privasi', fn () => app(PublicSiteController::class)->page('privasi'))->name('public.privacy');
 Route::get('/syarat-ketentuan', fn () => app(PublicSiteController::class)->page('syarat-ketentuan'))->name('public.terms');
@@ -149,6 +154,9 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::get('/academy/program/{program}', [AcademyController::class, 'program'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.program');
     Route::get('/academy/materi/{lesson}', [AcademyController::class, 'lesson'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.lesson');
     Route::post('/academy/materi/{lesson}/selesai', [AcademyController::class, 'complete'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.lesson.complete');
+    Route::post('/academy/kuis/{quiz}/jawab', [AcademyLmsController::class, 'submitQuiz'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.quiz.submit');
+    Route::post('/academy/worksheet/{worksheet}/selesai', [AcademyLmsController::class, 'submitWorksheet'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.worksheet.submit');
+    Route::get('/academy/sertifikat/{certificate}', [AcademyLmsController::class, 'certificate'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.certificate');
 
     Route::get('/perjalanan-quran', [QuranJourneyController::class, 'index'])->middleware(['permission:quran.view','feature:quran_journey'])->name('quran-journey.index');
     Route::post('/perjalanan-quran/program', [QuranJourneyController::class, 'start'])->middleware(['permission:quran.view','feature:quran_journey'])->name('quran-journey.programs.start');
@@ -216,6 +224,12 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::put('/academy/paths/{path}', [AdminAcademyController::class, 'updatePath'])->middleware(['permission:academy.manage','feature:learning_paths'])->name('academy.paths.update');
             Route::post('/academy/path-items', [AdminAcademyController::class, 'storePathItem'])->middleware(['permission:academy.manage','feature:learning_paths'])->name('academy.path-items.store');
             Route::delete('/academy/path-items/{item}', [AdminAcademyController::class, 'destroyPathItem'])->middleware(['permission:academy.manage','feature:learning_paths'])->name('academy.path-items.destroy');
+            Route::post('/academy/prerequisites', [AdminAcademyController::class, 'storePrerequisite'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.prerequisites.store');
+            Route::delete('/academy/prerequisites/{prerequisite}', [AdminAcademyController::class, 'destroyPrerequisite'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.prerequisites.destroy');
+            Route::post('/academy/quizzes', [AdminAcademyController::class, 'storeQuiz'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.quizzes.store');
+            Route::post('/academy/quiz-questions', [AdminAcademyController::class, 'storeQuizQuestion'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.quiz-questions.store');
+            Route::delete('/academy/quiz-questions/{question}', [AdminAcademyController::class, 'destroyQuizQuestion'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.quiz-questions.destroy');
+            Route::post('/academy/worksheets', [AdminAcademyController::class, 'storeWorksheet'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.worksheets.store');
 
             Route::get('/quran-library', [QuranLibraryController::class, 'index'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.index');
             Route::post('/quran-library/sync-corpus', [QuranLibraryController::class, 'syncCorpus'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.sync-corpus');

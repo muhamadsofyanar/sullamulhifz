@@ -23,7 +23,8 @@ use App\Services\QuranDivisionService;
 use App\Services\MushafLineService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v2.6.1 — Mushaf Line Engine.');
+    $release = trim((string) @file_get_contents(base_path('RELEASE'))) ?: 'unknown';
+    $this->info('Sullamul Hifz '.$release.' — Academy LMS 2.0.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -553,5 +554,30 @@ Artisan::command('sullam:verify-ecosystem', function (): int {
     $this->info('Fondasi data ekosistem v2.3.0 tersedia. Status 10 fase ditentukan terpisah oleh sullam:roadmap-status dan tidak otomatis 100%.');
     return 0;
 })->purpose('Memeriksa fondasi roadmap 10 fase Sullamul Hifz v2.3.0');
+
+Artisan::command('sullam:verify-academy-lms', function (): int {
+    $required = [
+        'academy_prerequisites','academy_quizzes','academy_quiz_questions','academy_quiz_options',
+        'academy_quiz_attempts','academy_quiz_answers','academy_worksheets','academy_worksheet_submissions','academy_certificates',
+    ];
+    $missing = collect($required)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Academy LMS 2.0 belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+    if (! class_exists(\App\Services\AcademyLmsService::class)) {
+        $this->error('AcademyLmsService tidak tersedia.');
+        return 1;
+    }
+
+    $this->table(['Komponen','Jumlah'], [
+        ['Prerequisite', \App\Models\AcademyPrerequisite::query()->count()],
+        ['Quiz', \App\Models\AcademyQuiz::query()->count()],
+        ['Worksheet', \App\Models\AcademyWorksheet::query()->count()],
+        ['Sertifikat', \App\Models\AcademyCertificate::query()->where('status','issued')->count()],
+    ]);
+    $this->info('Struktur Academy LMS 2.0 v2.7.0 siap. Launch check produksi tetap harus divalidasi manual.');
+    return 0;
+})->purpose('Memeriksa struktur Academy LMS 2.0 v2.7.0');
 
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();

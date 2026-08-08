@@ -1,3 +1,13 @@
+# v2.7.0 — Academy LMS 2.0 — 2026-08-08
+
+- Menambah prerequisite lesson/path dengan enforcement sebelum konten dibuka.
+- Menambah kuis pilihan ganda, passing score, batas percobaan, attempt dan jawaban terstruktur.
+- Menambah worksheet/refleksi atau self-check sebagai syarat penyelesaian materi.
+- Completion lesson sekarang memeriksa quiz/worksheet wajib.
+- Menambah sertifikat otomatis setelah program tuntas dan halaman verifikasi publik.
+- Menambah authoring prerequisite, quiz, pertanyaan dan worksheet di Academy Studio.
+- Menambah regression test Fase 5 dan mempertahankan compile/lint Blade sebagai release gate.
+
 # v2.6.4 — Qur’an Journey Stabilization — 2026-08-08
 
 - Memperbaiki HTTP 500 detail Qur’an Journey guru akibat directive Blade `@endif` yang menempel pada teks.

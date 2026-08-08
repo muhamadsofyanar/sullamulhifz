@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class AcademyLesson extends Model
 {
@@ -13,4 +14,6 @@ class AcademyLesson extends Model
     public function module(): BelongsTo { return $this->belongsTo(AcademyModule::class, 'academy_module_id'); }
     public function progress(): HasMany { return $this->hasMany(AcademyLessonProgress::class); }
     public function recommendations(): HasMany { return $this->hasMany(AcademyRecommendation::class); }
+    public function quiz(): HasOne { return $this->hasOne(AcademyQuiz::class, 'academy_lesson_id'); }
+    public function worksheet(): HasOne { return $this->hasOne(AcademyWorksheet::class, 'academy_lesson_id'); }
 }

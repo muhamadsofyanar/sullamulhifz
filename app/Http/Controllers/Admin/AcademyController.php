@@ -9,7 +9,11 @@ use App\Models\AcademyLearningPath;
 use App\Models\AcademyLearningPathItem;
 use App\Models\AcademyModule;
 use App\Models\AcademyProgram;
+use App\Models\AcademyPrerequisite;
+use App\Models\AcademyQuiz;
+use App\Models\AcademyQuizQuestion;
 use App\Models\AcademyRecommendation;
+use App\Models\AcademyWorksheet;
 use App\Models\QuranPracticePreset;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -42,6 +46,10 @@ class AcademyController extends Controller
             'lessonCount' => $lessonCount,
             'paths' => AcademyLearningPath::query()->with('items')->where('institution_id', $institutionId)->orderBy('sort_order')->orderBy('id')->get(),
             'quranPresets' => QuranPracticePreset::query()->where('institution_id', $institutionId)->where('status', 'active')->orderByDesc('is_featured')->orderBy('title')->get(),
+            'prerequisites' => AcademyPrerequisite::query()->where('institution_id', $institutionId)->latest()->get(),
+            'quizzes' => AcademyQuiz::query()->with('lesson.module.program','questions.options')->whereHas('lesson.module.program', fn ($q) => $q->where('institution_id', $institutionId))->get(),
+            'worksheets' => AcademyWorksheet::query()->with('lesson.module.program')->whereHas('lesson.module.program', fn ($q) => $q->where('institution_id', $institutionId))->get(),
+            'academyLessons' => $programs->flatMap(fn (AcademyProgram $program) => $program->modules->flatMap->lessons),
         ]);
     }
 
@@ -192,6 +200,124 @@ class AcademyController extends Controller
         abort_unless((int)$item->path->institution_id === (int)$request->user()->institution_id, 404);
         $item->delete();
         return back()->with('success','Langkah dihapus dari jalur belajar.');
+    }
+
+    public function storePrerequisite(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'subject_type' => ['required', Rule::in(['lesson','path'])],
+            'subject_id' => ['required','integer'],
+            'required_type' => ['required', Rule::in(['lesson','path'])],
+            'required_id' => ['required','integer'],
+        ]);
+        abort_if($data['subject_type'] === $data['required_type'] && (int) $data['subject_id'] === (int) $data['required_id'], 422, 'Item tidak dapat menjadi prasyarat dirinya sendiri.');
+        $this->academyResource($request, $data['subject_type'], (int) $data['subject_id']);
+        $this->academyResource($request, $data['required_type'], (int) $data['required_id']);
+        abort_if($this->createsPrerequisiteCycle((int) $request->user()->institution_id, $data['subject_type'], (int) $data['subject_id'], $data['required_type'], (int) $data['required_id']), 422, 'Prasyarat ini akan membuat siklus sehingga konten tidak pernah dapat dibuka.');
+        AcademyPrerequisite::firstOrCreate([
+            'institution_id' => $request->user()->institution_id,
+            'subject_type' => $data['subject_type'], 'subject_id' => $data['subject_id'],
+            'required_type' => $data['required_type'], 'required_id' => $data['required_id'],
+        ]);
+        return back()->with('success', 'Prasyarat Academy disimpan.');
+    }
+
+    public function destroyPrerequisite(Request $request, AcademyPrerequisite $prerequisite): RedirectResponse
+    {
+        abort_unless((int) $prerequisite->institution_id === (int) $request->user()->institution_id, 404);
+        $prerequisite->delete();
+        return back()->with('success', 'Prasyarat dihapus.');
+    }
+
+    public function storeQuiz(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'academy_lesson_id' => ['required','integer','exists:academy_lessons,id'],
+            'title' => ['required','string','max:180'],
+            'instructions' => ['nullable','string','max:3000'],
+            'passing_percent' => ['required','integer','min:1','max:100'],
+            'max_attempts' => ['required','integer','min:1','max:10'],
+            'status' => ['required', Rule::in(['draft','published'])],
+        ]);
+        $lesson = $this->academyResource($request, 'lesson', (int) $data['academy_lesson_id']);
+        AcademyQuiz::updateOrCreate(['academy_lesson_id' => $lesson->id], $data);
+        return back()->with('success', 'Kuis materi disimpan. Tambahkan minimal satu pertanyaan sebelum digunakan.');
+    }
+
+    public function storeQuizQuestion(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'academy_quiz_id' => ['required','integer','exists:academy_quizzes,id'],
+            'prompt' => ['required','string','max:3000'],
+            'points' => ['required','integer','min:1','max:100'],
+            'explanation' => ['nullable','string','max:3000'],
+            'options' => ['required','array','min:2','max:6'],
+            'options.*' => ['required','string','max:1000'],
+            'correct_option' => ['required','integer','min:0','max:5'],
+        ]);
+        $quiz = AcademyQuiz::with('lesson.module.program')->findOrFail($data['academy_quiz_id']);
+        $this->own($request, $quiz->lesson->module->program);
+        abort_unless(array_key_exists((int) $data['correct_option'], $data['options']), 422, 'Jawaban benar harus menunjuk salah satu opsi.');
+        $question = $quiz->questions()->create([
+            'question_type' => 'multiple_choice', 'prompt' => $data['prompt'], 'points' => $data['points'],
+            'sort_order' => (int) $quiz->questions()->max('sort_order') + 1, 'explanation' => $data['explanation'] ?? null,
+        ]);
+        foreach (array_values($data['options']) as $index => $label) {
+            $question->options()->create(['label' => $label, 'is_correct' => $index === (int) $data['correct_option'], 'sort_order' => $index + 1]);
+        }
+        return back()->with('success', 'Pertanyaan kuis ditambahkan.');
+    }
+
+    public function destroyQuizQuestion(Request $request, AcademyQuizQuestion $question): RedirectResponse
+    {
+        $question->load('quiz.lesson.module.program');
+        $this->own($request, $question->quiz->lesson->module->program);
+        $question->delete();
+        return back()->with('success', 'Pertanyaan kuis dihapus.');
+    }
+
+    public function storeWorksheet(Request $request): RedirectResponse
+    {
+        $data = $request->validate([
+            'academy_lesson_id' => ['required','integer','exists:academy_lessons,id'],
+            'title' => ['required','string','max:180'],
+            'instructions' => ['nullable','string','max:5000'],
+            'completion_mode' => ['required', Rule::in(['reflection','self_check'])],
+            'is_required' => ['nullable','boolean'],
+            'status' => ['required', Rule::in(['draft','published'])],
+        ]);
+        $lesson = $this->academyResource($request, 'lesson', (int) $data['academy_lesson_id']);
+        $data['is_required'] = $request->boolean('is_required');
+        AcademyWorksheet::updateOrCreate(['academy_lesson_id' => $lesson->id], $data);
+        return back()->with('success', 'Worksheet materi disimpan.');
+    }
+
+    private function academyResource(Request $request, string $type, int $id): AcademyLesson|AcademyLearningPath
+    {
+        if ($type === 'lesson') {
+            $lesson = AcademyLesson::with('module.program')->findOrFail($id);
+            $this->own($request, $lesson->module->program);
+            return $lesson;
+        }
+        $path = AcademyLearningPath::findOrFail($id);
+        abort_unless((int) $path->institution_id === (int) $request->user()->institution_id, 404);
+        return $path;
+    }
+
+    private function createsPrerequisiteCycle(int $institutionId, string $subjectType, int $subjectId, string $requiredType, int $requiredId): bool
+    {
+        $queue = [[$requiredType, $requiredId]];
+        $seen = [];
+        while ($queue !== []) {
+            [$type, $id] = array_shift($queue);
+            $key = $type.':'.$id;
+            if (isset($seen[$key])) continue;
+            $seen[$key] = true;
+            if ($type === $subjectType && $id === $subjectId) return true;
+            $dependencies = AcademyPrerequisite::query()->where('institution_id', $institutionId)->where('subject_type', $type)->where('subject_id', $id)->get();
+            foreach ($dependencies as $dependency) $queue[] = [$dependency->required_type, (int) $dependency->required_id];
+        }
+        return false;
     }
 
     private function own(Request $request, AcademyProgram $program): void { abort_unless((int)$program->institution_id===(int)$request->user()->institution_id,404); }
