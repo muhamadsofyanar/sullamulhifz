@@ -1,0 +1,11 @@
+SULLAMUL HIFZ v2.6.3 — ALL MARHALAH PORTION ENGINE
+
+1. Backup database dan storage.
+2. Upload seluruh ISI folder sullamulhifz-v2.6.3 ke root repository GitHub main.
+3. Commit dan push.
+4. Redeploy di Coolify.
+5. AUTO_MIGRATE=true akan menambahkan kolom mushaf_end_page_number pada memorization_targets.
+6. Tidak ada perubahan Environment yang diperlukan.
+7. Setelah deploy, buka Guru > Qur’an Journey. Porsi Juz 27/26/1–25 sekarang menggunakan selector Mushaf, bukan input ayat manual.
+
+Validasi produksi Fase 4 tetap terpisah dari implementasi source.

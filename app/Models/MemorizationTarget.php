@@ -14,7 +14,7 @@ class MemorizationTarget extends Model
     protected $fillable = [
         'institution_id','academic_year_id','student_id','learning_group_id','assigned_by_teacher_id',
         'quran_rubu_id','quran_journey_portion_id','surah_id','start_verse','end_verse','marhalah_type_id','journey_juz_number','portion_confirmed','portion_note',
-        'mushaf_page_number','mushaf_start_line','mushaf_end_line','start_word_location','end_word_location','target_type','status',
+        'mushaf_page_number','mushaf_end_page_number','mushaf_start_line','mushaf_end_line','start_word_location','end_word_location','target_type','status',
         'target_date','due_date','completed_at','notes',
     ];
 

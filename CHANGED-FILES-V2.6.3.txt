@@ -1,0 +1,21 @@
+SULLAMUL HIFZ v2.6.3 — CHANGED FILES
+
+NEW
+- app/Services/MushafPageService.php
+- database/migrations/2026_08_08_001700_mushaf_page_engine_v263.php
+- tests/Feature/QuranJourneyAllMarhalahV263Test.php
+- docs/PHASE-04-ALL-MARHALAH-V2.6.3.md
+- UPGRADE-V2.6.3.md
+- DEPLOY-QUICK-V2.6.3.txt
+
+UPDATED
+- RELEASE
+- app/Http/Controllers/Teacher/QuranJourneyController.php
+- app/Models/MemorizationTarget.php
+- app/Services/QuranJourneyService.php
+- app/Services/RoadmapStatusService.php
+- database/seeders/QuranJourneyV260Seeder.php
+- resources/views/admin/launch-readiness/index.blade.php
+- resources/views/teacher/quran-journey/student.blade.php
+- resources/views/teacher/tahfizh/student.blade.php
+- routes/web.php

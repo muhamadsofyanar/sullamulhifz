@@ -17,6 +17,7 @@ use App\Models\StudentMarhalahHistory;
 use App\Models\TeacherAssignment;
 use App\Services\QuranJourneyService;
 use App\Services\MushafLineService;
+use App\Services\MushafPageService;
 use App\Services\QuranProgramService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -30,6 +31,7 @@ class QuranJourneyController extends Controller
         private readonly QuranJourneyService $journey,
         private readonly QuranProgramService $programs,
         private readonly MushafLineService $mushafLines,
+        private readonly MushafPageService $mushafPagesService,
     ) {
     }
 
@@ -58,17 +60,22 @@ class QuranJourneyController extends Controller
         $mushafPages = collect();
         $selectedMushafPage = null;
         $mushafLineBlocks = [];
+        $mushafPageOptions = [];
         $profile = $summary['profile'];
         $rule = $summary['rule'];
-        if ($profile && ($rule['unit'] ?? null) === 'line') {
+        if ($profile && in_array(($rule['unit'] ?? null), ['line','page'], true)) {
             $juz = (int) $profile->current_juz_number;
             $mushafPages = $this->mushafLines->pagesForJuz($juz);
             $requestedPage = (int) $request->query('mushaf_page', 0);
             $selectedMushafPage = $mushafPages->contains($requestedPage) ? $requestedPage : $mushafPages->first();
             if ($selectedMushafPage) {
                 try {
-                    $this->mushafLines->syncPage((int) $selectedMushafPage);
-                    $mushafLineBlocks = $this->mushafLines->blocksForPage((int)$selectedMushafPage, (int)$rule['value'], $juz);
+                    if (($rule['unit'] ?? null) === 'line') {
+                        $this->mushafLines->syncPage((int) $selectedMushafPage);
+                        $mushafLineBlocks = $this->mushafLines->blocksForPage((int)$selectedMushafPage, (int)$rule['value'], $juz);
+                    } else {
+                        $mushafPageOptions = $this->mushafPagesService->optionsForStage($juz, (float)$rule['value'], (int)$selectedMushafPage);
+                    }
                     $lineStatus = $this->mushafLines->status();
                 } catch (\Throwable $exception) {
                     report($exception);
@@ -105,6 +112,7 @@ class QuranJourneyController extends Controller
             'mushafPages'=>$mushafPages,
             'selectedMushafPage'=>$selectedMushafPage,
             'mushafLineBlocks'=>$mushafLineBlocks,
+            'mushafPageOptions'=>$mushafPageOptions,
         ]);
     }
 
@@ -190,6 +198,28 @@ class QuranJourneyController extends Controller
             $data['scheduled_for'] ?? null,$data['due_date'] ?? null,$data['notes'] ?? null,
         );
         return back()->with('success','Porsi Mushaf dibuat dari halaman '.$portion->start_page_number.' baris '.$portion->start_line_number.'–'.$portion->end_line_number.'. Target Tahfizh terhubung otomatis.');
+    }
+
+    public function storePagePortion(Request $request, Student $student): RedirectResponse
+    {
+        $this->authorizeStudent($request,$student);
+        $teacher = $request->user()->teacher;
+        abort_unless($teacher,403);
+        $data = $request->validate([
+            'page_number'=>['required','integer','between:1,604'],
+            'variant'=>['required',Rule::in(['half-top','half-bottom','page','two-pages'])],
+            'scheduled_for'=>['nullable','date'],
+            'due_date'=>['nullable','date','after_or_equal:today'],
+            'notes'=>['nullable','string','max:3000'],
+        ]);
+        $portion = $this->mushafPagesService->createPagePortion(
+            $student,$teacher,(int)$data['page_number'],$data['variant'],
+            $data['scheduled_for'] ?? null,$data['due_date'] ?? null,$data['notes'] ?? null,
+        );
+        $range = $portion->start_page_number === $portion->end_page_number
+            ? 'halaman '.$portion->start_page_number
+            : 'halaman '.$portion->start_page_number.'–'.$portion->end_page_number;
+        return back()->with('success','Porsi '.$portion->portion_label.' dibuat dari '.$range.' dan target Tahfizh terhubung otomatis.');
     }
 
     public function milestone(Request $request, Student $student): RedirectResponse

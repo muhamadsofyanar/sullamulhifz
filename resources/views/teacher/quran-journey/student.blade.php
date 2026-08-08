@@ -81,9 +81,9 @@ $purposeLabel = ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawa
     </details>
     @endif
     @if(($rule['unit'] ?? null)==='line')
-        <div class="alert info"><strong>Mushaf Line Engine aktif.</strong> Tsalātsiyyah/Khamsiyyah mengikuti slot fisik halaman Mushaf Madinah: blok 3/5 baris tetap. Nama surah atau basmalah yang menempati slot halaman tetap dihitung pada posisi fisiknya; batas hafalan disimpan sampai tingkat kata agar tidak dipaksa menjadi satu ayat penuh.</div>
+        <div class="alert info"><strong>Porsi berbasis Mushaf Madinah.</strong> Tsalātsiyyah/Khamsiyyah mengikuti blok fisik 3/5 baris. Nama surah dan basmalah tetap dihitung pada posisi fisiknya; batas bacaan disimpan sampai tingkat kata.</div>
     @elseif(($rule['unit'] ?? null)==='page')
-        <div class="alert info">Porsi {{ $rule['portion'] }} mengikuti halaman Mushaf Madinah. Guru tetap memastikan titik awal/akhir sesuai halaman yang dipakai.</div>
+        <div class="alert info"><strong>Porsi berbasis halaman Mushaf Madinah.</strong> Niṣfiyyah memakai dua bagian visual tetap dalam satu halaman, Ṣafḥah satu halaman penuh, dan Ṣafḥatayn dua halaman berurutan.</div>
     @endif
 </section>
 
@@ -145,6 +145,82 @@ $purposeLabel = ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawa
                         <div class="alert warning">Blok fisik ini menyentuh batas Juz. Sistem tidak membuat target otomatis; guru menyelesaikan batas Juz terlebih dahulu agar Marhalah tidak tercampur.</div>
                     @else
                         <div class="alert warning">Blok ini belum memiliki batas kata yang lengkap dan tidak dapat dipilih.</div>
+                    @endif
+                </div>
+            @endforeach
+            </div>
+        @endif
+    @elseif(($rule['unit'] ?? null)==='page')
+        @php
+            $pageValue = (float) $rule['value'];
+            $pagePattern = abs($pageValue-0.5) < 0.001
+                ? '½ halaman: bagian atas slot 1–8 atau bagian bawah slot 9–15'
+                : (abs($pageValue-1.0) < 0.001 ? '1 halaman penuh: slot 1–15' : '2 halaman berurutan: 15 + 15 slot fisik');
+        @endphp
+        <div class="stats-grid two" style="margin-bottom:14px">
+            <div class="stat-card"><span>Layout Mushaf</span><strong>{{ $mushafLineStatus['pages'] ?? 0 }}/604 halaman</strong><small>{{ ($mushafLineStatus['complete'] ?? false) ? 'Tersinkron penuh' : 'Sinkronisasi bertahap / on-demand' }}</small></div>
+            <div class="stat-card"><span>Pola {{ $profile->marhalah?->name }}</span><strong>{{ $rule['portion'] }}</strong><small>{{ $pagePattern }}</small></div>
+        </div>
+
+        @if($mushafPages->isNotEmpty())
+        <form method="get" action="{{ route('teacher.quran-journey.student',$student) }}" class="inline-form" style="margin-bottom:14px">
+            <label style="flex:1">Halaman pada Juz {{ $profile->current_juz_number }}
+                <select name="mushaf_page" onchange="this.form.submit()">
+                    @foreach($mushafPages as $page)<option value="{{ $page }}" @selected((int)$selectedMushafPage===(int)$page)>Halaman {{ $page }}</option>@endforeach
+                </select>
+            </label>
+            <noscript><button class="button secondary">Tampilkan halaman</button></noscript>
+        </form>
+        @endif
+
+        @if(empty($mushafPageOptions))
+            <div class="alert warning">Pemetaan halaman ini belum siap. Sistem mencoba sinkronisasi halaman Mushaf saat dibuka.</div>
+        @else
+            <div class="cards-list">
+            @foreach($mushafPageOptions as $option)
+                <div class="item-card static" style="display:block">
+                    <div class="section-head" style="margin-bottom:8px">
+                        <div>
+                            <strong>{{ $option['label'] }} · @if($option['start_page']===$option['end_page'])Halaman {{ $option['start_page'] }}@else Halaman {{ $option['start_page'] }}–{{ $option['end_page'] }}@endif</strong>
+                            <small>
+                                @if($option['variant']==='half-top')Bagian atas · slot 1–8
+                                @elseif($option['variant']==='half-bottom')Bagian bawah · slot 9–15
+                                @elseif($option['variant']==='page')Satu halaman fisik · slot 1–15
+                                @else Dua halaman fisik berurutan · 30 slot @endif
+                                @if($option['boundary_adjusted']) · porsi batas Juz@endif
+                            </small>
+                        </div>
+                        <span class="badge">{{ $option['available'] ? 'Siap dipilih' : 'Belum tersedia' }}</span>
+                    </div>
+
+                    <details>
+                        <summary>Lihat susunan baris Mushaf</summary>
+                        <div class="cards-list" style="margin-top:8px">
+                        @foreach($option['lines'] as $line)
+                            <div class="list-row"><div><strong>H{{ $line['page'] }} · {{ $line['line_number'] }}</strong>
+                                @if($line['type']==='ayah')<small>{{ $line['text'] ?: $line['verse_range'] }}</small>
+                                @elseif($line['type']==='surah_name')<small>Nama Surah · {{ $line['text'] }}</small>
+                                @elseif($line['type']==='basmallah')<small>Basmalah · {{ $line['text'] }}</small>
+                                @else<small>{{ $line['type'] }} · {{ $line['text'] }}</small>@endif
+                            </div></div>
+                        @endforeach
+                        </div>
+                    </details>
+
+                    @if($option['available'])
+                        <p class="hint">
+                            Rentang target: {{ $option['start_surah_id'] }}:{{ $option['start_verse'] }} → {{ $option['end_surah_id'] }}:{{ $option['end_verse'] }}.
+                            @if($option['first_word_location'] && $option['last_word_location']) Batas kata: {{ $option['first_word_location'] }} → {{ $option['last_word_location'] }}.@endif
+                            @if($option['boundary_adjusted']) Porsi ini berada di batas Juz; sistem hanya mengambil ayat yang termasuk Juz {{ $profile->current_juz_number }} dan tidak menyeberang ke Juz lain.@endif
+                        </p>
+                        <form class="stack compact" method="post" action="{{ route('teacher.quran-journey.page-portions.store',$student) }}">@csrf
+                            <input type="hidden" name="page_number" value="{{ $option['start_page'] }}"><input type="hidden" name="variant" value="{{ $option['variant'] }}">
+                            <div class="form-grid"><label>Rencana mulai<input type="date" name="scheduled_for"></label><label>Batas fleksibel<input type="date" name="due_date"></label></div>
+                            <label>Catatan<textarea name="notes" rows="2" placeholder="Opsional: arahan khusus untuk porsi ini"></textarea></label>
+                            <button class="button primary">Gunakan {{ $option['label'] }} & buat target Tahfizh</button>
+                        </form>
+                    @else
+                        <div class="alert warning">Porsi ini belum dapat dipilih karena slot Mushaf atau batas ayatnya belum lengkap.</div>
                     @endif
                 </div>
             @endforeach

@@ -396,6 +396,11 @@ class QuranJourneyService
                 'teacher_confirmed'=>'Tsalātsiyyah/Khamsiyyah wajib dibuat melalui Mushaf Line Engine agar batas 3/5 baris dan lokasi kata tersimpan tepat.',
             ]);
         }
+        if (($rule['unit'] ?? null) === 'page') {
+            throw ValidationException::withMessages([
+                'teacher_confirmed'=>'Niṣfiyyah/Ṣafḥah/Ṣafḥatayn wajib dibuat melalui Mushaf Page Engine agar batas ½/1/2 halaman mengikuti halaman fisik Mushaf Madinah.',
+            ]);
+        }
         $marhalah = $this->marhalahForJuz($juz);
         if (! $marhalah) {
             throw ValidationException::withMessages(['start_surah_id'=>'Master Marhalah untuk Juz ini belum tersedia.']);

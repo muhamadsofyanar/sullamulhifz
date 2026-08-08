@@ -132,6 +132,11 @@ class RoadmapStatusService
                         && app(\App\Services\MushafLineService::class)->coverageForJuz(29)['complete']
                         && app(\App\Services\MushafLineService::class)->coverageForJuz(28)['complete'],
                 ], [
+                    'label' => 'Mushaf Page Engine mendukung Niṣfiyyah, Ṣafḥah, dan Ṣafḥatayn',
+                    'passed' => class_exists(\App\Services\MushafPageService::class)
+                        && method_exists(\App\Services\MushafPageService::class, 'createPagePortion')
+                        && Schema::hasColumn('memorization_targets','mushaf_end_page_number'),
+                ], [
                     'label' => 'Pembagian mushaf nyata tersedia: 30 juz, 60 hizb, 240 rubu‘',
                     'passed' => Schema::hasTable('quran_division_units')
                         && \App\Models\QuranDivisionUnit::query()->where('unit_type','juz')->count() >= 30
@@ -153,10 +158,10 @@ class RoadmapStatusService
                         && is_file(resource_path('views/quran-journey/academy.blade.php')),
                 ]]),
                 $this->manualCriteria($institutionId, [
-                    'phase4_marhalah_flow', 'phase4_mushaf_line_blocks', 'phase4_milestone_retention', 'phase4_khatam_30',
+                    'phase4_marhalah_flow', 'phase4_mushaf_line_blocks', 'phase4_all_marhalah_portions', 'phase4_milestone_retention', 'phase4_khatam_30',
                     'phase4_fami_bisyauqin', 'phase4_heritage_terms', 'phase4_guardian_visibility', 'phase4_academy_journey', 'phase4_mobile_workflow',
                 ]),
-                'Validasi jalur Juz–Marhalah, blok fisik 3/5 baris Mushaf, milestone/penjagaan, dua program khatam, literasi mushaf, wali, dan mobile sebelum 100%.',
+                'Validasi seluruh Marhalah Āyah sampai Ṣafḥatayn, milestone/penjagaan, dua program khatam, literasi mushaf, wali, dan mobile sebelum 100%.',
             ),
             5 => $this->phase(
                 5,
