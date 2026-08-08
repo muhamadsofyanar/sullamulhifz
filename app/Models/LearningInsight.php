@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class LearningInsight extends Model
 {
@@ -12,4 +13,5 @@ class LearningInsight extends Model
 
     public function student(): BelongsTo { return $this->belongsTo(Student::class); }
     public function creator(): BelongsTo { return $this->belongsTo(User::class, 'created_by_user_id'); }
+    public function recommendationReview(): HasOne { return $this->hasOne(LearningRecommendationReview::class, 'learning_insight_id'); }
 }

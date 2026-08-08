@@ -118,6 +118,9 @@
                 <a href="{{ route('teacher.learning-plan.index') }}" class="{{ request()->routeIs('teacher.learning-plan.*') ? 'active' : '' }}">
                     <x-icon name="guidance"/><span>Target & Profil</span>
                 </a>
+                <a href="{{ route('teacher.personal-learning.index') }}" class="{{ request()->routeIs('teacher.personal-learning.*') ? 'active' : '' }}">
+                    <x-icon name="growth"/><span>Personalisasi Belajar</span>
+                </a>
                 @if(\App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id))
                 <a href="{{ route('teacher.academy.index') }}" class="{{ request()->routeIs('teacher.academy.*') ? 'active' : '' }}">
                     <x-icon name="lesson"/><span>Academy & Keluarga</span>

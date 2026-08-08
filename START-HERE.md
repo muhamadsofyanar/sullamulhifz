@@ -1,14 +1,14 @@
-# MULAI DI SINI — v2.8.0
+# MULAI DI SINI — v2.9.0
 
-Rilis aktif adalah **v2.8.0 — Family & Teacher Ecosystem**.
+Rilis aktif adalah **v2.9.0 — Personal Learning System**.
 
 Baca berurutan:
-1. `UPGRADE-V2.8.0.md`
-2. `DEPLOY-QUICK-V2.8.0.txt`
-3. `docs/PHASE-06-FAMILY-TEACHER-V2.8.0.md`
+1. `UPGRADE-V2.9.0.md`
+2. `DEPLOY-QUICK-V2.9.0.txt`
+3. `docs/PHASE-07-PERSONAL-LEARNING-V2.9.0.md`
 4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-v2.8.0 menutup gap implementasi utama Fase 6: aktivitas keluarga terstruktur dan kompetensi/pelatihan guru. Keduanya menggunakan refleksi dan status proses, bukan skor/ranking. Fase 6 baru 100% setelah alur Parent↔Teacher dan guardrail STIFIn benar-benar divalidasi di produksi.
+v2.9.0 mengaktifkan Fase 7: evidence belajar → draf rekomendasi → teacher override. STIFIn tidak menjadi input mesin rekomendasi. Dua gate manual Fase 6 yang ditunda tetap berstatus pending dan tidak dianggap lulus otomatis karena pengembangan sudah bergerak ke Fase 7.
 
 ---
 

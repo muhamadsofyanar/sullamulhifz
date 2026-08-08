@@ -1,3 +1,14 @@
+# v2.9.0 — Personal Learning System — 2026-08-08
+
+- Mengaktifkan Fase 7 sebagai workflow personalisasi berbasis evidence dengan keputusan akhir tetap pada guru.
+- Menambah halaman Guru `Personalisasi Belajar` untuk memilih santri ampuan, melihat observasi, membuat draf rekomendasi, lalu menerima/mengubah/menolaknya.
+- Menambah `PersonalLearningRecommendationService` yang hanya memakai observasi belajar, setoran Tahfizh, dan Murāja‘ah sebagai evidence.
+- Menambah audit `learning_recommendation_reviews` untuk menyimpan rekomendasi awal, keputusan guru, rekomendasi final dan alasan review.
+- Menambah tenant/assignment guard agar guru tidak dapat membuat atau mereview rekomendasi santri di luar penugasannya.
+- STIFIn tidak dipakai sebagai input mesin rekomendasi; verifier produksi gagal bila evidence atau isi rekomendasi membawa STIFIn.
+- Menambah command `sullam:verify-personal-learning` dan regression test Fase 7.
+- Fase 6 tetap dipertahankan; dua gate manual keamanan lintas pengguna dan guardrail STIFIn Fase 6 tetap tercatat pending sampai diuji.
+
 # v2.8.0 — Family & Teacher Ecosystem — 2026-08-08
 
 - Menambah aktivitas keluarga terstruktur: guru memilih santri, aktivitas, instruksi, tenggat opsional dan materi Parent Academy opsional.

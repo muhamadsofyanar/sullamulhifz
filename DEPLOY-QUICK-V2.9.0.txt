@@ -1,0 +1,14 @@
+SULLAMUL HIFZ v2.9.0 — PERSONAL LEARNING SYSTEM
+
+1. Backup database + persistent storage.
+2. Upload seluruh ISI paket v2.9.0 ke root repository GitHub branch main.
+3. Tunggu GitHub Actions Tests + Release Documentation Check hijau.
+4. Coolify: Post-deployment Command kosong; AUTO_MIGRATE=true.
+5. Redeploy SATU KALI.
+6. Cek /up = HTTP 200 dan cat RELEASE = v2.9.0.
+7. Cek migrate:status -> 2026_08_08_002000_personal_learning_system_v290 = Ran.
+8. Jalankan php artisan sullam:verify-personal-learning.
+9. Smoke test Guru -> Observasi -> Susun Rekomendasi -> Terima/Ubah/Tolak.
+10. Pastikan guard assignment guru dan guardrail STIFIn tetap berlaku.
+
+Jangan menjalankan migrate:fresh, db:wipe, atau rollback database produksi tanpa backup dan rencana pemulihan.

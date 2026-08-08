@@ -24,7 +24,7 @@ use App\Services\MushafLineService;
 
 Artisan::command('sullam:about', function (): void {
     $release = trim((string) @file_get_contents(base_path('RELEASE'))) ?: 'unknown';
-    $this->info('Sullamul Hifz '.$release.' — Family & Teacher Ecosystem.');
+    $this->info('Sullamul Hifz '.$release.' — Personal Learning System.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -597,5 +597,40 @@ Artisan::command('sullam:verify-family-teacher', function (): int {
     $this->info('Struktur Family & Teacher Ecosystem v2.8.0 siap. Validasi alur Parent↔Teacher dan guardrail STIFIn tetap harus dilakukan manual di produksi.');
     return 0;
 })->purpose('Memeriksa struktur Family & Teacher Ecosystem v2.8.0');
+
+Artisan::command('sullam:verify-personal-learning', function (): int {
+    $required = ['learning_observations','learning_insights','student_marhalah_histories','learning_recommendation_reviews'];
+    $missing = collect($required)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Personal Learning System belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+    if (! class_exists(\App\Services\PersonalLearningRecommendationService::class)) {
+        $this->error('PersonalLearningRecommendationService tidak tersedia.');
+        return 1;
+    }
+
+    $recommendations = \App\Models\LearningInsight::query()->where('insight_type','personal_recommendation');
+    $stifinLeaks = (clone $recommendations)->where(function ($query): void {
+        $query->whereRaw('LOWER(title) LIKE ?', ['%stifin%'])
+            ->orWhereRaw('LOWER(summary) LIKE ?', ['%stifin%'])
+            ->orWhereRaw('LOWER(CAST(evidence AS CHAR)) LIKE ?', ['%stifin%']);
+    })->count();
+
+    $this->table(['Komponen','Jumlah'], [
+        ['Observasi belajar', \App\Models\LearningObservation::query()->count()],
+        ['Rekomendasi personal', (clone $recommendations)->count()],
+        ['Review/override guru', \App\Models\LearningRecommendationReview::query()->count()],
+        ['Evidence/rekomendasi memuat STIFIn', $stifinLeaks],
+    ]);
+
+    if ($stifinLeaks > 0) {
+        $this->error('Guardrail gagal: ditemukan rekomendasi personal yang membawa STIFIn sebagai evidence/isi rekomendasi.');
+        return 1;
+    }
+
+    $this->info('Struktur Personal Learning System v2.9.0 siap. Teacher override tetap harus dibuktikan melalui smoke test produksi.');
+    return 0;
+})->purpose('Memeriksa Fase 7 Personal Learning System v2.9.0 dan guardrail evidence');
 
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();

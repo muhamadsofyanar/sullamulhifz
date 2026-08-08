@@ -42,6 +42,7 @@ use App\Http\Controllers\Teacher\ClassroomController;
 use App\Http\Controllers\Teacher\DailyOperationsController;
 use App\Http\Controllers\Teacher\MeetingController;
 use App\Http\Controllers\Teacher\LearningPlanController;
+use App\Http\Controllers\Teacher\PersonalLearningController;
 use App\Http\Controllers\Teacher\TahfizhController;
 use App\Http\Controllers\Teacher\QuranJourneyController as TeacherQuranJourneyController;
 use Illuminate\Http\Request;
@@ -309,6 +310,10 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         Route::post('/learning-plan/targets', [LearningPlanController::class, 'storeTarget'])->middleware('permission:learning.manage')->name('learning-plan.targets.store');
         Route::put('/learning-plan/targets/{target}', [LearningPlanController::class, 'updateTarget'])->middleware('permission:learning.manage')->name('learning-plan.targets.update');
         Route::post('/learning-plan/observations', [LearningPlanController::class, 'storeObservation'])->middleware('permission:learning.manage')->name('learning-plan.observations.store');
+
+        Route::get('/personal-learning', [PersonalLearningController::class, 'index'])->middleware('permission:learning.manage')->name('personal-learning.index');
+        Route::post('/personal-learning/{student}/recommendations', [PersonalLearningController::class, 'generate'])->middleware('permission:learning.manage')->name('personal-learning.recommendations.generate');
+        Route::put('/personal-learning/recommendations/{insight}', [PersonalLearningController::class, 'review'])->middleware('permission:learning.manage')->name('personal-learning.recommendations.review');
 
         Route::get('/quran-journey', [TeacherQuranJourneyController::class, 'index'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.index');
         Route::get('/quran-journey/students/{student}', [TeacherQuranJourneyController::class, 'student'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.student');
