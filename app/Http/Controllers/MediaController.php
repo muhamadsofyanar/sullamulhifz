@@ -8,6 +8,8 @@ use App\Models\AssignmentSubmission;
 use App\Models\FridayDevelopmentSession;
 use App\Models\LiaisonMessage;
 use App\Models\MediaAsset;
+use App\Models\QuranGuidedSubmission;
+use App\Models\QuranGuidedSubmissionReview;
 use App\Services\ContentAudienceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -65,6 +67,48 @@ class MediaController extends Controller
         }
 
         return $this->storedFile('local', $message->file_path, $message->mime_type, $message->original_name ?: 'lampiran');
+    }
+
+    public function guidedSubmission(Request $request, QuranGuidedSubmission $guidedSubmission): BinaryFileResponse
+    {
+        $guidedSubmission->load(['audioAsset', 'enrollment.program.reviewers']);
+        $program = $guidedSubmission->enrollment?->program;
+        abort_unless($program && $guidedSubmission->audioAsset, 404);
+
+        $user = $request->user();
+        $isLearner = (int) $guidedSubmission->learner_user_id === (int) $user->id
+            && (int) $guidedSubmission->learner_institution_id === (int) $user->institution_id;
+        $isAssignedReviewer = $program->reviewers
+            ->where('status', 'active')
+            ->contains(fn ($row) => (int) $row->reviewer_user_id === (int) $user->id);
+        $isProviderManager = $user->hasAnyRole(['institution_admin', 'head'])
+            && (int) $program->provider_institution_id === (int) $user->institution_id;
+
+        abort_unless($this->isSystemSuperadmin($user) || $isLearner || $isAssignedReviewer || $isProviderManager, 403);
+        if ($isProviderManager || $this->isSystemSuperadmin($user)) {
+            $this->auditPrivilegedView($request, $guidedSubmission, (int) $guidedSubmission->learner_institution_id);
+        }
+
+        return $this->assetFile($guidedSubmission->audioAsset);
+    }
+
+    public function guidedFeedback(Request $request, QuranGuidedSubmissionReview $guidedReview): BinaryFileResponse
+    {
+        $guidedReview->load(['feedbackAudio', 'submission.enrollment.program.reviewers']);
+        $submission = $guidedReview->submission;
+        $program = $submission?->enrollment?->program;
+        abort_unless($program && $guidedReview->feedbackAudio, 404);
+
+        $user = $request->user();
+        $isLearner = (int) $submission->learner_user_id === (int) $user->id
+            && (int) $submission->learner_institution_id === (int) $user->institution_id;
+        $isReviewer = (int) $guidedReview->reviewer_user_id === (int) $user->id
+            || $program->reviewers->where('status', 'active')->contains(fn ($row) => (int) $row->reviewer_user_id === (int) $user->id);
+        $isProviderManager = $user->hasAnyRole(['institution_admin', 'head'])
+            && (int) $program->provider_institution_id === (int) $user->institution_id;
+
+        abort_unless($this->isSystemSuperadmin($user) || $isLearner || $isReviewer || $isProviderManager, 403);
+        return $this->assetFile($guidedReview->feedbackAudio);
     }
 
     public function announcement(Request $request, Announcement $announcement): BinaryFileResponse

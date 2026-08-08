@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v3.0.0 — Public Self-Registration + Personal Mode**.
+Rilis kandidat: **v3.1.0 — Guided Quran Learning**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajaran Al-Qur’an, operasional lembaga, tugas rumah, komunikasi guru–wali, dan perjalanan perkembangan santri. TPA Al-Insyirah menjadi implementasi pertama, sementara fondasinya disiapkan untuk cabang dan lembaga lain.
 
@@ -54,4 +54,4 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - pertahankan persistent volume `storage/app` saat mengganti image/container;
 - aktifkan SMTP agar reset kata sandi dapat dikirim melalui email.
 
-Upgrade v3.0.0 bersifat additive terhadap v2.9.0. Data lembaga tetap dipertahankan; Personal memakai workspace privat internal agar fondasi tenant yang sudah stabil tidak dibongkar.
+Upgrade v3.1.0 bersifat additive terhadap v3.0.0. Data lembaga dan workspace Personal tetap dipertahankan; setoran program menggunakan relasi eksplisit agar reviewer hanya menerima bukti yang memang dikirim peserta.

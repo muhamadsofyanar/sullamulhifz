@@ -8,6 +8,7 @@ use App\Models\AcademyModule;
 use App\Models\AcademyProgram;
 use App\Models\AcademyRecommendation;
 use App\Models\AcademyCertificate;
+use App\Models\GuidedQuranEnrollment;
 use App\Models\QuranAudioSource;
 use App\Models\QuranPracticePreset;
 use App\Services\AcademyLmsService;
@@ -358,13 +359,30 @@ class AcademyController extends Controller
     private function programsFor(Request $request): Collection
     {
         $institutionId = (int) $request->user()->institution_id;
-        $programs = AcademyProgram::query()
+        $query = AcademyProgram::query()
             ->with([
                 'modules' => fn ($q) => $q->where('status', 'published')->orderBy('sort_order'),
                 'modules.lessons' => fn ($q) => $q->where('status', 'published')->orderBy('sort_order'),
             ])
-            ->where('institution_id', $institutionId)
-            ->where('status', 'published')
+            ->where('status', 'published');
+
+        if ($request->user()->hasRole('personal')) {
+            $sharedProgramIds = GuidedQuranEnrollment::query()
+                ->where('learner_institution_id', $institutionId)
+                ->where('learner_user_id', $request->user()->id)
+                ->where('status', 'active')
+                ->whereHas('program', fn ($q) => $q->whereNotNull('academy_program_id'))
+                ->with('program:id,academy_program_id')
+                ->get()
+                ->pluck('program.academy_program_id')
+                ->filter()
+                ->unique();
+            $query->whereIn('id', $sharedProgramIds);
+        } else {
+            $query->where('institution_id', $institutionId);
+        }
+
+        $programs = $query
             ->whereIn('audience', $this->audiencesFor($request))
             ->orderByDesc('is_featured')
             ->orderBy('sort_order')
@@ -416,13 +434,26 @@ class AcademyController extends Controller
         if ($user->hasRole('guardian')) {
             $audiences[] = 'guardian';
         }
+        if ($user->hasRole('personal')) {
+            $audiences[] = 'personal';
+        }
 
         return array_values(array_unique($audiences));
     }
 
     private function authorizeProgram(Request $request, AcademyProgram $program): void
     {
-        abort_unless((int) $program->institution_id === (int) $request->user()->institution_id, 404);
+        if ($request->user()->hasRole('personal')) {
+            $allowed = GuidedQuranEnrollment::query()
+                ->where('learner_institution_id', $request->user()->institution_id)
+                ->where('learner_user_id', $request->user()->id)
+                ->where('status', 'active')
+                ->whereHas('program', fn ($q) => $q->where('academy_program_id', $program->id))
+                ->exists();
+            abort_unless($allowed, 404);
+        } else {
+            abort_unless((int) $program->institution_id === (int) $request->user()->institution_id, 404);
+        }
         abort_unless($program->status === 'published' || $request->user()->hasAnyRole(['superadmin', 'institution_admin', 'head']), 404);
         abort_unless(in_array($program->audience, $this->audiencesFor($request), true), 403);
         abort_unless($this->programFeatureEnabled($program, (int) $request->user()->institution_id), 404);

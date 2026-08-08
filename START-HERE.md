@@ -1,6 +1,6 @@
-# MULAI DI SINI — v3.0.0
+# MULAI DI SINI — v3.1.0
 
-Rilis kandidat adalah **v3.0.0 — Public Self-Registration + Personal Mode**.
+Rilis kandidat adalah **v3.1.0 — Guided Quran Learning**.
 
 Baca berurutan:
 1. `UPGRADE-V3.0.0.md`
@@ -8,7 +8,7 @@ Baca berurutan:
 3. `docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md`
 4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-v3.0.0 menambahkan jalur produk Personal setelah Fase 7 stabil: masyarakat dapat mendaftar sendiri, mendapat ruang privat, lalu mengelola perjalanan Qur’annya tanpa terdaftar pada lembaga. Roadmap 10 fase tetap berlaku; dua gate manual Fase 6 yang ditunda tetap pending.
+v3.0.0 membuka jalur Personal. v3.1.0 menghubungkannya dengan murattal, Program Online, Academy terpilih, setoran audio/teks, dan review asatidz. Personal tetap merupakan akun mandiri; mengikuti program tidak otomatis menjadikannya santri lembaga penyelenggara. Roadmap 10 fase tetap berlaku; dua gate manual Fase 6 yang ditunda tetap pending.
 
 ---
 

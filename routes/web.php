@@ -7,6 +7,7 @@ use App\Http\Controllers\Admin\FamilyTeacherController as AdminFamilyTeacherCont
 use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\QuranLibraryController;
 use App\Http\Controllers\Admin\GuardianController;
+use App\Http\Controllers\Admin\GuidedQuranProgramController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LaunchReadinessController;
 use App\Http\Controllers\Admin\PlatformController;
@@ -22,7 +23,9 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountInvitationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\PersonalGuidedLearningController;
 use App\Http\Controllers\PersonalRegistrationController;
+use App\Http\Controllers\GuidedQuranReviewController;
 use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\AcademyExperienceController;
 use App\Http\Controllers\AcademyLmsController;
@@ -154,7 +157,13 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         Route::post('/aktivitas', [PersonalController::class, 'storeActivity'])->middleware('permission:personal.use')->name('activities.store');
         Route::post('/target', [PersonalController::class, 'storeGoal'])->middleware('permission:personal.use')->name('goals.store');
         Route::put('/target/{goal}/selesai', [PersonalController::class, 'completeGoal'])->middleware('permission:personal.use')->name('goals.complete');
+        Route::get('/belajar', [PersonalGuidedLearningController::class, 'index'])->middleware('permission:guided_learning.use')->name('learning.index');
+        Route::post('/program/{program}/ikuti', [PersonalGuidedLearningController::class, 'enroll'])->middleware('permission:guided_learning.use')->name('learning.enroll');
+        Route::post('/program-saya/{enrollment}/setoran', [PersonalGuidedLearningController::class, 'submit'])->middleware('permission:guided_learning.use')->name('learning.submit');
     });
+
+    Route::get('/review-setoran-quran', [GuidedQuranReviewController::class, 'index'])->middleware('permission:guided_learning.review')->name('guided-review.index');
+    Route::put('/review-setoran-quran/{submission}', [GuidedQuranReviewController::class, 'review'])->middleware('permission:guided_learning.review')->name('guided-review.review');
 
     Route::get('/buku-penghubung', [LiaisonController::class, 'index'])->middleware('permission:liaison.view')->name('liaison.index');
     Route::get('/buku-penghubung/buat', [LiaisonController::class, 'create'])->middleware('permission:liaison.manage')->name('liaison.create');
@@ -184,6 +193,8 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::post('/latihan-quran/sesi', [QuranPracticeController::class, 'startSession'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.sessions.start');
     Route::put('/latihan-quran/sesi/{session}/selesai', [QuranPracticeController::class, 'completeSession'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.sessions.complete');
     Route::get('/media/submission/{submission}', [MediaController::class, 'submission'])->middleware('permission:media.view')->name('media.submission');
+    Route::get('/media/guided-submission/{guidedSubmission}', [MediaController::class, 'guidedSubmission'])->name('media.guided-submission');
+    Route::get('/media/guided-feedback/{guidedReview}', [MediaController::class, 'guidedFeedback'])->name('media.guided-feedback');
     Route::get('/media/liaison/{message}', [MediaController::class, 'liaison'])->middleware('permission:media.view')->name('media.liaison');
     Route::get('/media/announcement/{announcement}', [MediaController::class, 'announcement'])->middleware('permission:media.view')->name('media.announcement');
     Route::get('/media/friday/{session}', [MediaController::class, 'friday'])->middleware('permission:media.view')->name('media.friday');
@@ -257,6 +268,11 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::post('/quran-library/sync', [QuranLibraryController::class, 'sync'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.sync');
             Route::post('/quran-library/videos', [QuranLibraryController::class, 'storeVideo'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.videos.store');
             Route::put('/quran-library/videos/{video}', [QuranLibraryController::class, 'updateVideo'])->middleware(['permission:quran.manage','feature:quran_audio'])->name('quran-library.videos.update');
+
+            Route::get('/guided-learning', [GuidedQuranProgramController::class, 'index'])->middleware('permission:guided_learning.manage')->name('guided-learning.index');
+            Route::post('/guided-learning/programs', [GuidedQuranProgramController::class, 'storeProgram'])->middleware('permission:guided_learning.manage')->name('guided-learning.programs.store');
+            Route::post('/guided-learning/programs/{program}/reviewers', [GuidedQuranProgramController::class, 'assignReviewer'])->middleware('permission:guided_learning.manage')->name('guided-learning.reviewers.store');
+            Route::post('/guided-learning/programs/{program}/students', [GuidedQuranProgramController::class, 'enrollStudent'])->middleware('permission:guided_learning.manage')->name('guided-learning.students.store');
 
             Route::get('/launch-readiness', [LaunchReadinessController::class, 'index'])->middleware('permission:features.manage')->name('launch-readiness.index');
             Route::put('/launch-readiness/{launchCheck}', [LaunchReadinessController::class, 'update'])->middleware('permission:features.manage')->name('launch-readiness.update');

@@ -16,6 +16,7 @@ Contoh:
 - v1.3.0 — website publik;
 - v2.0.0 — Academy MVP;
 - v3.0.0 — multi-lembaga.
+- v3.1.0 — Guided Quran Learning lintas Personal/penyelenggara dengan scope eksplisit.
 
 ## 2. Berkas wajib setiap rilis
 

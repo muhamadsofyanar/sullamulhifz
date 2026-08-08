@@ -1,0 +1,11 @@
+SULLAMUL HIFZ v3.1.0 — GUIDED QURAN LEARNING
+
+1. Upload seluruh ISI paket ke root repository GitHub branch main.
+2. Tunggu GitHub Actions/build gate hijau.
+3. Redeploy Coolify satu kali.
+4. Cek /up = HTTP 200 dan cat RELEASE = v3.1.0.
+5. Jalankan: php artisan migrate:status | grep guided_quran_learning
+6. Jalankan: php artisan sullam:verify-guided-quran
+7. Lanjut smoke test Program Online → Personal enroll → setoran audio → review → feedback → verifikasi → akun kedua.
+
+Jangan nyatakan stabil sebelum smoke test produksi selesai.

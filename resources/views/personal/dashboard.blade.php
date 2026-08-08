@@ -41,6 +41,11 @@
         <article><span>Murāja‘ah</span><strong>{{ $week_murajaah_verses }}</strong><small>ayat tercatat</small></article>
     </section>
 
+    <section class="card guided-dashboard-cta">
+        <div><span class="eyebrow">BELAJAR DENGAN ARAH</span><h2>Dari latihan mandiri ke pendampingan asatidz</h2><p class="muted">Dengarkan murattal, ikuti program seperti Tahfizh Juz 30/Tahsin, lalu kirim setoran yang Anda pilih untuk mendapat koreksi teks atau voice note.</p></div>
+        <a class="button primary" href="{{ route('personal.learning.index') }}">Buka Belajar & Audio</a>
+    </section>
+
     <section class="personal-grid-two">
         <div class="card personal-guidance">
             <div class="section-head"><div><span class="eyebrow">HARI INI</span><h2>Apa yang perlu dijaga?</h2></div></div>

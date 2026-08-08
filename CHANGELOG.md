@@ -1,3 +1,16 @@
+# v3.1.0 — Guided Quran Learning — 2026-08-08
+
+- Menambah Learning Hub Personal: murattal Al-Husary/Al-Minshawi, katalog Program Online, setoran dan riwayat feedback dalam satu alur.
+- Menambah Program Al-Qur’an `online`, `offline`, atau `hybrid` untuk Tahfizh, Tahsin, membaca Al-Qur’an, dan Murāja‘ah.
+- Pengguna Personal dapat mengikuti program publik tanpa berubah menjadi santri lembaga penyelenggara; workspace dan jurnal pribadinya tetap terisolasi.
+- Menambah setoran teks atau voice note/audio dengan status `pending`, `revision`, `verified`, atau `rejected`.
+- Menambah reviewer asatidz eksplisit per program serta review teks/audio; admin/kepala penyelenggara tetap dapat menangani antrian program miliknya.
+- Akses media lintas workspace hanya diberikan kepada pengirim, reviewer yang ditugaskan, dan pengelola lembaga penyelenggara; jurnal Personal tidak ikut terbuka.
+- Program dapat dikaitkan ke materi Academy. Pengguna Personal hanya dapat membuka Academy lintas workspace melalui program yang aktif diikutinya.
+- Santri TPA dapat dimasukkan ke program yang sama untuk jalur offline/hybrid; pencatatan pertemuan/Tahfizh offline tetap memakai workflow lembaga yang sudah ada.
+- Menambah permission `guided_learning.use`, `guided_learning.review`, `guided_learning.manage`, verifier `sullam:verify-guided-quran`, dan regression test isolasi enrollment dua akun Personal.
+- Memperbarui Privasi/Syarat agar membedakan self-record Personal dari setoran yang sengaja dibagikan untuk review.
+
 # v3.0.0 — Public Self-Registration + Personal Mode — 2026-08-08
 
 - Membuka pendaftaran mandiri masyarakat melalui `/daftar-personal` tanpa harus bergabung dengan lembaga.

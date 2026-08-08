@@ -671,4 +671,59 @@ Artisan::command('sullam:verify-personal-mode', function (): int {
     return 0;
 })->purpose('Memeriksa Public Self-Registration + Personal Mode v3.0.0');
 
+Artisan::command('sullam:verify-guided-quran', function (): int {
+    $required = [
+        'guided_quran_programs', 'guided_quran_program_reviewers', 'guided_quran_enrollments',
+        'quran_guided_submissions', 'quran_guided_submission_reviews',
+    ];
+    $missing = collect($required)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Guided Quran Learning belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $ownershipIssues = DB::table('quran_guided_submissions as s')
+        ->join('guided_quran_enrollments as e', 'e.id', '=', 's.guided_quran_enrollment_id')
+        ->where(function ($query): void {
+            $query->whereColumn('s.learner_institution_id', '!=', 'e.learner_institution_id')
+                ->orWhereColumn('s.student_id', '!=', 'e.student_id')
+                ->orWhere(function ($q): void {
+                    $q->whereNotNull('e.learner_user_id')->whereColumn('s.learner_user_id', '!=', 'e.learner_user_id');
+                });
+        })->count();
+
+    $reviewerScopeIssues = DB::table('guided_quran_program_reviewers as r')
+        ->join('guided_quran_programs as p', 'p.id', '=', 'r.guided_quran_program_id')
+        ->join('users as u', 'u.id', '=', 'r.reviewer_user_id')
+        ->whereColumn('u.institution_id', '!=', 'p.provider_institution_id')
+        ->count();
+
+    $personalRoleId = DB::table('roles')->where('name', 'personal')->value('id');
+    $personalPermissions = $personalRoleId ? DB::table('role_permissions as rp')
+        ->join('permissions as p', 'p.id', '=', 'rp.permission_id')
+        ->where('rp.role_id', $personalRoleId)
+        ->whereIn('p.name', ['guided_learning.use', 'academy.view', 'quran.view'])
+        ->distinct()->count('p.name') : 0;
+
+    $this->table(['Komponen', 'Jumlah'], [
+        ['Program Al-Qur’an', DB::table('guided_quran_programs')->count()],
+        ['Enrollment program', DB::table('guided_quran_enrollments')->count()],
+        ['Reviewer ditugaskan', DB::table('guided_quran_program_reviewers')->where('status', 'active')->count()],
+        ['Setoran online', DB::table('quran_guided_submissions')->count()],
+        ['Setoran menunggu review', DB::table('quran_guided_submissions')->where('review_status', 'pending')->count()],
+        ['Feedback/review', DB::table('quran_guided_submission_reviews')->count()],
+        ['Masalah ownership setoran', $ownershipIssues],
+        ['Reviewer di luar penyelenggara', $reviewerScopeIssues],
+        ['Izin Personal inti tersedia', $personalPermissions],
+    ]);
+
+    if ($ownershipIssues > 0 || $reviewerScopeIssues > 0 || $personalPermissions !== 3) {
+        $this->error('Guardrail Guided Quran Learning belum lolos. Periksa ownership, reviewer, dan permission Personal.');
+        return 1;
+    }
+
+    $this->info('Struktur Guided Quran Learning v3.1.0 siap. Setoran audio, review asatidz, feedback, dan isolasi dua akun tetap harus dibuktikan lewat smoke test produksi.');
+    return 0;
+})->purpose('Memeriksa program online, setoran, review asatidz, dan guardrail privasi v3.1.0');
+
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();

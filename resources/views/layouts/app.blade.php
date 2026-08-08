@@ -17,6 +17,7 @@
     <link rel="stylesheet" href="/css/app-v240.css?v={{ @filemtime(public_path('css/app-v240.css')) ?: '240' }}">
     <link rel="stylesheet" href="/css/app-v250.css?v={{ @filemtime(public_path('css/app-v250.css')) ?: '250' }}">
     <link rel="stylesheet" href="/css/app-v300.css?v={{ @filemtime(public_path('css/app-v300.css')) ?: '300' }}">
+    <link rel="stylesheet" href="/css/app-v310.css?v={{ @filemtime(public_path('css/app-v310.css')) ?: '310' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
@@ -33,7 +34,8 @@
                 <x-icon name="home"/><span>Beranda</span>
             </a>
             @if(auth()->user()->hasRole('personal'))
-                <a href="{{ route('personal.dashboard') }}#catat" class="{{ request()->routeIs('personal.*') ? 'active' : '' }}"><x-icon name="preservation"/><span>Catat Aktivitas</span></a>
+                <a href="{{ route('personal.learning.index') }}" class="{{ request()->routeIs('personal.learning.*') ? 'active' : '' }}"><x-icon name="listen"/><span>Belajar & Audio</span></a>
+                <a href="{{ route('personal.dashboard') }}#catat" class="{{ request()->routeIs('personal.dashboard') ? 'active' : '' }}"><x-icon name="preservation"/><span>Catat Aktivitas</span></a>
                 <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target Saya</span></a>
                 <a href="{{ route('personal.dashboard') }}#jurnal"><x-icon name="continuity"/><span>Jurnal Perjalanan</span></a>
             @endif
@@ -65,6 +67,14 @@
                 @if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))
                 <a href="{{ route('admin.quran-library.index') }}" class="{{ request()->routeIs('admin.quran-library.*') ? 'active' : '' }}">
                     <x-icon name="audio"/><span>Pustaka Qur’an</span>
+                </a>
+                @endif
+                @if(auth()->user()->hasPermission('guided_learning.manage'))
+                <a href="{{ route('admin.guided-learning.index') }}" class="{{ request()->routeIs('admin.guided-learning.*') ? 'active' : '' }}">
+                    <x-icon name="growth"/><span>Program Online</span>
+                </a>
+                <a href="{{ route('guided-review.index') }}" class="{{ request()->routeIs('guided-review.*') ? 'active' : '' }}">
+                    <x-icon name="listen"/><span>Review Setoran</span>
                 </a>
                 @endif
                 @if(\App\Support\Feature::enabled('parent_academy', auth()->user()->institution_id, true))
@@ -140,6 +150,11 @@
                 <a href="{{ route('teacher.assignments.index') }}" class="{{ request()->routeIs('teacher.assignments.*') ? 'active' : '' }}">
                     <x-icon name="assignment"/><span>Tugas</span>
                 </a>
+                @if(auth()->user()->hasPermission('guided_learning.review'))
+                <a href="{{ route('guided-review.index') }}" class="{{ request()->routeIs('guided-review.*') ? 'active' : '' }}">
+                    <x-icon name="listen"/><span>Review Setoran Online</span>
+                </a>
+                @endif
             @endif
             @if(auth()->user()->hasRole('guardian'))
                 <a href="{{ route('guardian.children.index') }}" class="{{ request()->routeIs('guardian.children.*') ? 'active' : '' }}">
@@ -230,10 +245,10 @@
 </div>
 <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
     @if(auth()->user()->hasRole('personal'))
-        <a href="{{ route('personal.dashboard') }}" class="{{ request()->routeIs('personal.*')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
+        <a href="{{ route('personal.dashboard') }}" class="{{ request()->routeIs('personal.dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
+        <a href="{{ route('personal.learning.index') }}" class="{{ request()->routeIs('personal.learning.*')?'active':'' }}"><x-icon name="listen"/><span>Belajar</span></a>
         <a href="{{ route('personal.dashboard') }}#catat"><x-icon name="preservation"/><span>Catat</span></a>
         <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target</span></a>
-        <a href="{{ route('personal.dashboard') }}#jurnal"><x-icon name="continuity"/><span>Jurnal</span></a>
         <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>
     @elseif(auth()->user()->hasRole('guardian'))
         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
@@ -275,5 +290,6 @@
 @else
     @yield('content')
 @endif
+@stack('scripts')
 </body>
 </html>

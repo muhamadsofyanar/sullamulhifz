@@ -13,7 +13,7 @@
     <div class="public-container registration-choice-grid {{ $admissionsEnabled ? '' : 'single' }}">
         <article class="registration-choice-card featured">
             <span>PERSONAL</span><h2>Saya ingin menggunakan sendiri</h2>
-            <p>Daftar mandiri, tentukan target, catat hafalan dan murāja‘ah, lalu jaga konsistensi dalam ruang privat.</p>
+            <p>Daftar mandiri, tentukan target, catat hafalan dan murāja‘ah, dengarkan Al-Qur’an, dan bila ingin pendampingan ikuti Program Online dengan review asatidz.</p>
             <a class="public-button primary" href="{{ route('personal.register') }}">Buat akun Personal</a>
         </article>
         @if($admissionsEnabled)

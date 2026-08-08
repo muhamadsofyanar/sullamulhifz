@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Institution;
+use App\Models\FeatureFlag;
 use App\Models\PersonalProfile;
 use App\Models\Role;
 use App\Models\Student;
@@ -77,6 +78,13 @@ class PersonalRegistrationController extends Controller
                 'daily_minutes' => 20,
                 'privacy_acknowledged_at' => now(),
             ]);
+
+            foreach (['academy_portal', 'quran_audio'] as $featureKey) {
+                FeatureFlag::firstOrCreate(
+                    ['institution_id' => $institution->id, 'feature_key' => $featureKey],
+                    ['enabled' => true],
+                );
+            }
 
             $institution->update(['owner_user_id' => $user->id]);
             return $user;
