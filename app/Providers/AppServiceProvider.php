@@ -6,6 +6,7 @@ use App\Models\Announcement;
 use App\Models\AssignmentSubmission;
 use App\Models\FridayDevelopmentSession;
 use App\Models\LiaisonMessage;
+use App\Models\QuranGuidedSubmission;
 use App\Models\Student;
 use App\Models\Teacher;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -30,6 +31,7 @@ class AppServiceProvider extends ServiceProvider
             'assignment_submission' => AssignmentSubmission::class,
             'friday_session' => FridayDevelopmentSession::class,
             'liaison_message' => LiaisonMessage::class,
+            'quran_guided_submission' => QuranGuidedSubmission::class,
             'student' => Student::class,
             'teacher' => Teacher::class,
         ]);
