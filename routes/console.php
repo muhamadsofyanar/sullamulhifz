@@ -13,6 +13,7 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Schedule;
@@ -24,7 +25,7 @@ use App\Services\MushafLineService;
 
 Artisan::command('sullam:about', function (): void {
     $release = trim((string) @file_get_contents(base_path('RELEASE'))) ?: 'unknown';
-    $this->info('Sullamul Hifz '.$release.' — Personal Learning System.');
+    $this->info('Sullamul Hifz '.$release.' — Qur’an learning ecosystem.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -632,5 +633,42 @@ Artisan::command('sullam:verify-personal-learning', function (): int {
     $this->info('Struktur Personal Learning System v2.9.0 siap. Teacher override tetap harus dibuktikan melalui smoke test produksi.');
     return 0;
 })->purpose('Memeriksa Fase 7 Personal Learning System v2.9.0 dan guardrail evidence');
+
+Artisan::command('sullam:verify-personal-mode', function (): int {
+    $required = ['personal_profiles','personal_goals','personal_practice_entries'];
+    $missing = collect($required)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty() || ! Schema::hasColumn('institutions','workspace_type') || ! Schema::hasColumn('institutions','owner_user_id')) {
+        $this->error('Public Personal Mode belum lengkap: '.($missing->implode(', ') ?: 'kolom workspace Personal belum tersedia'));
+        return 1;
+    }
+
+    $roleReady = DB::table('roles')->where('name','personal')->exists();
+    $permissionReady = DB::table('permissions')->where('name','personal.use')->exists();
+    $privacyIssues = DB::table('institutions')->where('workspace_type','personal')->where('privacy_mode','!=','private')->count();
+    $ownershipIssues = DB::table('personal_profiles as pp')
+        ->join('users as u','u.id','=','pp.user_id')
+        ->whereColumn('pp.institution_id','!=','u.institution_id')->count();
+
+    $servicePath = app_path('Services/PersonalJourneyService.php');
+    $serviceUsesStifin = is_file($servicePath) && str_contains(strtolower((string) file_get_contents($servicePath)), 'stifin');
+
+    $this->table(['Komponen','Jumlah'], [
+        ['Workspace Personal', DB::table('institutions')->where('workspace_type','personal')->count()],
+        ['Profil Personal', DB::table('personal_profiles')->count()],
+        ['Target Personal', DB::table('personal_goals')->count()],
+        ['Jurnal aktivitas Personal', DB::table('personal_practice_entries')->count()],
+        ['Masalah ownership profil', $ownershipIssues],
+        ['Workspace Personal tidak privat', $privacyIssues],
+        ['Mesin arahan menyebut STIFIn', $serviceUsesStifin ? 1 : 0],
+    ]);
+
+    if (! $roleReady || ! $permissionReady || $ownershipIssues > 0 || $privacyIssues > 0 || $serviceUsesStifin) {
+        $this->error('Guardrail Personal Mode belum lolos. Periksa role/permission, ownership, privasi, dan independensi STIFIn.');
+        return 1;
+    }
+
+    $this->info('Struktur Public Self-Registration + Personal Mode v3.0.0 siap. Registrasi, isolasi dua akun, dan jurnal tetap harus dibuktikan lewat smoke test produksi.');
+    return 0;
+})->purpose('Memeriksa Public Self-Registration + Personal Mode v3.0.0');
 
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();

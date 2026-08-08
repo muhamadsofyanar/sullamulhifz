@@ -1,17 +1,32 @@
 @extends('layouts.public')
-@section('title', 'Pendaftaran Awal — Sullamul Ḥifẓ')
-@section('description', 'Formulir pendaftaran awal program Sullamul Ḥifẓ dan TPA Al-Insyirah.')
+@section('title', 'Daftar — Sullamul Ḥifẓ')
+@section('description', 'Pilih Sullamul Hifz Personal untuk perjalanan mandiri atau pendaftaran program TPA Al-Insyirah.')
 @section('content')
 <section class="page-hero">
     <div class="public-container page-hero-inner">
-        <span class="public-eyebrow">PENDAFTARAN AWAL</span>
-        <h1>Mulai perjalanan dengan informasi yang cukup.</h1>
-        <p>Isi data singkat berikut. Tim kami akan menghubungi wali untuk menjelaskan program, jadwal, dan proses berikutnya.</p>
+        <span class="public-eyebrow">MULAI PERJALANAN</span>
+        <h1>Pilih cara Anda menggunakan Sullamul Ḥifẓ.</h1>
+        <p>Gunakan secara mandiri melalui Personal, atau daftarkan calon santri ke program lembaga/TPA.</p>
     </div>
 </section>
 <section class="public-section soft-section">
+    <div class="public-container registration-choice-grid {{ $admissionsEnabled ? '' : 'single' }}">
+        <article class="registration-choice-card featured">
+            <span>PERSONAL</span><h2>Saya ingin menggunakan sendiri</h2>
+            <p>Daftar mandiri, tentukan target, catat hafalan dan murāja‘ah, lalu jaga konsistensi dalam ruang privat.</p>
+            <a class="public-button primary" href="{{ route('personal.register') }}">Buat akun Personal</a>
+        </article>
+        @if($admissionsEnabled)
+        <article class="registration-choice-card">
+            <span>TPA / LEMBAGA</span><h2>Saya mendaftarkan calon santri</h2>
+            <p>Isi pendaftaran awal di bawah. Tim lembaga akan menghubungi wali untuk proses program dan penempatan.</p>
+            <a class="public-button secondary" href="#pendaftaran-tpa">Isi pendaftaran TPA</a>
+        </article>
+        @endif
+    </div>
+    @if($admissionsEnabled)
     <div class="public-container registration-grid">
-        <form class="public-form-card" method="post" action="{{ route('public.registration.store') }}">
+        <form class="public-form-card" id="pendaftaran-tpa" method="post" action="{{ route('public.registration.store') }}">
             @csrf
             @if(session('success'))<div class="public-alert success">{{ session('success') }}</div>@endif
             @if($errors->any())<div class="public-alert danger"><strong>Periksa kembali:</strong><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
@@ -38,5 +53,6 @@
             </ol>
         </aside>
     </div>
+    @endif
 </section>
 @endsection

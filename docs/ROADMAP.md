@@ -13,4 +13,4 @@ Roadmap resmi terdiri dari 10 fase. Detail definisi Fase 4 ada di `ROADMAP-10-PH
 9. Insight, Automation & AI Assist
 10. Ecosystem / SaaS
 
-Fokus source v2.9.0 adalah implementasi Fase 7 Personal Learning System. Fase 6 boleh tetap memiliki gate manual pending selama pengembangan berlanjut. **100% bukan berarti menu tersedia**; fase selesai hanya setelah implementasi dan validasi produksi lengkap.
+Fase 7 telah mencapai alur produksi utama pada v2.9.0. Source v3.0.0 menambahkan **Product Track P1 — Public Personal Mode** sebagai fondasi jalur Personal → Family → Mentor → Institution → Enterprise. Product Track ini tidak mengubah nomor Fase 8–10. Fase 6 boleh tetap memiliki gate manual pending selama pengembangan berlanjut. **100% bukan berarti menu tersedia**; fase selesai hanya setelah implementasi dan validasi produksi lengkap.

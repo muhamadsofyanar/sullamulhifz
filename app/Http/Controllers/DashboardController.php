@@ -50,6 +50,10 @@ class DashboardController extends Controller
             return $this->guardian($request);
         }
 
+        if ($user->hasRole('personal')) {
+            return redirect()->route('personal.dashboard');
+        }
+
         abort(403, 'Peran akun belum dikonfigurasi.');
     }
 

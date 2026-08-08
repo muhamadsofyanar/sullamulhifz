@@ -1,14 +1,14 @@
-# MULAI DI SINI — v2.9.0
+# MULAI DI SINI — v3.0.0
 
-Rilis aktif adalah **v2.9.0 — Personal Learning System**.
+Rilis kandidat adalah **v3.0.0 — Public Self-Registration + Personal Mode**.
 
 Baca berurutan:
-1. `UPGRADE-V2.9.0.md`
-2. `DEPLOY-QUICK-V2.9.0.txt`
-3. `docs/PHASE-07-PERSONAL-LEARNING-V2.9.0.md`
+1. `UPGRADE-V3.0.0.md`
+2. `DEPLOY-QUICK-V3.0.0.txt`
+3. `docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md`
 4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-v2.9.0 mengaktifkan Fase 7: evidence belajar → draf rekomendasi → teacher override. STIFIn tidak menjadi input mesin rekomendasi. Dua gate manual Fase 6 yang ditunda tetap berstatus pending dan tidak dianggap lulus otomatis karena pengembangan sudah bergerak ke Fase 7.
+v3.0.0 menambahkan jalur produk Personal setelah Fase 7 stabil: masyarakat dapat mendaftar sendiri, mendapat ruang privat, lalu mengelola perjalanan Qur’annya tanpa terdaftar pada lembaga. Roadmap 10 fase tetap berlaku; dua gate manual Fase 6 yang ditunda tetap pending.
 
 ---
 

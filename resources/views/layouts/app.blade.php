@@ -16,6 +16,7 @@
     <link rel="stylesheet" href="/css/app-v230.css?v={{ @filemtime(public_path('css/app-v230.css')) ?: '230' }}">
     <link rel="stylesheet" href="/css/app-v240.css?v={{ @filemtime(public_path('css/app-v240.css')) ?: '240' }}">
     <link rel="stylesheet" href="/css/app-v250.css?v={{ @filemtime(public_path('css/app-v250.css')) ?: '250' }}">
+    <link rel="stylesheet" href="/css/app-v300.css?v={{ @filemtime(public_path('css/app-v300.css')) ?: '300' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
@@ -31,6 +32,11 @@
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>
                 <x-icon name="home"/><span>Beranda</span>
             </a>
+            @if(auth()->user()->hasRole('personal'))
+                <a href="{{ route('personal.dashboard') }}#catat" class="{{ request()->routeIs('personal.*') ? 'active' : '' }}"><x-icon name="preservation"/><span>Catat Aktivitas</span></a>
+                <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target Saya</span></a>
+                <a href="{{ route('personal.dashboard') }}#jurnal"><x-icon name="continuity"/><span>Jurnal Perjalanan</span></a>
+            @endif
             @if(auth()->user()->hasAnyRole(['superadmin','institution_admin']))
                 <a href="{{ route('admin.students.index') }}" class="{{ request()->routeIs('admin.students.*') ? 'active' : '' }}" @if(request()->routeIs('admin.students.*')) aria-current="page" @endif>
                     <x-icon name="student"/><span>Santri</span>
@@ -153,6 +159,7 @@
                 </a>
                 @endif
             @endif
+            @unless(auth()->user()->hasRole('personal'))
             <a href="{{ route('liaison.index') }}" class="{{ request()->routeIs('liaison.*') ? 'active' : '' }}" @if(request()->routeIs('liaison.*')) aria-current="page" @endif>
                 <x-icon name="discussion"/><span>Buku Penghubung</span>
             </a>
@@ -180,6 +187,7 @@
             <a href="{{ route('feed.pledge') }}" class="{{ request()->routeIs('feed.pledge') ? 'active' : '' }}" @if(request()->routeIs('feed.pledge')) aria-current="page" @endif>
                 <x-icon name="values"/><span>Ikrar Santri</span>
             </a>
+            @endunless
         </nav>
 
         <div class="sidebar-footer">
@@ -197,7 +205,7 @@
     <main class="main-content">
         <header class="topbar">
             <button type="button" class="icon-button" data-sidebar-toggle aria-label="Buka menu"><x-icon name="menu" size="25"/></button>
-            <div class="topbar-title"><strong>{{ $pageTitle ?? 'Sullamul Ḥifẓ' }}</strong><small>{{ auth()->user()->institution?->name }}</small></div>
+            <div class="topbar-title"><strong>{{ $pageTitle ?? 'Sullamul Ḥifẓ' }}</strong><small>{{ auth()->user()->hasRole('personal') ? 'Ruang Personal · Privat' : auth()->user()->institution?->name }}</small></div>
             <button type="button" class="pwa-install-chip" data-pwa-install hidden>Instal</button>
             <a class="avatar" href="{{ route('profile.edit') }}" aria-label="Buka profil {{ auth()->user()->name }}">{{ strtoupper(mb_substr(auth()->user()->name,0,1)) }}</a>
         </header>
@@ -221,7 +229,13 @@
     </main>
 </div>
 <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
-    @if(auth()->user()->hasRole('guardian'))
+    @if(auth()->user()->hasRole('personal'))
+        <a href="{{ route('personal.dashboard') }}" class="{{ request()->routeIs('personal.*')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
+        <a href="{{ route('personal.dashboard') }}#catat"><x-icon name="preservation"/><span>Catat</span></a>
+        <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target</span></a>
+        <a href="{{ route('personal.dashboard') }}#jurnal"><x-icon name="continuity"/><span>Jurnal</span></a>
+        <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>
+    @elseif(auth()->user()->hasRole('guardian'))
         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
         <a href="{{ route('guardian.children.index') }}" class="{{ request()->routeIs('guardian.children.*')?'active':'' }}"><x-icon name="student"/><span>Anak</span></a>
         <a href="{{ route('guardian.tasks.index') }}" class="{{ request()->routeIs('guardian.tasks.*')?'active':'' }}"><x-icon name="plan"/><span>Tugas</span></a>

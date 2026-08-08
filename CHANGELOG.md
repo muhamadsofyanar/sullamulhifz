@@ -1,3 +1,16 @@
+# v3.0.0 — Public Self-Registration + Personal Mode — 2026-08-08
+
+- Membuka pendaftaran mandiri masyarakat melalui `/daftar-personal` tanpa harus bergabung dengan lembaga.
+- Setiap pendaftar mendapat workspace privat internal, role `personal`, dan profil perjalanan yang terisolasi dari pengguna Personal lain.
+- Menambah onboarding fokus, ritme harian, target juz/surah dan tanggal target tanpa menjadikannya penilaian kemampuan.
+- Menambah jurnal mandiri untuk hafalan baru, Murāja‘ah, tilawah, dan refleksi dengan rentang ayat, durasi, penilaian diri, dan catatan.
+- Menambah target terukur untuk ayat hafalan, ayat Murāja‘ah, menit latihan, hari aktif, atau jumlah sesi; progres dihitung dari jurnal nyata.
+- Menambah dashboard Personal dengan ringkasan 7 hari, streak konsistensi, target, jurnal terbaru, dan arahan harian berbasis aktivitas.
+- Membuat navigasi Personal terpisah dari menu lembaga serta mempertahankan form pendaftaran TPA yang sudah ada.
+- Memperbarui Privasi dan Syarat & Ketentuan untuk menjelaskan self-record, isolasi data Personal, dan guardrail STIFIn.
+- Menambah `sullam:verify-personal-mode` dan regression test pendaftaran, workspace privat, ownership lintas akun, serta independensi arahan dari STIFIn.
+- Fase 7 v2.9.0 telah lulus smoke test produksi observasi → rekomendasi → teacher override; dua gate manual Fase 6 tetap tercatat pending.
+
 # v2.9.0 — Personal Learning System — 2026-08-08
 
 - Mengaktifkan Fase 7 sebagai workflow personalisasi berbasis evidence dengan keputusan akhir tetap pada guru.

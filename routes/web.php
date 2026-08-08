@@ -21,6 +21,8 @@ use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountInvitationController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\PersonalRegistrationController;
 use App\Http\Controllers\AcademyController;
 use App\Http\Controllers\AcademyExperienceController;
 use App\Http\Controllers\AcademyLmsController;
@@ -125,6 +127,8 @@ Route::get('/artikel', [PublicSiteController::class, 'articles'])->name('public.
 Route::get('/artikel/{article}', [PublicSiteController::class, 'article'])->name('public.article');
 Route::get('/pendaftaran', [PublicSiteController::class, 'registration'])->name('public.registration');
 Route::post('/pendaftaran', [PublicSiteController::class, 'storeRegistration'])->middleware('throttle:5,10')->name('public.registration.store');
+Route::get('/daftar-personal', [PersonalRegistrationController::class, 'create'])->middleware('guest')->name('personal.register');
+Route::post('/daftar-personal', [PersonalRegistrationController::class, 'store'])->middleware(['guest','throttle:3,10'])->name('personal.register.store');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -143,6 +147,14 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
 
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil/kata-sandi', [ProfileController::class, 'updatePassword'])->name('profile.password');
+
+    Route::prefix('personal')->name('personal.')->middleware('role:personal')->group(function (): void {
+        Route::get('/', [PersonalController::class, 'index'])->middleware('permission:personal.use')->name('dashboard');
+        Route::put('/onboarding', [PersonalController::class, 'onboarding'])->middleware('permission:personal.use')->name('onboarding');
+        Route::post('/aktivitas', [PersonalController::class, 'storeActivity'])->middleware('permission:personal.use')->name('activities.store');
+        Route::post('/target', [PersonalController::class, 'storeGoal'])->middleware('permission:personal.use')->name('goals.store');
+        Route::put('/target/{goal}/selesai', [PersonalController::class, 'completeGoal'])->middleware('permission:personal.use')->name('goals.complete');
+    });
 
     Route::get('/buku-penghubung', [LiaisonController::class, 'index'])->middleware('permission:liaison.view')->name('liaison.index');
     Route::get('/buku-penghubung/buat', [LiaisonController::class, 'create'])->middleware('permission:liaison.manage')->name('liaison.create');

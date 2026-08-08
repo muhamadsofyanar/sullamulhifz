@@ -47,7 +47,7 @@
             <a href="{{ route('public.academy') }}" class="{{ request()->routeIs('public.academy') ? 'active' : '' }}">Academy</a>
             <a href="{{ route('public.articles') }}" class="{{ request()->routeIs('public.articles') ? 'active' : '' }}">Artikel</a>
             <a href="{{ route('public.contact') }}" class="{{ request()->routeIs('public.contact') ? 'active' : '' }}">Kontak</a>
-            <a href="{{ route('public.registration') }}" class="{{ request()->routeIs('public.registration*') ? 'active' : '' }}">Daftar</a>
+            <a href="{{ route('public.registration') }}" class="{{ request()->routeIs('public.registration*') || request()->routeIs('personal.register*') ? 'active' : '' }}">Daftar</a>
             <a class="public-login-button" href="{{ $portalUrl }}">Masuk aplikasi</a>
         </nav>
     </div>
@@ -70,6 +70,7 @@
             <a href="{{ route('public.institution.reference') }}">Referensi lembaga</a>
             <a href="{{ route('public.pledge') }}">Ikrar Santri</a>
             <a href="{{ route('public.academy') }}">Sullamul Ḥifẓ Academy</a>
+            <a href="{{ route('personal.register') }}">Sullamul Ḥifẓ Personal</a>
             <a href="{{ route('public.programs') }}">Keluarga & komunitas</a>
         </div>
         <div>
@@ -82,7 +83,7 @@
         </div>
         <div>
             <h2>Aplikasi</h2>
-            <p>Portal operasional untuk admin, guru, dan orang tua/wali.</p>
+            <p>Portal untuk pengguna Personal, admin, guru, dan orang tua/wali.</p>
             <a class="footer-login" href="{{ $portalUrl }}">Masuk ke portal →</a>
         </div>
     </div>

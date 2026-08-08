@@ -105,8 +105,10 @@ class PublicSiteController extends Controller
 
     public function registration(): View
     {
-        $this->ensurePublicFeature('admissions');
-        return view('public.registration');
+        $institutionId = $this->publicInstitutionId();
+        return view('public.registration', [
+            'admissionsEnabled' => Feature::enabled('admissions', $institutionId, true),
+        ]);
     }
 
     public function storeRegistration(Request $request): RedirectResponse

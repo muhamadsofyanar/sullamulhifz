@@ -44,6 +44,7 @@ class User extends Authenticatable
 
     public function teacher(): HasOne { return $this->hasOne(Teacher::class); }
     public function guardian(): HasOne { return $this->hasOne(Guardian::class); }
+    public function personalProfile(): HasOne { return $this->hasOne(PersonalProfile::class); }
     public function accountInvitations(): HasMany { return $this->hasMany(AccountInvitation::class); }
 
     public function hasRole(string $role): bool
@@ -87,7 +88,7 @@ class User extends Authenticatable
 
     public function primaryRole(): ?string
     {
-        $priority = ['superadmin', 'institution_admin', 'head', 'teacher', 'guardian', 'student'];
+        $priority = ['superadmin', 'institution_admin', 'head', 'teacher', 'guardian', 'personal', 'student'];
         $active = $this->activeRolesQuery()->pluck('roles.name');
 
         return collect($priority)->first(fn (string $role): bool => $active->contains($role)) ?? $active->first();

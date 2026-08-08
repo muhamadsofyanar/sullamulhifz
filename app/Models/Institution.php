@@ -10,7 +10,10 @@ class Institution extends Model
 {
     use SoftDeletes;
 
-    protected $fillable = ['name', 'code', 'slug', 'legal_name', 'phone', 'email', 'address', 'timezone', 'status', 'settings'];
+    protected $fillable = [
+        'name', 'code', 'slug', 'workspace_type', 'owner_user_id', 'privacy_mode',
+        'legal_name', 'phone', 'email', 'address', 'timezone', 'status', 'settings',
+    ];
 
     protected function casts(): array
     {
@@ -24,6 +27,7 @@ class Institution extends Model
     public function branches(): HasMany { return $this->hasMany(Branch::class); }
     public function featureFlags(): HasMany { return $this->hasMany(FeatureFlag::class); }
     public function mediaAssets(): HasMany { return $this->hasMany(MediaAsset::class); }
+    public function personalProfiles(): HasMany { return $this->hasMany(PersonalProfile::class); }
 
     public function setting(string $key, mixed $default = null): mixed
     {
