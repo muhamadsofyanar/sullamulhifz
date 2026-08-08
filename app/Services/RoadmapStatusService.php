@@ -76,6 +76,11 @@ class RoadmapStatusService
                     'passed' => is_file(resource_path('views/teacher/tahfizh/index.blade.php'))
                         && is_file(resource_path('views/teacher/tahfizh/student.blade.php')),
                 ], [
+                    'label' => 'Pencatatan individual terpadu di Perjalanan Tahfizh',
+                    'passed' => method_exists(\App\Http\Controllers\Teacher\TahfizhController::class, 'storeMemorization')
+                        && method_exists(\App\Http\Controllers\Teacher\TahfizhController::class, 'storeMurajaah')
+                        && str_contains((string) @file_get_contents(resource_path('views/teacher/tahfizh/student.blade.php')), 'ALUR TERPADU'),
+                ], [
                     'label' => 'Ringkasan penjagaan tersedia untuk wali',
                     'passed' => is_file(resource_path('views/guardian/child.blade.php')),
                 ]]),

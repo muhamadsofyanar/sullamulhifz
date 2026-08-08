@@ -1,5 +1,18 @@
 # Changelog
 
+## v2.5.2 — Tahfizh Unified Workflow — 2026-08-07
+- Menyatukan pencatatan individual Tahfizh di halaman Perjalanan Tahfizh santri.
+- Guru dapat mencatat setoran, Murāja‘ah, fokus koreksi, tindak lanjut, dan jadwal review tanpa keluar ke Operasional Hari Ini.
+- Target dan jadwal Murāja‘ah dapat mengisi otomatis surah/rentang ayat pada form individual.
+- Catatan individual tetap terhubung dengan siklus belajar, target, fokus koreksi, activity log, dan histori.
+- Operasional Hari Ini tetap dipertahankan untuk pencatatan kelas/massal.
+- Menambahkan production criterion Fase 3 untuk workflow individual terpadu.
+
+## v2.5.1 — Phase 3 Detail Hotfix — 2026-08-07
+- Memperbaiki HTTP 500 pada detail Perjalanan Tahfizh akibat variabel `$errors` menimpa validation error bag Laravel.
+- Mengganti collection fokus koreksi menjadi `$correctionItems`.
+- Menambahkan regression check agar benturan variabel tidak berulang.
+
 ## v2.5.0 — Tahfizh Learning Engine — 2026-08-07
 - Menambahkan siklus belajar target → persiapan → setoran → penguatan → Murāja‘ah.
 - Menambahkan talaqqi/tasmi‘ sebagai cara belajar/setoran yang tercatat.

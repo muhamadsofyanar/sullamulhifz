@@ -3,11 +3,15 @@
 namespace App\Http\Controllers\Teacher;
 
 use App\Http\Controllers\Controller;
+use App\Models\ActivityLog;
 use App\Models\AcademicYear;
 use App\Models\ClassEnrollment;
 use App\Models\GroupMembership;
+use App\Models\MarhalahType;
+use App\Models\MemorizationRecord;
 use App\Models\MemorizationReviewPlan;
 use App\Models\MemorizationTarget;
+use App\Models\MurajaahRecord;
 use App\Models\QuranLearningErrorItem;
 use App\Models\QuranSurah;
 use App\Models\Student;
@@ -68,6 +72,7 @@ class TahfizhController extends Controller
                 ->where('student_id', $student->id)
                 ->latest()->limit(40)->get(),
             'surahs' => QuranSurah::orderBy('id')->get(),
+            'marhalah' => MarhalahType::where('status', 'active')->orderBy('sequence')->get(),
         ]);
     }
 
@@ -128,6 +133,219 @@ class TahfizhController extends Controller
             'completed_at' => $data['status'] === 'completed' ? now() : null,
         ]);
         return back()->with('success', 'Status siklus belajar diperbarui.');
+    }
+
+    public function storeMemorization(Request $request, Student $student): RedirectResponse
+    {
+        $this->authorizeStudent($request, $student);
+        $teacher = $request->user()->teacher;
+        abort_unless($teacher, 403);
+
+        $data = $request->validate([
+            'memorization_target_id' => ['nullable','exists:memorization_targets,id'],
+            'marhalah_type_id' => ['nullable','exists:marhalah_types,id'],
+            'record_type' => ['required', Rule::in(['new_memorization','initial_repetition','home_submission','class_submission','tasmi','exam'])],
+            'delivery_mode' => ['required', Rule::in(['talaqqi','individual_submission','group_tasmi','home_submission','exam'])],
+            'surah_id' => ['required','exists:quran_surahs,id'],
+            'start_verse' => ['required','integer','min:1'],
+            'end_verse' => ['required','integer','gte:start_verse'],
+            'result' => ['required', Rule::in(['fluent','fair','repeat_needed','postponed'])],
+            'fluency_status' => ['nullable', Rule::in(['strong','developing','needs_repetition'])],
+            'tajwid_status' => ['nullable', Rule::in(['strong','developing','needs_correction'])],
+            'error_count' => ['nullable','integer','min:0','max:999'],
+            'prompt_count' => ['nullable','integer','min:0','max:999'],
+            'self_correction_count' => ['nullable','integer','min:0','max:999'],
+            'assistance_level' => ['required', Rule::in(['none','little','several','much'])],
+            'follow_up' => ['nullable','string','max:190'],
+            'review_recommendation' => ['nullable','string','max:190'],
+            'next_review_date' => ['nullable','date','after_or_equal:today'],
+            'teacher_notes' => ['nullable','string','max:5000'],
+            'error_categories' => ['nullable','array'],
+            'error_categories.*' => ['string','max:50'],
+            'error_ayah' => ['nullable','integer','min:1'],
+            'error_note' => ['nullable','string','max:1000'],
+        ]);
+        $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
+
+        $target = null;
+        if (! empty($data['memorization_target_id'])) {
+            $target = MemorizationTarget::query()
+                ->where('institution_id', $request->user()->institution_id)
+                ->where('student_id', $student->id)
+                ->findOrFail($data['memorization_target_id']);
+            abort_if(
+                (int) $target->surah_id !== (int) $data['surah_id']
+                || (int) $target->start_verse !== (int) $data['start_verse']
+                || (int) $target->end_verse !== (int) $data['end_verse'],
+                422,
+                'Target yang dipilih tidak sama dengan rentang ayat setoran. Pilih target lain atau kosongkan Target terkait.',
+            );
+            $data['marhalah_type_id'] ??= $target->marhalah_type_id;
+        }
+        $target ??= MemorizationTarget::query()
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('student_id', $student->id)
+            ->where('surah_id', $data['surah_id'])
+            ->where('start_verse', $data['start_verse'])
+            ->where('end_verse', $data['end_verse'])
+            ->whereIn('status', ['active','in_progress','strengthening','paused'])
+            ->latest()->first();
+
+        $cycle = $this->learning->resolveCycle(
+            (int) $request->user()->institution_id,
+            (int) $student->id,
+            $teacher,
+            $target,
+            in_array($data['record_type'], ['tasmi','exam'], true) ? $data['record_type'] : 'new_memorization',
+            match ($data['delivery_mode']) {
+                'talaqqi' => 'talaqqi',
+                'home_submission' => 'mixed',
+                'group_tasmi' => 'teach_back',
+                default => 'reading_repetition',
+            },
+        );
+
+        $recordData = $data;
+        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note']);
+        $record = MemorizationRecord::create([
+            ...$recordData,
+            'memorization_target_id' => $target?->id,
+            'learning_cycle_id' => $cycle->id,
+            'institution_id' => $request->user()->institution_id,
+            'meeting_id' => null,
+            'student_id' => $student->id,
+            'teacher_id' => $teacher->id,
+            'recorded_at' => now(),
+        ]);
+
+        $this->learning->applyMemorizationOutcome($cycle, $record);
+        $this->learning->scheduleReviewFromMemorization($record, $teacher);
+        $this->learning->recordErrors(
+            'memorization', $record->id, (int) $request->user()->institution_id, (int) $student->id,
+            (int) $teacher->id, null, $data['error_categories'] ?? [],
+            $data['error_ayah'] ?? null, $data['error_note'] ?? null,
+        );
+
+        if ($target) {
+            $status = match ($data['result']) {
+                'fluent' => 'completed',
+                'fair' => 'in_progress',
+                'repeat_needed' => 'strengthening',
+                default => 'paused',
+            };
+            $target->update(['status' => $status, 'completed_at' => $status === 'completed' ? now() : null]);
+        }
+
+        $this->log($request, 'tahfizh.individual_memorization_recorded', $record, [
+            'student_id' => $student->id,
+            'target_id' => $target?->id,
+            'source' => 'student_journey',
+        ]);
+
+        return redirect()->route('teacher.tahfizh.student', $student)
+            ->with('success', 'Setoran Tahfizh tersimpan di perjalanan santri.');
+    }
+
+    public function storeMurajaah(Request $request, Student $student): RedirectResponse
+    {
+        $this->authorizeStudent($request, $student);
+        $teacher = $request->user()->teacher;
+        abort_unless($teacher, 403);
+
+        $data = $request->validate([
+            'review_plan_id' => ['nullable','exists:memorization_review_plans,id'],
+            'murajaah_type' => ['required', Rule::in(['scheduled','random_recall','continuation','tasmi','home'])],
+            'surah_id' => ['required','exists:quran_surahs,id'],
+            'start_verse' => ['required','integer','min:1'],
+            'end_verse' => ['required','integer','gte:start_verse'],
+            'result' => ['required', Rule::in(['maintained','strengthening_needed','reactivation_needed'])],
+            'strength_status' => ['nullable', Rule::in(['strong','fair','weak','recall_needed'])],
+            'assistance_level' => ['required', Rule::in(['none','little','several','much'])],
+            'prompt_count' => ['nullable','integer','min:0','max:999'],
+            'self_correction_count' => ['nullable','integer','min:0','max:999'],
+            'next_review_date' => ['nullable','date','after_or_equal:today'],
+            'review_recommendation' => ['nullable','string','max:190'],
+            'teacher_notes' => ['nullable','string','max:5000'],
+            'error_categories' => ['nullable','array'],
+            'error_categories.*' => ['string','max:50'],
+            'error_ayah' => ['nullable','integer','min:1'],
+            'error_note' => ['nullable','string','max:1000'],
+        ]);
+        $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
+
+        $reviewPlan = null;
+        if (! empty($data['review_plan_id'])) {
+            $reviewPlan = MemorizationReviewPlan::query()
+                ->where('institution_id', $request->user()->institution_id)
+                ->where('student_id', $student->id)
+                ->where('status', 'scheduled')
+                ->findOrFail($data['review_plan_id']);
+            abort_if(
+                (int) $reviewPlan->surah_id !== (int) $data['surah_id']
+                || (int) $reviewPlan->start_verse !== (int) $data['start_verse']
+                || (int) $reviewPlan->end_verse !== (int) $data['end_verse'],
+                422,
+                'Jadwal Murāja‘ah yang dipilih tidak sama dengan rentang ayat yang dicatat.',
+            );
+        }
+
+        $target = MemorizationTarget::query()
+            ->where('institution_id', $request->user()->institution_id)
+            ->where('student_id', $student->id)
+            ->where('surah_id', $data['surah_id'])
+            ->where('start_verse', $data['start_verse'])
+            ->where('end_verse', $data['end_verse'])
+            ->whereIn('status', ['active','in_progress','strengthening','paused'])
+            ->latest()->first();
+
+        $cycle = $this->learning->resolveCycle(
+            (int) $request->user()->institution_id,
+            (int) $student->id,
+            $teacher,
+            $target,
+            'murajaah',
+            'reading_repetition',
+        );
+
+        $recordData = $data;
+        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note']);
+        $record = MurajaahRecord::create([
+            ...$recordData,
+            'learning_cycle_id' => $cycle->id,
+            'review_plan_id' => $reviewPlan?->id,
+            'institution_id' => $request->user()->institution_id,
+            'meeting_id' => null,
+            'student_id' => $student->id,
+            'teacher_id' => $teacher->id,
+            'recorded_at' => now(),
+        ]);
+
+        $this->learning->completeReviewPlan($reviewPlan, $record);
+        $this->learning->scheduleNextReview($record, $teacher);
+        $this->learning->applyMurajaahOutcome($cycle, $record);
+        $this->learning->recordErrors(
+            'murajaah', $record->id, (int) $request->user()->institution_id, (int) $student->id,
+            (int) $teacher->id, null, $data['error_categories'] ?? [],
+            $data['error_ayah'] ?? null, $data['error_note'] ?? null,
+        );
+
+        if ($target && in_array($target->target_type, ['murajaah','initial_repetition'], true)) {
+            $status = match ($data['result']) {
+                'maintained' => 'completed',
+                'strengthening_needed' => 'strengthening',
+                default => 'in_progress',
+            };
+            $target->update(['status' => $status, 'completed_at' => $status === 'completed' ? now() : null]);
+        }
+
+        $this->log($request, 'tahfizh.individual_murajaah_recorded', $record, [
+            'student_id' => $student->id,
+            'review_plan_id' => $reviewPlan?->id,
+            'source' => 'student_journey',
+        ]);
+
+        return redirect()->route('teacher.tahfizh.student', $student)
+            ->with('success', 'Murāja‘ah tersimpan di perjalanan santri.');
     }
 
     public function storeReviewPlan(Request $request): RedirectResponse
@@ -203,6 +421,27 @@ class TahfizhController extends Controller
         $this->authorizeStudent($request, $student);
         $error->update(['resolved_at' => now()]);
         return back()->with('success', 'Fokus koreksi ditandai sudah ditindaklanjuti.');
+    }
+
+    private function validateVerseRange(int $surahId, int $endVerse): void
+    {
+        $surah = QuranSurah::findOrFail($surahId);
+        abort_if($endVerse > $surah->verse_count, 422, 'Rentang ayat melebihi jumlah ayat surah.');
+    }
+
+    private function log(Request $request, string $action, object $subject, array $newValues = []): void
+    {
+        ActivityLog::create([
+            'institution_id' => $request->user()->institution_id,
+            'user_id' => $request->user()->id,
+            'action' => $action,
+            'subject_type' => $subject::class,
+            'subject_id' => $subject->id ?? null,
+            'new_values' => $newValues,
+            'ip_address' => $request->ip(),
+            'user_agent' => $request->userAgent(),
+            'created_at' => now(),
+        ]);
     }
 
     /** @return Collection<int, Student> */

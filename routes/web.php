@@ -278,6 +278,8 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         Route::get('/tahfizh', [TahfizhController::class, 'index'])->middleware('permission:learning.manage')->name('tahfizh.index');
         Route::get('/tahfizh/students/{student}', [TahfizhController::class, 'student'])->middleware('permission:learning.manage')->name('tahfizh.student');
         Route::post('/tahfizh/cycles', [TahfizhController::class, 'storeCycle'])->middleware('permission:learning.manage')->name('tahfizh.cycles.store');
+        Route::post('/tahfizh/students/{student}/memorization', [TahfizhController::class, 'storeMemorization'])->middleware('permission:learning.manage')->name('tahfizh.memorization.store');
+        Route::post('/tahfizh/students/{student}/murajaah', [TahfizhController::class, 'storeMurajaah'])->middleware('permission:learning.manage')->name('tahfizh.murajaah.store');
         Route::put('/tahfizh/cycles/{cycle}', [TahfizhController::class, 'updateCycle'])->middleware('permission:learning.manage')->name('tahfizh.cycles.update');
         Route::post('/tahfizh/reviews', [TahfizhController::class, 'storeReviewPlan'])->middleware('permission:learning.manage')->name('tahfizh.reviews.store');
         Route::put('/tahfizh/reviews/{plan}', [TahfizhController::class, 'updateReviewPlan'])->middleware('permission:learning.manage')->name('tahfizh.reviews.update');

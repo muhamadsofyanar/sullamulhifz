@@ -1,0 +1,10 @@
+SULLAMUL HIFZ v2.5.2 — DEPLOY CEPAT
+
+1. Backup database + storage persistent Coolify.
+2. Upload ISI folder sullamulhifz-v2.5.2 ke root repository GitHub.
+3. Jangan upload .env atau storage produksi.
+4. Push main.
+5. Redeploy Coolify satu kali.
+6. Tidak ada migration baru dan tidak perlu ubah Environment Variables.
+7. Setelah deploy: Guru > Perjalanan Tahfizh > pilih santri.
+8. Uji Catat Setoran dan Catat Murāja‘ah langsung dari halaman santri.
