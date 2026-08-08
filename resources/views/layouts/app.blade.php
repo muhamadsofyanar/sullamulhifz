@@ -90,7 +90,7 @@
                     <x-icon name="report"/><span>Rapor</span>
                 </a>
             @endif
-            @if(auth()->user()->hasPermission('reports.view'))
+            @if(auth()->user()->hasAnyRole(['superadmin','institution_admin']) && auth()->user()->hasPermission('reports.view'))
                 <a href="{{ route('admin.reports.index') }}" class="{{ request()->routeIs('admin.reports.*') ? 'active' : '' }}" @if(request()->routeIs('admin.reports.*')) aria-current="page" @endif>
                     <x-icon name="report"/><span>Laporan</span>
                 </a>
@@ -118,6 +118,9 @@
                 </a>
             @endif
             @if(auth()->user()->hasRole('guardian'))
+                <a href="{{ route('dashboard') }}#anak-saya" class="{{ request()->routeIs('guardian.children.*') ? 'active' : '' }}">
+                    <x-icon name="progress"/><span>Perkembangan Anak</span>
+                </a>
                 <a href="{{ route('guardian.tasks.index') }}" class="{{ request()->routeIs('guardian.tasks.*') ? 'active' : '' }}">
                     <x-icon name="assignment"/><span>Tugas Anak</span>
                 </a>

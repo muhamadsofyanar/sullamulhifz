@@ -29,6 +29,11 @@ use Illuminate\Support\Facades\Schema;
 
 class DashboardController extends Controller
 {
+    public function __construct(
+        private readonly ContentAudienceService $audience,
+    ) {
+    }
+
     public function __invoke(Request $request): View|RedirectResponse
     {
         $user = $request->user()->load('roles', 'teacher', 'guardian.students.currentEnrollment.schoolClass');

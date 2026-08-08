@@ -6,7 +6,7 @@
 <section class="family-priority-card"><div class="family-priority-icon"><x-icon name="academic" size="30"/></div><div><small>REKOMENDASI GURU</small><h2>{{ $academyRecommendations->first()->lesson->title }}</h2><p>Untuk {{ $academyRecommendations->first()->student->full_name }} · {{ $academyRecommendations->first()->message ?: 'Materi pendamping untuk keluarga.' }}</p></div><a class="button primary" href="{{ route('academy.portal.lesson',$academyRecommendations->first()->lesson) }}">Buka materi</a></section>
 @endif
 
-<section class="family-children-grid">
+<section class="family-children-grid" id="anak-saya">
 @forelse($students as $student)
 <a class="family-child-card" href="{{ route('guardian.children.show',$student) }}"><div class="family-child-avatar">{{ strtoupper(mb_substr($student->full_name,0,1)) }}</div><div><small>Anak saya</small><strong>{{ $student->full_name }}</strong><span>{{ $student->currentEnrollment?->schoolClass?->name ?? 'Belum ditempatkan' }}</span></div><b>→</b></a>
 @empty<div class="card"><p class="empty">Belum ada data anak yang terhubung. Hubungi admin.</p></div>@endforelse
