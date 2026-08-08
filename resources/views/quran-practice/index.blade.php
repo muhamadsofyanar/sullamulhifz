@@ -95,7 +95,7 @@
             </label>
 
             <div class="form-grid quran-primary-fields">
-                <label class="senior-field">Jenis latihan<select name="mode" data-quran-mode><option value="ayah">Satu ayat</option><option value="range" selected>Beberapa ayat</option><option value="surah">Satu surah</option><option value="juz">Satu juz</option><option value="page">Satu halaman</option><option value="hizb_quarter">Satu Rubu‘ al-Hizb</option><option value="rubu">Milestone Juz 30 Sullam</option></select></label>
+                <label class="senior-field">Jenis latihan<select name="mode" data-quran-mode><option value="ayah">Satu ayat</option><option value="range" selected>Beberapa ayat</option><option value="surah">Satu surah</option><option value="juz">Satu juz</option><option value="page">Satu halaman</option><option value="hizb_quarter">Satu Rubu‘ al-Hizb</option><option value="rubu">Segment Juz 30 lama</option></select></label>
                 <label class="senior-field" data-quran-surah>Surah<select name="surah_id">@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
             </div>
 
@@ -103,7 +103,7 @@
             <label class="senior-field" data-quran-page hidden>Halaman Mushaf<select name="page_number"><option value="">Pilih halaman</option>@foreach($pages as $page)<option value="{{ $page }}">Halaman {{ $page }}</option>@endforeach</select></label>
             <label class="senior-field" data-quran-juz hidden>Juz<select name="juz_number"><option value="">Pilih juz</option>@foreach($juzs as $juz)<option value="{{ $juz }}">Juz {{ $juz }}</option>@endforeach</select></label>
             <label class="senior-field" data-quran-hizb-quarter hidden>Rubu‘ al-Hizb<select name="hizb_quarter"><option value="">Pilih rubu‘</option>@foreach($hizbQuarters as $quarter)<option value="{{ $quarter }}">Rubu‘ {{ $quarter }}/240</option>@endforeach</select></label>
-            <label class="senior-field" data-quran-rubu hidden>Rubu’ Juz 30<select name="rubu_id"><option value="">Pilih rubu’</option>@foreach($rubus as $rubu)<option value="{{ $rubu->id }}">{{ $rubu->name }}</option>@endforeach</select></label>
+            <label class="senior-field" data-quran-rubu hidden>Segment Juz 30 lama<select name="rubu_id"><option value="">Pilih segment</option>@foreach($rubus as $rubu)<option value="{{ $rubu->id }}">{{ $rubu->name }}</option>@endforeach</select></label>
 
             <div class="quran-repeat-box"><span>Jumlah pengulangan</span><div class="quran-repeat-stepper"><button type="button" data-repeat-minus aria-label="Kurangi pengulangan">−</button><strong data-repeat-label>10×</strong><button type="button" data-repeat-plus aria-label="Tambah pengulangan">+</button></div><select name="repeat_count" data-repeat-select aria-label="Jumlah pengulangan"><option value="1">1×</option><option value="3">3×</option><option value="5">5×</option><option value="10" selected>10×</option><option value="20">20×</option><option value="0">Tanpa batas</option></select></div>
 

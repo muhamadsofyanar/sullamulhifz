@@ -24,6 +24,7 @@
     $academyInstitutionId = (int) auth()->user()->institution_id;
     $academyLearningPathsEnabled = \App\Support\Feature::enabled('learning_paths', $academyInstitutionId, true);
     $academyQuranEnabled = \App\Support\Feature::enabled('quran_audio', $academyInstitutionId, true);
+    $academyJourneyEnabled = \App\Support\Feature::enabled('quran_journey', $academyInstitutionId, true);
 @endphp
 <div class="academy-shell">
     <aside class="academy-sidebar" id="academy-sidebar">
@@ -43,6 +44,7 @@
             <a href="{{ route('academy.portal.materials') }}" class="{{ request()->routeIs('academy.portal.materials','academy.portal.lesson') ? 'active' : '' }}"><x-icon name="academic"/><span>Materi</span></a>
             <a href="{{ route('academy.portal.videos') }}" class="{{ request()->routeIs('academy.portal.videos') ? 'active' : '' }}"><x-icon name="video"/><span>Video</span></a>
             @if($academyQuranEnabled)<a href="{{ route('academy.portal.audio') }}" class="{{ request()->routeIs('academy.portal.audio') ? 'active' : '' }}"><x-icon name="listen"/><span>Audio</span></a>@endif
+            @if($academyJourneyEnabled)<a href="{{ route('academy.portal.quran-journey') }}" class="{{ request()->routeIs('academy.portal.quran-journey*') ? 'active' : '' }}"><x-icon name="continuity"/><span>Program Qur’an</span></a>@endif
             <a href="{{ route('academy.portal.articles') }}" class="{{ request()->routeIs('academy.portal.articles') ? 'active' : '' }}"><x-icon name="assignment"/><span>Artikel</span></a>
             <a href="{{ route('academy.portal.progress') }}" class="{{ request()->routeIs('academy.portal.progress') ? 'active' : '' }}"><x-icon name="progress"/><span>Progres Belajar</span></a>
             <a href="{{ route('academy.portal.recommendations') }}" class="{{ request()->routeIs('academy.portal.recommendations') ? 'active' : '' }}"><x-icon name="guidance"/><span>Rekomendasi Guru</span></a>

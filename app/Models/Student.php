@@ -60,4 +60,9 @@ class Student extends Model
     public function memorizationTargets(): HasMany { return $this->hasMany(MemorizationTarget::class); }
     public function learningObservations(): HasMany { return $this->hasMany(LearningObservation::class); }
     public function marhalahHistories(): HasMany { return $this->hasMany(StudentMarhalahHistory::class); }
+    public function quranJourneyPortions(): HasMany { return $this->hasMany(QuranJourneyPortion::class); }
+    public function quranJourneyProfile() { return $this->hasOne(QuranJourneyProfile::class); }
+    public function memorizationMilestones(): HasMany { return $this->hasMany(MemorizationMilestone::class); }
+    public function quranProgramEnrollments(): HasMany { return $this->hasMany(QuranProgramEnrollment::class); }
 }
+

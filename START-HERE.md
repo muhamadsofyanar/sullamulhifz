@@ -1,3 +1,17 @@
+# MULAI DI SINI — v2.6.0
+
+Rilis aktif untuk pengembangan adalah **v2.6.0 — Qur’an Journey**.
+
+Baca berurutan:
+1. `UPGRADE-V2.6.0.md`
+2. `DEPLOY-QUICK-V2.6.0.txt`
+3. `docs/PHASE-04-QURAN-JOURNEY-V2.6.0.md`
+4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
+
+Fase 3 Tahfizh Learning sudah divalidasi end-to-end dalam pengujian proyek. Fase 4 belum boleh disebut 100% sebelum seluruh launch check produksinya lulus.
+
+---
+
 # Mulai di Sini — Sullamul Ḥifẓ v2.5.2
 
 Rilis kandidat: **v2.5.2 Tahfizh Unified Workflow**.

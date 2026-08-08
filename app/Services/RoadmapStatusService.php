@@ -92,14 +92,48 @@ class RoadmapStatusService
             ),
             4 => $this->phase(
                 4,
-                'Marhalah & Milestone',
-                'Āyah sampai Ṣafḥatayn, histori keputusan marhalah, milestone surah/rubu‘/juz dan pemeriksaan penjagaan.',
-                array_merge($this->tableCriteria(['marhalah_types', 'student_marhalah_histories', 'quran_rubus', 'memorization_targets']), [
-                    ['label' => 'Milestone surah/rubu‘/juz terstruktur', 'passed' => Schema::hasTable('memorization_milestones')],
-                    ['label' => 'Pemeriksaan penjagaan / retention exam', 'passed' => Schema::hasTable('memorization_retention_checks')],
+                'Qur’an Journey',
+                'Marhalah berbasis Juz, milestone hafalan/penjagaan, Khatam 30 Hari, Fami Bisyauqin, dan literasi pembagian mushaf.',
+                array_merge($this->tableCriteria([
+                    'marhalah_types', 'student_marhalah_histories', 'quran_journey_profiles', 'quran_journey_portions',
+                    'memorization_milestones', 'memorization_retention_checks', 'quran_division_units',
+                    'quran_program_templates', 'quran_program_steps', 'quran_program_enrollments', 'quran_program_progress',
+                    'quran_heritage_terms', 'memorization_targets',
+                ]), [[
+                    'label' => 'Enam Marhalah terikat pada wilayah Juz',
+                    'passed' => \App\Models\MarhalahType::query()->where('status','active')->whereNotNull('juz_from')->whereNotNull('portion_unit')->count() >= 6,
+                ], [
+                    'label' => 'Porsi Marhalah dapat melintasi pergantian surah dalam Juz yang sama',
+                    'passed' => Schema::hasTable('quran_journey_portions')
+                        && Schema::hasColumn('memorization_targets','quran_journey_portion_id')
+                        && Schema::hasColumn('memorization_targets','journey_juz_number')
+                        && Schema::hasColumn('memorization_targets','portion_confirmed'),
+                ], [
+                    'label' => 'Pembagian mushaf nyata tersedia: 30 juz, 60 hizb, 240 rubu‘',
+                    'passed' => Schema::hasTable('quran_division_units')
+                        && \App\Models\QuranDivisionUnit::query()->where('unit_type','juz')->count() >= 30
+                        && \App\Models\QuranDivisionUnit::query()->where('unit_type','hizb')->count() >= 60
+                        && \App\Models\QuranDivisionUnit::query()->where('unit_type','rubu')->count() >= 240,
+                ], [
+                    'label' => 'Khatam 30 Hari tersedia lengkap 30 langkah',
+                    'passed' => \App\Models\QuranProgramStep::query()->whereHas('template', fn($q)=>$q->where('code','khatam-30-hari')->where('status','active'))->count() >= 30,
+                ], [
+                    'label' => 'Fami Bisyauqin tujuh manzil tersedia lengkap',
+                    'passed' => \App\Models\QuranProgramStep::query()->whereHas('template', fn($q)=>$q->where('code','fami-bisyauqin')->where('status','active'))->count() >= 7
+                        && \App\Models\QuranDivisionUnit::query()->where('unit_type','fami_manzil')->count() >= 7,
+                ], [
+                    'label' => 'Peta Mushaf & Warisan Ulama terstruktur',
+                    'passed' => \App\Models\QuranHeritageTerm::query()->where('status','active')->count() >= 10,
+                ], [
+                    'label' => 'Program Qur’an tersedia native di Academy',
+                    'passed' => method_exists(\App\Http\Controllers\QuranJourneyController::class, 'academy')
+                        && is_file(resource_path('views/quran-journey/academy.blade.php')),
+                ]]),
+                $this->manualCriteria($institutionId, [
+                    'phase4_marhalah_flow', 'phase4_milestone_retention', 'phase4_khatam_30',
+                    'phase4_fami_bisyauqin', 'phase4_heritage_terms', 'phase4_guardian_visibility', 'phase4_academy_journey', 'phase4_mobile_workflow',
                 ]),
-                $this->manualCriteria($institutionId, ['phase4_marhalah_flow', 'phase4_milestone_retention']),
-                'Bangun keputusan naik/tetap/turun berbasis bukti dan milestone penjagaan lintas juz.',
+                'Validasi jalur Juz–Marhalah, milestone/penjagaan, dua program khatam, literasi mushaf, wali, dan mobile sebelum 100%.',
             ),
             5 => $this->phase(
                 5,

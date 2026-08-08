@@ -384,7 +384,7 @@ class QuranAudioSyncService
             }
         }
 
-        // Delapan rubu' Juz 30 adalah milestone khas Sullamul Hifz, berbeda dari 240 Rubu' al-Hizb standar.
+        // Delapan segment Juz 30 adalah struktur legacy Sullamul Hifz, berbeda dari 240 Rubu' al-Hizb standar.
         QuranRubu::query()->where('juz_number', 30)->where('status', 'active')->orderBy('rubu_number')->get()->each(function (QuranRubu $rubu) use ($institution, $source): void {
             $this->upsertPreset($institution, $source, 'rubu-sullam-'.$rubu->rubu_number, [
                 'title' => $rubu->name,

@@ -1,5 +1,16 @@
 # Changelog
 
+## v2.6.0 — Qur’an Journey — 2026-08-08
+- Mengunci Marhalah berdasarkan perjalanan Juz: 30 Āyah, 29 Tsalātsiyyah, 28 Khamsiyyah, 27 Niṣfiyyah, 26 Ṣafḥah, Juz 1–25 Ṣafḥatayn.
+- Menegaskan porsi adalah standar per sesi, bukan kewajiban harian.
+- Menambahkan porsi Marhalah lintas surah dalam Juz yang sama dan memecahnya ke target setoran terkait.
+- Menambahkan milestone hafalan terpisah dari status penjagaan dan histori retention check.
+- Menambahkan Fondasi 5 Juz dan jembatan milestone Manzil Qaf (Qāf–An-Nās).
+- Menambahkan Khatam Al-Qur’an 30 Hari dan Fami Bisyauqin 7 Manzil untuk tilawah, Murāja‘ah, atau keduanya.
+- Menambahkan Peta Mushaf & Warisan Ulama: Juz, Ḥizb, Rubu‘ al-Ḥizb, Manzil, Rukū‘, Waqaf, Sajdah, Makki/Madani.
+- Meluruskan delapan `quran_rubus` v1.5 sebagai Segment Juz 30 legacy, bukan Rubu‘ al-Ḥizb standar.
+- Menambahkan Qur’an Journey untuk guru, program pribadi, tampilan read-only wali, roadmap, verifier, dan startup seeder/sync.
+
 ## v2.5.2 — Tahfizh Unified Workflow — 2026-08-07
 - Menyatukan pencatatan individual Tahfizh di halaman Perjalanan Tahfizh santri.
 - Guru dapat mencatat setoran, Murāja‘ah, fokus koreksi, tindak lanjut, dan jadwal review tanpa keluar ke Operasional Hari Ini.

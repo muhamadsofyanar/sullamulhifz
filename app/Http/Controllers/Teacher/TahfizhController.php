@@ -19,6 +19,7 @@ use App\Models\TahfizhLearningCycle;
 use App\Models\TeacherAssignment;
 use App\Services\TahfizhLearningService;
 use App\Services\TahfizhProgressService;
+use App\Services\QuranJourneyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -30,6 +31,7 @@ class TahfizhController extends Controller
     public function __construct(
         private readonly TahfizhProgressService $progress,
         private readonly TahfizhLearningService $learning,
+        private readonly QuranJourneyService $journey,
     ) {
     }
 
@@ -160,12 +162,18 @@ class TahfizhController extends Controller
             'review_recommendation' => ['nullable','string','max:190'],
             'next_review_date' => ['nullable','date','after_or_equal:today'],
             'teacher_notes' => ['nullable','string','max:5000'],
+            'portion_confirmed' => ['nullable','boolean'],
             'error_categories' => ['nullable','array'],
             'error_categories.*' => ['string','max:50'],
             'error_ayah' => ['nullable','integer','min:1'],
             'error_note' => ['nullable','string','max:1000'],
         ]);
         $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
+
+        $resolvedJourney = null;
+        if ($data['record_type'] === 'new_memorization') {
+            $resolvedJourney = $this->journey->resolveRange($student,(int)$data['surah_id'],(int)$data['start_verse'],(int)$data['end_verse'],true);
+        }
 
         $target = null;
         if (! empty($data['memorization_target_id'])) {
@@ -181,6 +189,13 @@ class TahfizhController extends Controller
                 'Target yang dipilih tidak sama dengan rentang ayat setoran. Pilih target lain atau kosongkan Target terkait.',
             );
             $data['marhalah_type_id'] ??= $target->marhalah_type_id;
+            $data['portion_confirmed'] = $target->portion_confirmed || (bool)($data['portion_confirmed'] ?? false);
+        }
+        if ($data['record_type'] === 'new_memorization') {
+            $data['marhalah_type_id'] = $resolvedJourney['marhalah']?->id ?? $data['marhalah_type_id'] ?? null;
+            if (! $target && ! (bool)($data['portion_confirmed'] ?? false)) {
+                return back()->withErrors(['portion_confirmed'=>'Konfirmasi bahwa porsi setoran sesuai Marhalah '.$resolvedJourney['rule']['name'].' ('.$resolvedJourney['rule']['portion'].') pada Mushaf Madinah.'])->withInput();
+            }
         }
         $target ??= MemorizationTarget::query()
             ->where('institution_id', $request->user()->institution_id)
@@ -206,7 +221,7 @@ class TahfizhController extends Controller
         );
 
         $recordData = $data;
-        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note']);
+        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note'], $recordData['portion_confirmed']);
         $record = MemorizationRecord::create([
             ...$recordData,
             'memorization_target_id' => $target?->id,
@@ -234,6 +249,7 @@ class TahfizhController extends Controller
                 default => 'paused',
             };
             $target->update(['status' => $status, 'completed_at' => $status === 'completed' ? now() : null]);
+            $this->journey->refreshPortionForTarget($target->fresh());
         }
 
         $this->log($request, 'tahfizh.individual_memorization_recorded', $record, [
@@ -336,6 +352,7 @@ class TahfizhController extends Controller
                 default => 'in_progress',
             };
             $target->update(['status' => $status, 'completed_at' => $status === 'completed' ? now() : null]);
+            $this->journey->refreshPortionForTarget($target->fresh());
         }
 
         $this->log($request, 'tahfizh.individual_murajaah_recorded', $record, [

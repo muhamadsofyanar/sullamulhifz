@@ -14,9 +14,13 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use App\Services\QuranJourneyService;
 
 class AcademicCoreController extends Controller
 {
+    public function __construct(private readonly QuranJourneyService $journey)
+    {
+    }
     public function index(Request $request): View
     {
         $institutionId = $request->user()->institution_id;
@@ -55,8 +59,21 @@ class AcademicCoreController extends Controller
         $institutionId = $request->user()->institution_id;
         $activeYear = AcademicYear::where('institution_id', $institutionId)->where('is_active', true)->firstOrFail();
         $data = $this->validateTarget($request);
-        abort_unless(Student::where('institution_id', $institutionId)->whereKey($data['student_id'])->exists(), 403);
+        $student = Student::where('institution_id', $institutionId)->findOrFail($data['student_id']);
         $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
+
+        if ($data['target_type'] === 'new_memorization') {
+            if (! (bool)($data['portion_confirmed'] ?? false)) {
+                return back()->withErrors(['portion_confirmed'=>'Konfirmasi porsi Marhalah pada Mushaf Madinah sebelum membuat target hafalan baru.'])->withInput();
+            }
+            $resolved = $this->journey->resolveRange($student,(int)$data['surah_id'],(int)$data['start_verse'],(int)$data['end_verse'],true);
+            $data['marhalah_type_id'] = $resolved['marhalah']?->id;
+            $data['journey_juz_number'] = $resolved['juz'];
+            $data['portion_confirmed'] = true;
+            $data['portion_note'] = 'Dikonfirmasi admin: '.$resolved['rule']['name'].' · porsi '.$resolved['rule']['portion'].'.';
+        } else {
+            $data['portion_confirmed'] = false;
+        }
 
         MemorizationTarget::create([
             ...$data,
@@ -75,6 +92,7 @@ class AcademicCoreController extends Controller
         $data = $request->validate([
             'status' => ['required', Rule::in(['active','in_progress','strengthening','completed','paused','cancelled'])],
             'notes' => ['nullable','string','max:2000'],
+            'portion_confirmed' => ['nullable','boolean'],
         ]);
         $target->update([
             ...$data,

@@ -14,6 +14,7 @@ use App\Models\QuranSurah;
 use App\Models\Student;
 use App\Models\TeacherAssignment;
 use App\Services\TahfizhLearningService;
+use App\Services\QuranJourneyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -22,8 +23,10 @@ use Illuminate\View\View;
 
 class LearningPlanController extends Controller
 {
-    public function __construct(private readonly TahfizhLearningService $tahfizh)
-    {
+    public function __construct(
+        private readonly TahfizhLearningService $tahfizh,
+        private readonly QuranJourneyService $journey,
+    ) {
     }
 
     public function index(Request $request): View
@@ -63,9 +66,24 @@ class LearningPlanController extends Controller
             'target_date' => ['nullable','date'],
             'due_date' => ['nullable','date','after_or_equal:target_date'],
             'notes' => ['nullable','string','max:2000'],
+            'portion_confirmed' => ['nullable','boolean'],
         ]);
         $this->authorizeStudent($request, (int) $data['student_id']);
+        $student = Student::where('institution_id',$request->user()->institution_id)->findOrFail($data['student_id']);
         $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
+
+        if ($data['target_type'] === 'new_memorization') {
+            if (! (bool)($data['portion_confirmed'] ?? false)) {
+                return back()->withErrors(['portion_confirmed'=>'Konfirmasi porsi Marhalah pada Mushaf Madinah sebelum membuat target hafalan baru.'])->withInput();
+            }
+            $resolved = $this->journey->resolveRange($student,(int)$data['surah_id'],(int)$data['start_verse'],(int)$data['end_verse'],true);
+            $data['marhalah_type_id'] = $resolved['marhalah']?->id;
+            $data['journey_juz_number'] = $resolved['juz'];
+            $data['portion_confirmed'] = true;
+            $data['portion_note'] = 'Dikonfirmasi guru: '.$resolved['rule']['name'].' · porsi '.$resolved['rule']['portion'].'.';
+        } else {
+            $data['portion_confirmed'] = false;
+        }
 
         $target = MemorizationTarget::create([
             ...$data,

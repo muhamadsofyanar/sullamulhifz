@@ -142,11 +142,11 @@ class QuranPlaylistBuilder
             return $query->where('hizb_quarter', $quarter)->get();
         }
 
-        // Mode rubu lama adalah delapan milestone Juz 30 khas Sullamul Hifz.
+        // Mode rubu lama dipertahankan sebagai delapan segment Juz 30 legacy untuk kompatibilitas.
         if ($mode === 'rubu') {
             $rubu = QuranRubu::query()->where('juz_number', 30)->where('status', 'active')->find((int) ($selection['rubu_id'] ?? 0));
             if (! $rubu) {
-                throw ValidationException::withMessages(['rubu_id' => 'Pilih milestone rubu‘ Juz 30.']);
+                throw ValidationException::withMessages(['rubu_id' => 'Pilih segment Juz 30 lama.']);
             }
             return $query
                 ->whereBetween('surah_id', [min($rubu->start_surah_id, $rubu->end_surah_id), max($rubu->start_surah_id, $rubu->end_surah_id)])

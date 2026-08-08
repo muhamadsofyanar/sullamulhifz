@@ -19,9 +19,10 @@ use Illuminate\Support\Facades\Schedule;
 use App\Services\QuranAudioSyncService;
 use App\Services\QuranCorpusSyncService;
 use App\Services\RoadmapStatusService;
+use App\Services\QuranDivisionService;
 
 Artisan::command('sullam:about', function (): void {
-    $this->info('Sullamul Hifz v2.5.0 — Tahfizh Learning Engine.');
+    $this->info('Sullamul Hifz v2.6.0 — Qur’an Journey.');
 })->purpose('Menampilkan identitas aplikasi');
 
 Artisan::command('sullam:reset-admin {--email=} {--password=}', function (): int {
@@ -107,11 +108,11 @@ Artisan::command('sullam:verify-academic-core', function (): int {
 
     $rubuCount = QuranRubu::where('juz_number', 30)->where('status', 'active')->count();
     if ($rubuCount !== 8) {
-        $this->error("Master rubu Juz 30 tidak lengkap. Ditemukan: {$rubuCount}.");
+        $this->error("Master segment legacy Juz 30 tidak lengkap. Ditemukan: {$rubuCount}.");
         return 1;
     }
 
-    $this->info('Academic Core siap: 8 rubu Juz 30 dan tabel target/observasi tersedia.');
+    $this->info('Academic Core siap: 8 segment legacy Juz 30 dan tabel target/observasi tersedia. Rubu‘ al-Ḥizb standar dikelola oleh Qur’an Journey.');
     return 0;
 })->purpose('Memeriksa tabel dan master data Academic Core v1.5.0');
 
@@ -314,6 +315,64 @@ Artisan::command('sullam:verify-tahfizh', function (): int {
     $this->info('Tahfizh Learning Engine v2.5.0 siap untuk validasi guru–wali. Implementasi tidak dianggap 100% fase sampai launch checks Fase 3 selesai.');
     return 0;
 })->purpose('Memeriksa fondasi siklus Tahfizh, setoran, Murāja‘ah, fokus koreksi dan jadwal penjagaan v2.5.0');
+
+Artisan::command('sullam:sync-quran-divisions', function (): int {
+    $result = app(QuranDivisionService::class)->sync();
+    $this->table(['Unit','Jumlah'], [
+        ['Juz',$result['juz']],
+        ['Ḥizb',$result['hizb']],
+        ['Rubu‘ al-Ḥizb',$result['rubu']],
+        ['Rukū‘',$result['ruku']],
+        ['Fami Bisyauqin / Manzil',$result['fami_manzil']],
+    ]);
+    $ready = $result['juz'] >= 30 && $result['hizb'] >= 60 && $result['rubu'] >= 240 && $result['fami_manzil'] >= 7;
+    if (! $ready) {
+        $this->warn('Pembagian mushaf belum lengkap. Pastikan korpus Full Qur’an 6.236 ayat sudah tersinkron.');
+        return 1;
+    }
+    $this->info('Peta pembagian mushaf siap: 30 Juz, 60 Ḥizb, 240 Rubu‘ al-Ḥizb, serta 7 manzil Fami Bisyauqin.');
+    return 0;
+})->purpose('Menyusun unit Juz, Hizb, Rubu, Ruku dan manzil Fami dari korpus Al-Qur’an');
+
+Artisan::command('sullam:verify-quran-journey', function (): int {
+    $required = [
+        'quran_journey_profiles','quran_journey_portions','memorization_milestones','memorization_retention_checks',
+        'quran_division_units','quran_program_templates','quran_program_steps','quran_program_enrollments',
+        'quran_program_progress','quran_heritage_terms',
+    ];
+    $missing = collect($required)->reject(fn(string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Struktur Qur’an Journey belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $marhalah = \App\Models\MarhalahType::query()->where('status','active')->whereNotNull('juz_from')->count();
+    $khatamSteps = \App\Models\QuranProgramTemplate::query()->where('code','khatam-30-hari')->first()?->steps()->count() ?? 0;
+    $famiSteps = \App\Models\QuranProgramTemplate::query()->where('code','fami-bisyauqin')->first()?->steps()->count() ?? 0;
+    $divisions = app(QuranDivisionService::class)->sync();
+    $terms = \App\Models\QuranHeritageTerm::query()->where('status','active')->count();
+
+    $this->table(['Komponen','Tersedia','Target'], [
+        ['Marhalah berbasis Juz',$marhalah,6],
+        ['Khatam 30 Hari',$khatamSteps,30],
+        ['Fami Bisyauqin',$famiSteps,7],
+        ['Juz',$divisions['juz'],30],
+        ['Ḥizb',$divisions['hizb'],60],
+        ['Rubu‘ al-Ḥizb',$divisions['rubu'],240],
+        ['Warisan Ulama',$terms,10],
+    ]);
+
+    $portionReady = Schema::hasColumn('memorization_targets','quran_journey_portion_id')
+        && Schema::hasColumn('memorization_targets','portion_confirmed');
+    $ready = $marhalah >= 6 && $khatamSteps >= 30 && $famiSteps >= 7 && $portionReady
+        && $divisions['juz'] >= 30 && $divisions['hizb'] >= 60 && $divisions['rubu'] >= 240 && $terms >= 10;
+    if (! $ready) {
+        $this->warn('Implementasi Qur’an Journey belum lengkap. Validasi fase tidak boleh ditutup.');
+        return 1;
+    }
+    $this->info('Qur’an Journey v2.6.0 siap untuk validasi produksi. 100% tetap menunggu seluruh launch check Fase 4.');
+    return 0;
+})->purpose('Memeriksa Marhalah, milestone, program khatam dan Peta Mushaf Fase 4');
 
 Artisan::command('sullam:roadmap-status {--institution=}', function (): int {
     $query = Institution::query()->where('status', 'active');

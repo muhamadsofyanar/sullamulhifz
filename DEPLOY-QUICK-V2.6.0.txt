@@ -1,0 +1,17 @@
+SULLAMUL HIFZ v2.6.0 — QUR'AN JOURNEY
+
+1. Backup database + storage.
+2. Upload ISI folder sullamulhifz-v2.6.0 ke root GitHub.
+3. Commit ke main.
+4. Redeploy Coolify satu kali.
+5. Tunggu sampai: Building completed → New container started → Rolling update completed.
+
+Tidak perlu ubah Environment Coolify.
+
+Setelah deploy cek:
+- /teacher/quran-journey
+- /perjalanan-quran
+- Guardian → Perkembangan Anak
+- Admin → Fondasi Platform / Roadmap 10 Fase
+
+Fase 4 belum dianggap 100% sebelum validasi produksi lulus.

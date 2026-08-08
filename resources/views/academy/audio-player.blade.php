@@ -131,7 +131,7 @@
                     <option value="juz">Satu juz</option>
                     <option value="page">Satu halaman Mushaf</option>
                     <option value="hizb_quarter">Satu Rubu‘ al-Hizb</option>
-                    <option value="rubu">Milestone Juz 30 Sullam</option>
+                    <option value="rubu">Segment Juz 30 lama</option>
                 </select>
             </label>
             <label data-quran-surah>Surah
@@ -151,7 +151,7 @@
             <label data-quran-hizb-quarter hidden>Rubu‘ al-Hizb
                 <select name="hizb_quarter"><option value="">Pilih rubu‘</option>@foreach($hizbQuarters as $quarter)<option value="{{ $quarter }}" @selected($quarter===($readingProgress?->hizb_quarter ?? null))>Rubu‘ {{ $quarter }} / 240</option>@endforeach</select>
             </label>
-            <label data-quran-rubu hidden>Milestone Juz 30 Sullam
+            <label data-quran-rubu hidden>Segment Juz 30 lama
                 <select name="rubu_id"><option value="">Pilih milestone</option>@foreach($rubus as $rubu)<option value="{{ $rubu->id }}">{{ $rubu->name }}</option>@endforeach</select>
             </label>
             <label>Pengulangan

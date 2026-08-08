@@ -10,6 +10,9 @@ use App\Models\Student;
 use App\Models\MediaAsset;
 use App\Services\MediaStorageService;
 use App\Services\TahfizhProgressService;
+use App\Services\QuranJourneyService;
+use App\Models\MemorizationMilestone;
+use App\Models\QuranProgramEnrollment;
 use App\Support\Feature;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -23,6 +26,7 @@ class PortalController extends Controller
     public function __construct(
         private readonly MediaStorageService $media,
         private readonly TahfizhProgressService $tahfizhProgress,
+        private readonly QuranJourneyService $quranJourney,
     ) {
     }
     public function children(Request $request): View
@@ -106,6 +110,15 @@ class PortalController extends Controller
             ->where('status', 'scheduled')
             ->orderBy('review_date')->limit(8)->get();
 
+        $quranJourneyEnabled = Feature::enabled('quran_journey', $institutionId, true);
+        $quranJourneySummary = $quranJourneyEnabled ? $this->quranJourney->summary($student) : null;
+        $quranJourneyMilestones = $quranJourneyEnabled
+            ? MemorizationMilestone::query()->where('institution_id',$institutionId)->where('student_id',$student->id)->latest('updated_at')->limit(12)->get()
+            : collect();
+        $quranJourneyPrograms = $quranJourneyEnabled
+            ? QuranProgramEnrollment::query()->with(['template','progress.step'])->where('institution_id',$institutionId)->where('student_id',$student->id)->latest()->limit(4)->get()
+            : collect();
+
         $academyRecommendations = $academyEnabled
             ? AcademyRecommendation::query()
                 ->with(['lesson.module.program','creator'])
@@ -128,6 +141,10 @@ class PortalController extends Controller
             'tahfizhSummary',
             'tahfizhCycles',
             'reviewPlans',
+            'quranJourneyEnabled',
+            'quranJourneySummary',
+            'quranJourneyMilestones',
+            'quranJourneyPrograms',
         ));
     }
 

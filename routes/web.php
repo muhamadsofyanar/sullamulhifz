@@ -30,6 +30,7 @@ use App\Http\Controllers\LiaisonController;
 use App\Http\Controllers\MediaController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuranPracticeController;
+use App\Http\Controllers\QuranJourneyController;
 use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\AcademyRecommendationController;
@@ -38,6 +39,7 @@ use App\Http\Controllers\Teacher\DailyOperationsController;
 use App\Http\Controllers\Teacher\MeetingController;
 use App\Http\Controllers\Teacher\LearningPlanController;
 use App\Http\Controllers\Teacher\TahfizhController;
+use App\Http\Controllers\Teacher\QuranJourneyController as TeacherQuranJourneyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +80,9 @@ Route::domain((string) config('sullam.academy_host'))
         Route::get('/audio/playlist', [AcademyQuranController::class, 'playlist'])->middleware('feature:quran_audio')->name('audio.playlist');
         Route::post('/audio/sesi', [AcademyQuranController::class, 'startSession'])->middleware('feature:quran_audio')->name('audio.sessions.start');
         Route::put('/audio/sesi/{session}/selesai', [AcademyQuranController::class, 'completeSession'])->middleware('feature:quran_audio')->name('audio.sessions.complete');
+        Route::get('/quran-journey', [QuranJourneyController::class, 'academy'])->middleware('feature:quran_journey')->name('quran-journey');
+        Route::post('/quran-journey/program', [QuranJourneyController::class, 'start'])->middleware('feature:quran_journey')->name('quran-journey.programs.start');
+        Route::put('/quran-journey/program/{enrollment}/langkah', [QuranJourneyController::class, 'step'])->middleware('feature:quran_journey')->name('quran-journey.programs.step');
         Route::get('/jalur-belajar', [AcademyExperienceController::class, 'paths'])->middleware('feature:learning_paths')->name('paths');
         Route::get('/jalur-belajar/{path}', [AcademyExperienceController::class, 'path'])->middleware('feature:learning_paths')->name('path');
         Route::get('/tersimpan', [AcademyExperienceController::class, 'bookmarks'])->name('bookmarks');
@@ -144,6 +149,10 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::get('/academy/program/{program}', [AcademyController::class, 'program'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.program');
     Route::get('/academy/materi/{lesson}', [AcademyController::class, 'lesson'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.lesson');
     Route::post('/academy/materi/{lesson}/selesai', [AcademyController::class, 'complete'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.lesson.complete');
+
+    Route::get('/perjalanan-quran', [QuranJourneyController::class, 'index'])->middleware(['permission:quran.view','feature:quran_journey'])->name('quran-journey.index');
+    Route::post('/perjalanan-quran/program', [QuranJourneyController::class, 'start'])->middleware(['permission:quran.view','feature:quran_journey'])->name('quran-journey.programs.start');
+    Route::put('/perjalanan-quran/program/{enrollment}/langkah', [QuranJourneyController::class, 'step'])->middleware(['permission:quran.view','feature:quran_journey'])->name('quran-journey.programs.step');
 
     Route::get('/latihan-quran', [QuranPracticeController::class, 'index'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.index');
     Route::get('/latihan-quran/playlist', [QuranPracticeController::class, 'playlist'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.playlist');
@@ -274,6 +283,17 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         Route::post('/learning-plan/targets', [LearningPlanController::class, 'storeTarget'])->middleware('permission:learning.manage')->name('learning-plan.targets.store');
         Route::put('/learning-plan/targets/{target}', [LearningPlanController::class, 'updateTarget'])->middleware('permission:learning.manage')->name('learning-plan.targets.update');
         Route::post('/learning-plan/observations', [LearningPlanController::class, 'storeObservation'])->middleware('permission:learning.manage')->name('learning-plan.observations.store');
+
+        Route::get('/quran-journey', [TeacherQuranJourneyController::class, 'index'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.index');
+        Route::get('/quran-journey/students/{student}', [TeacherQuranJourneyController::class, 'student'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.student');
+        Route::post('/quran-journey/students/{student}/initialize', [TeacherQuranJourneyController::class, 'initialize'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.initialize');
+        Route::post('/quran-journey/students/{student}/advance', [TeacherQuranJourneyController::class, 'advance'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.advance');
+        Route::post('/quran-journey/students/{student}/portions', [TeacherQuranJourneyController::class, 'storePortion'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.portions.store');
+        Route::post('/quran-journey/students/{student}/milestones/current-juz', [TeacherQuranJourneyController::class, 'currentJuzMilestone'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.milestones.current-juz');
+        Route::post('/quran-journey/students/{student}/milestones', [TeacherQuranJourneyController::class, 'milestone'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.milestones.store');
+        Route::post('/quran-journey/students/{student}/milestones/{milestone}/retention', [TeacherQuranJourneyController::class, 'retention'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.retention.store');
+        Route::post('/quran-journey/students/{student}/programs', [TeacherQuranJourneyController::class, 'assignProgram'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.programs.store');
+        Route::put('/quran-journey/students/{student}/programs/{enrollment}/step', [TeacherQuranJourneyController::class, 'programStep'])->middleware(['permission:learning.manage','feature:quran_journey'])->name('quran-journey.programs.step');
 
         Route::get('/tahfizh', [TahfizhController::class, 'index'])->middleware('permission:learning.manage')->name('tahfizh.index');
         Route::get('/tahfizh/students/{student}', [TahfizhController::class, 'student'])->middleware('permission:learning.manage')->name('tahfizh.student');

@@ -14,8 +14,10 @@ use App\Models\MemorizationTarget;
 use App\Models\MurajaahRecord;
 use App\Models\QuranSurah;
 use App\Models\SchoolClass;
+use App\Models\Student;
 use App\Models\TahsinRecord;
 use App\Services\TahfizhLearningService;
+use App\Services\QuranJourneyService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -24,8 +26,10 @@ use Illuminate\View\View;
 
 class MeetingController extends Controller
 {
-    public function __construct(private readonly TahfizhLearningService $tahfizh)
-    {
+    public function __construct(
+        private readonly TahfizhLearningService $tahfizh,
+        private readonly QuranJourneyService $journey,
+    ) {
     }
 
     public function create(Request $request): View
@@ -192,6 +196,7 @@ class MeetingController extends Controller
             'review_recommendation' => ['nullable', 'string', 'max:190'],
             'next_review_date' => ['nullable', 'date', 'after_or_equal:today'],
             'teacher_notes' => ['nullable', 'string'],
+            'portion_confirmed' => ['nullable', 'boolean'],
             'error_categories' => ['nullable', 'array'],
             'error_categories.*' => ['string', 'max:50'],
             'error_ayah' => ['nullable', 'integer', 'min:1'],
@@ -199,6 +204,11 @@ class MeetingController extends Controller
         ]);
         $this->authorizeStudent($meeting, (int) $data['student_id']);
         $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
+        $student = Student::where('institution_id',$meeting->institution_id)->findOrFail($data['student_id']);
+        $resolvedJourney = null;
+        if ($data['record_type'] === 'new_memorization') {
+            $resolvedJourney = $this->journey->resolveRange($student,(int)$data['surah_id'],(int)$data['start_verse'],(int)$data['end_verse'],true);
+        }
 
         $target = null;
         if (! empty($data['memorization_target_id'])) {
@@ -206,6 +216,13 @@ class MeetingController extends Controller
                 ->where('institution_id', $meeting->institution_id)
                 ->where('student_id', $data['student_id'])
                 ->findOrFail($data['memorization_target_id']);
+        }
+        if ($data['record_type'] === 'new_memorization') {
+            $data['marhalah_type_id'] = $resolvedJourney['marhalah']?->id ?? $data['marhalah_type_id'] ?? null;
+            $targetConfirmed = $target?->portion_confirmed ?? false;
+            if (! $targetConfirmed && ! (bool)($data['portion_confirmed'] ?? false)) {
+                return back()->withErrors(['portion_confirmed'=>'Konfirmasi bahwa porsi setoran sesuai Marhalah '.$resolvedJourney['rule']['name'].' ('.$resolvedJourney['rule']['portion'].') pada Mushaf Madinah.'])->withInput();
+            }
         }
         $target ??= MemorizationTarget::where('institution_id', $meeting->institution_id)
             ->where('student_id', $data['student_id'])
@@ -226,7 +243,7 @@ class MeetingController extends Controller
             },
         );
         $recordData = $data;
-        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note']);
+        unset($recordData['error_categories'], $recordData['error_ayah'], $recordData['error_note'], $recordData['portion_confirmed']);
         $record = MemorizationRecord::create([
             ...$recordData,
             'memorization_target_id' => $target?->id,
@@ -253,6 +270,7 @@ class MeetingController extends Controller
                 default => 'paused',
             };
             $target->update(['status' => $status, 'completed_at' => $status === 'completed' ? now() : null]);
+            $this->journey->refreshPortionForTarget($target->fresh());
         }
 
         $this->log($request, 'memorization.recorded', $record, ['student_id' => $data['student_id'], 'target_id' => $target?->id]);
@@ -338,6 +356,7 @@ class MeetingController extends Controller
                 default => 'in_progress',
             };
             $target->update(['status' => $status, 'completed_at' => $status === 'completed' ? now() : null]);
+            $this->journey->refreshPortionForTarget($target->fresh());
         }
 
         $this->log($request, 'murajaah.recorded', $record, ['student_id' => $data['student_id']]);

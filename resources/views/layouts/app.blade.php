@@ -105,6 +105,11 @@
                 <a href="{{ route('teacher.tahfizh.index') }}" class="{{ request()->routeIs('teacher.tahfizh.*') ? 'active' : '' }}">
                     <x-icon name="preservation"/><span>Perjalanan Tahfizh</span>
                 </a>
+                @if(\App\Support\Feature::enabled('quran_journey', auth()->user()->institution_id, true))
+                <a href="{{ route('teacher.quran-journey.index') }}" class="{{ request()->routeIs('teacher.quran-journey.*') ? 'active' : '' }}">
+                    <x-icon name="growth"/><span>Qur’an Journey Santri</span>
+                </a>
+                @endif
                 <a href="{{ route('teacher.learning-plan.index') }}" class="{{ request()->routeIs('teacher.learning-plan.*') ? 'active' : '' }}">
                     <x-icon name="guidance"/><span>Target & Profil</span>
                 </a>
@@ -139,6 +144,11 @@
             <a href="{{ route('feed.friday') }}" class="{{ request()->routeIs('feed.friday') ? 'active' : '' }}" @if(request()->routeIs('feed.friday')) aria-current="page" @endif>
                 <x-icon name="values"/><span>Pembinaan Jumat</span>
             </a>
+            @if(\App\Support\Feature::enabled('quran_journey', auth()->user()->institution_id, true))
+            <a href="{{ route('quran-journey.index') }}" class="{{ request()->routeIs('quran-journey.*') ? 'active' : '' }}" @if(request()->routeIs('quran-journey.*')) aria-current="page" @endif>
+                <x-icon name="continuity"/><span>Program Qur’an Saya</span>
+            </a>
+            @endif
             @if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id))
             <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*') ? 'active' : '' }}" @if(request()->routeIs('quran-practice.*')) aria-current="page" @endif>
                 <x-icon name="listen"/><span>Latihan Al-Qur’an</span>
