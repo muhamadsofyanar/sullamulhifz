@@ -13,6 +13,7 @@ use App\Models\QuranProgramTemplate;
 use App\Models\QuranJourneyPortion;
 use App\Models\QuranSurah;
 use App\Models\Student;
+use App\Models\StudentMarhalahHistory;
 use App\Models\TeacherAssignment;
 use App\Services\QuranJourneyService;
 use App\Services\MushafLineService;
@@ -97,6 +98,9 @@ class QuranJourneyController extends Controller
             'portions'=>QuranJourneyPortion::query()->with(['marhalah','startSurah','endSurah','targets.surah'])
                 ->where('institution_id',$request->user()->institution_id)->where('student_id',$student->id)
                 ->latest()->limit(30)->get(),
+            'stageHistories'=>StudentMarhalahHistory::query()->with(['marhalahType','teacher'])
+                ->where('student_id',$student->id)
+                ->orderByDesc('effective_from')->orderByDesc('id')->get(),
             'mushafLineStatus'=>$lineStatus,
             'mushafPages'=>$mushafPages,
             'selectedMushafPage'=>$selectedMushafPage,
@@ -120,6 +124,20 @@ class QuranJourneyController extends Controller
             $student,$teacher,(int)$data['current_juz_number'],$data['cadence_mode'],$data['cadence_notes'] ?? null,$data['reason'] ?? null,
         );
         return back()->with('success','Posisi awal Qur’an Journey tersimpan. Marhalah ditentukan otomatis dari Juz, bukan dipilih sebagai level kemampuan.');
+    }
+
+    public function updateCadence(Request $request, Student $student): RedirectResponse
+    {
+        $this->authorizeStudent($request,$student);
+        $teacher = $request->user()->teacher;
+        abort_unless($teacher,403);
+        $data = $request->validate([
+            'cadence_mode'=>['required',Rule::in(['flexible','daily','weekly','custom'])],
+            'cadence_notes'=>['nullable','string','max:1000'],
+        ]);
+
+        $this->journey->updateCadence($student,$teacher,$data['cadence_mode'],$data['cadence_notes'] ?? null);
+        return back()->with('success','Arahan tahap aktif diperbarui. Catatan ini akan diarsipkan bersama Juz/Marhalah saat berpindah tahap.');
     }
 
     public function advance(Request $request, Student $student): RedirectResponse

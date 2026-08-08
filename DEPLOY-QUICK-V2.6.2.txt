@@ -1,0 +1,15 @@
+SULLAMUL HIFZ v2.6.2 — DEPLOY CEPAT
+
+1. Backup database dan storage.
+2. Upload ISI folder sullamulhifz-v2.6.2 ke root repository GitHub.
+3. Commit ke branch main.
+4. Redeploy satu kali di Coolify.
+5. AUTO_MIGRATE akan menambahkan snapshot arahan per tahap/Juz.
+6. Tidak ada Environment baru yang perlu ditambahkan.
+
+VALIDASI SETELAH DEPLOY
+- Login guru.
+- Buka Qur’an Journey Affan.
+- Juz aktif 29 / Tsalātsiyyah harus tampil dengan pola default Fleksibel jika catatan lama sebelumnya terbawa.
+- “senin menghafal minimal 1 ayat” harus berpindah ke Riwayat arahan Juz 30, bukan tampil sebagai arahan aktif Juz 29.
+- Isi arahan baru Juz 29 lalu Simpan; refresh halaman dan pastikan tetap tersimpan.

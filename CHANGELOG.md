@@ -1,3 +1,11 @@
+# v2.6.2 — Stage Schedule History
+
+- Arahan guru sekarang berlaku per Juz/Marhalah, bukan menempel selamanya pada profil santri.
+- Tahap baru selalu dimulai dengan pola Fleksibel; sistem tidak mengarang atau mewariskan instruksi tahap lama.
+- Catatan tahap lama diarsipkan sebagai riwayat lengkap dengan Juz, Marhalah, porsi, pola, dan periode.
+- Guru dapat memperbarui pola pelaksanaan dan arahan tahap aktif langsung dari Qur’an Journey.
+- Migrasi memperbaiki data legacy v2.6.0 yang sempat membawa catatan Juz 30 ke Juz 29.
+
 # v2.6.1 — Mushaf Line Engine
 
 - Tsalātsiyyah (Juz 29) sekarang menggunakan blok fisik 3 slot Mushaf: 1–3, 4–6, 7–9, 10–12, 13–15.

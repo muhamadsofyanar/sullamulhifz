@@ -8,7 +8,8 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class StudentMarhalahHistory extends Model
 {
     protected $fillable = [
-        'student_id', 'marhalah_type_id', 'effective_from', 'effective_until', 'decision', 'reason',
+        'student_id', 'marhalah_type_id', 'journey_juz_number', 'stage_code', 'portion_label',
+        'effective_from', 'effective_until', 'decision', 'reason', 'cadence_mode', 'cadence_notes',
         'decided_by_teacher_id', 'evidence_notes', 'status',
     ];
 

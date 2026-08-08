@@ -81,9 +81,14 @@ class QuranJourneyService
             StudentMarhalahHistory::query()->create([
                 'student_id'=>$student->id,
                 'marhalah_type_id'=>$marhalah->id,
+                'journey_juz_number'=>$juz,
+                'stage_code'=>$rule['stage'],
+                'portion_label'=>$rule['portion'],
                 'effective_from'=>today(),
                 'decision'=>'initial_position',
                 'reason'=>$reason ?: 'Posisi awal perjalanan Qur’an ditetapkan guru saat migrasi ke Qur’an Journey.',
+                'cadence_mode'=>$cadenceMode,
+                'cadence_notes'=>$cadenceNotes,
                 'decided_by_teacher_id'=>$teacher->id,
                 'evidence_notes'=>'Juz '.$juz.' · '.$rule['name'].' · porsi '.$rule['portion'].'.',
                 'status'=>'active',
@@ -136,17 +141,36 @@ class QuranJourneyService
         }
 
         DB::transaction(function () use ($student, $teacher, $profile, $currentJuz, $next, $rule, $marhalah): void {
+            $currentRule = $this->ruleForJuz($currentJuz);
+
+            // Tutup tahap lama sambil menyimpan snapshot arahan guru. Catatan tidak dibuang:
+            // ia menjadi bagian dari jejak pendidikan pada Juz/Marhalah ketika dibuat.
             StudentMarhalahHistory::query()
                 ->where('student_id', $student->id)
                 ->where('status', 'active')
-                ->update(['status'=>'completed','effective_until'=>today()]);
+                ->update([
+                    'journey_juz_number'=>$currentJuz,
+                    'stage_code'=>$profile->stage_code,
+                    'portion_label'=>$currentRule['portion'],
+                    'cadence_mode'=>$profile->cadence_mode ?: 'flexible',
+                    'cadence_notes'=>$profile->cadence_notes,
+                    'status'=>'completed',
+                    'effective_until'=>today(),
+                ]);
 
+            // Tahap baru selalu dimulai netral/fleksibel. Sistem tidak mengarang atau
+            // mewariskan instruksi tahap lama seperti "minimal 1 ayat" menjadi "3 baris".
             StudentMarhalahHistory::query()->create([
                 'student_id'=>$student->id,
                 'marhalah_type_id'=>$marhalah->id,
+                'journey_juz_number'=>$next,
+                'stage_code'=>$rule['stage'],
+                'portion_label'=>$rule['portion'],
                 'effective_from'=>today(),
                 'decision'=>'advance_by_juz',
                 'reason'=>'Juz '.$currentJuz.' telah selesai dan guru mengonfirmasi lanjut ke Juz '.$next.'.',
+                'cadence_mode'=>'flexible',
+                'cadence_notes'=>null,
                 'decided_by_teacher_id'=>$teacher->id,
                 'evidence_notes'=>$rule['name'].' · standar porsi '.$rule['portion'].'.',
                 'status'=>'active',
@@ -156,8 +180,7 @@ class QuranJourneyService
                 'current_juz_number'=>$next,
                 'current_marhalah_type_id'=>$marhalah->id,
                 'stage_code'=>$rule['stage'],
-                // Catatan porsi lama dapat bertentangan dengan Marhalah baru (mis. "1 ayat" saat masuk 3 baris).
-                // Pola jadwal tetap dipertahankan, tetapi catatan spesifik porsi diminta ulang pada tahap baru.
+                'cadence_mode'=>'flexible',
                 'cadence_notes'=>null,
                 'updated_by_teacher_id'=>$teacher->id,
                 'foundation_completed_at'=>$currentJuz === 26 ? ($profile->foundation_completed_at ?: now()) : $profile->foundation_completed_at,
@@ -166,6 +189,44 @@ class QuranJourneyService
 
             $this->ensureJuzMilestone($student, $next);
             $this->refreshAggregateMilestones($student, $teacher);
+        });
+
+        return $profile->fresh('marhalah');
+    }
+
+    public function updateCadence(Student $student, Teacher $teacher, string $cadenceMode, ?string $cadenceNotes = null): QuranJourneyProfile
+    {
+        $profile = QuranJourneyProfile::query()
+            ->where('institution_id', $student->institution_id)
+            ->where('student_id', $student->id)
+            ->firstOrFail();
+
+        $allowed = ['flexible','daily','weekly','custom'];
+        if (! in_array($cadenceMode, $allowed, true)) {
+            throw ValidationException::withMessages(['cadence_mode' => 'Pola pelaksanaan tidak dikenal.']);
+        }
+
+        $notes = $cadenceNotes !== null && trim($cadenceNotes) !== '' ? trim($cadenceNotes) : null;
+        $rule = $this->ruleForJuz((int) $profile->current_juz_number);
+
+        DB::transaction(function () use ($student, $teacher, $profile, $cadenceMode, $notes, $rule): void {
+            $profile->update([
+                'cadence_mode'=>$cadenceMode,
+                'cadence_notes'=>$notes,
+                'updated_by_teacher_id'=>$teacher->id,
+            ]);
+
+            StudentMarhalahHistory::query()
+                ->where('student_id', $student->id)
+                ->where('status', 'active')
+                ->update([
+                    'journey_juz_number'=>(int) $profile->current_juz_number,
+                    'stage_code'=>$profile->stage_code,
+                    'portion_label'=>$rule['portion'],
+                    'cadence_mode'=>$cadenceMode,
+                    'cadence_notes'=>$notes,
+                    'decided_by_teacher_id'=>$teacher->id,
+                ]);
         });
 
         return $profile->fresh('marhalah');

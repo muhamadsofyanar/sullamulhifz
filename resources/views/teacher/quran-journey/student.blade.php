@@ -21,8 +21,8 @@ $purposeLabel = ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawa
             <option value="30">Juz 30 — Āyah · ≥ 1 ayat</option><option value="29">Juz 29 — Tsalātsiyyah · 3 baris</option><option value="28">Juz 28 — Khamsiyyah · 5 baris</option><option value="27">Juz 27 — Niṣfiyyah · ½ halaman</option><option value="26">Juz 26 — Ṣafḥah · 1 halaman</option>
             @for($j=1;$j<=25;$j++)<option value="{{ $j }}">Juz {{ $j }} — Ṣafḥatayn · 2 halaman</option>@endfor
         </select></label>
-        <label>Ritme program<select name="cadence_mode"><option value="flexible">Fleksibel</option><option value="daily">Harian</option><option value="weekly">Mingguan</option><option value="custom">Khusus</option></select></label>
-        <label>Catatan ritme<textarea name="cadence_notes" rows="2" placeholder="Contoh: setoran Senin dan Kamis; porsi tetap mengikuti Marhalah"></textarea></label>
+        <label>Pola pelaksanaan<select name="cadence_mode"><option value="flexible" selected>Fleksibel</option><option value="daily">Harian</option><option value="weekly">Mingguan</option><option value="custom">Khusus</option></select><small>Default fleksibel. Porsi Marhalah adalah standar satu sesi, bukan kewajiban harian.</small></label>
+        <label>Arahan guru tahap awal<textarea name="cadence_notes" rows="2" placeholder="Contoh: setoran Senin dan Kamis; satu porsi tetap mengikuti Marhalah"></textarea></label>
         <label>Alasan posisi awal<textarea name="reason" rows="3" placeholder="Catatan guru saat memulai penggunaan Qur’an Journey"></textarea></label>
         <button class="button primary">Mulai Qur’an Journey</button>
     </form>
@@ -37,8 +37,49 @@ $purposeLabel = ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawa
 
 <section class="card">
     <div class="section-head"><div><span class="eyebrow">MARHALAH AKTIF</span><h2>Juz {{ $profile->current_juz_number }} · {{ $profile->marhalah?->name }}</h2><p class="hint">{{ $profile->marhalah?->description }}</p></div><span class="badge">{{ $rule['portion'] }} / sesi</span></div>
-    <p><strong>Pola jadwal:</strong> {{ ['flexible'=>'Fleksibel','daily'=>'Harian','weekly'=>'Mingguan','custom'=>'Khusus'][$profile->cadence_mode] ?? $profile->cadence_mode }}. Ini hanya pola pelaksanaan; porsi Marhalah tidak berarti santri wajib setor setiap hari.</p>
-    @if($profile->cadence_notes)<p><strong>Catatan jadwal:</strong> {{ $profile->cadence_notes }}</p>@endif
+    @php
+        $cadenceLabels = ['flexible'=>'Fleksibel','daily'=>'Harian','weekly'=>'Mingguan','custom'=>'Khusus'];
+        $completedStageHistories = $stageHistories->where('status','completed');
+    @endphp
+    <div class="grid two" style="margin-top:14px">
+        <div class="item-card static">
+            <div>
+                <strong>Arahan tahap aktif</strong>
+                <small>Juz {{ $profile->current_juz_number }} · {{ $profile->marhalah?->name }} · porsi {{ $rule['portion'] }}</small>
+                <p><strong>Pola pelaksanaan:</strong> {{ $cadenceLabels[$profile->cadence_mode] ?? 'Fleksibel' }}</p>
+                <p>{{ $profile->cadence_notes ?: 'Belum ada arahan khusus dari guru untuk tahap ini.' }}</p>
+            </div>
+        </div>
+        <form class="stack compact" method="post" action="{{ route('teacher.quran-journey.cadence.update',$student) }}">
+            @csrf @method('PUT')
+            <label>Pola pelaksanaan
+                <select name="cadence_mode">
+                    <option value="flexible" @selected($profile->cadence_mode==='flexible')>Fleksibel</option>
+                    <option value="daily" @selected($profile->cadence_mode==='daily')>Harian</option>
+                    <option value="weekly" @selected($profile->cadence_mode==='weekly')>Mingguan</option>
+                    <option value="custom" @selected($profile->cadence_mode==='custom')>Khusus</option>
+                </select>
+                <small>Porsi {{ $rule['portion'] }} tidak otomatis berarti harus disetor setiap hari.</small>
+            </label>
+            <label>Arahan guru tahap aktif<textarea name="cadence_notes" rows="2" placeholder="Contoh: Senin dan Kamis, satu porsi 3 baris per setoran">{{ $profile->cadence_notes }}</textarea></label>
+            <button class="button secondary">Simpan arahan tahap ini</button>
+        </form>
+    </div>
+
+    @if($completedStageHistories->isNotEmpty())
+    <details style="margin-top:14px">
+        <summary><strong>Riwayat arahan tahap sebelumnya</strong> · {{ $completedStageHistories->count() }} tahap</summary>
+        <div class="cards-list" style="margin-top:10px">
+            @foreach($completedStageHistories as $history)
+            <div class="list-row"><div>
+                <strong>{{ $history->journey_juz_number ? 'Juz '.$history->journey_juz_number.' · ' : '' }}{{ $history->marhalahType?->name }}</strong>
+                <small>{{ $history->portion_label ?: 'Porsi mengikuti Marhalah saat itu' }} · {{ $cadenceLabels[$history->cadence_mode] ?? 'Fleksibel' }} · {{ $history->effective_from?->format('d M Y') }}@if($history->effective_until)–{{ $history->effective_until->format('d M Y') }}@endif</small>
+                <p>{{ $history->cadence_notes ?: 'Tidak ada arahan khusus pada tahap ini.' }}</p>
+            </div></div>
+            @endforeach
+        </div>
+    </details>
+    @endif
     @if(($rule['unit'] ?? null)==='line')
         <div class="alert info"><strong>Mushaf Line Engine aktif.</strong> Tsalātsiyyah/Khamsiyyah mengikuti slot fisik halaman Mushaf Madinah: blok 3/5 baris tetap. Nama surah atau basmalah yang menempati slot halaman tetap dihitung pada posisi fisiknya; batas hafalan disimpan sampai tingkat kata agar tidak dipaksa menjadi satu ayat penuh.</div>
     @elseif(($rule['unit'] ?? null)==='page')

@@ -103,6 +103,12 @@ class RoadmapStatusService
                     'label' => 'Enam Marhalah terikat pada wilayah Juz',
                     'passed' => \App\Models\MarhalahType::query()->where('status','active')->whereNotNull('juz_from')->whereNotNull('portion_unit')->count() >= 6,
                 ], [
+                    'label' => 'Arahan jadwal disimpan per tahap/Juz dan tahap baru kembali fleksibel',
+                    'passed' => Schema::hasColumn('student_marhalah_histories','journey_juz_number')
+                        && Schema::hasColumn('student_marhalah_histories','cadence_mode')
+                        && Schema::hasColumn('student_marhalah_histories','cadence_notes')
+                        && method_exists(\App\Services\QuranJourneyService::class, 'updateCadence'),
+                ], [
                     'label' => 'Porsi Marhalah dapat melintasi pergantian surah dalam Juz yang sama',
                     'passed' => Schema::hasTable('quran_journey_portions')
                         && Schema::hasColumn('memorization_targets','quran_journey_portion_id')
