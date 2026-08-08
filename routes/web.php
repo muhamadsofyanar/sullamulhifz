@@ -293,6 +293,7 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     });
 
     Route::prefix('guardian')->name('guardian.')->middleware('role:guardian')->group(function (): void {
+        Route::get('/children', [PortalController::class, 'children'])->middleware('permission:students.view')->name('children.index');
         Route::get('/children/{student}', [PortalController::class, 'child'])->middleware('permission:students.view')->name('children.show');
         Route::get('/tasks', [PortalController::class, 'tasks'])->middleware('permission:assignments.view')->name('tasks.index');
         Route::get('/tasks/{recipient}', [PortalController::class, 'task'])->middleware('permission:assignments.view')->name('tasks.show');

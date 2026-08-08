@@ -25,6 +25,19 @@ class PortalController extends Controller
         private readonly TahfizhProgressService $tahfizhProgress,
     ) {
     }
+    public function children(Request $request): View
+    {
+        $guardian = $request->user()->guardian;
+        abort_unless($guardian, 403, 'Profil wali belum terhubung.');
+
+        $students = $guardian->students()
+            ->with('currentEnrollment.schoolClass')
+            ->orderBy('full_name')
+            ->get();
+
+        return view('guardian.children.index', compact('students'));
+    }
+
     public function child(Request $request, Student $student): View
     {
         $this->authorizeChild($request, $student);

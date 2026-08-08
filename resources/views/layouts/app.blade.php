@@ -118,7 +118,7 @@
                 </a>
             @endif
             @if(auth()->user()->hasRole('guardian'))
-                <a href="{{ route('dashboard') }}#anak-saya" class="{{ request()->routeIs('guardian.children.*') ? 'active' : '' }}">
+                <a href="{{ route('guardian.children.index') }}" class="{{ request()->routeIs('guardian.children.*') ? 'active' : '' }}">
                     <x-icon name="progress"/><span>Perkembangan Anak</span>
                 </a>
                 <a href="{{ route('guardian.tasks.index') }}" class="{{ request()->routeIs('guardian.tasks.*') ? 'active' : '' }}">
@@ -195,7 +195,7 @@
 <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
     @if(auth()->user()->hasRole('guardian'))
         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
-        <a href="{{ route('dashboard') }}#anak-saya" class="{{ request()->routeIs('guardian.children.*')?'active':'' }}"><x-icon name="student"/><span>Anak</span></a>
+        <a href="{{ route('guardian.children.index') }}" class="{{ request()->routeIs('guardian.children.*')?'active':'' }}"><x-icon name="student"/><span>Anak</span></a>
         <a href="{{ route('guardian.tasks.index') }}" class="{{ request()->routeIs('guardian.tasks.*')?'active':'' }}"><x-icon name="plan"/><span>Tugas</span></a>
         <a href="{{ route('liaison.index') }}" class="{{ request()->routeIs('liaison.*')?'active':'' }}"><x-icon name="discussion"/><span>Pesan</span></a>
         <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>

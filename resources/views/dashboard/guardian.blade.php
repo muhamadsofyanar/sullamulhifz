@@ -20,7 +20,16 @@
 </div>
 
 @if($todayRecords->isNotEmpty())
-<section class="card family-today"><div class="section-head"><h2>Hari ini</h2><span class="badge">Ringkasan guru</span></div>@foreach($todayRecords as $record)@php($meeting=$record->meeting;$target=$meeting?->schoolClass ?: $meeting?->learningGroup)<div class="family-today-row"><div class="family-status-dot"></div><div><strong>{{ $record->student?->full_name }} · {{ $target?->name }}</strong><small>{{ ['present'=>'Hadir','late'=>'Terlambat','permission'=>'Izin','sick'=>'Sakit','absent'=>'Tanpa keterangan'][$record->status] ?? $record->status }}</small><p>{{ $meeting?->guardian_summary ?: 'Ringkasan belum ditulis.' }}</p></div></div>@endforeach</section>
+<section class="card family-today">
+    <div class="section-head"><h2>Hari ini</h2><span class="badge">Ringkasan guru</span></div>
+    @foreach($todayRecords as $record)
+        @php
+            $meeting = $record->meeting;
+            $target = $meeting?->schoolClass ?: $meeting?->learningGroup;
+        @endphp
+        <div class="family-today-row"><div class="family-status-dot"></div><div><strong>{{ $record->student?->full_name }} · {{ $target?->name }}</strong><small>{{ ['present'=>'Hadir','late'=>'Terlambat','permission'=>'Izin','sick'=>'Sakit','absent'=>'Tanpa keterangan'][$record->status] ?? $record->status }}</small><p>{{ $meeting?->guardian_summary ?: 'Ringkasan belum ditulis.' }}</p></div></div>
+    @endforeach
+</section>
 @endif
 
 @if($academyEnabled && $academyFeatured)

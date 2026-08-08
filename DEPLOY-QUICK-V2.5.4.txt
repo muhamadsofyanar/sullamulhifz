@@ -1,0 +1,13 @@
+SULLAMUL HIFZ v2.5.4 — DEPLOY CEPAT
+
+1. Backup database/storage seperti biasa.
+2. Upload ISI folder sullamulhifz-v2.5.4 ke root repository GitHub.
+3. Commit ke branch main.
+4. Redeploy di Coolify.
+5. Login sebagai wali.
+6. Uji:
+   - https://app.sullamulhifz.or.id/dashboard
+   - https://app.sullamulhifz.or.id/guardian/children
+   - pilih anak → detail perkembangan
+
+Tidak ada migration atau perubahan Environment yang diperlukan.
