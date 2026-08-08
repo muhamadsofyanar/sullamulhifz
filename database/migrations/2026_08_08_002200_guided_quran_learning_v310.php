@@ -85,14 +85,18 @@ return new class extends Migration {
 
         Schema::create('quran_guided_submission_reviews', function (Blueprint $table): void {
             $table->id();
-            $table->foreignId('quran_guided_submission_id')->constrained('quran_guided_submissions')->cascadeOnDelete();
+            $table->foreignId('quran_guided_submission_id');
             $table->foreignId('reviewer_user_id')->constrained('users')->cascadeOnDelete();
             $table->foreignId('reviewer_teacher_id')->nullable()->constrained('teachers')->nullOnDelete();
-            $table->foreignId('feedback_audio_media_asset_id')->nullable()->constrained('media_assets')->nullOnDelete();
+            $table->foreignId('feedback_audio_media_asset_id')->nullable();
             $table->string('decision', 30);
             $table->text('feedback_text')->nullable();
             $table->timestamps();
             $table->index(['quran_guided_submission_id', 'created_at'], 'guided_review_history_idx');
+            $table->foreign('quran_guided_submission_id', 'guided_review_submission_fk')
+                ->references('id')->on('quran_guided_submissions')->cascadeOnDelete();
+            $table->foreign('feedback_audio_media_asset_id', 'guided_review_feedback_audio_fk')
+                ->references('id')->on('media_assets')->nullOnDelete();
         });
 
         $permissions = [

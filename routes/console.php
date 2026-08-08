@@ -722,8 +722,8 @@ Artisan::command('sullam:verify-guided-quran', function (): int {
         return 1;
     }
 
-    $this->info('Struktur Guided Quran Learning v3.1.0 siap. Setoran audio, review asatidz, feedback, dan isolasi dua akun tetap harus dibuktikan lewat smoke test produksi.');
+    $this->info('Struktur Guided Quran Learning v3.1.1 siap. Setoran audio, review asatidz, feedback, dan isolasi dua akun tetap harus dibuktikan lewat smoke test produksi.');
     return 0;
-})->purpose('Memeriksa program online, setoran, review asatidz, dan guardrail privasi v3.1.0');
+})->purpose('Memeriksa program online, setoran, review asatidz, dan guardrail privasi v3.1.1');
 
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();

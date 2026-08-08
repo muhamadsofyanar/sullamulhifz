@@ -1,3 +1,10 @@
+# v3.1.1 — Guided Quran Learning Recovery — 2026-08-08
+
+## Fixed
+- Memberi nama eksplisit yang pendek pada dua foreign key tabel `quran_guided_submission_reviews` agar kompatibel dengan batas identifier MySQL 64 karakter.
+- Menjaga migration Guided Quran tetap dapat dijalankan sebagai migration `002200` karena rilis v3.1.0 di production belum pernah tercatat `Ran`.
+- Tidak mengubah tabel atau data Personal v3.0.0; recovery hanya menyasar struktur Guided Quran v3.1.x yang sebelumnya gagal dan kosong.
+
 # v3.1.0 — Guided Quran Learning — 2026-08-08
 
 - Menambah Learning Hub Personal: murattal Al-Husary/Al-Minshawi, katalog Program Online, setoran dan riwayat feedback dalam satu alur.

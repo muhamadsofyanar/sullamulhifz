@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v3.1.0 — Guided Quran Learning**.
+Rilis kandidat: **v3.1.1 — Guided Quran Learning Recovery**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajaran Al-Qur’an, operasional lembaga, tugas rumah, komunikasi guru–wali, dan perjalanan perkembangan santri. TPA Al-Insyirah menjadi implementasi pertama, sementara fondasinya disiapkan untuk cabang dan lembaga lain.
 

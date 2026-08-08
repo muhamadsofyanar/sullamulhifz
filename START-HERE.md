@@ -1,6 +1,6 @@
-# MULAI DI SINI — v3.1.0
+# MULAI DI SINI — v3.1.1
 
-Rilis kandidat adalah **v3.1.0 — Guided Quran Learning**.
+Rilis kandidat adalah **v3.1.1 — Guided Quran Learning Recovery**.
 
 Baca berurutan:
 1. `UPGRADE-V3.0.0.md`

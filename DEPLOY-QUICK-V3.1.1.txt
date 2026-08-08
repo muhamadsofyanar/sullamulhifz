@@ -1,0 +1,8 @@
+SULLAMUL HIFZ v3.1.1 — GUIDED QURAN LEARNING RECOVERY
+
+1. Pastikan cleanup lima tabel Guided Quran kosong sudah selesai.
+2. Upload seluruh isi paket ke root branch main.
+3. Tunggu build/deploy selesai satu kali. Jangan redeploy berulang saat migration gagal.
+4. Cek /up = HTTP 200 dan RELEASE = v3.1.1.
+5. Cek migrate:status; 002200 harus Ran.
+6. Jalankan php artisan sullam:verify-guided-quran.
