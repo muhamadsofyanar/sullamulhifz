@@ -2,9 +2,9 @@ FROM composer:2.8 AS vendor
 WORKDIR /app
 COPY . .
 
-# composer.lock is strongly recommended. Until it is committed, Composer will
-# resolve dependencies during the build. Application bootstrap must therefore
-# be safe to execute without runtime-only secrets or a database connection.
+# composer.lock is strongly recommended. If it is not present in a source
+# snapshot, Composer will resolve dependencies during the build. Application
+# bootstrap must therefore be safe without runtime-only secrets or a database.
 # Coolify/BuildKit can occasionally resolve Packagist over an unreachable IPv6 path.
 # Force Composer downloads to IPv4 and retry transient outbound failures before
 # failing the image build. This keeps production deploys resilient without
@@ -35,12 +35,15 @@ RUN set -eu; \
 # Fail fast at image-build time if Laravel cannot bootstrap or routes cannot be
 # registered. This catches bootstrap regressions before Coolify swaps containers.
 RUN php artisan package:discover --ansi \
-    && php artisan route:list --no-ansi > /tmp/sullam-routes.txt
+    && php artisan route:list --no-ansi > /tmp/sullam-routes.txt \
+    && php artisan view:cache \
+    && for file in storage/framework/views/*.php; do php -l "$file" || exit 1; done \
+    && php artisan view:clear
 
 FROM unit:1.34.2-php8.4
 
 LABEL org.opencontainers.image.title="Sullamul Hifz" \
-      org.opencontainers.image.version="2.6.1" \
+      org.opencontainers.image.version="2.6.4" \
       org.opencontainers.image.description="Platform pembinaan Al-Quran Sullamul Hifz"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \
@@ -80,4 +83,4 @@ RUN mkdir -p \
     && chmod +x scripts/*.sh
 
 EXPOSE 8000
-CMD ["sh", "scripts/container-start-v2.6.1.sh"]
+CMD ["sh", "scripts/container-start.sh"]

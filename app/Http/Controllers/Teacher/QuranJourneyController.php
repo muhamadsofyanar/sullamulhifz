@@ -71,7 +71,6 @@ class QuranJourneyController extends Controller
             if ($selectedMushafPage) {
                 try {
                     if (($rule['unit'] ?? null) === 'line') {
-                        $this->mushafLines->syncPage((int) $selectedMushafPage);
                         $mushafLineBlocks = $this->mushafLines->blocksForPage((int)$selectedMushafPage, (int)$rule['value'], $juz);
                     } else {
                         $mushafPageOptions = $this->mushafPagesService->optionsForStage($juz, (float)$rule['value'], (int)$selectedMushafPage);

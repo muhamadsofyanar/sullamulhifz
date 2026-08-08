@@ -1,0 +1,13 @@
+SULLAMUL HIFZ v2.6.4 — QUR'AN JOURNEY STABILIZATION
+
+1. Backup database dan persistent storage.
+2. Upload seluruh ISI folder paket v2.6.4 ke root repository GitHub branch main.
+3. Commit/push dan TUNGGU GitHub Actions: Tests + Release Docs harus hijau.
+4. Di Coolify, kosongkan Post-deployment Command. Jangan jalankan scripts/deploy.sh.
+5. Pertahankan AUTO_MIGRATE=true dan environment produksi yang sudah ada.
+6. Redeploy Coolify SATU KALI.
+7. Pastikan /up = HTTP 200.
+8. Buka Guru > Qur'an Journey > santri Juz 29 dan pastikan detail tidak 500.
+9. Jika ada masalah, jangan redeploy berulang; ambil Application Logs terlebih dahulu.
+
+Tidak ada migration baru dan tidak ada environment variable baru pada v2.6.4.

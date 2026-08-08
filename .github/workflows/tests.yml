@@ -17,4 +17,9 @@ jobs:
       - run: cp .env.example .env
       - run: composer install --no-interaction --prefer-dist
       - run: php artisan key:generate
+      - name: Compile and lint Blade views
+        run: |
+          php artisan view:cache
+          for file in storage/framework/views/*.php; do php -l "$file" || exit 1; done
+          php artisan view:clear
       - run: php artisan test

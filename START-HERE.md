@@ -1,14 +1,14 @@
-# MULAI DI SINI — v2.6.1
+# MULAI DI SINI — v2.6.4
 
-Rilis aktif untuk pengembangan adalah **v2.6.1 — Qur’an Journey**.
+Rilis aktif adalah **v2.6.4 — Qur’an Journey Stabilization**.
 
 Baca berurutan:
-1. `UPGRADE-V2.6.0.md`
-2. `DEPLOY-QUICK-V2.6.0.txt`
+1. `UPGRADE-V2.6.4.md`
+2. `DEPLOY-QUICK-V2.6.4.txt`
 3. `docs/PHASE-04-QURAN-JOURNEY-V2.6.0.md`
 4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-Fase 3 Tahfizh Learning sudah divalidasi end-to-end dalam pengujian proyek. Fase 4 belum boleh disebut 100% sebelum seluruh launch check produksinya lulus.
+v2.6.4 menstabilkan Fase 4 sebelum pengembangan Fase 5 dimulai. Fase 4 belum boleh disebut 100% sebelum seluruh launch check produksinya lulus.
 
 ---
 

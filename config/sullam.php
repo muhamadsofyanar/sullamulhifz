@@ -27,7 +27,7 @@ return [
     'initial_institution_code' => env('INITIAL_INSTITUTION_CODE', 'ALINSYIRAH'),
     'upload_max_kb' => (int) env('UPLOAD_MAX_KB', 25600),
     'media_retention_days' => (int) env('MEDIA_RETENTION_DAYS', 180),
-    // Mushaf Line Engine v2.6.1: KFGQPC V2 (1421H), 604-page Madani layout.
+    // Mushaf Line Engine: KFGQPC V2 (1421H), 604-page Madani layout.
     // Data is synchronized at runtime so the application does not redistribute third-party layout files.
     'mushaf_line_layout' => env('MUSHAF_LINE_LAYOUT', 'kfgqpc-v2-1421h'),
     'mushaf_line_source_name' => env('MUSHAF_LINE_SOURCE_NAME', 'Madani Mushaf line-layout mirror'),

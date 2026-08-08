@@ -1,6 +1,6 @@
 # Roadmap Sullamul Ḥifẓ
 
-Roadmap resmi terdiri dari 10 fase. Detail versi aktif ada di `ROADMAP-10-PHASES-V2.5.0.md`.
+Roadmap resmi terdiri dari 10 fase. Detail definisi Fase 4 ada di `ROADMAP-10-PHASES-V2.6.0.md`.
 
 1. Platform Core
 2. Full Qur’an Engine
@@ -13,4 +13,4 @@ Roadmap resmi terdiri dari 10 fase. Detail versi aktif ada di `ROADMAP-10-PHASES
 9. Insight, Automation & AI Assist
 10. Ecosystem / SaaS
 
-Fokus source v2.5.0 adalah Fase 3. **100% bukan berarti menu tersedia**; fase selesai hanya setelah implementasi dan validasi produksi lengkap.
+Fokus source v2.6.4 adalah stabilisasi dan validasi Fase 4 sebelum Fase 5. **100% bukan berarti menu tersedia**; fase selesai hanya setelah implementasi dan validasi produksi lengkap.

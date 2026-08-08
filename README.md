@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v2.6.1 — Qur’an Journey**.
+Rilis kandidat: **v2.6.4 — Qur’an Journey Stabilization**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajaran Al-Qur’an, operasional lembaga, tugas rumah, komunikasi guru–wali, dan perjalanan perkembangan santri. TPA Al-Insyirah menjadi implementasi pertama, sementara fondasinya disiapkan untuk cabang dan lembaga lain.
 
@@ -36,8 +36,8 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 ## Mulai dari sini
 
 1. [`START-HERE.md`](START-HERE.md)
-2. [`UPGRADE-V2.6.0.md`](UPGRADE-V2.6.0.md)
-3. [`DEPLOY-QUICK-V2.6.0.txt`](DEPLOY-QUICK-V2.6.0.txt)
+2. [`UPGRADE-V2.6.4.md`](UPGRADE-V2.6.4.md)
+3. [`DEPLOY-QUICK-V2.6.4.txt`](DEPLOY-QUICK-V2.6.4.txt)
 4. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
 5. [`docs/ROADMAP-10-PHASES-V2.6.0.md`](docs/ROADMAP-10-PHASES-V2.6.0.md)
 6. [`docs/PHASE-04-QURAN-JOURNEY-V2.6.0.md`](docs/PHASE-04-QURAN-JOURNEY-V2.6.0.md)
@@ -51,4 +51,4 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - pertahankan persistent volume `storage/app` saat mengganti image/container;
 - aktifkan SMTP agar reset kata sandi dapat dikirim melalui email.
 
-Migration v2.6.1 bersifat additive. Data Tahsīn, Tahfizh, Murāja‘ah, target, Quran Learning dan Academy lama tetap dipertahankan; v2.6 menambahkan Qur’an Journey tanpa menghapus histori Fase 3.
+Seluruh migration seri v2.6 bersifat additive. Data Tahsīn, Tahfizh, Murāja‘ah, target, Quran Learning dan Academy lama tetap dipertahankan; v2.6 menambahkan Qur’an Journey tanpa menghapus histori Fase 3.

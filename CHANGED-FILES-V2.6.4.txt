@@ -1,0 +1,28 @@
+SULLAMUL HIFZ v2.6.4 — CHANGED FILES
+
+Runtime / fix:
+- resources/views/teacher/quran-journey/student.blade.php
+- app/Http/Controllers/Teacher/QuranJourneyController.php
+- app/Services/MushafPageService.php
+- config/sullam.php
+- scripts/container-start.sh
+- Dockerfile
+
+Release gates / tests:
+- .github/workflows/tests.yml
+- tests/Feature/QuranJourneyStabilizationV264Test.php
+
+Release metadata / docs:
+- RELEASE
+- public/release.txt
+- CHANGELOG.md
+- README.md
+- README-COOLIFY.md
+- START-HERE.md
+- docs/CURRENT-STATE.md
+- docs/ROADMAP.md
+- UPGRADE-V2.6.4.md
+- DEPLOY-QUICK-V2.6.4.txt
+- BUILD-REPORT-V2.6.4.md
+- docs/releases/v2.6.4.md
+- CHANGED-FILES-V2.6.4.txt

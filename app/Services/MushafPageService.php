@@ -38,7 +38,6 @@ class MushafPageService
         }
 
         if ($portionValue === 0.5) {
-            $this->lines->syncPage($page);
             return [
                 $this->buildOption($juz, [[$page, 1, 8]], '½ halaman atas', 'half-top'),
                 $this->buildOption($juz, [[$page, 9, 15]], '½ halaman bawah', 'half-bottom'),
@@ -46,7 +45,6 @@ class MushafPageService
         }
 
         if ($portionValue === 1.0) {
-            $this->lines->syncPage($page);
             return [
                 $this->buildOption($juz, [[$page, 1, 15]], '1 halaman', 'page'),
             ];
@@ -54,10 +52,6 @@ class MushafPageService
 
         if ($portionValue === 2.0) {
             $nextPage = $page + 1;
-            $this->lines->syncPage($page);
-            if ($nextPage <= MushafLineService::TOTAL_PAGES) {
-                $this->lines->syncPage($nextPage);
-            }
             return [
                 $this->buildOption($juz, [[$page, 1, 15], [$nextPage, 1, 15]], '2 halaman', 'two-pages'),
             ];
@@ -196,6 +190,14 @@ class MushafPageService
         };
         if (! in_array($variant, $allowedVariant, true)) {
             throw ValidationException::withMessages(['page_portion'=>'Pilihan halaman tidak sesuai Marhalah aktif.']);
+        }
+
+        // Sinkronisasi jaringan hanya boleh terjadi pada aksi eksplisit, bukan saat
+        // halaman detail guru dibuka melalui GET. Startup/background sync tetap
+        // menjadi jalur utama untuk menyiapkan cache Mushaf.
+        $this->lines->syncPage($page);
+        if (abs($value - 2.0) < 0.001 && $page < MushafLineService::TOTAL_PAGES) {
+            $this->lines->syncPage($page + 1);
         }
 
         $option = collect($this->optionsForStage($juz, $value, $page))->firstWhere('variant', $variant);

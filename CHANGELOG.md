@@ -1,3 +1,20 @@
+# v2.6.4 — Qur’an Journey Stabilization — 2026-08-08
+
+- Memperbaiki HTTP 500 detail Qur’an Journey guru akibat directive Blade `@endif` yang menempel pada teks.
+- Menambahkan compile + syntax-lint seluruh compiled Blade pada GitHub Actions dan Docker build.
+- Menambahkan regression test HTTP untuk detail Qur’an Journey pada Juz 30, 29, 28, 27, 26, dan jalur Juz 1–25.
+- Memindahkan sinkronisasi jaringan Mushaf keluar dari request GET detail guru; cache disiapkan oleh startup/background sync.
+- Mengganti startup versioned dengan `scripts/container-start.sh` yang membaca versi dari `RELEASE`.
+- Menyelaraskan label image Docker dan dokumentasi deploy ke v2.6.4.
+- Post-deployment command Coolify tidak lagi diperlukan; migration dijalankan sekali oleh startup container saat `AUTO_MIGRATE=true`.
+- Tidak ada migration database baru dan tidak ada environment variable baru.
+
+# v2.6.3 — All Marhalah Portion Engine — 2026-08-08
+
+- Menambahkan Mushaf Page Engine untuk porsi ½, 1, dan 2 halaman.
+- Menambahkan penyimpanan halaman akhir target melalui migration `mushaf_end_page_number`.
+- Menyelesaikan implementasi porsi kandidat untuk seluruh enam pola Marhalah.
+
 # v2.6.2 — Stage Schedule History
 
 - Arahan guru sekarang berlaku per Juz/Marhalah, bukan menempel selamanya pada profil santri.

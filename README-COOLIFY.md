@@ -15,7 +15,7 @@ Dockerfile
 unit.json
 composer.json
 artisan
-scripts/deploy.sh
+scripts/container-start.sh
 ```
 
 Branch deployment yang disarankan: `main`.
@@ -148,23 +148,12 @@ Database berada pada resource MySQL terpisah dan harus memiliki volume persisten
 
 ## 7. Post-deployment command
 
-Isi bagian **Post-deployment Command**:
+Biarkan bagian **Post-deployment Command kosong**. Mulai v2.6.4, migration,
+seeder idempoten, cache, dan startup aplikasi dikelola oleh
+`scripts/container-start.sh` ketika `AUTO_MIGRATE=true`.
 
-```bash
-sh scripts/deploy.sh
-```
-
-Script menjalankan:
-
-```bash
-php artisan optimize:clear
-php artisan migrate --force
-php artisan db:seed --class="Database\Seeders\ProductionSeeder" --force
-php artisan storage:link
-php artisan optimize
-```
-
-Seeder produksi idempotent. Dengan `SEED_INITIAL_TPA_DATA=true`, data 88 santri, 88 wali, 4 guru, serta Kelas Tahfizh A/B dibuat otomatis. `SEED_DEMO_DATA` harus tetap `false`.
+Jangan menjalankan `scripts/deploy.sh` lagi sebagai post-deployment command,
+karena akan menduplikasi pekerjaan startup container.
 
 ## 8. Domain dan HTTPS
 
@@ -181,7 +170,7 @@ Tekan **Deploy** dan periksa tahap berikut:
 1. Composer dependency installation berhasil.
 2. Docker image selesai dibuat.
 3. Container membuka port `8000`.
-4. Post-deployment command berhasil.
+4. Startup container menyelesaikan migration dan seeder tanpa error fatal.
 5. Health check `/up` berstatus sehat.
 
 ## 10. Instalasi database baru
@@ -260,7 +249,7 @@ Setelah memperbarui file di GitHub:
 
 1. Commit/push ke branch `main`.
 2. Coolify dapat melakukan auto-deploy melalui webhook, atau tekan Redeploy.
-3. `scripts/deploy.sh` menjalankan migration baru secara otomatis.
+3. `scripts/container-start.sh` menjalankan migration baru secara otomatis ketika `AUTO_MIGRATE=true`.
 4. Periksa log dan fungsi utama.
 
 ## 15. Troubleshooting ringkas
