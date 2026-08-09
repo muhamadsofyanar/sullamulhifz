@@ -2,9 +2,9 @@
 @section('content')
 <div class="page-head">
     <div>
-        <span class="eyebrow">SULLAMUL ḤIFẒ V2.4</span>
+        <span class="eyebrow">SULLAMUL ḤIFẒ V4.0</span>
         <h1>Fondasi Platform</h1>
-        <p>Kelola cabang, periode akademik, dan modul pengembangan tanpa mengubah source code.</p>
+        <p>Kelola cabang, periode akademik, dan modul pengembangan tanpa mengubah source code atau redeploy.</p>
     </div>
 </div>
 
@@ -14,7 +14,7 @@
             <h2>Roadmap Pengembangan 10 Fase</h2>
             <p class="muted">Status dihitung dari implementasi nyata dan verifikasi produksi. Fase tidak akan tampil 100% hanya karena menu atau tabelnya sudah ada.</p>
         </div>
-        <a class="button secondary" href="{{ route('admin.launch-readiness.index') }}">Verifikasi Produksi</a>
+        <div style="display:flex;gap:8px;flex-wrap:wrap"><a class="button secondary" href="{{ route('admin.ecosystem.index') }}">Kendali Ekosistem</a><a class="button secondary" href="{{ route('admin.launch-readiness.index') }}">Verifikasi Produksi</a></div>
     </div>
     <div class="roadmap-status-grid">
         @foreach($roadmapPhases as $phase)

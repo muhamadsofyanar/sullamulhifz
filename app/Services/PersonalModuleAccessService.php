@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\GuidedQuranEnrollment;
+use App\Models\CommunityPost;
+use App\Models\PaymentTransaction;
 use App\Models\PersonalModuleEnrollment;
 use App\Models\QuranPracticeSession;
 use App\Models\QuranProgramEnrollment;
@@ -62,6 +64,28 @@ class PersonalModuleAccessService
                 'feature' => 'academy_portal',
                 'self_enrollable' => false,
             ],
+            'community' => [
+                'title' => 'Community Terbatas',
+                'mobile_label' => 'Community',
+                'eyebrow' => 'RUANG BERMODERASI',
+                'description' => 'Berbagi pengalaman belajar pada ruang yang dikurasi dan dimoderasi manusia.',
+                'route' => 'personal.community.index',
+                'route_pattern' => 'personal.community.*',
+                'icon' => 'community',
+                'feature' => 'community',
+                'self_enrollable' => false,
+            ],
+            'payments' => [
+                'title' => 'Pembayaran Program',
+                'mobile_label' => 'Pembayaran',
+                'eyebrow' => 'TRANSFER BANK',
+                'description' => 'Lihat rekening resmi dan status konfirmasi pembayaran program Anda.',
+                'route' => 'personal.payments.index',
+                'route_pattern' => 'personal.payments.*',
+                'icon' => 'report',
+                'feature' => 'payments',
+                'self_enrollable' => false,
+            ],
         ];
     }
 
@@ -84,11 +108,12 @@ class PersonalModuleAccessService
             return false;
         }
 
-        if ($moduleKey !== 'academy') {
-            $directStatus = $this->directEnrollmentStatus($user, $moduleKey);
-            if ($directStatus !== null) {
-                return $directStatus;
-            }
+        $directStatus = $this->directEnrollmentStatus($user, $moduleKey);
+        if ($directStatus === true) {
+            return true;
+        }
+        if ($directStatus === false && ! $this->hasRequiredActiveProgram($user, $moduleKey)) {
+            return false;
         }
 
         return match ($moduleKey) {
@@ -96,6 +121,7 @@ class PersonalModuleAccessService
             'quran_journey' => $this->hasJourneyEnrollment($user),
             'quran_practice' => $this->hasPracticeHistory($user),
             'academy' => $this->hasAcademyProgram($user),
+            'community', 'payments' => false,
             default => false,
         };
     }
@@ -133,6 +159,20 @@ class PersonalModuleAccessService
                 'active' => $this->allows($user, $key),
                 'can_deactivate' => $this->canDeactivate($user, $key),
                 'count' => $this->activityCount($user, $key),
+            ])
+            ->values();
+    }
+
+    /** @return Collection<int,array<string,mixed>> */
+    public function adminCatalog(User $user): Collection
+    {
+        return collect($this->definitions())
+            ->map(fn (array $definition, string $key): array => [
+                'key' => $key,
+                ...$definition,
+                'available' => $this->featureAvailable($user, $definition['feature']),
+                'active' => $this->allows($user, $key),
+                'required' => $this->hasRequiredActiveProgram($user, $key),
             ])
             ->values();
     }
@@ -184,6 +224,40 @@ class PersonalModuleAccessService
                 'expires_at' => null,
             ],
         );
+    }
+
+    /** @param array<int,string> $moduleKeys */
+    public function syncAssignedAccess(User $user, array $moduleKeys, User $administrator): void
+    {
+        abort_unless((int) $user->institution_id === (int) $administrator->institution_id, 403);
+        abort_unless($user->hasRole('personal'), 422, 'Akun yang dipilih bukan akun Personal.');
+
+        $profile = $user->personalProfile()->firstOrFail();
+        $selected = array_values(array_intersect(array_keys($this->definitions()), $moduleKeys));
+
+        foreach ($this->definitions() as $moduleKey => $definition) {
+            $available = $this->featureAvailable($user, $definition['feature']);
+            $active = in_array($moduleKey, $selected, true)
+                || ($available && $this->hasRequiredActiveProgram($user, $moduleKey));
+            if ($active && ! $available) {
+                throw ValidationException::withMessages([
+                    'programs' => "Modul {$definition['title']} belum diaktifkan pada Fondasi Platform.",
+                ]);
+            }
+
+            PersonalModuleEnrollment::query()->updateOrCreate(
+                ['personal_profile_id' => $profile->id, 'module_key' => $moduleKey],
+                [
+                    'institution_id' => $user->institution_id,
+                    'user_id' => $user->id,
+                    'status' => $active ? 'active' : 'inactive',
+                    'enrollment_source' => 'administrator',
+                    'enrolled_at' => $active ? now() : null,
+                    'expires_at' => $active ? null : now(),
+                    'metadata' => ['assigned_by_user_id' => $administrator->id],
+                ],
+            );
+        }
     }
 
     public function deactivate(User $user, string $moduleKey): PersonalModuleEnrollment
@@ -284,6 +358,7 @@ class PersonalModuleAccessService
         return match ($moduleKey) {
             'guided_learning' => $this->hasGuidedEnrollment($user),
             'quran_journey' => $this->hasJourneyEnrollment($user),
+            'academy' => $this->hasAcademyProgram($user),
             default => false,
         };
     }
@@ -305,6 +380,10 @@ class PersonalModuleAccessService
             'academy' => Schema::hasTable('guided_quran_enrollments') ? GuidedQuranEnrollment::query()
                 ->where('learner_institution_id', $user->institution_id)->where('learner_user_id', $user->id)->where('status', 'active')
                 ->whereHas('program', fn ($query) => $query->whereNotNull('academy_program_id'))->count() : 0,
+            'community' => Schema::hasTable('community_posts') ? CommunityPost::query()
+                ->where('created_by_user_id', $user->id)->count() : 0,
+            'payments' => Schema::hasTable('payment_transactions') ? PaymentTransaction::query()
+                ->where('institution_id', $user->institution_id)->where('user_id', $user->id)->count() : 0,
             default => 0,
         };
     }

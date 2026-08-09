@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\PersonalGoal;
+use App\Models\PersonalCheckIn;
 use App\Models\PersonalPracticeEntry;
 use App\Models\PersonalProfile;
 use App\Models\QuranSurah;
@@ -12,6 +13,7 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\Schema;
 
 class PersonalController extends Controller
 {
@@ -24,11 +26,18 @@ class PersonalController extends Controller
     {
         $profile = $this->profile($request);
         $snapshot = $this->journey->snapshot($request->user(), $profile);
+        $activeModules = $this->modules->activeModules($request->user());
+        $primaryModule = $activeModules->first();
 
         return view('personal.dashboard', [
             'profile' => $profile->load('targetSurah'),
             'surahs' => QuranSurah::query()->orderBy('id')->get(['id','name_latin','verse_count']),
-            'activeModules' => $this->modules->activeModules($request->user()),
+            'activeModules' => $activeModules,
+            'primaryModule' => $primaryModule,
+            'todayCheckIn' => Schema::hasTable('personal_check_ins')
+                ? PersonalCheckIn::query()->where('personal_profile_id', $profile->id)->whereDate('check_in_on', today())->first()
+                : null,
+            'unreadNotifications' => $request->user()->unreadNotifications()->count(),
             ...$snapshot,
         ]);
     }

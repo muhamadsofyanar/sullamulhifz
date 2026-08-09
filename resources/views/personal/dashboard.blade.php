@@ -9,13 +9,26 @@
     $ratingLabels = ['needs_review'=>'Perlu diulang','developing'=>'Sedang tumbuh','steady'=>'Cukup mantap','strong'=>'Kuat'];
 @endphp
 <div class="personal-page">
-    <section class="personal-hero">
+    <section class="personal-v4-hero">
         <div>
-            <span class="personal-kicker">RUANG PERSONAL · PRIVAT</span>
+            <span class="personal-kicker">SATU RUANG QUR’AN · PRIVAT</span>
             <h1>Assalamu‘alaikum, {{ auth()->user()->name }}</h1>
-            <p>Yang penting bukan seberapa cepat, tetapi seberapa jujur Anda membaca keadaan hafalan dan menjaga kesinambungannya.</p>
+            <p>Hari ini tidak harus sempurna. Pilih satu langkah yang paling mungkin dijaga, lalu biarkan seluruh program Anda tercatat dalam satu perjalanan.</p>
+            <div class="v4-hero-actions">
+                @if($primaryModule)<a class="button primary" href="{{ route($primaryModule['route']) }}">Lanjutkan {{ $primaryModule['title'] }}</a>@else<a class="button primary" href="{{ route('personal.programs.index') }}">Pilih program pertama</a>@endif
+                <a class="button secondary" href="{{ route('personal.journey.index') }}">Lihat Perjalanan Saya</a>
+            </div>
         </div>
-        <div class="personal-streak"><strong>{{ $streak }}</strong><span>hari streak</span><small>berdasarkan hari aktif berurutan</small></div>
+        <div class="v4-hero-status">
+            <article><strong>{{ $streak }}</strong><span>hari kesinambungan</span></article>
+            <article><strong>{{ $activeModules->count() }}</strong><span>program aktif</span></article>
+            <article><strong>{{ $unreadNotifications }}</strong><span>informasi baru</span></article>
+        </div>
+    </section>
+
+    <section class="v4-today-strip">
+        <div><span class="eyebrow">KEADAAN HARI INI</span>@if($todayCheckIn)<strong>{{ ['low'=>'Ritme ringan','steady'=>'Cukup stabil','strong'=>'Siap bertumbuh'][$todayCheckIn->energy] ?? $todayCheckIn->energy }}</strong><small>{{ $todayCheckIn->intention ?: 'Check-in hari ini sudah tersimpan.' }}</small>@else<strong>Belum check-in</strong><small>Kenali keadaan sebelum menentukan beban.</small>@endif</div>
+        <a class="button secondary small" href="{{ route('personal.journey.index') }}">{{ $todayCheckIn ? 'Perbarui refleksi' : 'Check-in sekarang' }}</a>
     </section>
 
     @if(!$profile->onboarding_completed_at)
@@ -60,7 +73,7 @@
 
     <section class="personal-grid-two">
         <div class="card personal-guidance">
-            <div class="section-head"><div><span class="eyebrow">HARI INI</span><h2>Apa yang perlu dijaga?</h2></div></div>
+            <div class="section-head"><div><span class="eyebrow">RENCANA HARI INI</span><h2>Apa yang perlu dijaga?</h2></div></div>
             <div class="personal-guidance-list">
                 @foreach($guidance as $item)
                 <article><span>{{ $loop->iteration }}</span><div><strong>{{ $item['title'] }}</strong><p>{{ $item['body'] }}</p></div></article>

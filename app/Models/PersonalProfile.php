@@ -30,4 +30,5 @@ class PersonalProfile extends Model
     public function goals(): HasMany { return $this->hasMany(PersonalGoal::class); }
     public function practiceEntries(): HasMany { return $this->hasMany(PersonalPracticeEntry::class); }
     public function moduleEnrollments(): HasMany { return $this->hasMany(PersonalModuleEnrollment::class); }
+    public function checkIns(): HasMany { return $this->hasMany(PersonalCheckIn::class); }
 }

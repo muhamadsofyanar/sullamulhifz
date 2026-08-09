@@ -1,3 +1,16 @@
+# v4.0.0 — Satu Ruang Qur’an — 2026-08-09
+
+- Menggabungkan sepuluh workstream pengalaman produk dalam satu paket deploy.
+- Membuat Beranda Personal baru dengan tindakan utama, status hari ini, program aktif, notifikasi, dan kesinambungan.
+- Menambah halaman Perjalanan Saya yang menyatukan jurnal, latihan, Qur’an Journey, dan setoran asatidz tanpa ranking.
+- Menambah check-in harian privat agar beban dapat disesuaikan dengan keadaan nyata.
+- Memperluas enrollment Personal ke Academy, Community Terbatas, dan Pembayaran Program; URL langsung tetap dijaga middleware.
+- Menambah Kendali Ekosistem admin untuk menetapkan akses per akun tanpa redeploy.
+- Mengaktifkan alur community bermoderasi: ruang draft/aktif, tulisan pending, keputusan manusia, dan audit moderasi.
+- Mengaktifkan alur transfer bank: tujuan resmi BSI, snapshot rekening, konfirmasi pengguna, serta rekonsiliasi admin.
+- Menjaga feature flag Community dan Payments tetap OFF setelah migration; keduanya harus diaktifkan dan ditugaskan secara sengaja.
+- Menjaga AI Assist tetap human-review/audit dan tidak diaktifkan otomatis.
+
 # v3.4.0 — Personal Enrollment Lifecycle — 2026-08-09
 
 - Menambahkan pilihan Latihan Qur’an, Qur’an Journey, dan Program dengan Asatidz langsung pada pendaftaran Personal; pengguna tetap boleh memulai hanya dengan jurnal dan target.

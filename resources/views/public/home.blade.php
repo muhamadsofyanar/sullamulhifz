@@ -87,6 +87,24 @@
     </div>
 </section>
 
+<section class="public-section personal-entry-section">
+    <div class="public-container journey-card">
+        <div>
+            <span class="public-eyebrow">SULLAMUL ḤIFẒ PERSONAL</span>
+            <h2>Bukan aplikasi audio. Ini ruang untuk seluruh perjalanan Qur’an Anda.</h2>
+            <p>Mulai dari jurnal dan target pribadi, lalu gunakan Latihan Qur’an, Qur’an Journey, pendampingan asatidz, Academy, community, atau pembayaran program sesuai akses yang didaftarkan kepada akun Anda.</p>
+            <div class="hero-actions"><a class="public-button primary" href="{{ route('personal.register') }}">Buat Ruang Personal</a><a class="public-button secondary" href="{{ config('sullam.portal_url') ?: route('login') }}">Masuk ke ruang saya</a></div>
+        </div>
+        <div class="journey-list">
+            <span>Jurnal, check-in, target, dan timeline pribadi</span>
+            <span>Latihan Qur’an dengan mushaf dan murattal</span>
+            <span>Qur’an Journey untuk tilawah dan murāja‘ah</span>
+            <span>Setoran dan koreksi bersama asatidz</span>
+            <span>Yang tidak didaftarkan tidak muncul dan tidak dapat dibuka</span>
+        </div>
+    </div>
+</section>
+
 <section class="public-section pledge-teaser-section">
     <div class="public-container pledge-teaser-card">
         <div>

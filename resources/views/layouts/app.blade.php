@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="/css/app-v310.css?v={{ @filemtime(public_path('css/app-v310.css')) ?: '310' }}">
     <link rel="stylesheet" href="/css/app-v330.css?v={{ @filemtime(public_path('css/app-v330.css')) ?: '330' }}">
     <link rel="stylesheet" href="/css/app-v340.css?v={{ @filemtime(public_path('css/app-v340.css')) ?: '340' }}">
+    <link rel="stylesheet" href="/css/app-v400.css?v={{ @filemtime(public_path('css/app-v400.css')) ?: '400' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
@@ -43,6 +44,7 @@
             </a>
             @if(auth()->user()->hasRole('personal'))
                 <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*') ? 'active' : '' }}"><x-icon name="plan"/><span>Program Saya</span></a>
+                <a href="{{ route('personal.journey.index') }}" class="{{ request()->routeIs('personal.journey.*') ? 'active' : '' }}"><x-icon name="continuity"/><span>Perjalanan Saya</span></a>
                 @if($personalAccess['quran_practice'] ?? false)
                 <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*') ? 'active' : '' }}"><x-icon name="listen"/><span>Latihan Qur’an</span></a>
                 @endif
@@ -54,6 +56,12 @@
                 @endif
                 @if($personalAccess['academy'] ?? false)
                 <a href="{{ route('academy.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}"><x-icon name="lesson"/><span>Academy</span></a>
+                @endif
+                @if($personalAccess['community'] ?? false)
+                <a href="{{ route('personal.community.index') }}" class="{{ request()->routeIs('personal.community.*') ? 'active' : '' }}"><x-icon name="community"/><span>Community</span></a>
+                @endif
+                @if($personalAccess['payments'] ?? false)
+                <a href="{{ route('personal.payments.index') }}" class="{{ request()->routeIs('personal.payments.*') ? 'active' : '' }}"><x-icon name="report"/><span>Pembayaran</span></a>
                 @endif
                 <a href="{{ route('personal.dashboard') }}#catat" class="{{ request()->routeIs('personal.dashboard') ? 'active' : '' }}"><x-icon name="preservation"/><span>Catat Aktivitas</span></a>
                 <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target Saya</span></a>
@@ -83,6 +91,9 @@
                 </a>
                 <a href="{{ route('admin.platform.index') }}" class="{{ request()->routeIs('admin.platform.*') ? 'active' : '' }}">
                     <x-icon name="growth"/><span>Fondasi Platform</span>
+                </a>
+                <a href="{{ route('admin.ecosystem.index') }}" class="{{ request()->routeIs('admin.ecosystem.*') ? 'active' : '' }}">
+                    <x-icon name="continuity"/><span>Kendali Ekosistem</span>
                 </a>
                 @if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))
                 <a href="{{ route('admin.quran-library.index') }}" class="{{ request()->routeIs('admin.quran-library.*') ? 'active' : '' }}">
@@ -267,13 +278,11 @@
     @if(auth()->user()->hasRole('personal'))
         <a href="{{ route('personal.dashboard') }}" class="{{ request()->routeIs('personal.dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
         <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*')?'active':'' }}"><x-icon name="plan"/><span>Program</span></a>
-        @foreach($personalModules->take(2) as $module)
+        <a href="{{ route('personal.journey.index') }}" class="{{ request()->routeIs('personal.journey.*')?'active':'' }}"><x-icon name="continuity"/><span>Perjalanan</span></a>
+        @foreach($personalModules->take(1) as $module)
         <a href="{{ route($module['route']) }}" class="{{ request()->routeIs($module['route_pattern'])?'active':'' }}"><x-icon :name="$module['icon']"/><span>{{ $module['mobile_label'] }}</span></a>
         @endforeach
         @if($personalModules->isEmpty())
-        <a href="{{ route('personal.dashboard') }}#catat"><x-icon name="preservation"/><span>Catat</span></a>
-        <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target</span></a>
-        @elseif($personalModules->count() === 1)
         <a href="{{ route('personal.dashboard') }}#catat"><x-icon name="preservation"/><span>Catat</span></a>
         @endif
         <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>

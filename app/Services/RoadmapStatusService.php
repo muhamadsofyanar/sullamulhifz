@@ -217,9 +217,12 @@ class RoadmapStatusService
                 7,
                 'Personal Learning System',
                 'Observasi metode belajar, respons nyata, preferensi, beban adaptif dan rekomendasi yang tetap dapat diedit guru.',
-                array_merge($this->tableCriteria(['learning_observations', 'learning_insights', 'student_marhalah_histories']), [
+                array_merge($this->tableCriteria(['learning_observations', 'learning_insights', 'student_marhalah_histories', 'personal_profiles', 'personal_module_enrollments', 'personal_check_ins']), [
                     ['label' => 'Mesin rekomendasi personal berbasis evidence', 'passed' => class_exists(\App\Services\PersonalLearningRecommendationService::class)],
                     ['label' => 'Teacher override tercatat', 'passed' => Schema::hasTable('learning_recommendation_reviews')],
+                    ['label' => 'Home, Program Saya, Perjalanan dan route guard memakai enrollment Personal', 'passed' => class_exists(\App\Services\PersonalModuleAccessService::class)
+                        && class_exists(\App\Http\Controllers\PersonalExperienceController::class)
+                        && is_file(resource_path('views/personal/journey.blade.php'))],
                 ]),
                 $this->manualCriteria($institutionId, ['phase7_personalization_evidence', 'phase7_teacher_override']),
                 'Bangun mesin rekomendasi berbasis evidence dengan teacher override dan guardrail STIFIn.',
@@ -270,7 +273,12 @@ class RoadmapStatusService
                         'passed' => Schema::hasTable('integration_connections') && \App\Models\IntegrationConnection::query()->where('institution_id', $institutionId)->where('status', 'active')->exists(),
                     ], [
                         'label' => 'Pembayaran opsional siap bila diaktifkan',
-                        'passed' => Schema::hasTable('payment_transactions'),
+                        'passed' => Schema::hasTable('payment_transactions')
+                            && class_exists(\App\Http\Controllers\PersonalPaymentController::class),
+                    ], [
+                        'label' => 'Kendali akses, moderasi dan rekonsiliasi tersedia untuk admin',
+                        'passed' => class_exists(\App\Http\Controllers\Admin\EcosystemController::class)
+                            && is_file(resource_path('views/admin/ecosystem/index.blade.php')),
                     ]],
                 ),
                 $this->manualCriteria($institutionId, ['phase10_tenant_isolation', 'phase10_integrations', 'phase10_scale_restore']),

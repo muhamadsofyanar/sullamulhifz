@@ -1,0 +1,11 @@
+SULLAMUL HIFZ v4.0.0 — SATU DEPLOY
+
+1. Backup database dan storage produksi.
+2. Pastikan source repository saat ini minimal v3.4.0, bukan ZIP v2.6.3.
+3. Ganti source dengan isi paket v4.0.0 dan push ke main satu kali.
+4. Redeploy Coolify satu kali.
+5. Pastikan build, migration 002500, container baru, dan rolling update selesai.
+6. Cek RELEASE dan public/release.txt = v4.0.0.
+7. Login admin → Kendali Ekosistem; jangan aktifkan Community/Payments sebelum operator siap.
+
+Rollback source tidak otomatis membatalkan migration additive. Pertahankan tabel/kolom v4.0.0 bila rollback aplikasi diperlukan.
