@@ -20,36 +20,44 @@ class PersonalModuleAccessService
         return [
             'quran_practice' => [
                 'title' => 'Latihan Qur’an',
+                'mobile_label' => 'Latihan',
                 'eyebrow' => 'LATIHAN MANDIRI',
                 'description' => 'Mushaf, murattal, pengulangan ayat, dan sesi latihan pribadi.',
                 'route' => 'quran-practice.index',
+                'route_pattern' => 'quran-practice.*',
                 'icon' => 'listen',
                 'feature' => 'quran_audio',
                 'self_enrollable' => true,
             ],
             'quran_journey' => [
                 'title' => 'Qur’an Journey',
+                'mobile_label' => 'Journey',
                 'eyebrow' => 'PROGRAM BERJALAN',
                 'description' => 'Tilawah dan murāja‘ah dengan langkah program yang dapat dijaga bertahap.',
                 'route' => 'quran-journey.index',
+                'route_pattern' => 'quran-journey.*',
                 'icon' => 'continuity',
                 'feature' => 'quran_journey',
                 'self_enrollable' => true,
             ],
             'guided_learning' => [
                 'title' => 'Program dengan Asatidz',
+                'mobile_label' => 'Asatidz',
                 'eyebrow' => 'PENDAMPINGAN',
                 'description' => 'Ikuti program, kirim setoran yang dipilih, lalu terima koreksi dari reviewer.',
                 'route' => 'personal.learning.index',
+                'route_pattern' => 'personal.learning.*',
                 'icon' => 'growth',
                 'feature' => null,
                 'self_enrollable' => true,
             ],
             'academy' => [
                 'title' => 'Academy',
+                'mobile_label' => 'Academy',
                 'eyebrow' => 'MATERI PROGRAM',
                 'description' => 'Materi Academy yang terhubung dengan program yang sedang Anda ikuti.',
                 'route' => 'academy.index',
+                'route_pattern' => 'academy.*',
                 'icon' => 'lesson',
                 'feature' => 'academy_portal',
                 'self_enrollable' => false,
@@ -76,8 +84,11 @@ class PersonalModuleAccessService
             return false;
         }
 
-        if ($moduleKey !== 'academy' && $this->hasDirectEnrollment($user, $moduleKey)) {
-            return true;
+        if ($moduleKey !== 'academy') {
+            $directStatus = $this->directEnrollmentStatus($user, $moduleKey);
+            if ($directStatus !== null) {
+                return $directStatus;
+            }
         }
 
         return match ($moduleKey) {
@@ -103,6 +114,15 @@ class PersonalModuleAccessService
     }
 
     /** @return Collection<int,array<string,mixed>> */
+    public function registrationCatalog(): Collection
+    {
+        return collect($this->definitions())
+            ->filter(fn (array $definition): bool => $definition['self_enrollable'])
+            ->map(fn (array $definition, string $key): array => ['key' => $key, ...$definition])
+            ->values();
+    }
+
+    /** @return Collection<int,array<string,mixed>> */
     public function catalog(User $user): Collection
     {
         return collect($this->definitions())
@@ -111,6 +131,7 @@ class PersonalModuleAccessService
                 'key' => $key,
                 ...$definition,
                 'active' => $this->allows($user, $key),
+                'can_deactivate' => $this->canDeactivate($user, $key),
                 'count' => $this->activityCount($user, $key),
             ])
             ->values();
@@ -165,19 +186,61 @@ class PersonalModuleAccessService
         );
     }
 
-    private function hasDirectEnrollment(User $user, string $moduleKey): bool
+    public function deactivate(User $user, string $moduleKey): PersonalModuleEnrollment
     {
-        if (! Schema::hasTable('personal_module_enrollments')) {
-            return false;
+        $definition = $this->definitions()[$moduleKey] ?? null;
+        if (! $definition || ! $definition['self_enrollable']) {
+            throw ValidationException::withMessages(['program' => 'Program ini tidak dapat dinonaktifkan secara mandiri.']);
+        }
+        if ($this->hasRequiredActiveProgram($user, $moduleKey)) {
+            throw ValidationException::withMessages([
+                'program' => 'Program masih terhubung dengan program aktif yang Anda ikuti. Selesaikan atau akhiri enrollment program tersebut terlebih dahulu.',
+            ]);
         }
 
-        return PersonalModuleEnrollment::query()
+        $profile = $user->personalProfile()->firstOrFail();
+        $enrollment = PersonalModuleEnrollment::query()
+            ->where('personal_profile_id', $profile->id)
+            ->where('module_key', $moduleKey)
+            ->first();
+
+        if (! $enrollment || $enrollment->status !== 'active') {
+            throw ValidationException::withMessages(['program' => 'Program ini tidak sedang aktif di Ruang Personal Anda.']);
+        }
+
+        $enrollment->update(['status' => 'inactive', 'expires_at' => now()]);
+
+        return $enrollment;
+    }
+
+    public function canDeactivate(User $user, string $moduleKey): bool
+    {
+        $definition = $this->definitions()[$moduleKey] ?? null;
+
+        return (bool) $definition
+            && $definition['self_enrollable']
+            && $this->directEnrollmentStatus($user, $moduleKey) === true
+            && ! $this->hasRequiredActiveProgram($user, $moduleKey);
+    }
+
+    private function directEnrollmentStatus(User $user, string $moduleKey): ?bool
+    {
+        if (! Schema::hasTable('personal_module_enrollments')) {
+            return null;
+        }
+
+        $enrollment = PersonalModuleEnrollment::query()
             ->where('institution_id', $user->institution_id)
             ->where('user_id', $user->id)
             ->where('module_key', $moduleKey)
-            ->where('status', 'active')
-            ->where(fn ($query) => $query->whereNull('expires_at')->orWhere('expires_at', '>', now()))
-            ->exists();
+            ->first(['status', 'expires_at']);
+
+        if (! $enrollment) {
+            return null;
+        }
+
+        return $enrollment->status === 'active'
+            && ($enrollment->expires_at === null || $enrollment->expires_at->isFuture());
     }
 
     private function hasGuidedEnrollment(User $user): bool
@@ -214,6 +277,15 @@ class PersonalModuleAccessService
             ->where('status', 'active')
             ->whereHas('program', fn ($query) => $query->whereNotNull('academy_program_id'))
             ->exists();
+    }
+
+    private function hasRequiredActiveProgram(User $user, string $moduleKey): bool
+    {
+        return match ($moduleKey) {
+            'guided_learning' => $this->hasGuidedEnrollment($user),
+            'quran_journey' => $this->hasJourneyEnrollment($user),
+            default => false,
+        };
     }
 
     private function featureAvailable(User $user, ?string $feature): bool

@@ -21,6 +21,13 @@
                 @if($program['active'])
                     <div class="personal-program-status"><span>Aktif di Ruang Personal</span>@if($program['count'] > 0)<small>{{ $program['count'] }} jejak/program aktif</small>@endif</div>
                     <a class="button primary" href="{{ route($program['route']) }}">Buka program</a>
+                    @if($program['can_deactivate'])
+                    <form method="post" action="{{ route('personal.programs.deactivate', $program['key']) }}" class="personal-program-deactivate">@csrf @method('delete')
+                        <button class="button ghost" type="submit">Nonaktifkan dari Ruang Personal</button>
+                    </form>
+                    @elseif($program['self_enrollable'])
+                    <p class="personal-program-linked">Program tetap aktif karena masih terhubung dengan enrollment yang sedang berjalan.</p>
+                    @endif
                 @elseif($program['self_enrollable'])
                     <form method="post" action="{{ route('personal.programs.enroll', $program['key']) }}">@csrf
                         <button class="button secondary" type="submit">Tambahkan ke Program Saya</button>

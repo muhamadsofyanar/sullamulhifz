@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\PersonalModuleEnrollment;
+use App\Models\QuranPracticeSession;
 use App\Models\User;
 use App\Services\PersonalModuleAccessService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -19,6 +20,7 @@ class PersonalProgramHubV330Test extends TestCase
         $this->assertTrue(Schema::hasTable('personal_module_enrollments'));
         $this->assertTrue(Route::has('personal.programs.index'));
         $this->assertTrue(Route::has('personal.programs.enroll'));
+        $this->assertTrue(Route::has('personal.programs.deactivate'));
     }
 
     public function test_new_personal_home_only_exposes_programs_after_enrollment(): void
@@ -63,6 +65,71 @@ class PersonalProgramHubV330Test extends TestCase
         $this->get(route('quran-journey.index'))->assertOk();
         $this->get(route('personal.learning.index'))->assertOk();
         $this->get(route('academy.index'))->assertForbidden();
+    }
+
+    public function test_selected_programs_are_enrolled_during_public_registration(): void
+    {
+        $this->post(route('personal.register.store'), [
+            'name' => 'Personal Pilihan',
+            'email' => 'personal-pilihan@example.test',
+            'password' => 'RahasiaAman123',
+            'password_confirmation' => 'RahasiaAman123',
+            'programs' => ['quran_practice', 'quran_journey'],
+            'terms' => '1',
+        ])->assertRedirect(route('personal.dashboard'));
+
+        $user = User::query()->where('email', 'personal-pilihan@example.test')->firstOrFail();
+        $this->assertDatabaseHas('personal_module_enrollments', [
+            'user_id' => $user->id,
+            'module_key' => 'quran_practice',
+            'status' => 'active',
+            'enrollment_source' => 'public_registration',
+        ]);
+        $this->assertDatabaseHas('personal_module_enrollments', [
+            'user_id' => $user->id,
+            'module_key' => 'quran_journey',
+            'status' => 'active',
+            'enrollment_source' => 'public_registration',
+        ]);
+
+        $this->get(route('personal.dashboard'))
+            ->assertOk()
+            ->assertSee('href="'.route('quran-practice.index').'"', false)
+            ->assertSee('href="'.route('quran-journey.index').'"', false)
+            ->assertDontSee('href="'.route('personal.learning.index').'"', false);
+    }
+
+    public function test_deactivated_program_disappears_everywhere_even_when_history_exists(): void
+    {
+        $user = $this->registerPersonal('deactivate');
+        $this->post(route('personal.programs.enroll', 'quran_practice'))->assertRedirect();
+
+        $profile = $user->personalProfile()->firstOrFail();
+        QuranPracticeSession::create([
+            'institution_id' => $user->institution_id,
+            'user_id' => $user->id,
+            'student_id' => $profile->student_id,
+            'mode' => 'manual',
+            'selection' => ['surah_id' => 1, 'start_verse' => 1, 'end_verse' => 1],
+            'repeat_target' => 1,
+            'repeat_completed' => 1,
+            'started_at' => now()->subMinute(),
+            'completed_at' => now(),
+            'duration_seconds' => 60,
+            'status' => 'completed',
+        ]);
+
+        $this->delete(route('personal.programs.deactivate', 'quran_practice'))->assertRedirect();
+
+        $this->assertDatabaseHas('personal_module_enrollments', [
+            'user_id' => $user->id,
+            'module_key' => 'quran_practice',
+            'status' => 'inactive',
+        ]);
+        $this->get(route('personal.dashboard'))
+            ->assertOk()
+            ->assertDontSee('href="'.route('quran-practice.index').'"', false);
+        $this->get(route('quran-practice.index'))->assertForbidden();
     }
 
     private function registerPersonal(string $suffix): User

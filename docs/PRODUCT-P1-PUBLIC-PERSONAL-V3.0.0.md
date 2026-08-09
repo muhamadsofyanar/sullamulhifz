@@ -49,4 +49,12 @@ Beranda dan navigasi hanya menampilkan program yang aktif untuk akun tersebut. M
 8. modul yang belum di-enroll tidak muncul di Home/sidebar dan URL langsung ditolak untuk role Personal;
 9. enrollment/histori Personal lama tetap mendapat akses setelah migration v3.3.0.
 
+## Evolusi v3.4.0 — Personal Enrollment Lifecycle
+
+1. pilihan program dapat ditetapkan saat pendaftaran publik atau dari Program Saya;
+2. status enrollment eksplisit menjadi sumber visibilitas Home, sidebar, navigasi ponsel, dan akses URL;
+3. modul mandiri dapat dinonaktifkan tanpa menghapus histori;
+4. enrollment Guided Quran/Qur’an Journey aktif mencegah program terkait disembunyikan secara semu;
+5. Academy tetap merupakan akses turunan dan tidak dapat diaktifkan bebas.
+
 Family, Mentor, dan Enterprise menjadi track berikutnya setelah fondasi Personal stabil; roadmap fase inti tidak dinomori ulang.

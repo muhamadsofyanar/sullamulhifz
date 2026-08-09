@@ -24,4 +24,11 @@ class PersonalProgramController extends Controller
 
         return back()->with('success', 'Program ditambahkan ke Ruang Personal Anda.');
     }
+
+    public function deactivate(Request $request, string $moduleKey): RedirectResponse
+    {
+        $this->access->deactivate($request->user(), $moduleKey);
+
+        return back()->with('success', 'Program dinonaktifkan. Jurnal dan jejak aktivitas lama tetap tersimpan.');
+    }
 }

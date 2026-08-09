@@ -1,0 +1,12 @@
+SULLAMUL HIFZ v3.4.0 — PERSONAL ENROLLMENT LIFECYCLE
+
+1. Backup database dan persistent storage production.
+2. Pastikan commit v3.3.0 aktif dan migration 002400 berstatus Ran.
+3. Salin seluruh isi paket v3.4.0 ke root repository GitHub.
+4. Commit lalu deploy main satu kali melalui Coolify.
+5. Tunggu build dan rolling update selesai; jangan redeploy ketika build masih berjalan.
+6. Cek /up = HTTP 200 dan RELEASE = v3.4.0.
+7. Tidak ada migration baru pada rilis ini.
+8. Daftar satu akun Personal dengan pilihan program, lalu cek Home/sidebar/mobile.
+9. Uji aktifkan dan nonaktifkan Latihan Qur’an dari Program Saya.
+10. Jangan jalankan migrate:fresh, db:wipe, DROP, atau rollback database.

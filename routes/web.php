@@ -156,6 +156,7 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
         Route::get('/', [PersonalController::class, 'index'])->middleware('permission:personal.use')->name('dashboard');
         Route::get('/program', [PersonalProgramController::class, 'index'])->middleware('permission:personal.use')->name('programs.index');
         Route::post('/program-saya/{moduleKey}/aktifkan', [PersonalProgramController::class, 'enroll'])->middleware('permission:personal.use')->name('programs.enroll');
+        Route::delete('/program-saya/{moduleKey}', [PersonalProgramController::class, 'deactivate'])->middleware('permission:personal.use')->name('programs.deactivate');
         Route::put('/onboarding', [PersonalController::class, 'onboarding'])->middleware('permission:personal.use')->name('onboarding');
         Route::post('/aktivitas', [PersonalController::class, 'storeActivity'])->middleware('permission:personal.use')->name('activities.store');
         Route::post('/target', [PersonalController::class, 'storeGoal'])->middleware('permission:personal.use')->name('goals.store');

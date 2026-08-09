@@ -1,8 +1,8 @@
 # Current State
 
-## Current candidate: v3.3.0
+## Current candidate: v3.4.0
 
-Fokus pengembangan aktif: **Personal Program Hub — satu Ruang Personal dengan program modular berbasis enrollment nyata**.
+Fokus pengembangan aktif: **Personal Enrollment Lifecycle — satu keputusan enrollment untuk pendaftaran, Home, navigasi, dan route guard**.
 
 v3.0.0 membuka penggunaan mandiri kepada masyarakat umum tanpa mengubah mereka menjadi anggota lembaga. Di backend setiap pengguna Personal memiliki workspace privat untuk mempertahankan isolasi tenant; di UI pengguna melihat pengalaman Personal, bukan struktur admin lembaga.
 
@@ -19,5 +19,7 @@ v3.2.0 menambahkan progres Character/Talent non-ranking, evidence portofolio, re
 v3.2.1 menambahkan rekening transfer resmi **BSI (Bank Syariah Indonesia) · 7350451147 · YYS INSAN QURAN MADANI** sebagai konfigurasi dan snapshot audit pada transaksi transfer manual. Patch ini tidak mengubah schema database dan tidak otomatis mengaktifkan feature flag pembayaran.
 
 v3.3.0 menambahkan tabel enrollment modul Personal dan menjadikan Beranda/navigasi Personal dinamis. Jurnal, target, dan catatan aktivitas tetap tersedia untuk setiap akun Personal; Latihan Qur’an, Qur’an Journey, Program dengan Asatidz, dan Academy hanya tampil bila aksesnya aktif. Enrollment/histori lama dibackfill agar aktivitas nyata tidak hilang. Academy tetap mengikuti hubungan program Guided Quran, bukan dibuka bebas. Migration v3.3.0 bersifat additive.
+
+v3.4.0 menutup gap lifecycle tanpa migration baru. Pendaftar dapat memilih modul awal, Program Saya dapat mengaktifkan atau menonaktifkan modul mandiri, dan status enrollment eksplisit menjadi sumber keputusan utama. Beranda, sidebar, navigasi bawah ponsel, serta akses URL membaca keputusan yang sama. Nonaktivasi tidak menghapus histori. Program yang masih terhubung ke enrollment Guided Quran/Qur’an Journey aktif tidak dapat disembunyikan secara semu, dan Academy tetap bersifat turunan.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.

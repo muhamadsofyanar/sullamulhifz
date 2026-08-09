@@ -1,0 +1,34 @@
+SULLAMUL HIFZ v3.4.0 — PERSONAL ENROLLMENT LIFECYCLE
+
+ADDED
+public/css/app-v340.css
+docs/releases/v3.4.0.md
+UPGRADE-V3.4.0.md
+DEPLOY-QUICK-V3.4.0.txt
+BUILD-REPORT-V3.4.0.md
+CHANGED-FILES-V3.4.0.txt
+
+MODIFIED
+app/Http/Controllers/PersonalProgramController.php
+app/Http/Controllers/PersonalRegistrationController.php
+app/Services/PersonalModuleAccessService.php
+routes/web.php
+routes/console.php
+resources/views/auth/register-personal.blade.php
+resources/views/layouts/app.blade.php
+resources/views/personal/programs.blade.php
+tests/Feature/PersonalProgramHubV330Test.php
+Dockerfile
+docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md
+docs/CURRENT-STATE.md
+docs/ROADMAP.md
+CHANGELOG.md
+START-HERE.md
+RELEASE
+public/release.txt
+
+PRESERVED
+Migration 002400 dan seluruh histori enrollment v3.3.0.
+Konfigurasi rekening transfer resmi v3.2.1.
+Patch morph map QuranGuidedSubmission/User.
+Fondasi roadmap v3.2.0 dan seluruh migration sebelumnya.

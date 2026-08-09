@@ -19,12 +19,18 @@
     <link rel="stylesheet" href="/css/app-v300.css?v={{ @filemtime(public_path('css/app-v300.css')) ?: '300' }}">
     <link rel="stylesheet" href="/css/app-v310.css?v={{ @filemtime(public_path('css/app-v310.css')) ?: '310' }}">
     <link rel="stylesheet" href="/css/app-v330.css?v={{ @filemtime(public_path('css/app-v330.css')) ?: '330' }}">
+    <link rel="stylesheet" href="/css/app-v340.css?v={{ @filemtime(public_path('css/app-v340.css')) ?: '340' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
 <body class="app-body @auth role-{{ auth()->user()->primaryRole() }} @endauth">
 @if(auth()->check())
-@php($personalAccess = auth()->user()->hasRole('personal') ? app(\App\Services\PersonalModuleAccessService::class)->accessMap(auth()->user()) : [])
+@php
+    $personalModules = auth()->user()->hasRole('personal')
+        ? app(\App\Services\PersonalModuleAccessService::class)->activeModules(auth()->user())
+        : collect();
+    $personalAccess = $personalModules->mapWithKeys(fn (array $module): array => [$module['key'] => true])->all();
+@endphp
 <div class="app-shell">
     <aside class="sidebar" id="sidebar">
         <a class="brand brand-sidebar" href="{{ route('dashboard') }}" aria-label="Sullamul Hifz — Beranda">
@@ -261,8 +267,15 @@
     @if(auth()->user()->hasRole('personal'))
         <a href="{{ route('personal.dashboard') }}" class="{{ request()->routeIs('personal.dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
         <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*')?'active':'' }}"><x-icon name="plan"/><span>Program</span></a>
+        @foreach($personalModules->take(2) as $module)
+        <a href="{{ route($module['route']) }}" class="{{ request()->routeIs($module['route_pattern'])?'active':'' }}"><x-icon :name="$module['icon']"/><span>{{ $module['mobile_label'] }}</span></a>
+        @endforeach
+        @if($personalModules->isEmpty())
         <a href="{{ route('personal.dashboard') }}#catat"><x-icon name="preservation"/><span>Catat</span></a>
         <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target</span></a>
+        @elseif($personalModules->count() === 1)
+        <a href="{{ route('personal.dashboard') }}#catat"><x-icon name="preservation"/><span>Catat</span></a>
+        @endif
         <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>
     @elseif(auth()->user()->hasRole('guardian'))
         <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>

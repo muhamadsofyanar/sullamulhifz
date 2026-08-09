@@ -20,6 +20,18 @@
                 <label>Nomor WhatsApp <span class="optional-label">opsional</span><input name="phone" value="{{ old('phone') }}" autocomplete="tel"></label>
                 <label>Kata sandi<input type="password" name="password" required minlength="12" autocomplete="new-password"><small>Minimal 12 karakter, huruf besar-kecil, dan angka.</small></label>
                 <label>Ulangi kata sandi<input type="password" name="password_confirmation" required minlength="12" autocomplete="new-password"></label>
+                <fieldset class="span-all personal-program-choice">
+                    <legend>Program yang ingin ditampilkan <span class="optional-label">boleh dipilih nanti</span></legend>
+                    <p>Pilih hanya yang ingin langsung digunakan. Pilihan ini dapat diubah dari Program Saya.</p>
+                    <div class="personal-program-choice-grid">
+                        @foreach($programs as $program)
+                        <label>
+                            <input type="checkbox" name="programs[]" value="{{ $program['key'] }}" @checked(in_array($program['key'], (array) old('programs', []), true))>
+                            <span><x-icon :name="$program['icon']" size="22"/><strong>{{ $program['title'] }}</strong><small>{{ $program['description'] }}</small></span>
+                        </label>
+                        @endforeach
+                    </div>
+                </fieldset>
                 <label class="span-all personal-terms"><input type="checkbox" name="terms" value="1" required> <span>Saya menyetujui <a href="{{ route('public.terms') }}" target="_blank">Syarat & Ketentuan</a> dan memahami <a href="{{ route('public.privacy') }}" target="_blank">kebijakan privasi</a>.</span></label>
             </div>
             <button class="public-button primary" type="submit">Buat ruang Personal saya</button>

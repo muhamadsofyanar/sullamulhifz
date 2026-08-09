@@ -8,19 +8,25 @@ use App\Models\PersonalProfile;
 use App\Models\Role;
 use App\Models\Student;
 use App\Models\User;
+use App\Services\PersonalModuleAccessService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Password;
 use Illuminate\View\View;
 
 class PersonalRegistrationController extends Controller
 {
+    public function __construct(private readonly PersonalModuleAccessService $personalModules) {}
+
     public function create(): View
     {
-        return view('auth.register-personal');
+        return view('auth.register-personal', [
+            'programs' => $this->personalModules->registrationCatalog(),
+        ]);
     }
 
     public function store(Request $request): RedirectResponse
@@ -31,10 +37,14 @@ class PersonalRegistrationController extends Controller
             'email' => ['required', 'email:rfc', 'max:190', 'unique:users,email'],
             'phone' => ['nullable', 'string', 'max:30'],
             'password' => ['required', 'confirmed', Password::min(12)->letters()->mixedCase()->numbers()],
+            'programs' => ['sometimes', 'array', 'max:3'],
+            'programs.*' => ['string', 'distinct', Rule::in($this->personalModules->registrationCatalog()->pluck('key')->all())],
             'terms' => ['accepted'],
         ]);
 
-        $user = DB::transaction(function () use ($data): User {
+        $selectedPrograms = collect($data['programs'] ?? [])->unique()->values();
+
+        $user = DB::transaction(function () use ($data, $selectedPrograms): User {
             $token = Str::lower(str_replace('-', '', (string) Str::uuid()));
             $institution = Institution::create([
                 'name' => 'Ruang Personal '.Str::limit($data['name'], 70, ''),
@@ -84,6 +94,10 @@ class PersonalRegistrationController extends Controller
                     ['institution_id' => $institution->id, 'feature_key' => $featureKey],
                     ['enabled' => true],
                 );
+            }
+
+            foreach ($selectedPrograms as $moduleKey) {
+                $this->personalModules->enroll($user, (string) $moduleKey, 'public_registration');
             }
 
             $institution->update(['owner_user_id' => $user->id]);

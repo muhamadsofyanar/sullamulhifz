@@ -1,3 +1,12 @@
+# v3.4.0 — Personal Enrollment Lifecycle — 2026-08-09
+
+- Menambahkan pilihan Latihan Qur’an, Qur’an Journey, dan Program dengan Asatidz langsung pada pendaftaran Personal; pengguna tetap boleh memulai hanya dengan jurnal dan target.
+- Menyatukan pilihan pendaftaran, Program Saya, Beranda, sidebar, navigasi bawah ponsel, serta route guard pada enrollment modul yang sama.
+- Menambahkan nonaktivasi program tanpa menghapus histori latihan, jurnal, target, setoran, atau progres lama.
+- Membuat status enrollment eksplisit menjadi sumber keputusan utama agar histori lama tidak membuka kembali program yang sudah dinonaktifkan.
+- Menjaga Program Asatidz/Qur’an Journey tetap aktif selama masih terhubung ke enrollment program yang berjalan; Academy tetap hanya diturunkan dari program Guided Quran yang terhubung.
+- Tidak menambah migration, tidak mengubah konfigurasi rekening resmi, dan tidak mengaktifkan payment/AI/community secara otomatis.
+
 # v3.3.0 — Personal Program Hub — 2026-08-09
 
 - Mengubah Ruang Personal dari pengalaman yang berpusat pada `Belajar & Audio` menjadi hub modular berbasis enrollment.
