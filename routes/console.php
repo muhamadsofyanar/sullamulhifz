@@ -726,6 +726,39 @@ Artisan::command('sullam:verify-guided-quran', function (): int {
     return 0;
 })->purpose('Memeriksa program online, setoran, review asatidz, dan guardrail privasi v3.1.1');
 
+Artisan::command('sullam:verify-personal-program-hub', function (): int {
+    if (! Schema::hasTable('personal_module_enrollments')) {
+        $this->error('Personal Program Hub belum siap: tabel personal_module_enrollments tidak tersedia.');
+        return 1;
+    }
+
+    $allowed = ['quran_practice', 'quran_journey', 'guided_learning', 'academy'];
+    $invalidKeys = DB::table('personal_module_enrollments')->whereNotIn('module_key', $allowed)->count();
+    $ownershipIssues = DB::table('personal_module_enrollments as pme')
+        ->join('personal_profiles as pp', 'pp.id', '=', 'pme.personal_profile_id')
+        ->where(function ($query): void {
+            $query->whereColumn('pme.user_id', '!=', 'pp.user_id')
+                ->orWhereColumn('pme.institution_id', '!=', 'pp.institution_id');
+        })->count();
+
+    $this->table(['Komponen', 'Jumlah'], [
+        ['Enrollment modul Personal', DB::table('personal_module_enrollments')->count()],
+        ['Latihan Qur’an aktif', DB::table('personal_module_enrollments')->where('module_key', 'quran_practice')->where('status', 'active')->count()],
+        ['Qur’an Journey aktif', DB::table('personal_module_enrollments')->where('module_key', 'quran_journey')->where('status', 'active')->count()],
+        ['Program Asatidz aktif', DB::table('personal_module_enrollments')->where('module_key', 'guided_learning')->where('status', 'active')->count()],
+        ['Module key tidak dikenal', $invalidKeys],
+        ['Ownership tidak konsisten', $ownershipIssues],
+    ]);
+
+    if ($invalidKeys > 0 || $ownershipIssues > 0) {
+        $this->error('Guardrail Personal Program Hub gagal. Periksa module key dan ownership enrollment.');
+        return 1;
+    }
+
+    $this->info('Struktur Personal Program Hub v3.3.0 siap. Visibilitas Home dan akses URL tetap harus dibuktikan lewat smoke test akun nyata.');
+    return 0;
+})->purpose('Memeriksa enrollment dan ownership Personal Program Hub v3.3.0');
+
 Artisan::command('sullam:send-murajaah-reminders {--through=}', function (): int {
     $through = $this->option('through')
         ? \Illuminate\Support\Carbon::parse((string) $this->option('through'))->startOfDay()

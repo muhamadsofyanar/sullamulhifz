@@ -18,11 +18,13 @@
     <link rel="stylesheet" href="/css/app-v250.css?v={{ @filemtime(public_path('css/app-v250.css')) ?: '250' }}">
     <link rel="stylesheet" href="/css/app-v300.css?v={{ @filemtime(public_path('css/app-v300.css')) ?: '300' }}">
     <link rel="stylesheet" href="/css/app-v310.css?v={{ @filemtime(public_path('css/app-v310.css')) ?: '310' }}">
+    <link rel="stylesheet" href="/css/app-v330.css?v={{ @filemtime(public_path('css/app-v330.css')) ?: '330' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
 <body class="app-body @auth role-{{ auth()->user()->primaryRole() }} @endauth">
 @if(auth()->check())
+@php($personalAccess = auth()->user()->hasRole('personal') ? app(\App\Services\PersonalModuleAccessService::class)->accessMap(auth()->user()) : [])
 <div class="app-shell">
     <aside class="sidebar" id="sidebar">
         <a class="brand brand-sidebar" href="{{ route('dashboard') }}" aria-label="Sullamul Hifz — Beranda">
@@ -34,7 +36,19 @@
                 <x-icon name="home"/><span>Beranda</span>
             </a>
             @if(auth()->user()->hasRole('personal'))
-                <a href="{{ route('personal.learning.index') }}" class="{{ request()->routeIs('personal.learning.*') ? 'active' : '' }}"><x-icon name="listen"/><span>Belajar & Audio</span></a>
+                <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*') ? 'active' : '' }}"><x-icon name="plan"/><span>Program Saya</span></a>
+                @if($personalAccess['quran_practice'] ?? false)
+                <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*') ? 'active' : '' }}"><x-icon name="listen"/><span>Latihan Qur’an</span></a>
+                @endif
+                @if($personalAccess['quran_journey'] ?? false)
+                <a href="{{ route('quran-journey.index') }}" class="{{ request()->routeIs('quran-journey.*') ? 'active' : '' }}"><x-icon name="continuity"/><span>Qur’an Journey</span></a>
+                @endif
+                @if($personalAccess['guided_learning'] ?? false)
+                <a href="{{ route('personal.learning.index') }}" class="{{ request()->routeIs('personal.learning.*') ? 'active' : '' }}"><x-icon name="growth"/><span>Program Asatidz</span></a>
+                @endif
+                @if($personalAccess['academy'] ?? false)
+                <a href="{{ route('academy.index') }}" class="{{ request()->routeIs('academy.*') ? 'active' : '' }}"><x-icon name="lesson"/><span>Academy</span></a>
+                @endif
                 <a href="{{ route('personal.dashboard') }}#catat" class="{{ request()->routeIs('personal.dashboard') ? 'active' : '' }}"><x-icon name="preservation"/><span>Catat Aktivitas</span></a>
                 <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target Saya</span></a>
                 <a href="{{ route('personal.dashboard') }}#jurnal"><x-icon name="continuity"/><span>Jurnal Perjalanan</span></a>
@@ -246,7 +260,7 @@
 <nav class="mobile-bottom-nav" aria-label="Navigasi bawah">
     @if(auth()->user()->hasRole('personal'))
         <a href="{{ route('personal.dashboard') }}" class="{{ request()->routeIs('personal.dashboard')?'active':'' }}"><x-icon name="home"/><span>Beranda</span></a>
-        <a href="{{ route('personal.learning.index') }}" class="{{ request()->routeIs('personal.learning.*')?'active':'' }}"><x-icon name="listen"/><span>Belajar</span></a>
+        <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*')?'active':'' }}"><x-icon name="plan"/><span>Program</span></a>
         <a href="{{ route('personal.dashboard') }}#catat"><x-icon name="preservation"/><span>Catat</span></a>
         <a href="{{ route('personal.dashboard') }}#target"><x-icon name="plan"/><span>Target</span></a>
         <button type="button" data-sidebar-toggle><x-icon name="menu"/><span class="mobile-more-label">Lainnya</span></button>

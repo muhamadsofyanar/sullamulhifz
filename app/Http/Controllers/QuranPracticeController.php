@@ -29,20 +29,23 @@ class QuranPracticeController extends Controller
     public function index(Request $request): View
     {
         $institutionId = (int) $request->user()->institution_id;
+        $libraryInstitutionId = $this->libraryInstitutionId($request);
         $sources = QuranAudioSource::query()
-            ->where('institution_id', $institutionId)
+            ->where('institution_id', $libraryInstitutionId)
             ->where('status', 'active')
             ->orderByDesc('is_default')
             ->get();
 
-        $presets = QuranPracticePreset::query()
-            ->with(['source', 'rubu', 'startSurah', 'endSurah'])
-            ->where('institution_id', $institutionId)
-            ->where('status', 'active')
-            ->whereIn('audience', $this->audiencesFor($request))
-            ->orderByDesc('is_featured')
-            ->orderBy('title')
-            ->get();
+        $presets = $request->user()->hasRole('personal')
+            ? collect()
+            : QuranPracticePreset::query()
+                ->with(['source', 'rubu', 'startSurah', 'endSurah'])
+                ->where('institution_id', $libraryInstitutionId)
+                ->where('status', 'active')
+                ->whereIn('audience', $this->audiencesFor($request))
+                ->orderByDesc('is_featured')
+                ->orderBy('title')
+                ->get();
 
         $students = $this->availableStudents($request);
         $defaultSource = $sources->firstWhere('is_default', true) ?: $sources->first();
@@ -52,12 +55,14 @@ class QuranPracticeController extends Controller
             'defaultSource' => $defaultSource,
             'presets' => $presets,
             'featuredPresets' => $presets->where('is_featured', true)->values(),
-            'videos' => QuranVideoResource::query()
-                ->with('surah')
-                ->where('institution_id', $institutionId)
-                ->where('status', 'published')
-                ->latest()
-                ->get(),
+            'videos' => $request->user()->hasRole('personal')
+                ? collect()
+                : QuranVideoResource::query()
+                    ->with('surah')
+                    ->where('institution_id', $libraryInstitutionId)
+                    ->where('status', 'published')
+                    ->latest()
+                    ->get(),
             'students' => $students,
             'targets' => MemorizationTarget::query()
                 ->with(['student', 'surah', 'rubu', 'marhalah'])
@@ -99,9 +104,10 @@ class QuranPracticeController extends Controller
             'playback_rate' => ['nullable', 'numeric', 'min:0.65', 'max:1.5'],
         ]);
 
-        $institutionId = (int) $request->user()->institution_id;
+        $institutionId = $this->libraryInstitutionId($request);
 
         if (! empty($data['preset_id'])) {
+            abort_if($request->user()->hasRole('personal'), 403, 'Preset lembaga tidak tersedia di Ruang Personal.');
             $preset = QuranPracticePreset::query()
                 ->where('institution_id', $institutionId)
                 ->where('status', 'active')
@@ -159,8 +165,9 @@ class QuranPracticeController extends Controller
         }
 
         if (! empty($data['preset_id'])) {
+            abort_if($request->user()->hasRole('personal'), 403, 'Preset lembaga tidak tersedia di Ruang Personal.');
             $preset = QuranPracticePreset::query()
-                ->where('institution_id', $request->user()->institution_id)
+                ->where('institution_id', $this->libraryInstitutionId($request))
                 ->where('status', 'active')
                 ->findOrFail($data['preset_id']);
             $this->authorizePreset($request, $preset);
@@ -202,7 +209,7 @@ class QuranPracticeController extends Controller
 
         if (! empty($data['source_id'])) {
             abort_unless(QuranAudioSource::query()
-                ->where('institution_id', $request->user()->institution_id)
+                ->where('institution_id', $this->libraryInstitutionId($request))
                 ->whereKey($data['source_id'])
                 ->exists(), 403, 'Sumber audio tidak termasuk lembaga ini.');
         }
@@ -309,15 +316,34 @@ class QuranPracticeController extends Controller
         if ($user->hasRole('guardian')) {
             $audiences[] = 'guardian';
         }
+        if ($user->hasRole('personal')) {
+            $audiences[] = 'personal';
+        }
 
         return array_values(array_unique($audiences));
     }
 
     private function authorizePreset(Request $request, QuranPracticePreset $preset): void
     {
-        abort_unless((int) $preset->institution_id === (int) $request->user()->institution_id, 404);
+        abort_unless((int) $preset->institution_id === $this->libraryInstitutionId($request), 404);
         abort_unless($preset->status === 'active', 404);
         abort_unless(in_array($preset->audience, $this->audiencesFor($request), true), 403);
+    }
+
+    private function libraryInstitutionId(Request $request): int
+    {
+        $institutionId = (int) $request->user()->institution_id;
+        if (! $request->user()->hasRole('personal')) {
+            return $institutionId;
+        }
+
+        return (int) (QuranAudioSource::query()
+            ->where('status', 'active')
+            ->whereHas('institution', fn ($query) => $query->where(fn ($scope) => $scope
+                ->whereNull('workspace_type')->orWhere('workspace_type', '!=', 'personal')))
+            ->orderByDesc('is_default')
+            ->orderBy('id')
+            ->value('institution_id') ?: $institutionId);
     }
 
     private function authorizeTarget(Request $request, MemorizationTarget $target): void

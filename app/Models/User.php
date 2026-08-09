@@ -45,6 +45,7 @@ class User extends Authenticatable
     public function teacher(): HasOne { return $this->hasOne(Teacher::class); }
     public function guardian(): HasOne { return $this->hasOne(Guardian::class); }
     public function personalProfile(): HasOne { return $this->hasOne(PersonalProfile::class); }
+    public function personalModuleEnrollments(): HasMany { return $this->hasMany(PersonalModuleEnrollment::class); }
     public function accountInvitations(): HasMany { return $this->hasMany(AccountInvitation::class); }
 
     public function hasRole(string $role): bool

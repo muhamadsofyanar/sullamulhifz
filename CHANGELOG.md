@@ -1,3 +1,16 @@
+# v3.3.0 — Personal Program Hub — 2026-08-09
+
+- Mengubah Ruang Personal dari pengalaman yang berpusat pada `Belajar & Audio` menjadi hub modular berbasis enrollment.
+- Menambah `personal_module_enrollments` sebagai sumber hak akses eksplisit untuk Latihan Qur’an, Qur’an Journey, dan Program dengan Asatidz.
+- Beranda, sidebar, dan navigasi mobile Personal hanya menampilkan modul yang aktif untuk akun tersebut; jurnal, target, dan catatan aktivitas tetap menjadi fondasi privat yang selalu tersedia.
+- Academy muncul otomatis hanya jika program Guided Quran aktif yang diikuti memang terhubung ke materi Academy.
+- Menambah `Program Saya` agar pengguna Personal dapat mengaktifkan modul self-service yang tersedia tanpa membuka semua modul secara default.
+- Menambah middleware akses Personal sehingga URL langsung ke modul yang belum terdaftar ditolak tanpa memengaruhi Guru/Wali/Admin.
+- Membackfill entitlement akun lama dari Guided Quran enrollment, Qur’an Journey enrollment, dan histori Latihan Qur’an yang sudah nyata.
+- Latihan Qur’an Personal dapat membaca pustaka murattal/timing bersama tanpa menggandakan ribuan timing ke setiap workspace Personal.
+- Menyesuaikan Home publik, halaman Program, pendaftaran, dan copy Personal agar arsitektur modular ini terlihat konsisten dari depan sampai portal.
+- Menjaga konfigurasi transfer resmi v3.2.1 dan seluruh fondasi v3.2.0 tanpa perubahan destruktif.
+
 # v3.2.1 — Official Bank Transfer Configuration — 2026-08-09
 
 - Menambahkan rekening transfer resmi BSI atas nama YYS INSAN QURAN MADANI.

@@ -1,14 +1,14 @@
-# MULAI DI SINI — v3.2.1
+# MULAI DI SINI — v3.3.0
 
-Rilis kandidat adalah **v3.2.1 — Official Bank Transfer Configuration**.
+Rilis kandidat adalah **v3.3.0 — Personal Program Hub**.
 
 Baca berurutan:
-1. `UPGRADE-V3.2.1.md`
-2. `DEPLOY-QUICK-V3.2.1.txt`
+1. `UPGRADE-V3.3.0.md`
+2. `DEPLOY-QUICK-V3.3.0.txt`
 3. `docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md`
 4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-v3.0.0 membuka jalur Personal. v3.1.x menghubungkannya dengan murattal, Program Online, Academy terpilih, setoran audio/teks, dan review asatidz. v3.2.0 menambahkan fondasi implementasi Fase 8–9 serta readiness Fase 10. v3.2.1 menambahkan konfigurasi rekening transfer resmi dan snapshot tujuan pada payment ledger. Feature flag pembayaran, multi-lembaga, community, payment provider, dan integrasi eksternal tetap tidak diaktifkan otomatis.
+v3.0.0 membuka jalur Personal. v3.1.x menghubungkannya dengan murattal, Program Online, Academy terpilih, setoran audio/teks, dan review asatidz. v3.2.x menambahkan fondasi roadmap serta konfigurasi transfer resmi. v3.3.0 merapikan arsitektur Personal: jurnal/target selalu privat, sedangkan Latihan Qur’an, Qur’an Journey, Program Asatidz, dan Academy tampil berdasarkan enrollment nyata. Feature flag pembayaran, multi-lembaga, community, payment provider, dan integrasi eksternal tetap tidak diaktifkan otomatis.
 
 ---
 

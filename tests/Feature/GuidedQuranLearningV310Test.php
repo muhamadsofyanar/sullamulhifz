@@ -34,7 +34,9 @@ class GuidedQuranLearningV310Test extends TestCase
         $this->assertTrue($user->hasPermission('guided_learning.use'));
         $this->assertTrue($user->hasPermission('academy.view'));
         $this->assertTrue($user->hasPermission('quran.view'));
-        $this->get(route('personal.learning.index'))->assertOk()->assertSee('Belajar Al-Qur’an tidak harus sendirian');
+        $this->get(route('personal.learning.index'))->assertForbidden();
+        $this->post(route('personal.programs.enroll', 'guided_learning'))->assertRedirect();
+        $this->get(route('personal.learning.index'))->assertOk()->assertSee('Pendampingan yang memang Anda pilih');
     }
 
     public function test_personal_user_cannot_submit_to_another_personal_users_enrollment(): void
@@ -55,9 +57,11 @@ class GuidedQuranLearningV310Test extends TestCase
             'status'=>'published',
         ]);
 
+        $this->actingAs($userA)->post(route('personal.programs.enroll', 'guided_learning'))->assertRedirect();
         $this->actingAs($userA)->post(route('personal.learning.enroll', $program))->assertRedirect();
         $enrollment = \App\Models\GuidedQuranEnrollment::where('student_id', $profileA->student_id)->firstOrFail();
 
+        $this->actingAs($userB)->post(route('personal.programs.enroll', 'guided_learning'))->assertRedirect();
         $this->actingAs($userB)->post(route('personal.learning.submit', $enrollment), [
             'submission_type'=>'memorization', 'surah_id'=>1, 'start_verse'=>1, 'end_verse'=>1, 'evidence_text'=>'Tidak boleh masuk.',
         ])->assertNotFound();

@@ -8,6 +8,7 @@ use App\Models\MediaAsset;
 use App\Models\QuranGuidedSubmission;
 use App\Models\QuranSurah;
 use App\Services\MediaStorageService;
+use App\Services\PersonalModuleAccessService;
 use App\Services\QuranAudioSyncService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,7 +19,10 @@ use Illuminate\View\View;
 
 class PersonalGuidedLearningController extends Controller
 {
-    public function __construct(private readonly MediaStorageService $media) {}
+    public function __construct(
+        private readonly MediaStorageService $media,
+        private readonly PersonalModuleAccessService $personalModules,
+    ) {}
 
     public function index(Request $request, QuranAudioSyncService $audio): View
     {
@@ -62,7 +66,7 @@ class PersonalGuidedLearningController extends Controller
         abort_if($program->enrollment_closes_at && $program->enrollment_closes_at->isPast(), 422, 'Pendaftaran program sudah ditutup.');
 
         $profile = $request->user()->personalProfile()->firstOrFail();
-        GuidedQuranEnrollment::query()->firstOrCreate(
+        GuidedQuranEnrollment::query()->updateOrCreate(
             ['guided_quran_program_id' => $program->id, 'student_id' => $profile->student_id],
             [
                 'learner_institution_id' => $request->user()->institution_id,
@@ -70,9 +74,12 @@ class PersonalGuidedLearningController extends Controller
                 'learner_mode' => 'personal_online',
                 'status' => 'active',
                 'enrolled_at' => now(),
+                'completed_at' => null,
                 'metadata' => ['joined_via' => 'personal_learning_hub'],
             ],
         );
+
+        $this->personalModules->rememberDerivedEnrollment($request->user(), 'guided_learning', 'guided_program_enrollment');
 
         return back()->with('success', 'Program berhasil diikuti. Materi dan jalur setoran sekarang tersedia di ruang Personal Anda.');
     }

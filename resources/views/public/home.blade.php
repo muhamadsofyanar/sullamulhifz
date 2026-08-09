@@ -64,6 +64,13 @@
             <a href="{{ route('public.tpa') }}">Lihat sistem TPA →</a>
         </article>
         <article class="ecosystem-card">
+            <div class="ecosystem-icon">PR</div>
+            <span class="status-badge active">Aktif</span>
+            <h3>Sullamul Ḥifẓ Personal</h3>
+            <p>Ruang privat untuk jurnal dan target Qur’an, dengan Latihan Qur’an, Qur’an Journey, Program Asatidz, serta Academy yang muncul sesuai program yang diikuti.</p>
+            <a href="{{ route('personal.register') }}">Buat Ruang Personal →</a>
+        </article>
+        <article class="ecosystem-card">
             <div class="ecosystem-icon">KU</div>
             <span class="status-badge">Bertumbuh</span>
             <h3>Keluarga Qur’ani</h3>

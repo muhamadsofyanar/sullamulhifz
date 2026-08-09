@@ -79,7 +79,7 @@ class PersonalRegistrationController extends Controller
                 'privacy_acknowledged_at' => now(),
             ]);
 
-            foreach (['academy_portal', 'quran_audio'] as $featureKey) {
+            foreach (['academy_portal', 'quran_audio', 'quran_journey'] as $featureKey) {
                 FeatureFlag::firstOrCreate(
                     ['institution_id' => $institution->id, 'feature_key' => $featureKey],
                     ['enabled' => true],

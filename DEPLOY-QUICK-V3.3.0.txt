@@ -1,0 +1,12 @@
+SULLAMUL HIFZ v3.3.0 — PERSONAL PROGRAM HUB
+
+1. Backup database dan persistent storage production.
+2. Pastikan source sebelumnya v3.2.x sehat.
+3. Deploy v3.3.0 satu kali melalui GitHub → Coolify.
+4. Tunggu build, migration, dan rolling update selesai; jangan redeploy berulang saat proses masih berjalan.
+5. Cek /up = HTTP 200 dan RELEASE = v3.3.0.
+6. Cek migrate:status; migration 002400 harus Ran.
+7. Login Personal → Beranda → Program Saya.
+8. Aktifkan satu modul dan pastikan hanya modul aktif yang muncul di Beranda/sidebar.
+9. Pastikan akun lama dengan enrollment Guided/Journey tetap mempunyai akses terkait.
+10. Jangan jalankan migrate:fresh, db:wipe, DROP, atau rollback database tanpa backup dan rencana pemulihan.

@@ -7,12 +7,14 @@
 <div class="guided-page">
     <section class="guided-hero">
         <div>
-            <span class="personal-kicker">BELAJAR · LATIHAN · SETORAN · KOREKSI</span>
-            <h1>Belajar Al-Qur’an tidak harus sendirian</h1>
+            <span class="personal-kicker">PROGRAM DENGAN ASATIDZ</span>
+            <h1>Pendampingan yang memang Anda pilih</h1>
             <p>Ruang Personal tetap privat. Saat Anda memilih mengikuti program, hanya setoran yang Anda kirim yang masuk ke reviewer asatidz.</p>
         </div>
         <div class="guided-loop" aria-label="Alur belajar"><span>Belajar</span><b>→</b><span>Latihan</span><b>→</b><span>Setoran</span><b>→</b><span>Koreksi</span><b>→</b><span>Jaga</span></div>
     </section>
+
+    <div class="actions" style="margin-bottom:16px"><a class="button ghost" href="{{ route('personal.programs.index') }}">← Program Saya</a></div>
 
     <section class="card guided-audio-card" id="audio">
         <div class="section-head"><div><span class="eyebrow">DENGARKAN AL-QUR’AN</span><h2>Murattal untuk menyimak & menirukan</h2><p class="muted">Audio adalah pendamping latihan. Koreksi bacaan tetap membutuhkan guru/asatidz.</p></div></div>

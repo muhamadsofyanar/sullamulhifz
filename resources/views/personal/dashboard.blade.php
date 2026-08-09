@@ -41,9 +41,21 @@
         <article><span>Murāja‘ah</span><strong>{{ $week_murajaah_verses }}</strong><small>ayat tercatat</small></article>
     </section>
 
-    <section class="card guided-dashboard-cta">
-        <div><span class="eyebrow">BELAJAR DENGAN ARAH</span><h2>Dari latihan mandiri ke pendampingan asatidz</h2><p class="muted">Dengarkan murattal, ikuti program seperti Tahfizh Juz 30/Tahsin, lalu kirim setoran yang Anda pilih untuk mendapat koreksi teks atau voice note.</p></div>
-        <a class="button primary" href="{{ route('personal.learning.index') }}">Buka Belajar & Audio</a>
+    <section class="card" id="program-saya">
+        <div class="section-head"><div><span class="eyebrow">PROGRAM SAYA</span><h2>Yang aktif untuk Anda</h2><p class="muted">Beranda hanya menampilkan program yang memang sudah Anda ikuti.</p></div><a class="button secondary small" href="{{ route('personal.programs.index') }}">Kelola program</a></div>
+        @if($activeModules->isEmpty())
+            <div class="personal-program-empty"><h3>Belum ada program aktif</h3><p class="muted">Ruang Personal Anda tetap bisa dipakai untuk jurnal dan target. Tambahkan Latihan Qur’an, Qur’an Journey, atau program pendampingan saat Anda membutuhkannya.</p><a class="button primary" href="{{ route('personal.programs.index') }}">Pilih program</a></div>
+        @else
+            <div class="personal-home-programs">
+                @foreach($activeModules as $module)
+                <a class="personal-home-program" href="{{ route($module['route']) }}">
+                    <span class="personal-program-icon"><x-icon :name="$module['icon']" size="24"/></span>
+                    <span class="program-copy"><strong>{{ $module['title'] }}</strong><span>{{ $module['description'] }}</span></span>
+                    <b>→</b>
+                </a>
+                @endforeach
+            </div>
+        @endif
     </section>
 
     <section class="personal-grid-two">

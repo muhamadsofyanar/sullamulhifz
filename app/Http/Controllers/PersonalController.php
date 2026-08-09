@@ -7,6 +7,7 @@ use App\Models\PersonalPracticeEntry;
 use App\Models\PersonalProfile;
 use App\Models\QuranSurah;
 use App\Services\PersonalJourneyService;
+use App\Services\PersonalModuleAccessService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -14,7 +15,10 @@ use Illuminate\View\View;
 
 class PersonalController extends Controller
 {
-    public function __construct(private readonly PersonalJourneyService $journey) {}
+    public function __construct(
+        private readonly PersonalJourneyService $journey,
+        private readonly PersonalModuleAccessService $modules,
+    ) {}
 
     public function index(Request $request): View
     {
@@ -24,6 +28,7 @@ class PersonalController extends Controller
         return view('personal.dashboard', [
             'profile' => $profile->load('targetSurah'),
             'surahs' => QuranSurah::query()->orderBy('id')->get(['id','name_latin','verse_count']),
+            'activeModules' => $this->modules->activeModules($request->user()),
             ...$snapshot,
         ]);
     }

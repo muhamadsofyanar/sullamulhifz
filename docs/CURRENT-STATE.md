@@ -1,8 +1,8 @@
 # Current State
 
-## Current candidate: v3.2.1
+## Current candidate: v3.3.0
 
-Fokus pengembangan aktif: **Roadmap Completion Foundations — menutup gap implementasi Fase 8–9 dan menyiapkan Fase 10 tanpa mengabaikan validasi produksi**.
+Fokus pengembangan aktif: **Personal Program Hub — satu Ruang Personal dengan program modular berbasis enrollment nyata**.
 
 v3.0.0 membuka penggunaan mandiri kepada masyarakat umum tanpa mengubah mereka menjadi anggota lembaga. Di backend setiap pengguna Personal memiliki workspace privat untuk mempertahankan isolasi tenant; di UI pengguna melihat pengalaman Personal, bukan struktur admin lembaga.
 
@@ -17,5 +17,7 @@ Personal Mode v3.0.0 telah membuktikan pendaftaran publik, onboarding, target, j
 v3.2.0 menambahkan progres Character/Talent non-ranking, evidence portofolio, reminder Murāja‘ah idempotent, AI Assist draft dengan human review/audit wajib, community moderation audit, dan payment ledger opsional. Fase 8–9 dapat mencapai 100% implementasi setelah migration ini berjalan, tetapi total fase tetap dibatasi oleh launch check produksi. Fase 10 sengaja tetap belum 100% sampai multi-tenant, community, integrasi eksternal, payment provider, backup/restore dan uji beban benar-benar diaktifkan serta diverifikasi.
 
 v3.2.1 menambahkan rekening transfer resmi **BSI (Bank Syariah Indonesia) · 7350451147 · YYS INSAN QURAN MADANI** sebagai konfigurasi dan snapshot audit pada transaksi transfer manual. Patch ini tidak mengubah schema database dan tidak otomatis mengaktifkan feature flag pembayaran.
+
+v3.3.0 menambahkan tabel enrollment modul Personal dan menjadikan Beranda/navigasi Personal dinamis. Jurnal, target, dan catatan aktivitas tetap tersedia untuk setiap akun Personal; Latihan Qur’an, Qur’an Journey, Program dengan Asatidz, dan Academy hanya tampil bila aksesnya aktif. Enrollment/histori lama dibackfill agar aktivitas nyata tidak hilang. Academy tetap mengikuti hubungan program Guided Quran, bukan dibuka bebas. Migration v3.3.0 bersifat additive.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.

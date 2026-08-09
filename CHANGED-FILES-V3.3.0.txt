@@ -1,0 +1,48 @@
+SULLAMUL HIFZ v3.3.0 — PERSONAL PROGRAM HUB
+
+ADDED
+app/Http/Controllers/PersonalProgramController.php
+app/Http/Middleware/EnsurePersonalModuleEnrollment.php
+app/Models/PersonalModuleEnrollment.php
+app/Services/PersonalModuleAccessService.php
+database/migrations/2026_08_09_002400_personal_program_hub_v330.php
+resources/views/personal/programs.blade.php
+public/css/app-v330.css
+tests/Feature/PersonalProgramHubV330Test.php
+docs/releases/v3.3.0.md
+UPGRADE-V3.3.0.md
+DEPLOY-QUICK-V3.3.0.txt
+BUILD-REPORT-V3.3.0.md
+
+MODIFIED
+app/Http/Controllers/PersonalController.php
+app/Http/Controllers/PersonalGuidedLearningController.php
+app/Http/Controllers/PersonalRegistrationController.php
+app/Http/Controllers/QuranPracticeController.php
+app/Models/PersonalProfile.php
+app/Models/User.php
+bootstrap/app.php
+routes/web.php
+routes/console.php
+scripts/container-start.sh
+resources/views/layouts/app.blade.php
+resources/views/personal/dashboard.blade.php
+resources/views/personal/guided-learning.blade.php
+resources/views/quran-journey/index.blade.php
+resources/views/auth/register-personal.blade.php
+resources/views/public/home.blade.php
+resources/views/public/programs.blade.php
+resources/views/public/registration.blade.php
+tests/Feature/GuidedQuranLearningV310Test.php
+docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md
+docs/CURRENT-STATE.md
+docs/ROADMAP.md
+CHANGELOG.md
+START-HERE.md
+RELEASE
+public/release.txt
+
+PRESERVED
+Konfigurasi rekening transfer resmi v3.2.1.
+Patch morph map QuranGuidedSubmission/User.
+Fondasi roadmap v3.2.0 dan seluruh migration sebelumnya.

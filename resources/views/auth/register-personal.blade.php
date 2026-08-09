@@ -1,12 +1,12 @@
 @extends('layouts.public')
 @section('title', 'Daftar Personal — Sullamul Ḥifẓ')
-@section('description', 'Buat ruang Personal Sullamul Hifz untuk perjalanan hafalan dan murajaah mandiri.')
+@section('description', 'Buat Ruang Personal Sullamul Hifz: jurnal pribadi dengan program Qur’an yang dapat diaktifkan sesuai kebutuhan.')
 @section('content')
 <section class="page-hero personal-register-hero">
     <div class="public-container page-hero-inner">
         <span class="public-eyebrow">SULLAMUL ḤIFẒ PERSONAL</span>
         <h1>Perjalanan Anda. Ritme Anda. Jejaknya tetap terjaga.</h1>
-        <p>Daftar mandiri tanpa harus bergabung dengan lembaga. Setelah masuk, Anda dapat menetapkan arah, mencatat hafalan dan murāja‘ah, serta melihat pola konsistensi dari waktu ke waktu.</p>
+        <p>Daftar mandiri tanpa harus bergabung dengan lembaga. Jurnal dan target pribadi selalu tersedia; Latihan Qur’an, Qur’an Journey, Program Asatidz, dan Academy hadir sesuai program yang benar-benar Anda ikuti.</p>
     </div>
 </section>
 <section class="public-section soft-section">
@@ -35,6 +35,7 @@
                 <li><strong>Jurnal Qur’an</strong><small>Hafalan, murāja‘ah, tilawah, dan refleksi dalam satu jejak.</small></li>
                 <li><strong>Konsistensi</strong><small>Lihat menit belajar, hari aktif, dan streak tanpa kompetisi dengan orang lain.</small></li>
                 <li><strong>Arahan harian</strong><small>Saran sederhana berdasarkan aktivitas nyata Anda, bukan label kepribadian.</small></li>
+                <li><strong>Program yang fleksibel</strong><small>Aktifkan Latihan Qur’an, Qur’an Journey, atau pendampingan asatidz tanpa memenuhi ruang Anda dengan program yang tidak diikuti.</small></li>
             </ul>
         </aside>
     </div>

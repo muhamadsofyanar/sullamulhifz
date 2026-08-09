@@ -7,6 +7,7 @@ use App\Http\Middleware\EnforceDomainSeparation;
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\EnsureFeatureEnabled;
+use App\Http\Middleware\EnsurePersonalModuleEnrollment;
 use App\Http\Middleware\EnsureRole;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
@@ -47,6 +48,7 @@ return Application::configure(basePath: dirname(__DIR__))
             'password.changed' => EnsurePasswordChanged::class,
             'permission' => EnsurePermission::class,
             'feature' => EnsureFeatureEnabled::class,
+            'personal.module' => EnsurePersonalModuleEnrollment::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

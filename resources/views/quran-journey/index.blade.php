@@ -1,7 +1,7 @@
 @extends('layouts.app',['pageTitle'=>'Program Qur’an Saya'])
 @section('content')
 @php($purposeLabel=['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawah + Murāja‘ah'])
-<div class="page-head"><div><span class="eyebrow">QUR’AN JOURNEY</span><h1>Program Qur’an Saya</h1><p>Tilawah dan Murāja‘ah berjalan berdampingan dengan hafalan. Jadwal adalah alat bantu kesinambungan, bukan alat untuk memberi label gagal.</p></div><div class="actions"><a class="button ghost" href="{{ route('quran-practice.index') }}">Latihan Al-Qur’an</a></div></div>
+<div class="page-head"><div><span class="eyebrow">QUR’AN JOURNEY</span><h1>Program Qur’an Saya</h1><p>Tilawah dan Murāja‘ah berjalan berdampingan dengan hafalan. Jadwal adalah alat bantu kesinambungan, bukan alat untuk memberi label gagal.</p></div>@if(!auth()->user()->hasRole('personal') || app(\App\Services\PersonalModuleAccessService::class)->allows(auth()->user(), 'quran_practice'))<div class="actions"><a class="button ghost" href="{{ route('quran-practice.index') }}">Latihan Al-Qur’an</a></div>@endif</div>
 
 <div class="grid two">
 @foreach($templates as $template)

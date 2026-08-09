@@ -29,4 +29,5 @@ class PersonalProfile extends Model
     public function targetSurah(): BelongsTo { return $this->belongsTo(QuranSurah::class, 'target_surah_id'); }
     public function goals(): HasMany { return $this->hasMany(PersonalGoal::class); }
     public function practiceEntries(): HasMany { return $this->hasMany(PersonalPracticeEntry::class); }
+    public function moduleEnrollments(): HasMany { return $this->hasMany(PersonalModuleEnrollment::class); }
 }

@@ -24,6 +24,7 @@ use App\Http\Controllers\AccountInvitationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PersonalGuidedLearningController;
+use App\Http\Controllers\PersonalProgramController;
 use App\Http\Controllers\PersonalRegistrationController;
 use App\Http\Controllers\GuidedQuranReviewController;
 use App\Http\Controllers\AcademyController;
@@ -77,7 +78,7 @@ Route::domain((string) config('sullam.staging_host'))->get('/status', fn () => r
 // mandiri pada academy.sullamulhifz.or.id. Route domain diletakkan sebelum
 // route publik generik agar path '/' Academy tidak tertangkap website utama.
 Route::domain((string) config('sullam.academy_host'))
-    ->middleware(['auth', 'password.changed', 'permission:academy.view', 'feature:academy_portal'])
+    ->middleware(['auth', 'password.changed', 'permission:academy.view', 'feature:academy_portal', 'personal.module:academy'])
     ->name('academy.portal.')
     ->group(function (): void {
         Route::get('/', [AcademyController::class, 'index'])->name('index');
@@ -153,13 +154,15 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
 
     Route::prefix('personal')->name('personal.')->middleware('role:personal')->group(function (): void {
         Route::get('/', [PersonalController::class, 'index'])->middleware('permission:personal.use')->name('dashboard');
+        Route::get('/program', [PersonalProgramController::class, 'index'])->middleware('permission:personal.use')->name('programs.index');
+        Route::post('/program-saya/{moduleKey}/aktifkan', [PersonalProgramController::class, 'enroll'])->middleware('permission:personal.use')->name('programs.enroll');
         Route::put('/onboarding', [PersonalController::class, 'onboarding'])->middleware('permission:personal.use')->name('onboarding');
         Route::post('/aktivitas', [PersonalController::class, 'storeActivity'])->middleware('permission:personal.use')->name('activities.store');
         Route::post('/target', [PersonalController::class, 'storeGoal'])->middleware('permission:personal.use')->name('goals.store');
         Route::put('/target/{goal}/selesai', [PersonalController::class, 'completeGoal'])->middleware('permission:personal.use')->name('goals.complete');
-        Route::get('/belajar', [PersonalGuidedLearningController::class, 'index'])->middleware('permission:guided_learning.use')->name('learning.index');
-        Route::post('/program/{program}/ikuti', [PersonalGuidedLearningController::class, 'enroll'])->middleware('permission:guided_learning.use')->name('learning.enroll');
-        Route::post('/program-saya/{enrollment}/setoran', [PersonalGuidedLearningController::class, 'submit'])->middleware('permission:guided_learning.use')->name('learning.submit');
+        Route::get('/belajar', [PersonalGuidedLearningController::class, 'index'])->middleware(['permission:guided_learning.use','personal.module:guided_learning'])->name('learning.index');
+        Route::post('/program/{program}/ikuti', [PersonalGuidedLearningController::class, 'enroll'])->middleware(['permission:guided_learning.use','personal.module:guided_learning'])->name('learning.enroll');
+        Route::post('/program-saya/{enrollment}/setoran', [PersonalGuidedLearningController::class, 'submit'])->middleware(['permission:guided_learning.use','personal.module:guided_learning'])->name('learning.submit');
     });
 
     Route::get('/review-setoran-quran', [GuidedQuranReviewController::class, 'index'])->middleware('permission:guided_learning.review')->name('guided-review.index');
@@ -175,23 +178,23 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::post('/pengumuman/{announcement}/konfirmasi', [ContentFeedController::class, 'acknowledge'])->middleware('permission:announcements.view')->name('feed.announcements.acknowledge');
     Route::get('/pembinaan-jumat', [ContentFeedController::class, 'friday'])->middleware('permission:friday.view')->name('feed.friday');
     Route::get('/nilai/ikrar-santri', [ContentFeedController::class, 'pledge'])->name('feed.pledge');
-    Route::get('/academy/belajar', [AcademyController::class, 'index'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.index');
-    Route::get('/academy/program/{program}', [AcademyController::class, 'program'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.program');
-    Route::get('/academy/materi/{lesson}', [AcademyController::class, 'lesson'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.lesson');
-    Route::post('/academy/materi/{lesson}/selesai', [AcademyController::class, 'complete'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.lesson.complete');
-    Route::post('/academy/kuis/{quiz}/jawab', [AcademyLmsController::class, 'submitQuiz'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.quiz.submit');
-    Route::post('/academy/worksheet/{worksheet}/selesai', [AcademyLmsController::class, 'submitWorksheet'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.worksheet.submit');
-    Route::get('/academy/sertifikat/{certificate}', [AcademyLmsController::class, 'certificate'])->middleware(['permission:academy.view','feature:academy_portal'])->name('academy.certificate');
+    Route::get('/academy/belajar', [AcademyController::class, 'index'])->middleware(['permission:academy.view','feature:academy_portal','personal.module:academy'])->name('academy.index');
+    Route::get('/academy/program/{program}', [AcademyController::class, 'program'])->middleware(['permission:academy.view','feature:academy_portal','personal.module:academy'])->name('academy.program');
+    Route::get('/academy/materi/{lesson}', [AcademyController::class, 'lesson'])->middleware(['permission:academy.view','feature:academy_portal','personal.module:academy'])->name('academy.lesson');
+    Route::post('/academy/materi/{lesson}/selesai', [AcademyController::class, 'complete'])->middleware(['permission:academy.view','feature:academy_portal','personal.module:academy'])->name('academy.lesson.complete');
+    Route::post('/academy/kuis/{quiz}/jawab', [AcademyLmsController::class, 'submitQuiz'])->middleware(['permission:academy.view','feature:academy_portal','personal.module:academy'])->name('academy.quiz.submit');
+    Route::post('/academy/worksheet/{worksheet}/selesai', [AcademyLmsController::class, 'submitWorksheet'])->middleware(['permission:academy.view','feature:academy_portal','personal.module:academy'])->name('academy.worksheet.submit');
+    Route::get('/academy/sertifikat/{certificate}', [AcademyLmsController::class, 'certificate'])->middleware(['permission:academy.view','feature:academy_portal','personal.module:academy'])->name('academy.certificate');
 
-    Route::get('/perjalanan-quran', [QuranJourneyController::class, 'index'])->middleware(['permission:quran.view','feature:quran_journey'])->name('quran-journey.index');
-    Route::post('/perjalanan-quran/program', [QuranJourneyController::class, 'start'])->middleware(['permission:quran.view','feature:quran_journey'])->name('quran-journey.programs.start');
-    Route::put('/perjalanan-quran/program/{enrollment}/langkah', [QuranJourneyController::class, 'step'])->middleware(['permission:quran.view','feature:quran_journey'])->name('quran-journey.programs.step');
+    Route::get('/perjalanan-quran', [QuranJourneyController::class, 'index'])->middleware(['permission:quran.view','feature:quran_journey','personal.module:quran_journey'])->name('quran-journey.index');
+    Route::post('/perjalanan-quran/program', [QuranJourneyController::class, 'start'])->middleware(['permission:quran.view','feature:quran_journey','personal.module:quran_journey'])->name('quran-journey.programs.start');
+    Route::put('/perjalanan-quran/program/{enrollment}/langkah', [QuranJourneyController::class, 'step'])->middleware(['permission:quran.view','feature:quran_journey','personal.module:quran_journey'])->name('quran-journey.programs.step');
 
-    Route::get('/latihan-quran', [QuranPracticeController::class, 'index'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.index');
-    Route::get('/latihan-quran/playlist', [QuranPracticeController::class, 'playlist'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.playlist');
-    Route::get('/latihan-quran/target/{target}', [QuranPracticeController::class, 'target'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.target');
-    Route::post('/latihan-quran/sesi', [QuranPracticeController::class, 'startSession'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.sessions.start');
-    Route::put('/latihan-quran/sesi/{session}/selesai', [QuranPracticeController::class, 'completeSession'])->middleware(['permission:quran.view','feature:quran_audio'])->name('quran-practice.sessions.complete');
+    Route::get('/latihan-quran', [QuranPracticeController::class, 'index'])->middleware(['permission:quran.view','feature:quran_audio','personal.module:quran_practice'])->name('quran-practice.index');
+    Route::get('/latihan-quran/playlist', [QuranPracticeController::class, 'playlist'])->middleware(['permission:quran.view','feature:quran_audio','personal.module:quran_practice'])->name('quran-practice.playlist');
+    Route::get('/latihan-quran/target/{target}', [QuranPracticeController::class, 'target'])->middleware(['permission:quran.view','feature:quran_audio','personal.module:quran_practice'])->name('quran-practice.target');
+    Route::post('/latihan-quran/sesi', [QuranPracticeController::class, 'startSession'])->middleware(['permission:quran.view','feature:quran_audio','personal.module:quran_practice'])->name('quran-practice.sessions.start');
+    Route::put('/latihan-quran/sesi/{session}/selesai', [QuranPracticeController::class, 'completeSession'])->middleware(['permission:quran.view','feature:quran_audio','personal.module:quran_practice'])->name('quran-practice.sessions.complete');
     Route::get('/media/submission/{submission}', [MediaController::class, 'submission'])->middleware('permission:media.view')->name('media.submission');
     Route::get('/media/guided-submission/{guidedSubmission}', [MediaController::class, 'guidedSubmission'])->name('media.guided-submission');
     Route::get('/media/guided-feedback/{guidedReview}', [MediaController::class, 'guidedFeedback'])->name('media.guided-feedback');

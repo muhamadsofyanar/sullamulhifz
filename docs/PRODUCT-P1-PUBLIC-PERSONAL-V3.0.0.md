@@ -17,6 +17,17 @@ Pengguna melihat **Ruang Personal**. Backend membuat private workspace bertipe `
 5. Dashboard menghitung aktivitas 7 hari, streak, dan progres target.
 6. Arahan harian disusun dari ritme dan jurnal nyata pengguna.
 
+## Evolusi v3.3.0 — Personal Program Hub
+
+Ruang Personal bukan lagi sinonim dari Audio/Belajar. Jurnal, target, statistik, dan privasi adalah shell pribadi yang selalu ada. Jalur belajar berada di lapisan program dan mengikuti enrollment:
+
+- Latihan Qur’an;
+- Qur’an Journey;
+- Program dengan Asatidz / Guided Quran;
+- Academy yang diwariskan dari program Guided Quran terhubung.
+
+Beranda dan navigasi hanya menampilkan program yang aktif untuk akun tersebut. Modul yang belum diikuti tetap berada di `Program Saya` sebagai pilihan dan tidak dianggap sebagai bagian dari perjalanan aktif pengguna.
+
 ## Guardrail
 
 - self-record tidak disebut sebagai setoran/verifikasi ustadz;
@@ -35,5 +46,7 @@ Pengguna melihat **Ruang Personal**. Backend membuat private workspace bertipe `
 5. logout/login kembali mempertahankan data;
 6. dua akun Personal tidak dapat saling melihat/mengubah data;
 7. login dan dashboard role lembaga lama tidak regress.
+8. modul yang belum di-enroll tidak muncul di Home/sidebar dan URL langsung ditolak untuk role Personal;
+9. enrollment/histori Personal lama tetap mendapat akses setelah migration v3.3.0.
 
 Family, Mentor, dan Enterprise menjadi track berikutnya setelah fondasi Personal stabil; roadmap fase inti tidak dinomori ulang.
