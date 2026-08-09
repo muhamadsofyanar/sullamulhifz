@@ -1,0 +1,8 @@
+SULLAMUL HIFZ v3.2.1 — OFFICIAL BANK TRANSFER CONFIGURATION
+
+1. Pastikan production v3.2.0 sehat dan backup tersedia.
+2. Deploy source v3.2.1 melalui GitHub → Coolify.
+3. Tidak ada migration baru khusus v3.2.1.
+4. Cek /up = HTTP 200 dan /release.txt = v3.2.1.
+5. Verifikasi rekening: BSI / 7350451147 / YYS INSAN QURAN MADANI.
+6. Jangan aktifkan feature flag payments sebelum alur pembayaran diuji end-to-end.

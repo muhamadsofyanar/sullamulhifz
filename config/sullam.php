@@ -27,6 +27,13 @@ return [
     'initial_institution_code' => env('INITIAL_INSTITUTION_CODE', 'ALINSYIRAH'),
     'upload_max_kb' => (int) env('UPLOAD_MAX_KB', 25600),
     'media_retention_days' => (int) env('MEDIA_RETENTION_DAYS', 180),
+    'payment' => [
+        'bank_transfer' => [
+            'bank_name' => env('PAYMENT_BANK_NAME', 'BSI (Bank Syariah Indonesia)'),
+            'account_name' => env('PAYMENT_BANK_ACCOUNT_NAME', 'YYS INSAN QURAN MADANI'),
+            'account_number' => env('PAYMENT_BANK_ACCOUNT_NUMBER', '7350451147'),
+        ],
+    ],
     // Mushaf Line Engine: KFGQPC V2 (1421H), 604-page Madani layout.
     // Data is synchronized at runtime so the application does not redistribute third-party layout files.
     'mushaf_line_layout' => env('MUSHAF_LINE_LAYOUT', 'kfgqpc-v2-1421h'),

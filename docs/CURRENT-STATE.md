@@ -1,6 +1,6 @@
 # Current State
 
-## Current candidate: v3.2.0
+## Current candidate: v3.2.1
 
 Fokus pengembangan aktif: **Roadmap Completion Foundations — menutup gap implementasi Fase 8–9 dan menyiapkan Fase 10 tanpa mengabaikan validasi produksi**.
 
@@ -15,5 +15,7 @@ Fase 7 v2.9.0 telah lolos migration, verifier, rekomendasi berbasis observasi ny
 Personal Mode v3.0.0 telah membuktikan pendaftaran publik, onboarding, target, jurnal, dan progres otomatis pada smoke test produksi. Fitur v3.1.0 menambahkan alur belajar → latihan → setoran → review → perbaikan/verifikasi, dan kandidat recovery v3.1.1 memperbaiki migration Guided Quran yang gagal pada deploy pertama. v3.1.1 baru boleh dinyatakan stabil setelah migration, verifier, audio player, pembuatan program, enrollment Personal, setoran audio, review asatidz, feedback audio/teks, Academy terhubung, dan isolasi dua akun lolos smoke test produksi.
 
 v3.2.0 menambahkan progres Character/Talent non-ranking, evidence portofolio, reminder Murāja‘ah idempotent, AI Assist draft dengan human review/audit wajib, community moderation audit, dan payment ledger opsional. Fase 8–9 dapat mencapai 100% implementasi setelah migration ini berjalan, tetapi total fase tetap dibatasi oleh launch check produksi. Fase 10 sengaja tetap belum 100% sampai multi-tenant, community, integrasi eksternal, payment provider, backup/restore dan uji beban benar-benar diaktifkan serta diverifikasi.
+
+v3.2.1 menambahkan rekening transfer resmi **BSI (Bank Syariah Indonesia) · 7350451147 · YYS INSAN QURAN MADANI** sebagai konfigurasi dan snapshot audit pada transaksi transfer manual. Patch ini tidak mengubah schema database dan tidak otomatis mengaktifkan feature flag pembayaran.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.

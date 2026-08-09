@@ -1,3 +1,9 @@
+# v3.2.1 — Official Bank Transfer Configuration — 2026-08-09
+
+- Menambahkan rekening transfer resmi BSI atas nama YYS INSAN QURAN MADANI.
+- Menambahkan helper ledger untuk membuat transaksi transfer manual dengan snapshot rekening tujuan.
+- Feature flag pembayaran tetap tidak diaktifkan otomatis; tidak ada perubahan schema/database.
+
 # v3.2.0 — Roadmap Completion Foundations — 2026-08-09
 
 ## Added

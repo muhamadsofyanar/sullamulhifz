@@ -9,6 +9,23 @@ use Illuminate\Validation\ValidationException;
 
 class PaymentLedgerService
 {
+    public function bankTransferDestination(): array
+    {
+        return [
+            'bank_name' => (string) config('sullam.payment.bank_transfer.bank_name'),
+            'account_name' => (string) config('sullam.payment.bank_transfer.account_name'),
+            'account_number' => (string) config('sullam.payment.bank_transfer.account_number'),
+        ];
+    }
+
+    public function createBankTransferPending(Institution $institution, ?User $user, string $purpose, string|int|float $amount, array $metadata = []): PaymentTransaction
+    {
+        return $this->createPending($institution, $user, $purpose, $amount, array_merge($metadata, [
+            'payment_method' => 'bank_transfer',
+            'payment_destination' => $this->bankTransferDestination(),
+        ]));
+    }
+
     public function createPending(Institution $institution, ?User $user, string $purpose, string|int|float $amount, array $metadata = []): PaymentTransaction
     {
         if ($user) {
