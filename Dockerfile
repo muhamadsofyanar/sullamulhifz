@@ -1,4 +1,5 @@
 # @phase 4.4 Multi-tenant release packaging
+# @phase 4.4.1 Blade Communication Template Hotfix
 FROM composer:2.8 AS vendor
 WORKDIR /app
 COPY . .
@@ -44,7 +45,7 @@ RUN php artisan package:discover --ansi \
 FROM unit:1.34.2-php8.4
 
 LABEL org.opencontainers.image.title="Sullamul Hifz" \
-      org.opencontainers.image.version="4.4.0" \
+      org.opencontainers.image.version="4.4.1" \
       org.opencontainers.image.description="Platform pembinaan Al-Quran Sullamul Hifz"
 
 RUN apt-get update && apt-get install -y --no-install-recommends \

@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+/** @phase 4.4.1 Blade Communication Template Hotfix */
+
 use App\Models\CommunicationDelivery;
 use App\Models\FeatureFlag;
 use App\Models\Institution;
@@ -36,7 +38,8 @@ class CommunicationCenterV410Test extends TestCase
         $this->actingAs($admin)->get(route('admin.communications.index'))
             ->assertOk()
             ->assertSee('WhatsApp & Email', false)
-            ->assertSee('Template notifikasi');
+            ->assertSee('Template notifikasi')
+            ->assertSee('{{recipient_name}}', false);
     }
 
     public function test_starsender_driver_tracks_success_without_storing_api_key(): void

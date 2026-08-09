@@ -1,0 +1,10 @@
+@phase 4.4.1 Blade Communication Template Hotfix
+
+1. Ekstrak ZIP v4.4.1.
+2. Unggah seluruh ISI folder sullamulhifz-main ke root repository GitHub.
+3. Pilih Replace files bila diminta.
+4. Commit perubahan.
+5. Buka tab Actions dan tunggu semua pemeriksaan hijau.
+6. Jika sudah hijau, buka Coolify lalu klik Redeploy.
+
+Tidak perlu mengubah .env, APP_KEY, atau database.

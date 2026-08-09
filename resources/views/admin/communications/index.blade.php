@@ -1,3 +1,4 @@
+{{-- @phase 4.4.1 Blade Communication Template Hotfix --}}
 @extends('layouts.app',['pageTitle'=>'WhatsApp & Email'])
 @section('content')
 <div class="page-head communication-page-head">
@@ -131,7 +132,7 @@
                 @csrf @method('put')
                 @if($template->channel === 'email')<label>Subjek<input name="subject" value="{{ $template->subject }}" maxlength="190"></label>@endif
                 <label>Isi template<textarea name="content" rows="9" maxlength="10000" required>{{ $template->content }}</textarea></label>
-                <small>Variabel: @foreach($template->available_variables ?: [] as $variable)<code>{{ '{{'.$variable.'}}' }}</code>{{ !$loop->last ? ', ' : '' }}@endforeach</small>
+                <small>Variabel: @foreach($template->available_variables ?: [] as $variable)<code>{{ '{'.'{'.$variable.'}'.'}' }}</code>{{ !$loop->last ? ', ' : '' }}@endforeach</small>
                 <label><input type="checkbox" name="is_active" value="1" @checked($template->is_active)> Template aktif</label>
                 <button class="button secondary" type="submit">Simpan template</button>
             </form>
