@@ -1,5 +1,6 @@
 {{-- @phase 4.4.1 Blade Communication Template Hotfix --}}
 {{-- @phase 4.4.2 Blade Compilation & Release Docs Hotfix --}}
+{{-- @phase 4.4.3 Blade Directive Structure Hotfix --}}
 @extends('layouts.app',['pageTitle'=>'WhatsApp & Email'])
 @section('content')
 <div class="page-head communication-page-head">
@@ -41,13 +42,18 @@
         <div class="communication-health {{ $state['ready'] ? 'ready' : 'warning' }}">
             <strong>{{ $state['ready'] ? '✓ Konfigurasi terdeteksi' : '○ Perlu dilengkapi' }}</strong>
             <span>{{ $state['message'] }}</span>
-            @if($connection?->last_checked_at)<small>Terakhir diperiksa {{ $connection->last_checked_at->diffForHumans() }}</small>@endif
-            @if($connection?->last_error)<small class="error-text">{{ $connection->last_error }}</small>@endif
+            @if($connection?->last_checked_at)
+                <small>Terakhir diperiksa {{ $connection->last_checked_at->diffForHumans() }}</small>
+            @endif
+            @if($connection?->last_error)
+                <small class="error-text">{{ $connection->last_error }}</small>
+            @endif
         </div>
 
         @if($connection)
         <form method="post" action="{{ route('admin.communications.connections.update',$connection) }}" class="stack compact communication-settings">
-            @csrf @method('put')
+            @csrf
+            @method('put')
             <label>Provider / driver
                 <select name="driver" required>
                     @foreach($driverCatalog[$channel] as $driver => $driverLabel)
@@ -59,7 +65,9 @@
                 <label><input type="checkbox" name="enabled" value="1" @checked($connection->status==='active')> Aktifkan kanal</label>
                 <label><input type="checkbox" name="event_liaison" value="1" @checked(data_get($events,'liaison',true))> Notifikasi Buku Penghubung</label>
                 <label><input type="checkbox" name="event_account_invitation" value="1" @checked(data_get($events,'account_invitation',true))> Undangan aktivasi akun</label>
-                @if($channel === 'email')<label><input type="checkbox" name="event_password_reset" value="1" @checked(data_get($events,'password_reset',true))> Tautan lupa kata sandi</label>@endif
+                @if($channel === 'email')
+                    <label><input type="checkbox" name="event_password_reset" value="1" @checked(data_get($events,'password_reset',true))> Tautan lupa kata sandi</label>
+                @endif
             </div>
             <button class="button primary" type="submit">Simpan konfigurasi</button>
         </form>
@@ -71,7 +79,9 @@
                 <label>{{ $channel === 'email' ? 'Email tujuan' : 'Nomor WhatsApp tujuan' }}
                     <input name="recipient" type="{{ $channel === 'email' ? 'email' : 'text' }}" required placeholder="{{ $channel === 'email' ? 'admin@domain.or.id' : '62812xxxxxxxx' }}">
                 </label>
-                @if($channel === 'email')<label>Subjek<input name="subject" value="Tes integrasi Sullamul Ḥifẓ" maxlength="190"></label>@endif
+                @if($channel === 'email')
+                    <label>Subjek<input name="subject" value="Tes integrasi Sullamul Ḥifẓ" maxlength="190"></label>
+                @endif
                 <label>Pesan<textarea name="message" rows="4" maxlength="2000" required>Assalamu’alaikum. Ini adalah tes integrasi {{ $label }} dari Sullamul Ḥifẓ.</textarea></label>
                 <p class="hint">Gunakan alamat milik Anda sendiri. Tombol ini melakukan pengiriman nyata kecuali driver “Log saja” dipilih.</p>
                 <button class="button secondary" type="submit">Kirim tes</button>
@@ -82,7 +92,9 @@
 @endforeach
 </div>
 
-@php($waConnection = $connections->get('whatsapp'))
+@php
+    $waConnection = $connections->get('whatsapp');
+@endphp
 @if($waConnection)
 <section class="card communication-webhook">
     <div>
@@ -130,10 +142,17 @@
         <details>
             <summary><span><b>{{ strtoupper($template->channel) }}</b> · {{ $template->name }}</span><span class="badge {{ $template->is_active ? 'status-sent' : '' }}">{{ $template->is_active ? 'Aktif' : 'Nonaktif' }}</span></summary>
             <form method="post" action="{{ route('admin.communications.templates.update',$template) }}" class="stack compact">
-                @csrf @method('put')
-                @if($template->channel === 'email')<label>Subjek<input name="subject" value="{{ $template->subject }}" maxlength="190"></label>@endif
+                @csrf
+                @method('put')
+                @if($template->channel === 'email')
+                    <label>Subjek<input name="subject" value="{{ $template->subject }}" maxlength="190"></label>
+                @endif
                 <label>Isi template<textarea name="content" rows="9" maxlength="10000" required>{{ $template->content }}</textarea></label>
-                @php($templateVariableLabels = collect($template->available_variables ?: [])->map(fn ($variable) => '{'.'{'.$variable.'}'.'}')->implode(', '))
+                @php
+                    $templateVariableLabels = collect($template->available_variables ?: [])
+                        ->map(fn ($variable) => '{'.'{'.$variable.'}'.'}')
+                        ->implode(', ');
+                @endphp
                 <small>Variabel: <code>{{ $templateVariableLabels }}</code></small>
                 <label><input type="checkbox" name="is_active" value="1" @checked($template->is_active)> Template aktif</label>
                 <button class="button secondary" type="submit">Simpan template</button>
@@ -149,7 +168,12 @@
         <form method="get" class="communication-filters">
             <select name="channel"><option value="">Semua kanal</option><option value="whatsapp" @selected(($filters['channel']??'')==='whatsapp')>WhatsApp</option><option value="email" @selected(($filters['channel']??'')==='email')>Email</option></select>
             <select name="direction"><option value="">Semua arah</option><option value="outbound" @selected(($filters['direction']??'')==='outbound')>Keluar</option><option value="inbound" @selected(($filters['direction']??'')==='inbound')>Masuk</option></select>
-            <select name="status"><option value="">Semua status</option>@foreach(['queued','sending','sent','delivered','received','failed'] as $status)<option value="{{ $status }}" @selected(($filters['status']??'')===$status)>{{ ucfirst($status) }}</option>@endforeach</select>
+            <select name="status">
+                <option value="">Semua status</option>
+                @foreach(['queued','sending','sent','delivered','received','failed'] as $status)
+                    <option value="{{ $status }}" @selected(($filters['status'] ?? '') === $status)>{{ ucfirst($status) }}</option>
+                @endforeach
+            </select>
             <button class="button secondary small">Filter</button>
         </form>
     </div>
@@ -169,8 +193,22 @@
                 <td><strong>{{ $delivery->direction === 'inbound' ? 'Masuk' : 'Keluar' }}</strong><small>{{ str($delivery->event_key)->replace('_',' ')->headline() }}</small></td>
                 <td><strong>{{ $delivery->recipient?->name ?: ($delivery->recipient_name ?: 'Kontak eksternal') }}</strong><small>{{ $masked }}</small></td>
                 <td>{{ str($delivery->provider)->headline() }}<small>Percobaan {{ $delivery->attempts }}</small></td>
-                <td><span class="badge status-{{ $delivery->status }}">{{ $delivery->status }}</span>@if($delivery->last_error)<small class="error-text" title="{{ $delivery->last_error }}">{{ str($delivery->last_error)->limit(70) }}</small>@endif</td>
-                <td>@if($delivery->isRetryable())<form method="post" action="{{ route('admin.communications.deliveries.retry',$delivery) }}">@csrf<button class="button ghost small">Kirim ulang</button></form>@else<span class="muted">—</span>@endif</td>
+                <td>
+                    <span class="badge status-{{ $delivery->status }}">{{ $delivery->status }}</span>
+                    @if($delivery->last_error)
+                        <small class="error-text" title="{{ $delivery->last_error }}">{{ str($delivery->last_error)->limit(70) }}</small>
+                    @endif
+                </td>
+                <td>
+                    @if($delivery->isRetryable())
+                        <form method="post" action="{{ route('admin.communications.deliveries.retry',$delivery) }}">
+                            @csrf
+                            <button class="button ghost small">Kirim ulang</button>
+                        </form>
+                    @else
+                        <span class="muted">—</span>
+                    @endif
+                </td>
             </tr>
         @empty
             <tr><td colspan="7" class="empty">Belum ada riwayat komunikasi.</td></tr>

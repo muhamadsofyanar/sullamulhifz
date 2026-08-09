@@ -1,3 +1,9 @@
+# v4.4.3 — Blade Directive Structure Hotfix — 2026-08-09
+
+- Memperbaiki kegagalan `php-tests` dengan pesan `unexpected token "endforeach"` pada compiled Blade.
+- Memisahkan directive kontrol, CSRF, method spoofing, dan pembentukan variabel template ke blok yang jelas dan seimbang.
+- Menjaga tampilan serta perilaku Pusat Komunikasi tetap sama tanpa perubahan database atau kredensial.
+
 # v4.4.2 — Blade Compilation & Release Docs Hotfix — 2026-08-09
 
 - Memperbaiki kompilasi daftar variabel template komunikasi agar tidak menghasilkan `unexpected token "endforeach"`.
