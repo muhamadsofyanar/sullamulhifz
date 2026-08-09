@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-/** @phase 4.3 Identity & Relationship Core */
+/** @phase 4.3 Identity & Relationship Core; @phase 4.8 specialized relationship safety */
 
 use App\Models\Institution;
 use App\Models\Role;
@@ -63,7 +63,7 @@ class WorkspaceContextV430Test extends TestCase
 
         $this->actingAs($requester)->post(route('relationships.store'), [
             'email' => $target->email,
-            'relationship_type' => 'mentor_learner',
+            'relationship_type' => 'family_companion',
         ])->assertRedirect();
 
         $relationship = UserRelationship::firstOrFail();

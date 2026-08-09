@@ -1,13 +1,13 @@
-# Upload Manual ke GitHub — v4.5.0
+# Upload Manual ke GitHub — v4.8.0
 
-`@phase 4.2` · `@phase 4.3` · `@phase 4.4` · `@phase 4.5`
+`@phase 4.2` · `@phase 4.3` · `@phase 4.4` · `@phase 4.5` · `@phase 4.6` · `@phase 4.7` · `@phase 4.8`
 
 Paket ini berisi perubahan runtime, migration additive, UI, dan konfigurasi deployment. Ikuti urutan berikut agar Coolify tidak perlu diredeploy berulang kali.
 
 ## 1. Siapkan repository lokal
 
 1. Backup repository lokal atau pastikan seluruh perubahan lama sudah di-commit.
-2. Ekstrak ZIP v4.5.0.
+2. Ekstrak ZIP v4.8.0.
 3. Salin **isi** folder `sullamulhifz-main` ke root repository—jangan membuat folder proyek bertingkat.
 4. Saat Windows menanyakan konflik, pilih replace untuk file paket ini.
 5. Jangan salin `.env` produksi ke repository.
@@ -27,7 +27,7 @@ Pastikan `APP_KEY`, password database, API key StarSender, token Mailketing, tok
 
 ```bash
 git add -A
-git commit -m "Release Sullamul Hifz v4.5.0 — Personal 2.0"
+git commit -m "Release Sullamul Hifz v4.8.0 — Pendampingan Terhubung"
 git push origin main
 ```
 
@@ -42,7 +42,7 @@ Jika workflow merah, perbaiki source terlebih dahulu agar kegagalan tidak berpin
 
 ## 5. Siapkan Environment Variables Coolify
 
-Pertahankan provider yang sudah dipakai sesuai `UPGRADE-V4.1.0.md`, lalu ikuti `UPGRADE-V4.5.0.md`. Pertahankan `APP_KEY` lama dan gunakan:
+Pertahankan provider yang sudah dipakai sesuai `UPGRADE-V4.1.0.md`, lalu ikuti `UPGRADE-V4.8.0.md`. Pertahankan `APP_KEY` lama dan gunakan:
 
 ```env
 COMMUNICATION_DISPATCH_MODE=sync
@@ -54,4 +54,4 @@ Biarkan toggle WhatsApp/email pada aplikasi OFF sampai tes provider siap.
 
 Setelah GitHub Actions hijau dan environment tersimpan, lakukan satu kali Redeploy. Biarkan Post-deployment Command kosong; startup container sudah menjalankan migration, seeder idempoten, prune, dan cache.
 
-Sesudah aplikasi sehat, jalankan `php artisan sullam:verify-personal-v450`, lalu uji dashboard Guru Sofyan, satu akun Wali, satu akun Personal lama, dan satu akun Personal uji baru.
+Sesudah aplikasi sehat, jalankan `php artisan sullam:verify-personal-v450` dan `php artisan sullam:verify-expansion-v480`, lalu uji Ustadz Privat, Suite Lembaga, Portal Keluarga, dashboard Guru Sofyan, serta satu akun Personal lama.

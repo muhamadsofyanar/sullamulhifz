@@ -191,6 +191,16 @@
 
 # Changelog
 
+# v4.8.0 — Pendampingan Terhubung — 2026-08-10
+
+- Menggabungkan Fase 5/v4.6 Ustadz Privat, Fase 6/v4.7 Suite Lembaga, dan Fase 7/v4.8 Portal Keluarga dalam satu rilis additive.
+- Menambah undangan bimbingan Personal–Ustadz berbasis persetujuan, batas ringkasan data, jadwal sesi, dan catatan Ustadz tanpa membuka jurnal pribadi.
+- Mewajibkan akun di bawah 18 tahun mempunyai hubungan keluarga aktif sebelum memulai bimbingan privat.
+- Menambah Suite Lembaga berisi checklist kesiapan, direktori anggota, ledger undangan tujuh hari, penerimaan peran lintas workspace, serta suspend per lembaga.
+- Menambah Portal Keluarga untuk hubungan anak–wali, kontrol akses milik anak, ringkasan progres, dan catatan dukungan privat tanpa ranking.
+- Menambah verifier `sullam:verify-expansion-v480` dan delapan tes regresi lintas peran/tenant.
+- Seluruh 99 tes dan 545 assertion lulus pada PHP 8.4 sebelum paket kandidat dibuat.
+
 # v4.5.0 — Personal 2.0: Setiap Orang, Setiap Cita — 2026-08-09
 
 - Menambahkan kelompok usia tanpa tanggal lahir, minat, cita-cita, tujuan Qur’ani, dan empat jalur pendampingan ke profil Personal.

@@ -20,10 +20,10 @@ Fase 7 telah mencapai alur produksi utama pada v2.9.0. Source v3.0.0 menambahkan
 - Fase 1 / v4.2.0 — Reposisi Brand & Home: **completed in v4.4.0**.
 - Fase 2 / v4.3.0 — Identity & Relationship Core: **completed in v4.4.0**.
 - Fase 3 / v4.4.0 — Multi-tenant Institution Foundation: **completed in v4.4.0**.
-- Fase 4 / v4.5.0 — Personal 2.0: **implementation candidate; menunggu GitHub Actions dan validasi produksi**.
-- Fase 5 / v4.6.0 — Ustadz Privat: planned.
-- Fase 6 / v4.7.0 — Institution Suite: planned.
-- Fase 7 / v4.8.0 — Family & Parent Portal: planned.
+- Fase 4 / v4.5.0 — Personal 2.0: **verified on CI and deployed; production validation aktif**.
+- Fase 5 / v4.6.0 — Ustadz Privat: **implementation completed in v4.8.0; menunggu CI dan smoke test produksi**.
+- Fase 6 / v4.7.0 — Institution Suite: **implementation completed in v4.8.0; menunggu CI dan smoke test produksi**.
+- Fase 7 / v4.8.0 — Family & Parent Portal: **implementation completed in v4.8.0; menunggu CI dan smoke test produksi**.
 - Fase 8 / v4.9.0 — Learning & Academy Integration: planned.
 - Fase 9 / v5.0.0 — Business, Payment & Integrations: planned.
 - Fase 10 / v5.1.0 — SaaS Production Readiness: planned.

@@ -1,12 +1,13 @@
 <?php
 
-/** @phase 4.2 Public Positioning; @phase 4.3 Identity Core; @phase 4.4 Multi-tenant */
+/** @phase 4.2 Public Positioning; @phase 4.3 Identity Core; @phase 4.4 Multi-tenant; @phase 4.5 Personal 2.0; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal */
 
 use App\Http\Controllers\Admin\AcademicController;
 use App\Http\Controllers\Admin\AcademicCoreController;
 use App\Http\Controllers\Admin\AcademyController as AdminAcademyController;
 use App\Http\Controllers\Admin\FamilyTeacherController as AdminFamilyTeacherController;
 use App\Http\Controllers\Admin\InstitutionController;
+use App\Http\Controllers\Admin\InstitutionSuiteController;
 use App\Http\Controllers\Admin\QuranLibraryController;
 use App\Http\Controllers\Admin\GuardianController;
 use App\Http\Controllers\Admin\GuidedQuranProgramController;
@@ -51,6 +52,8 @@ use App\Http\Controllers\PublicSiteController;
 use App\Http\Controllers\WorkspaceContextController;
 use App\Http\Controllers\InstitutionRegistrationController;
 use App\Http\Controllers\RelationshipController;
+use App\Http\Controllers\PrivateMentorshipController;
+use App\Http\Controllers\FamilyPortalController;
 use App\Http\Controllers\Admin\WorkspaceController as AdminWorkspaceController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\AcademyRecommendationController;
@@ -170,6 +173,29 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
     Route::put('/hubungan/{relationship}/tanggapi', [RelationshipController::class, 'respond'])->name('relationships.respond');
     Route::delete('/hubungan/{relationship}', [RelationshipController::class, 'destroy'])->name('relationships.destroy');
 
+    Route::prefix('bimbingan-privat')->name('mentorship.')->group(function (): void {
+        Route::get('/', [PrivateMentorshipController::class, 'index'])->name('index');
+        Route::post('/hubungan', [PrivateMentorshipController::class, 'store'])->middleware('throttle:6,10')->name('relationships.store');
+        Route::put('/hubungan/{relationship}/tanggapi', [PrivateMentorshipController::class, 'respond'])->name('relationships.respond');
+        Route::put('/hubungan/{relationship}/izin', [PrivateMentorshipController::class, 'updateConsent'])->name('relationships.consent');
+        Route::post('/hubungan/{relationship}/sesi', [PrivateMentorshipController::class, 'storeSession'])->middleware('throttle:10,1')->name('sessions.store');
+        Route::put('/sesi/{session}', [PrivateMentorshipController::class, 'updateSession'])->name('sessions.update');
+    });
+
+    Route::prefix('keluarga')->name('family.')->group(function (): void {
+        Route::get('/', [FamilyPortalController::class, 'index'])->name('index');
+        Route::post('/hubungan', [FamilyPortalController::class, 'store'])->middleware('throttle:6,10')->name('relationships.store');
+        Route::put('/hubungan/{relationship}/tanggapi', [FamilyPortalController::class, 'respond'])->name('relationships.respond');
+        Route::put('/hubungan/{relationship}/izin', [FamilyPortalController::class, 'updateConsent'])->name('relationships.consent');
+        Route::post('/hubungan/{relationship}/catatan', [FamilyPortalController::class, 'storeNote'])->middleware('throttle:10,1')->name('notes.store');
+    });
+
+    Route::get('/undangan-ruang/{token}', [InstitutionSuiteController::class, 'showInvitation'])
+        ->name('institution-suite.invitations.show');
+    Route::post('/undangan-ruang/{token}', [InstitutionSuiteController::class, 'accept'])
+        ->middleware('throttle:10,1')
+        ->name('institution-suite.invitations.accept');
+
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil/kata-sandi', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
@@ -238,6 +264,10 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
             Route::put('/workspaces/{institution}/status', [AdminWorkspaceController::class, 'status'])->name('workspaces.status');
         });
         Route::middleware('role:superadmin,institution_admin')->group(function (): void {
+            Route::get('/suite-lembaga', [InstitutionSuiteController::class, 'index'])->name('institution-suite.index');
+            Route::post('/suite-lembaga/undangan', [InstitutionSuiteController::class, 'invite'])->middleware('throttle:10,1')->name('institution-suite.invitations.store');
+            Route::delete('/suite-lembaga/undangan/{invitation}', [InstitutionSuiteController::class, 'revoke'])->name('institution-suite.invitations.destroy');
+            Route::put('/suite-lembaga/anggota/{membership}', [InstitutionSuiteController::class, 'updateMember'])->name('institution-suite.members.update');
             Route::resource('students', StudentController::class)->except(['destroy'])->middleware('permission:students.manage');
             Route::post('/students/{student}/guardians', [StudentController::class, 'addGuardian'])->middleware('permission:guardians.manage')->name('students.guardians.store');
             Route::resource('guardians', GuardianController::class)->only(['index','show','update'])->middleware('permission:guardians.manage');

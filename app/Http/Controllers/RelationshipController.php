@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-/** @phase 4.3 Identity & Relationship Core */
+/** @phase 4.3 Identity & Relationship Core; @phase 4.6 Private Ustadz; @phase 4.8 Family & Parent Portal */
 
 use App\Models\User;
 use App\Models\UserRelationship;
@@ -25,6 +25,7 @@ class RelationshipController extends Controller
 
         return view('relationships.index', [
             'types' => self::TYPES,
+            'creatableTypes' => ['family_companion' => self::TYPES['family_companion']],
             'outgoing' => $user->outgoingRelationships()->with('toUser')->latest()->get(),
             'incoming' => $user->incomingRelationships()->with('fromUser')->latest()->get(),
         ]);
@@ -34,7 +35,7 @@ class RelationshipController extends Controller
     {
         $data = $request->validate([
             'email' => ['required', 'email:rfc', 'max:190'],
-            'relationship_type' => ['required', Rule::in(array_keys(self::TYPES))],
+            'relationship_type' => ['required', Rule::in(['family_companion'])],
         ]);
 
         $target = User::query()->where('email', strtolower($data['email']))->where('status', 'active')->first();
@@ -71,7 +72,8 @@ class RelationshipController extends Controller
 
     public function respond(Request $request, UserRelationship $relationship): RedirectResponse
     {
-        abort_unless((int) $relationship->to_user_id === (int) $request->user()->id, 403);
+        abort_unless($relationship->hasParticipant($request->user()), 403);
+        abort_if((int) $relationship->created_by_user_id === (int) $request->user()->id, 403, 'Persetujuan harus diberikan oleh pihak lain.');
         abort_unless($relationship->status === 'pending', 422, 'Permintaan ini sudah diproses.');
         $data = $request->validate(['decision' => ['required', Rule::in(['accepted', 'rejected'])]]);
 

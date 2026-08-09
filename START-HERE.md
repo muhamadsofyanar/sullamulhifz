@@ -1,16 +1,16 @@
-# MULAI DI SINI — v4.5.0
+# MULAI DI SINI — v4.8.0
 
-Rilis kandidat adalah **v4.5.0 — Personal 2.0: Setiap Orang, Setiap Cita**.
+Rilis kandidat adalah **v4.8.0 — Pendampingan Terhubung**.
 
 ## Baca berurutan
 
-1. `UPGRADE-V4.5.0.md`
-2. `DEPLOY-QUICK-V4.5.0.txt`
+1. `UPGRADE-V4.8.0.md`
+2. `DEPLOY-QUICK-V4.8.0.txt`
 3. `UPLOAD-TO-GITHUB.md`
-4. `docs/releases/v4.5.0.md`
+4. `docs/releases/v4.8.0.md`
 5. `docs/CURRENT-STATE.md`
 6. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-v4.5.0 meneruskan seluruh v4.4.4 dan menambahkan Personal 2.0 pada aplikasi yang sama: kelompok usia tanpa tanggal lahir, minat, cita-cita, tujuan Qur’ani, empat jalur pendampingan, perlindungan pengguna di bawah 18 tahun, serta portofolio privat tanpa ranking. Rilis ini juga membuat hotfix dashboard Guru/Wali permanen.
+v4.8.0 meneruskan v4.5.0 yang telah berjalan dan menggabungkan tiga fase pada aplikasi yang sama: v4.6 Ustadz Privat, v4.7 Suite Lembaga, dan v4.8 Portal Keluarga. Seluruh hubungan memakai persetujuan, batas akses eksplisit, histori non-destruktif, dan isolasi workspace.
 
-Alur paling aman: backup → salin paket ke repository → push sekali → tunggu GitHub Actions hijau → redeploy sekali → jalankan verifikasi Personal 2.0 → uji dashboard Guru/Wali → uji satu akun Personal dewasa dan satu akun uji di bawah 18 tahun.
+Alur paling aman: backup → salin paket ke repository → push sekali → tunggu semua GitHub Actions hijau → redeploy sekali → jalankan verifier v4.5 dan v4.8 → uji satu relasi Ustadz, satu undangan lembaga, dan satu relasi keluarga.

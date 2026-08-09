@@ -842,5 +842,57 @@ Artisan::command('sullam:verify-personal-v450', function (): int {
     return 0;
 })->purpose('Memeriksa profil cita-cita, perlindungan anak, jalur pendampingan, dan portofolio privat v4.5.0');
 
+// @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family & Parent Portal
+Artisan::command('sullam:verify-expansion-v480', function (): int {
+    $requiredTables = ['mentorship_sessions', 'family_support_notes', 'user_relationships', 'workspace_invitations', 'workspace_memberships'];
+    $missing = collect($requiredTables)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Fase v4.6–v4.8 belum siap. Tabel hilang: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $acceptedWithoutTimestamp = DB::table('user_relationships')
+        ->whereIn('relationship_type', ['mentor_learner', 'guardian_child'])
+        ->where('status', 'accepted')
+        ->whereNull('accepted_at')
+        ->count();
+    $invalidMentorshipStatus = DB::table('mentorship_sessions')
+        ->whereNotIn('status', ['requested', 'scheduled', 'completed', 'cancelled'])
+        ->count();
+    $orphanAcceptedInvitations = DB::table('workspace_invitations as wi')
+        ->where('wi.status', 'accepted')
+        ->whereNotNull('wi.accepted_by_user_id')
+        ->whereNotExists(function ($query): void {
+            $query->selectRaw('1')
+                ->from('workspace_memberships as wm')
+                ->whereColumn('wm.institution_id', 'wi.institution_id')
+                ->whereColumn('wm.user_id', 'wi.accepted_by_user_id')
+                ->where('wm.status', 'active');
+        })
+        ->count();
+    $notesOutsideActiveFamily = DB::table('family_support_notes as fsn')
+        ->join('user_relationships as ur', 'ur.id', '=', 'fsn.user_relationship_id')
+        ->where('ur.relationship_type', '!=', 'guardian_child')
+        ->orWhere('ur.status', '!=', 'accepted')
+        ->count();
+
+    $this->table(['Komponen', 'Jumlah'], [
+        ['Hubungan Ustadz Privat aktif', DB::table('user_relationships')->where('relationship_type', 'mentor_learner')->where('status', 'accepted')->count()],
+        ['Sesi bimbingan', DB::table('mentorship_sessions')->count()],
+        ['Hubungan keluarga aktif', DB::table('user_relationships')->where('relationship_type', 'guardian_child')->where('status', 'accepted')->count()],
+        ['Catatan dukungan keluarga', DB::table('family_support_notes')->where('status', 'visible')->count()],
+        ['Keanggotaan workspace aktif', DB::table('workspace_memberships')->where('status', 'active')->count()],
+        ['Undangan ruang pending', DB::table('workspace_invitations')->where('status', 'pending')->where('expires_at', '>', now())->count()],
+    ]);
+
+    if ($acceptedWithoutTimestamp || $invalidMentorshipStatus || $orphanAcceptedInvitations || $notesOutsideActiveFamily) {
+        $this->error('Guardrail v4.8.0 belum lulus: periksa consent timestamp, status sesi, membership undangan, dan relasi catatan keluarga.');
+        return 1;
+    }
+
+    $this->info('Fase v4.6–v4.8 siap untuk smoke test akun nyata. Akses tetap consent-based dan terisolasi per workspace.');
+    return 0;
+})->purpose('Memeriksa Ustadz Privat, Suite Lembaga, dan Portal Keluarga v4.8.0');
+
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();
 Schedule::command('sullam:send-murajaah-reminders')->dailyAt('05:30')->withoutOverlapping();
