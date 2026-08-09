@@ -22,51 +22,44 @@ class DomainSeparationTest extends TestCase
 
     public function test_public_domain_keeps_public_homepage(): void
     {
-        $this->withServerVariables(['HTTP_HOST' => 'sullamulhifz.or.id'])
-            ->get('/')
+        $this->get('https://sullamulhifz.or.id/')
             ->assertOk()
-            ->assertSee('Menumbuhkan hubungan');
+            ->assertSee('Jaga perjalanan Al-Qur’an');
     }
 
     public function test_public_domain_sends_login_to_portal_domain(): void
     {
-        $this->withServerVariables(['HTTP_HOST' => 'sullamulhifz.or.id'])
-            ->get('/login')
+        $this->get('https://sullamulhifz.or.id/login')
             ->assertRedirect('https://app.sullamulhifz.or.id/login');
     }
 
     public function test_public_domain_sends_dashboard_to_portal_domain(): void
     {
-        $this->withServerVariables(['HTTP_HOST' => 'sullamulhifz.or.id'])
-            ->get('/dashboard')
+        $this->get('https://sullamulhifz.or.id/dashboard')
             ->assertRedirect('https://app.sullamulhifz.or.id/dashboard');
     }
 
     public function test_portal_root_sends_guest_to_login(): void
     {
-        $this->withServerVariables(['HTTP_HOST' => 'app.sullamulhifz.or.id'])
-            ->get('/')
+        $this->get('https://app.sullamulhifz.or.id/')
             ->assertRedirect('https://app.sullamulhifz.or.id/login');
     }
 
     public function test_portal_domain_sends_public_pages_to_public_domain(): void
     {
-        $this->withServerVariables(['HTTP_HOST' => 'app.sullamulhifz.or.id'])
-            ->get('/tentang')
+        $this->get('https://app.sullamulhifz.or.id/tentang')
             ->assertRedirect('https://sullamulhifz.or.id/tentang');
     }
 
     public function test_www_is_canonicalized_to_non_www(): void
     {
-        $this->withServerVariables(['HTTP_HOST' => 'www.sullamulhifz.or.id'])
-            ->get('/program?asal=www')
+        $this->get('https://www.sullamulhifz.or.id/program?asal=www')
             ->assertRedirect('https://sullamulhifz.or.id/program?asal=www');
     }
 
     public function test_legacy_domain_remains_available_during_transition(): void
     {
-        $this->withServerVariables(['HTTP_HOST' => 'taysriulqurani.id'])
-            ->get('/')
+        $this->get('https://taysriulqurani.id/')
             ->assertOk();
     }
 }

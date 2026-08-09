@@ -15,15 +15,24 @@ jobs:
           extensions: mbstring, pdo_sqlite, intl
           coverage: none
       - run: cp .env.example .env
-      - run: composer validate --no-check-publish
-      - run: composer install --no-interaction --prefer-dist
-      - run: php artisan key:generate
+      - name: Require reproducible dependencies
+        run: test -f composer.lock
+      - run: composer validate --strict --no-check-publish
+      - run: composer install --no-interaction --prefer-dist --no-progress
+      - run: composer audit --locked --no-dev --no-interaction
+      - run: php artisan key:generate --force
+      - name: Bootstrap and route smoke test
+        run: |
+          sh -n scripts/container-start.sh
+          php artisan package:discover --ansi
+          php artisan route:list --no-ansi > /tmp/sullam-routes.txt
       - name: Compile and lint Blade views
         run: |
           php artisan view:cache
           for file in storage/framework/views/*.php; do php -l "$file" || exit 1; done
           php artisan view:clear
-      - run: php artisan test
+      - name: Run complete Laravel test suite
+        run: php artisan test
 
   docker-build:
     runs-on: ubuntu-latest

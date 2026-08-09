@@ -39,6 +39,7 @@ class PersonalRegistrationController extends Controller
     public function store(Request $request): RedirectResponse
     {
         $request->merge(['email' => Str::lower(trim((string) $request->input('email')))]);
+        $isMinor = PersonalIdentity::isMinor($request->input('age_group'));
         $data = $request->validate([
             'name' => ['required', 'string', 'max:120'],
             'email' => ['required', 'email:rfc', 'max:190', 'unique:users,email'],
@@ -51,16 +52,12 @@ class PersonalRegistrationController extends Controller
             'interests.*' => ['string', 'distinct', Rule::in(array_keys(PersonalIdentity::interests()))],
             'aspiration' => ['nullable', 'string', 'max:150'],
             'learning_mode' => ['nullable', Rule::in(array_keys(PersonalIdentity::learningModes()))],
-            'guardian_acknowledgement' => [
-                Rule::requiredIf(fn (): bool => PersonalIdentity::isMinor($request->input('age_group'))),
-                'nullable',
-                'accepted',
-            ],
+            'guardian_acknowledgement' => $isMinor ? ['required', 'accepted'] : ['nullable'],
             'terms' => ['accepted'],
         ]);
 
         $selectedPrograms = collect($data['programs'] ?? [])->unique()->values();
-        $safeguardingAcknowledgedAt = PersonalIdentity::isMinor($data['age_group'] ?? null)
+        $safeguardingAcknowledgedAt = $isMinor
             && $request->boolean('guardian_acknowledgement') ? now() : null;
 
         $user = DB::transaction(function () use ($data, $selectedPrograms, $safeguardingAcknowledgedAt): User {

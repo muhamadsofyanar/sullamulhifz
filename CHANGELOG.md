@@ -200,6 +200,10 @@
 - Mempermanenkan hotfix dashboard Guru/Wali dengan menghindari eager-load relasi profil yang bergantung pada workspace aktif.
 - Memperbaiki kompilasi Blade halaman Perjalanan Saya dengan memisahkan directive kondisi deskripsi dan nilai Qur’ani pada kartu portofolio.
 - Menambah verifier produksi `sullam:verify-personal-v450` dan regresi privasi lintas akun.
+- Mengunci dependency Composer dan mewajibkan lock file pada CI serta Docker build.
+- Memperbaiki kompatibilitas job komunikasi dengan Queueable Laravel dan validasi persetujuan wali Personal.
+- Memperbaiki urutan middleware pemisahan domain serta memperbarui seluruh pengujian host publik/portal.
+- Memperkuat release gate hingga 91 tes/473 assertion, bootstrap route, audit dependency, Blade lint, dan instalasi produksi bersih.
 
 ## v2.6.0 — Qur’an Journey — 2026-08-08
 - Mengunci Marhalah berdasarkan perjalanan Juz: 30 Āyah, 29 Tsalātsiyyah, 28 Khamsiyyah, 27 Niṣfiyyah, 26 Ṣafḥah, Juz 1–25 Ṣafḥatayn.

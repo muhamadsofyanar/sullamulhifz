@@ -10,21 +10,21 @@ class PublicWebsiteTest extends TestCase
     #[DataProvider('publicPages')]
     public function test_public_pages_are_available(string $path, string $text): void
     {
-        $this->get($path)->assertOk()->assertSee($text);
+        $this->get('https://sullamulhifz.or.id'.$path)->assertOk()->assertSee($text);
     }
 
     public static function publicPages(): array
     {
         return [
-            ['/', 'Menumbuhkan hubungan'],
+            ['/', 'Jaga perjalanan Al-Qur’an'],
             ['/tentang', 'Tangga pertumbuhan'],
-            ['/program', 'beberapa jalur pembinaan'],
+            ['/program', 'Satu filosofi'],
             ['/tpa', 'Administrasi yang membantu'],
             ['/ikrar-santri', 'Ikrar Santri'],
-            ['/academy', 'Ruang belajar digital'],
+            ['/academy', 'Belajar bersama agar pendampingan tidak terputus'],
             ['/artikel', 'Membaca ulang perjalanan'],
             ['/kontak', 'Mari membangun perjalanan'],
-            ['/privasi', 'Data anak bukan bahan promosi'],
+            ['/privasi', 'Perjalanan Al-Qur’an adalah data yang perlu dijaga'],
         ];
     }
 
@@ -32,9 +32,8 @@ class PublicWebsiteTest extends TestCase
     {
         config(['sullam.portal_host' => 'app.sullamulhifz.or.id']);
 
-        $this->withServerVariables(['HTTP_HOST' => 'app.sullamulhifz.or.id'])
-            ->get('/')
-            ->assertRedirect('/login');
+        $this->get('https://app.sullamulhifz.or.id/')
+            ->assertRedirect('https://app.sullamulhifz.or.id/login');
     }
 
     public function test_internal_dashboard_remains_protected(): void

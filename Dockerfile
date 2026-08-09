@@ -7,9 +7,9 @@ FROM composer:2.8 AS vendor
 WORKDIR /app
 COPY . .
 
-# composer.lock is strongly recommended. If it is not present in a source
-# snapshot, Composer will resolve dependencies during the build. Application
-# bootstrap must therefore be safe without runtime-only secrets or a database.
+# Production builds must use the dependency graph already verified by CI.
+RUN test -f composer.lock || (echo "ERROR: composer.lock wajib tersedia." >&2; exit 1)
+
 # Coolify/BuildKit can occasionally resolve Packagist over an unreachable IPv6 path.
 # Force Composer downloads to IPv4 and retry transient outbound failures before
 # failing the image build. This keeps production deploys resilient without

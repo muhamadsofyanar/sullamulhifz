@@ -1,9 +1,12 @@
 @phase 4.5 Personal 2.0
 
 .gitignore
+.github/workflows/tests.yml
 RELEASE
 public/release.txt
 Dockerfile
+composer.lock
+phpunit.xml
 START-HERE.md
 CHANGELOG.md
 UPLOAD-TO-GITHUB.md
@@ -16,6 +19,7 @@ docs/ROADMAP.md
 docs/PHASE-REGISTRY.md
 docs/releases/v4.5.0.md
 app/Support/PersonalIdentity.php
+app/Jobs/SendCommunicationDelivery.php
 app/Models/User.php
 app/Models/PersonalProfile.php
 app/Services/PersonalJourneyService.php
@@ -36,4 +40,11 @@ public/css/public-v450.css
 routes/web.php
 routes/console.php
 scripts/container-start.sh
+bootstrap/app.php
+tests/Feature/AuthenticationTest.php
+tests/Feature/DomainSeparationTest.php
+tests/Feature/InstitutionReferenceTest.php
+tests/Feature/PublicPositioningV420Test.php
+tests/Feature/PublicWebsiteTest.php
+tests/Feature/StudentPledgeTest.php
 tests/Feature/PersonalTwoV450Test.php

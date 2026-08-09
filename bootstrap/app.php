@@ -48,7 +48,10 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withCommands([SyncQuranAudio::class, PurgeExpiredMedia::class, SecureLegacyMedia::class, PruneCommunicationDeliveries::class, VerifyIdentityCore::class])
     ->withMiddleware(function (Middleware $middleware) use ($trustedProxies): void {
         $middleware->trustProxies(at: $trustedProxies);
-        $middleware->web(append: [EnforceDomainSeparation::class, SecurityHeaders::class, ResolveWorkspaceContext::class]);
+        $middleware->web(
+            prepend: [EnforceDomainSeparation::class],
+            append: [SecurityHeaders::class, ResolveWorkspaceContext::class],
+        );
         $middleware->alias([
             'role' => EnsureRole::class,
             'password.changed' => EnsurePasswordChanged::class,

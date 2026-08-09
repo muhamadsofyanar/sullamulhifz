@@ -13,7 +13,7 @@ class PublicPositioningV420Test extends TestCase
 
     public function test_home_positions_product_for_all_primary_audiences(): void
     {
-        $this->get('/')
+        $this->get('https://sullamulhifz.or.id/')
             ->assertOk()
             ->assertSee('SATU EKOSISTEM')
             ->assertSee('Personal')
@@ -26,10 +26,10 @@ class PublicPositioningV420Test extends TestCase
     public function test_all_solution_pages_and_product_pages_are_available(): void
     {
         foreach (['personal', 'ustadz', 'keluarga', 'lembaga'] as $audience) {
-            $this->get(route('public.solution', $audience))->assertOk()->assertSee('POLA HUBUNGAN');
+            $this->get('https://sullamulhifz.or.id/solusi/'.$audience)->assertOk()->assertSee('POLA HUBUNGAN');
         }
 
-        $this->get(route('public.features'))->assertOk()->assertSee('Satu mesin perjalanan');
-        $this->get(route('public.pricing'))->assertOk()->assertSee('Harga resmi belum dipublikasikan');
+        $this->get('https://sullamulhifz.or.id/fitur')->assertOk()->assertSee('Satu mesin perjalanan');
+        $this->get('https://sullamulhifz.or.id/harga')->assertOk()->assertSee('Harga resmi belum dipublikasikan');
     }
 }

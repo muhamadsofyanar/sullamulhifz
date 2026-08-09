@@ -31,3 +31,13 @@ Paket baru boleh dideploy setelah `php-tests`, `docker-build`, dan `release-docs
 - directive Blade portofolio pada `resources/views/personal/journey.blade.php` dipisahkan agar seluruh kondisi dikompilasi;
 - pemeriksaan adjacency directive Blade, sintaks PHP, dokumen rilis, dan manifest fase telah dijalankan ulang;
 - GitHub Actions tetap menjadi gerbang akhir sebelum deployment Coolify.
+
+## CI hardening
+
+- seluruh suite dijalankan pada PHP 8.4: 91 tes dan 473 assertion lulus;
+- konflik properti job komunikasi dengan trait Queueable Laravel diperbaiki tanpa menonaktifkan queue;
+- validasi pendaftaran Personal hanya mewajibkan persetujuan wali untuk pengguna minor;
+- pengujian host publik dan portal dibuat eksplisit agar pemisahan domain benar-benar diuji;
+- urutan middleware diperbaiki agar route portal pada domain publik langsung diarahkan ke portal;
+- `composer.lock` diwajibkan di GitHub Actions dan Docker agar dependency tidak berubah antar-build;
+- instalasi produksi `--no-dev`, bootstrap Laravel, 309 route, kompilasi Blade, 337 file PHP, JSON, dan startup shell lulus.

@@ -21,11 +21,9 @@ class SendCommunicationDelivery implements ShouldQueue
     /** @var array<int,int> */
     public array $backoff = [60, 300, 900];
 
-    public bool $afterCommit = true;
-
     public function __construct(public CommunicationDelivery $delivery)
     {
-        $this->onQueue('communications');
+        $this->onQueue('communications')->afterCommit();
     }
 
     public function handle(CommunicationDriverFactory $factory): void

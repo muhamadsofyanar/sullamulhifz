@@ -12,16 +12,12 @@ class AuthenticationTest extends TestCase
 {
     use RefreshDatabase;
 
-    protected function setUp(): void
-    {
-        parent::setUp();
-        putenv('INITIAL_ADMIN_PASSWORD=TestAdmin2026Secure');
-        putenv('SEED_INITIAL_TPA_DATA=false');
-    }
-
     public function test_login_page_is_available(): void
     {
-        $this->get('/login')->assertOk()->assertSee('Sullamul Ḥifẓ');
+        $this->get('/login')
+            ->assertOk()
+            ->assertSee('Sullamul Hifz')
+            ->assertSee('Masuk ke aplikasi');
     }
 
     public function test_initial_admin_is_forced_to_change_password(): void

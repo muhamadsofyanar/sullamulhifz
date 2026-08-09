@@ -4,12 +4,13 @@
          bootstrap="vendor/autoload.php"
          colors="true">
     <testsuites>
-        <!-- @phase 4.4.4: the project currently has Feature tests only. -->
+        <!-- @phase 4.4.4 PHPUnit suite; @phase 4.5 CI hardening. -->
         <testsuite name="Feature"><directory>tests/Feature</directory></testsuite>
     </testsuites>
     <source><include><directory>app</directory></include></source>
     <php>
         <env name="APP_ENV" value="testing"/>
+        <env name="APP_URL" value="https://app.sullamulhifz.or.id"/>
         <env name="APP_MAINTENANCE_DRIVER" value="file"/>
         <env name="BCRYPT_ROUNDS" value="4"/>
         <env name="CACHE_STORE" value="array"/>
@@ -17,6 +18,10 @@
         <env name="DB_DATABASE" value=":memory:"/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
+        <env name="INITIAL_ADMIN_PASSWORD" value="TestAdmin2026Secure"/>
+        <env name="DEMO_PASSWORD" value="TestDemo2026Secure"/>
+        <env name="SEED_INITIAL_TPA_DATA" value="false"/>
+        <env name="SEED_DEMO_DATA" value="false"/>
         <env name="SESSION_DRIVER" value="array"/>
     </php>
 </phpunit>
