@@ -198,6 +198,7 @@
 - Menambahkan portofolio privat untuk karya, pelayanan, keterampilan, proyek, dan refleksi tanpa skor atau perbandingan.
 - Mewajibkan pengakuan pendampingan orang tua/wali untuk pengguna di bawah 18 tahun dan menjaga Community tetap tidak aktif secara otomatis.
 - Mempermanenkan hotfix dashboard Guru/Wali dengan menghindari eager-load relasi profil yang bergantung pada workspace aktif.
+- Memperbaiki kompilasi Blade halaman Perjalanan Saya dengan memisahkan directive kondisi deskripsi dan nilai Qur’ani pada kartu portofolio.
 - Menambah verifier produksi `sullam:verify-personal-v450` dan regresi privasi lintas akun.
 
 ## v2.6.0 — Qur’an Journey — 2026-08-08

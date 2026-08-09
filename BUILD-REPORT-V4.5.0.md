@@ -25,3 +25,9 @@
 ## Release gate
 
 Paket baru boleh dideploy setelah `php-tests`, `docker-build`, dan `release-docs` hijau. Status fase tetap `in_progress` sampai smoke test produksi selesai.
+
+## Hotfix kandidat
+
+- directive Blade portofolio pada `resources/views/personal/journey.blade.php` dipisahkan agar seluruh kondisi dikompilasi;
+- pemeriksaan adjacency directive Blade, sintaks PHP, dokumen rilis, dan manifest fase telah dijalankan ulang;
+- GitHub Actions tetap menjadi gerbang akhir sebelum deployment Coolify.

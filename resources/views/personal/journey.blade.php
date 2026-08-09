@@ -46,7 +46,17 @@
         <div class="personal-portfolio-layout">
             <div class="personal-portfolio-list">
                 @forelse($portfolioEntries as $entry)
-                <article><time>{{ ($entry->occurred_on ?: $entry->created_at)->translatedFormat('d M Y') }}</time><span>{{ $portfolioCategories[$entry->category] ?? 'Jejak pertumbuhan' }}</span><h3>{{ $entry->title }}</h3>@if($entry->description)<p>{{ $entry->description }}</p>@endif@if(data_get($entry->metadata, 'quranic_value'))<small>Nilai Qur’ani · {{ data_get($entry->metadata, 'quranic_value') }}</small>@endif</article>
+                <article>
+                    <time>{{ ($entry->occurred_on ?: $entry->created_at)->translatedFormat('d M Y') }}</time>
+                    <span>{{ $portfolioCategories[$entry->category] ?? 'Jejak pertumbuhan' }}</span>
+                    <h3>{{ $entry->title }}</h3>
+                    @if($entry->description)
+                    <p>{{ $entry->description }}</p>
+                    @endif
+                    @if(data_get($entry->metadata, 'quranic_value'))
+                    <small>Nilai Qur’ani · {{ data_get($entry->metadata, 'quranic_value') }}</small>
+                    @endif
+                </article>
                 @empty
                 <div class="empty-state"><p>Belum ada portofolio. Jejak pertama boleh sederhana: membantu orang lain, menyelesaikan karya, merawat tanaman, berlatih komunikasi, atau menjaga satu kebiasaan baik.</p></div>
                 @endforelse
