@@ -16,4 +16,5 @@ class CommunitySpace extends Model
     public function institution(): BelongsTo { return $this->belongsTo(Institution::class); }
     public function branch(): BelongsTo { return $this->belongsTo(Branch::class); }
     public function posts(): HasMany { return $this->hasMany(CommunityPost::class); }
+    public function moderationActions(): HasMany { return $this->hasMany(CommunityModerationAction::class); }
 }

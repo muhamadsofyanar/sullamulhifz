@@ -726,4 +726,42 @@ Artisan::command('sullam:verify-guided-quran', function (): int {
     return 0;
 })->purpose('Memeriksa program online, setoran, review asatidz, dan guardrail privasi v3.1.1');
 
+Artisan::command('sullam:send-murajaah-reminders {--through=}', function (): int {
+    $through = $this->option('through')
+        ? \Illuminate\Support\Carbon::parse((string) $this->option('through'))->startOfDay()
+        : today()->addDay();
+    $result = app(\App\Services\MurajaahReminderService::class)->sendDue($through);
+    $this->info("Reminder Murāja‘ah: {$result['plans']} jadwal, {$result['recipients']} penerima.");
+    return 0;
+})->purpose('Mengirim reminder penjagaan Murajaah yang jatuh tempo tanpa duplikasi');
+
+Artisan::command('sullam:verify-roadmap-foundations-v320', function (): int {
+    $required = [
+        'talent_progress_records', 'student_portfolio_evidence',
+        'ai_assist_drafts', 'ai_assist_reviews',
+        'community_moderation_actions', 'payment_transactions',
+    ];
+    $missing = collect($required)->reject(fn (string $table): bool => Schema::hasTable($table));
+    $reminderReady = class_exists(\App\Services\MurajaahReminderService::class)
+        && Schema::hasColumn('memorization_review_plans', 'reminder_sent_at');
+
+    $this->table(['Fondasi', 'Status'], [
+        ['Character/Talent non-ranking', Schema::hasTable('talent_progress_records') ? 'siap' : 'belum'],
+        ['Portfolio evidence', Schema::hasTable('student_portfolio_evidence') ? 'siap' : 'belum'],
+        ['Reminder Murāja‘ah', $reminderReady ? 'siap' : 'belum'],
+        ['AI draft + human review', Schema::hasTable('ai_assist_drafts') && Schema::hasTable('ai_assist_reviews') ? 'siap' : 'belum'],
+        ['Community moderation audit', Schema::hasTable('community_moderation_actions') ? 'siap' : 'belum'],
+        ['Payment ledger opsional', Schema::hasTable('payment_transactions') ? 'siap' : 'belum'],
+    ]);
+
+    if ($missing->isNotEmpty() || ! $reminderReady) {
+        $this->error('Fondasi roadmap v3.2.0 belum lengkap: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $this->info('Fondasi implementasi v3.2.0 tersedia. Aktivasi eksternal dan launch checks tetap wajib divalidasi di produksi.');
+    return 0;
+})->purpose('Memeriksa fondasi implementasi Fase 8, 9, dan readiness Fase 10');
+
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();
+Schedule::command('sullam:send-murajaah-reminders')->dailyAt('05:30')->withoutOverlapping();

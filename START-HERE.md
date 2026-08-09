@@ -1,14 +1,14 @@
-# MULAI DI SINI — v3.1.1
+# MULAI DI SINI — v3.2.0
 
-Rilis kandidat adalah **v3.1.1 — Guided Quran Learning Recovery**.
+Rilis kandidat adalah **v3.2.0 — Roadmap Completion Foundations**.
 
 Baca berurutan:
-1. `UPGRADE-V3.0.0.md`
-2. `DEPLOY-QUICK-V3.0.0.txt`
+1. `UPGRADE-V3.2.0.md`
+2. `DEPLOY-QUICK-V3.2.0.txt`
 3. `docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md`
 4. `docs/ROADMAP-10-PHASES-V2.6.0.md`
 
-v3.0.0 membuka jalur Personal. v3.1.0 menghubungkannya dengan murattal, Program Online, Academy terpilih, setoran audio/teks, dan review asatidz. Personal tetap merupakan akun mandiri; mengikuti program tidak otomatis menjadikannya santri lembaga penyelenggara. Roadmap 10 fase tetap berlaku; dua gate manual Fase 6 yang ditunda tetap pending.
+v3.0.0 membuka jalur Personal. v3.1.x menghubungkannya dengan murattal, Program Online, Academy terpilih, setoran audio/teks, dan review asatidz. v3.2.0 menambahkan fondasi implementasi Fase 8–9 serta readiness Fase 10. Aktivasi multi-lembaga, community, integrasi eksternal, payment provider, dan seluruh launch check tetap harus dibuktikan di produksi; source tidak memalsukan status validasi.
 
 ---
 

@@ -64,5 +64,6 @@ class Student extends Model
     public function quranJourneyProfile() { return $this->hasOne(QuranJourneyProfile::class); }
     public function memorizationMilestones(): HasMany { return $this->hasMany(MemorizationMilestone::class); }
     public function quranProgramEnrollments(): HasMany { return $this->hasMany(QuranProgramEnrollment::class); }
+    public function talentProgressRecords(): HasMany { return $this->hasMany(TalentProgressRecord::class); }
+    public function portfolios(): HasMany { return $this->hasMany(StudentPortfolio::class); }
 }
-

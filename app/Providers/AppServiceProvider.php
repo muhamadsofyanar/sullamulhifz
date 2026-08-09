@@ -9,6 +9,7 @@ use App\Models\LiaisonMessage;
 use App\Models\QuranGuidedSubmission;
 use App\Models\Student;
 use App\Models\Teacher;
+use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Relations\Relation;
 use Illuminate\Pagination\Paginator;
@@ -34,6 +35,7 @@ class AppServiceProvider extends ServiceProvider
             'quran_guided_submission' => QuranGuidedSubmission::class,
             'student' => Student::class,
             'teacher' => Teacher::class,
+            'user' => User::class,
         ]);
 
         ResetPassword::createUrlUsing(static function (object $notifiable, string $token): string {

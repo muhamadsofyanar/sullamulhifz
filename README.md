@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v3.1.1 — Guided Quran Learning Recovery**.
+Rilis kandidat: **v3.2.0 — Roadmap Completion Foundations**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajaran Al-Qur’an, operasional lembaga, tugas rumah, komunikasi guru–wali, dan perjalanan perkembangan santri. TPA Al-Insyirah menjadi implementasi pertama, sementara fondasinya disiapkan untuk cabang dan lembaga lain.
 
@@ -17,6 +17,8 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - Academy LMS 2.0: program/modul/materi, learning path, prerequisite, kuis, worksheet, progress, bookmark, refleksi, dan sertifikat;
 - Family & Teacher Ecosystem: aktivitas keluarga guru→wali→guru, refleksi pendampingan, kompetensi/pelatihan guru berbasis bukti naratif tanpa ranking;
 - Personal Learning System: rekomendasi berbasis observasi/progres nyata dengan teacher override tercatat; STIFIn bukan evidence rekomendasi;
+- Character, Talent & Portfolio: progres naratif non-ranking dan evidence portofolio lintas waktu;
+- Insight & Automation: reminder Murāja‘ah terjadwal dan AI Assist yang wajib melewati human review serta audit;
 - Public Personal Mode: masyarakat dapat daftar mandiri, memiliki workspace privat, mengatur ritme, mencatat hafalan/Murāja‘ah/tilawah/refleksi, membuat target, melihat streak dan arahan harian;
 - media terpusat, permission granular, feature flag, aktivasi akun, reset kata sandi, dan audit.
 

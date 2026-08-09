@@ -10,10 +10,10 @@ class MemorizationReviewPlan extends Model
     protected $fillable = [
         'institution_id','student_id','created_by_teacher_id','memorization_target_id',
         'source_memorization_record_id','completed_by_murajaah_record_id','surah_id',
-        'start_verse','end_verse','review_date','review_type','priority','status','notes',
+        'start_verse','end_verse','review_date','reminder_sent_at','review_type','priority','status','notes',
     ];
 
-    protected function casts(): array { return ['review_date'=>'date']; }
+    protected function casts(): array { return ['review_date'=>'date','reminder_sent_at'=>'datetime']; }
 
     public function student(): BelongsTo { return $this->belongsTo(Student::class); }
     public function creator(): BelongsTo { return $this->belongsTo(Teacher::class, 'created_by_teacher_id'); }

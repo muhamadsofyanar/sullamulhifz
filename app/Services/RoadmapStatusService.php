@@ -233,7 +233,7 @@ class RoadmapStatusService
                     ['label' => 'Proyek/portfolio evidence terhubung', 'passed' => Schema::hasTable('student_portfolio_evidence')],
                 ]),
                 $this->manualCriteria($institutionId, ['phase8_portfolio_flow', 'phase8_character_talent_flow']),
-                'Lengkapi workflow program bakat dan portofolio yang dapat diwariskan antar tahun ajaran.',
+                'Validasi workflow program bakat non-ranking, evidence portofolio, dan kesinambungan lintas tahun ajaran dengan data nyata.',
             ),
             9 => $this->phase(
                 9,
@@ -245,7 +245,7 @@ class RoadmapStatusService
                     ['label' => 'Audit keputusan AI Assist', 'passed' => Schema::hasTable('ai_assist_reviews')],
                 ]),
                 $this->manualCriteria($institutionId, ['phase9_insight_accuracy', 'phase9_ai_human_review']),
-                'Bangun otomatisasi dan AI assist dengan audit, human review dan evaluasi akurasi sebelum diaktifkan.',
+                'Validasi reminder Murāja‘ah, akurasi insight, dan AI Assist dengan human review/audit sebelum feature flag diaktifkan.',
             ),
             10 => $this->phase(
                 10,

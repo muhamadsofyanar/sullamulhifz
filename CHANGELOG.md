@@ -1,3 +1,20 @@
+# v3.2.0 — Roadmap Completion Foundations — 2026-08-09
+
+## Added
+- Menambah progres Character/Talent berbasis rubrik naratif non-ranking dan evidence portofolio.
+- Menambah reminder Murāja‘ah terjadwal, database-only, dan idempotent melalui `reminder_sent_at`.
+- Menambah AI Assist draft dengan human review wajib, final text terpisah, serta audit keputusan.
+- Menambah audit moderasi Community dan payment transaction ledger sebagai readiness Fase 10.
+- Menambah verifier `sullam:verify-roadmap-foundations-v320` dan command `sullam:send-murajaah-reminders`.
+
+## Fixed
+- Membawa patch production morph map `quran_guided_submission` ke baseline kandidat.
+- Menambah morph map `user` agar database notification dapat disimpan dengan `Relation::enforceMorphMap`.
+
+## Guardrail
+- Tidak mengaktifkan multi-institution, Community, provider pembayaran, atau integrasi eksternal secara otomatis.
+- Fase 8–9 tetap memerlukan launch check produksi; Fase 10 tetap belum 100% sampai tenant/integrasi/scale test nyata lulus.
+
 # v3.1.1 — Guided Quran Learning Recovery — 2026-08-08
 
 ## Fixed
