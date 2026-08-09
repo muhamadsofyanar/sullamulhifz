@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 4.4 Multi-tenant Institution Foundation */
+
 use App\Models\Announcement;
 use App\Models\AcademyProgram;
 use App\Models\AcademyRecommendation;
@@ -37,6 +39,10 @@ class DashboardController extends Controller
     public function __invoke(Request $request): View|RedirectResponse
     {
         $user = $request->user()->load('roles', 'teacher', 'guardian.students.currentEnrollment.schoolClass');
+
+        if ($user->institution && $user->institution->status !== 'active') {
+            return view('dashboard.onboarding', ['institution' => $user->institution]);
+        }
 
         if ($user->hasAnyRole(['superadmin', 'institution_admin', 'head'])) {
             return $this->admin($request);

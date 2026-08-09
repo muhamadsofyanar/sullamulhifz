@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+/** @phase 4.4 Multi-tenant Institution Foundation */
+
 use App\Models\AcademicYear;
 use App\Models\Institution;
 use App\Models\LearningGroup;
@@ -13,6 +15,7 @@ use App\Models\QuranSurah;
 use App\Models\Role;
 use App\Models\SchoolClass;
 use App\Models\User;
+use App\Models\WorkspaceMembership;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
@@ -26,6 +29,12 @@ class ProductionSeeder extends Seeder
             [
                 'name' => env('INITIAL_INSTITUTION_NAME', 'TPA Al-Insyirah'),
                 'slug' => Str::slug(env('INITIAL_INSTITUTION_NAME', 'TPA Al-Insyirah')),
+                'workspace_type' => 'institution',
+                'institution_type' => env('INITIAL_INSTITUTION_TYPE', 'tpa'),
+                'privacy_mode' => 'institution',
+                'onboarding_status' => 'completed',
+                'registration_source' => 'production_seed',
+                'approved_at' => now(),
                 'timezone' => 'Asia/Jakarta',
                 'status' => 'active',
             ]
@@ -100,6 +109,10 @@ class ProductionSeeder extends Seeder
         }
         $adminRole = Role::where('name', 'institution_admin')->firstOrFail();
         $admin->roles()->syncWithoutDetaching([$adminRole->id => ['institution_id' => $institution->id, 'status' => 'active']]);
+        WorkspaceMembership::updateOrCreate(
+            ['institution_id' => $institution->id, 'user_id' => $admin->id, 'membership_type' => 'owner'],
+            ['role_id' => $adminRole->id, 'status' => 'active', 'is_default' => true, 'joined_at' => $admin->created_at],
+        );
 
         $year = AcademicYear::updateOrCreate(
             ['institution_id' => $institution->id, 'name' => '2026/2027'],

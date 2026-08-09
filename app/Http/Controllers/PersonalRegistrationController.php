@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 4.3 Identity & Relationship Core; @phase 4.4 Multi-tenant metadata */
+
 use App\Models\Institution;
 use App\Models\FeatureFlag;
 use App\Models\PersonalProfile;
 use App\Models\Role;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\WorkspaceMembership;
 use App\Services\PersonalModuleAccessService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -51,7 +54,10 @@ class PersonalRegistrationController extends Controller
                 'code' => 'PRS-'.strtoupper(substr($token, 0, 12)),
                 'slug' => 'personal-'.substr($token, 0, 20),
                 'workspace_type' => 'personal',
+                'institution_type' => 'personal',
                 'privacy_mode' => 'private',
+                'onboarding_status' => 'completed',
+                'registration_source' => 'public_personal_registration',
                 'timezone' => config('app.timezone', 'Asia/Jakarta'),
                 'status' => 'active',
                 'settings' => ['private' => true, 'created_via' => 'public_personal_registration'],
@@ -70,6 +76,17 @@ class PersonalRegistrationController extends Controller
             $user->roles()->attach($role->id, [
                 'institution_id' => $institution->id,
                 'status' => 'active',
+            ]);
+
+            WorkspaceMembership::create([
+                'institution_id' => $institution->id,
+                'user_id' => $user->id,
+                'role_id' => $role->id,
+                'membership_type' => 'learner',
+                'display_label' => 'Ruang Personal',
+                'status' => 'active',
+                'is_default' => true,
+                'joined_at' => now(),
             ]);
 
             $student = Student::create([
@@ -106,6 +123,7 @@ class PersonalRegistrationController extends Controller
 
         Auth::login($user);
         $request->session()->regenerate();
+        $request->session()->put('workspace_id', $user->institution_id);
 
         return redirect()->route('personal.dashboard')->with('success', 'Akun Personal siap. Sekarang atur ritme perjalanan Anda.');
     }

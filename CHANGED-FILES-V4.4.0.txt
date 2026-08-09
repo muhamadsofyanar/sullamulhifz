@@ -1,0 +1,75 @@
+SULLAMUL HIFZ v4.4.0 — CHANGED FILES BY PHASE
+Base: v4.1.0
+
+[PHASE 4.2 — BRAND & UNIVERSAL HOME]
+app/Http/Controllers/PublicSiteController.php
+resources/views/layouts/public.blade.php
+resources/views/public/home.blade.php
+resources/views/public/solution.blade.php
+resources/views/public/features.blade.php
+resources/views/public/pricing.blade.php
+resources/views/public/programs.blade.php
+resources/views/public/academy.blade.php
+resources/views/public/article.blade.php
+public/css/public.css
+tests/Feature/PublicPositioningV420Test.php
+
+[PHASE 4.3 — IDENTITY & RELATIONSHIP CORE]
+app/Models/User.php
+app/Models/Institution.php
+app/Models/WorkspaceMembership.php
+app/Models/UserRelationship.php
+app/Models/WorkspaceInvitation.php
+app/Http/Middleware/ResolveWorkspaceContext.php
+app/Http/Controllers/WorkspaceContextController.php
+app/Http/Controllers/RelationshipController.php
+app/Http/Controllers/AuthController.php
+app/Http/Controllers/PersonalRegistrationController.php
+app/Console/Commands/VerifyIdentityCore.php
+resources/views/relationships/index.blade.php
+resources/views/layouts/app.blade.php
+bootstrap/app.php
+public/css/app-v440.css
+tests/Feature/WorkspaceContextV430Test.php
+
+[PHASE 4.4 — MULTI-TENANT INSTITUTION FOUNDATION]
+app/Support/InstitutionType.php
+app/Http/Controllers/InstitutionRegistrationController.php
+app/Http/Controllers/Admin/WorkspaceController.php
+app/Http/Controllers/Admin/InstitutionController.php
+app/Http/Controllers/DashboardController.php
+app/Http/Middleware/EnsureWorkspaceOperational.php
+app/Http/Controllers/PersonalRegistrationController.php
+app/Models/Institution.php
+database/migrations/2026_08_09_003000_identity_relationship_multitenant_v440.php
+database/seeders/ProductionSeeder.php
+resources/views/auth/register-institution.blade.php
+resources/views/admin/workspaces/index.blade.php
+resources/views/admin/institution/edit.blade.php
+resources/views/dashboard/onboarding.blade.php
+public/css/app-v440.css
+tests/Feature/MultiTenantInstitutionV440Test.php
+scripts/container-start.sh
+
+[SHARED ROUTING & RELEASE TRACEABILITY]
+routes/web.php
+Dockerfile
+PHASE-MANIFEST.json
+docs/PHASE-REGISTRY.md
+scripts/check-phase-manifest.py
+.github/workflows/release-docs.yml
+RELEASE
+public/release.txt
+CHANGELOG.md
+README.md
+START-HERE.md
+UPLOAD-TO-GITHUB.md
+docs/CURRENT-STATE.md
+docs/HANDOVER-NEXT-CHAT.md
+docs/ROADMAP.md
+UPGRADE-V4.4.0.md
+DEPLOY-QUICK-V4.4.0.txt
+BUILD-REPORT-V4.4.0.md
+docs/releases/v4.4.0.md
+
+Catatan: satu file dapat muncul di lebih dari satu fase bila memang berkembang lintas fase. Sumber kebenaran machine-readable berada di PHASE-MANIFEST.json.

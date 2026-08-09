@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+/** @phase 4.3 Identity & Relationship Core */
+
 use App\Services\Communication\CommunicationService;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -37,6 +39,28 @@ class User extends Authenticatable
 
     public function institution(): BelongsTo { return $this->belongsTo(Institution::class); }
 
+    public function workspaceMemberships(): HasMany
+    {
+        return $this->hasMany(WorkspaceMembership::class);
+    }
+
+    public function workspaces(): BelongsToMany
+    {
+        return $this->belongsToMany(Institution::class, 'workspace_memberships')
+            ->withPivot(['membership_type', 'display_label', 'status', 'is_default', 'joined_at', 'left_at', 'settings'])
+            ->withTimestamps();
+    }
+
+    public function outgoingRelationships(): HasMany
+    {
+        return $this->hasMany(UserRelationship::class, 'from_user_id');
+    }
+
+    public function incomingRelationships(): HasMany
+    {
+        return $this->hasMany(UserRelationship::class, 'to_user_id');
+    }
+
     public function roles(): BelongsToMany
     {
         return $this->belongsToMany(Role::class, 'user_roles')
@@ -44,9 +68,20 @@ class User extends Authenticatable
             ->withTimestamps();
     }
 
-    public function teacher(): HasOne { return $this->hasOne(Teacher::class); }
-    public function guardian(): HasOne { return $this->hasOne(Guardian::class); }
-    public function personalProfile(): HasOne { return $this->hasOne(PersonalProfile::class); }
+    public function teacher(): HasOne
+    {
+        return $this->hasOne(Teacher::class)->where('institution_id', $this->institution_id);
+    }
+
+    public function guardian(): HasOne
+    {
+        return $this->hasOne(Guardian::class)->where('institution_id', $this->institution_id);
+    }
+
+    public function personalProfile(): HasOne
+    {
+        return $this->hasOne(PersonalProfile::class)->where('institution_id', $this->institution_id);
+    }
     public function personalModuleEnrollments(): HasMany { return $this->hasMany(PersonalModuleEnrollment::class); }
     public function accountInvitations(): HasMany { return $this->hasMany(AccountInvitation::class); }
 
@@ -95,6 +130,14 @@ class User extends Authenticatable
         $active = $this->activeRolesQuery()->pluck('roles.name');
 
         return collect($priority)->first(fn (string $role): bool => $active->contains($role)) ?? $active->first();
+    }
+
+    public function isActiveMemberOf(int $institutionId): bool
+    {
+        return $this->workspaceMemberships()
+            ->active()
+            ->where('institution_id', $institutionId)
+            ->exists();
     }
 
     public function sendPasswordResetNotification($token): void

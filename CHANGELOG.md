@@ -1,3 +1,11 @@
+# v4.4.0 — Universal Product, Identity Core & Multi-tenant Foundation — 2026-08-09
+
+- Menyelesaikan Fase 1/v4.2.0: Home universal, empat jalur solusi, lima pola hubungan, halaman fitur, dan posisi TPA Al-Insyirah sebagai contoh implementasi.
+- Menyelesaikan Fase 2/v4.3.0: membership multi-workspace, context switcher, relasi berbasis persetujuan, invitation ledger, dan fallback kompatibel `users.institution_id`.
+- Menyelesaikan Fase 3/v4.4.0: jenis lembaga, istilah adaptif, branding, registrasi lembaga, onboarding, serta persetujuan superadmin.
+- Menambah `PHASE-MANIFEST.json`, `docs/PHASE-REGISTRY.md`, anotasi `@phase`, dan release gate otomatis.
+- Migration bersifat additive; data dan integrasi komunikasi v4.1.0 dipertahankan.
+
 # v4.1.0 — WhatsApp & Email Completion — 2026-08-09
 
 - Menyelesaikan scaffold `integration_connections` menjadi Pusat Komunikasi admin yang operasional.

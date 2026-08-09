@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers\Admin;
 
+/** @phase 4.4 Multi-tenant Institution Foundation */
+
 use App\Http\Controllers\Controller;
 use App\Models\AcademicYear;
+use App\Support\InstitutionType;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -18,6 +21,7 @@ class InstitutionController extends Controller
         return view('admin.institution.edit', [
             'institution' => $institution,
             'activeYear' => AcademicYear::where('institution_id', $institution->id)->where('is_active', true)->first(),
+            'institutionTypes' => InstitutionType::catalog(),
         ]);
     }
 
@@ -32,6 +36,12 @@ class InstitutionController extends Controller
             'phone' => ['nullable','string','max:50'],
             'email' => ['nullable','email','max:190'],
             'address' => ['nullable','string','max:2000'],
+            'institution_type' => ['required', \Illuminate\Validation\Rule::in(InstitutionType::keys())],
+            'brand_primary_color' => ['required','regex:/^#[0-9a-fA-F]{6}$/'],
+            'brand_secondary_color' => ['required','regex:/^#[0-9a-fA-F]{6}$/'],
+            'term_student' => ['required','string','max:60'],
+            'term_teacher' => ['required','string','max:60'],
+            'term_guardian' => ['required','string','max:60'],
             'master_brand' => ['required','string','max:190'],
             'tagline' => ['required','string','max:190'],
             'brand_relation' => ['nullable','string','max:255'],
@@ -48,6 +58,14 @@ class InstitutionController extends Controller
             'phone' => $data['phone'] ?? null,
             'email' => $data['email'] ?? null,
             'address' => $data['address'] ?? null,
+            'institution_type' => $data['institution_type'],
+            'brand_primary_color' => strtolower($data['brand_primary_color']),
+            'brand_secondary_color' => strtolower($data['brand_secondary_color']),
+            'terminology' => [
+                'student' => $data['term_student'],
+                'teacher' => $data['term_teacher'],
+                'guardian' => $data['term_guardian'],
+            ],
         ]);
 
         $settings = $institution->settings ?: [];

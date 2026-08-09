@@ -1,173 +1,82 @@
+{{-- @phase 4.2 Brand & Universal Home --}}
 @extends('layouts.public')
-@section('title', 'Sullamul Ḥifẓ — Bukan Sekadar Hafal, Tapi KUAT')
-@section('description', 'Ekosistem pendidikan Al-Qur’an yang membangun perjalanan hafalan secara manusiawi, bertahap, bermakna, dan berkelanjutan.')
+@section('title', 'Sullamul Ḥifẓ — Satu Ruang untuk Menjaga Perjalanan Al-Qur’an')
+@section('description', 'Belajar mandiri, bersama ustadz, didampingi keluarga, atau dikelola melalui lembaga dalam satu ekosistem Al-Qur’an.')
 @section('content')
-<section class="public-hero">
+<section class="public-hero universal-hero">
     <div class="public-container hero-grid">
         <div class="hero-copy">
-            <span class="public-eyebrow">EKOSISTEM PENDIDIKAN AL-QUR’AN</span>
-            <h1>Menumbuhkan hubungan yang <em>kuat</em> dengan Al-Qur’an.</h1>
-            <p class="hero-lead">Bukan sekadar menambah hafalan. Sullamul Ḥifẓ membantu lembaga, guru, orang tua, dan peserta menjaga perjalanan dari kesiapan hingga keberlanjutan.</p>
+            <span class="public-eyebrow">SATU EKOSISTEM · BANYAK JALUR</span>
+            <h1>Jaga perjalanan Al-Qur’an dalam ruang yang <em>sesuai hidup Anda.</em></h1>
+            <p class="hero-lead">Belajar mandiri, bersama ustadz, didampingi keluarga, atau dikelola melalui lembaga. Sullamul Ḥifẓ menyatukan perjalanan itu tanpa mencampur ruang privat Anda.</p>
             <div class="hero-actions">
-                <a class="public-button primary" href="{{ route('public.programs') }}">Jelajahi program</a>
-                <a class="public-button secondary" href="{{ config('sullam.portal_url') ?: route('login') }}">Masuk aplikasi</a>
+                <a class="public-button primary" href="#solusi">Temukan jalur Anda</a>
+                <a class="public-button secondary" href="{{ route('personal.register') }}">Mulai sebagai Personal</a>
             </div>
-            <div class="hero-trust" aria-label="Prinsip utama">
-                <span>Berpusat pada manusia</span>
-                <span>Bertahap dan terukur</span>
-                <span>Menjaga kesinambungan</span>
-            </div>
+            <div class="hero-trust"><span>Privasi per konteks</span><span>Satu akun, beberapa peran</span><span>Bertahap dan terukur</span></div>
         </div>
-        <div class="hero-visual" aria-label="Empat gerak KUAT">
-            <div class="visual-mark"><img src="/brand/logo-mark.svg" alt=""></div>
-            <div class="visual-orbit orbit-one"></div>
-            <div class="visual-orbit orbit-two"></div>
-            <article class="orbit-card card-k"><strong>K</strong><span>Kenali Diri</span></article>
-            <article class="orbit-card card-u"><strong>U</strong><span>Ukur Kemampuan</span></article>
-            <article class="orbit-card card-a"><strong>A</strong><span>Al-Qur’an Dipahami</span></article>
-            <article class="orbit-card card-t"><strong>T</strong><span>Teguh Menjaga</span></article>
+        <div class="relationship-map" aria-label="Pola hubungan Sullamul Hifz">
+            <div class="map-center"><img src="/brand/logo-mark.svg" alt=""><strong>Sullamul Ḥifẓ</strong><small>Satu akun · ruang terpisah</small></div>
+            <span class="map-node node-personal">Personal</span>
+            <span class="map-node node-teacher">Ustadz</span>
+            <span class="map-node node-family">Orang Tua</span>
+            <span class="map-node node-institution">Lembaga</span>
+            <span class="map-node node-student">Peserta</span>
         </div>
     </div>
 </section>
 
-<section class="public-section problem-section">
-    <div class="public-container split-intro">
-        <div>
-            <span class="public-eyebrow">MENGAPA SULLAMUL ḤIFẒ?</span>
-            <h2>Target tetap diperlukan. Tetapi target harus tunduk kepada kesiapan.</h2>
-        </div>
-        <div class="intro-copy">
-            <p>Hafalan dapat bertambah cepat, tetapi belum tentu hidup dalam jangka panjang. Sullamul Ḥifẓ membantu proses pembinaan agar tidak hanya menghitung jumlah, melainkan juga membaca manusia, mutu bacaan, kemampuan murāja‘ah, pemahaman, dan keberlanjutan.</p>
-            <a class="text-link" href="{{ route('public.about') }}">Pelajari filosofi kami →</a>
-        </div>
-    </div>
-    <div class="public-container value-grid">
-        <article class="value-card"><span class="value-number">01</span><h3>Mulai dari manusia</h3><p>Kondisi, kemampuan, lingkungan, dan riwayat peserta dikenali sebelum beban ditentukan.</p></article>
-        <article class="value-card"><span class="value-number">02</span><h3>Tumbuh bertahap</h3><p>Tantangan diberikan dalam ukuran yang dapat dibawa, bukan diseragamkan tanpa membaca kesiapan.</p></article>
-        <article class="value-card"><span class="value-number">03</span><h3>Hafalan yang hidup</h3><p>Hafalan baru, hafalan lama, pemahaman, dan pengamalan ditempatkan dalam satu perjalanan.</p></article>
-        <article class="value-card"><span class="value-number">04</span><h3>Ada jalan untuk kembali</h3><p>Jeda dan perubahan keadaan tidak dipandang sebagai kegagalan, melainkan fase yang perlu dibimbing.</p></article>
-    </div>
-</section>
-
-<section class="public-section ecosystem-section">
+<section class="public-section" id="solusi">
     <div class="public-container section-heading centered">
-        <span class="public-eyebrow">SATU BRAND, BEBERAPA JALUR</span>
-        <h2>Ekosistem yang tumbuh bersama kebutuhan nyata.</h2>
-        <p>Setiap jalur memiliki fungsi berbeda, tetapi memakai filosofi, identitas, dan arah pembinaan yang sama.</p>
+        <span class="public-eyebrow">SIAPA YANG DAPAT MENGGUNAKANNYA?</span>
+        <h2>Mulai dari kebutuhan Anda hari ini.</h2>
+        <p>Anda tidak dikunci pada satu jalur. Ruang baru dapat ditambahkan ketika perjalanan Anda berkembang.</p>
     </div>
-    <div class="public-container ecosystem-grid">
-        <article class="ecosystem-card featured">
-            <div class="ecosystem-icon">TPA</div>
-            <span class="status-badge active">Sudah berjalan</span>
-            <h3>Sullamul Ḥifẓ TPA</h3>
-            <p>Sistem operasional untuk data santri, kelas, guru, Tahsin, Tahfizh, murāja‘ah, laporan, dan komunikasi wali.</p>
-            <a href="{{ route('public.tpa') }}">Lihat sistem TPA →</a>
-        </article>
-        <article class="ecosystem-card">
-            <div class="ecosystem-icon">PR</div>
-            <span class="status-badge active">Aktif</span>
-            <h3>Sullamul Ḥifẓ Personal</h3>
-            <p>Ruang privat untuk jurnal dan target Qur’an, dengan Latihan Qur’an, Qur’an Journey, Program Asatidz, serta Academy yang muncul sesuai program yang diikuti.</p>
-            <a href="{{ route('personal.register') }}">Buat Ruang Personal →</a>
-        </article>
-        <article class="ecosystem-card">
-            <div class="ecosystem-icon">KU</div>
-            <span class="status-badge">Bertumbuh</span>
-            <h3>Keluarga Qur’ani</h3>
-            <p>Panduan bagi orang tua untuk mendampingi tanpa menjadikan rumah sebagai ruang tekanan kedua.</p>
-            <a href="{{ route('public.programs') }}#keluarga">Lihat arah program →</a>
-        </article>
-        <article class="ecosystem-card">
-            <div class="ecosystem-icon">AC</div>
-            <span class="status-badge upcoming">Segera hadir</span>
-            <h3>Sullamul Ḥifẓ Academy</h3>
-            <p>Kelas digital bagi guru, orang tua, pengelola lembaga, dan pembelajar Al-Qur’an.</p>
-            <a href="{{ route('public.academy') }}">Kenali Academy →</a>
-        </article>
+    <div class="public-container pathway-grid">
+        <a class="pathway-card" href="{{ route('public.solution', 'personal') }}"><span>01</span><h3>Personal</h3><p>Target, jurnal, latihan, dan progres yang tetap privat.</p><strong>Lihat solusi →</strong></a>
+        <a class="pathway-card" href="{{ route('public.solution', 'ustadz') }}"><span>02</span><h3>Bimbingan Ustadz</h3><p>Setoran, koreksi, jadwal, dan evaluasi bimbingan.</p><strong>Lihat solusi →</strong></a>
+        <a class="pathway-card" href="{{ route('public.solution', 'keluarga') }}"><span>03</span><h3>Keluarga</h3><p>Pendampingan orang tua–anak dengan batas yang sehat.</p><strong>Lihat solusi →</strong></a>
+        <a class="pathway-card" href="{{ route('public.solution', 'lembaga') }}"><span>04</span><h3>Lembaga</h3><p>Untuk TPA, SD, SMP, SMA, pesantren, kampus, dan komunitas.</p><strong>Lihat solusi →</strong></a>
     </div>
 </section>
 
-<section class="public-section personal-entry-section">
-    <div class="public-container journey-card">
-        <div>
-            <span class="public-eyebrow">SULLAMUL ḤIFẒ PERSONAL</span>
-            <h2>Bukan aplikasi audio. Ini ruang untuk seluruh perjalanan Qur’an Anda.</h2>
-            <p>Mulai dari jurnal dan target pribadi, lalu gunakan Latihan Qur’an, Qur’an Journey, pendampingan asatidz, Academy, community, atau pembayaran program sesuai akses yang didaftarkan kepada akun Anda.</p>
-            <div class="hero-actions"><a class="public-button primary" href="{{ route('personal.register') }}">Buat Ruang Personal</a><a class="public-button secondary" href="{{ config('sullam.portal_url') ?: route('login') }}">Masuk ke ruang saya</a></div>
-        </div>
-        <div class="journey-list">
-            <span>Jurnal, check-in, target, dan timeline pribadi</span>
-            <span>Latihan Qur’an dengan mushaf dan murattal</span>
-            <span>Qur’an Journey untuk tilawah dan murāja‘ah</span>
-            <span>Setoran dan koreksi bersama asatidz</span>
-            <span>Yang tidak didaftarkan tidak muncul dan tidak dapat dibuka</span>
-        </div>
+<section class="public-section relationship-section">
+    <div class="public-container section-heading">
+        <span class="public-eyebrow">HUBUNGAN YANG DIDUKUNG</span>
+        <h2>Bukan lima aplikasi berbeda.</h2>
+        <p>Satu platform dengan ruang kerja terpisah. Setiap hubungan hanya melihat data yang memang diizinkan.</p>
     </div>
-</section>
-
-<section class="public-section pledge-teaser-section">
-    <div class="public-container pledge-teaser-card">
-        <div>
-            <span class="public-eyebrow">NILAI YANG DIBIASAKAN</span>
-            <h2>Ikrar Santri TPA Al-Insyirah</h2>
-            <p>Tujuh janji sederhana untuk menumbuhkan ketaatan, cinta Al-Qur’an, adab, tanggung jawab, kebersihan, kasih sayang, dan semangat belajar.</p>
-            <a class="public-button primary" href="{{ route('public.pledge') }}">Baca Ikrar Santri</a>
-        </div>
-        <div class="pledge-teaser-numbers" aria-label="Tujuh ikrar santri">
-            @foreach(range(1,7) as $number)<span>{{ $number }}</span>@endforeach
-        </div>
+    <div class="public-container relationship-list">
+        <article><strong>Personal</strong><span>Perjalanan mandiri dan privat</span></article>
+        <article><strong>Personal ↔ Ustadz</strong><span>Bimbingan privat dan setoran</span></article>
+        <article><strong>Lembaga ↔ Ustadz ↔ Peserta</strong><span>Kelas dan operasional pembelajaran</span></article>
+        <article><strong>Lembaga ↔ Ustadz ↔ Orang Tua ↔ Peserta</strong><span>Pembelajaran, laporan, dan komunikasi</span></article>
+        <article><strong>Orang Tua ↔ Anak</strong><span>Pendampingan keluarga mandiri</span></article>
     </div>
 </section>
 
 <section class="public-section kuat-section" id="kuat">
     <div class="public-container kuat-layout">
-        <div class="kuat-intro">
-            <span class="public-eyebrow light">KERANGKA PEMBINAAN</span>
-            <h2>KUAT bukan sekadar slogan.</h2>
-            <p>KUAT adalah urutan pertanyaan agar pembinaan tidak langsung melompat kepada target.</p>
-            <a class="public-button gold" href="{{ route('public.about') }}#kuat">Baca kerangka KUAT</a>
-        </div>
+        <div class="kuat-intro"><span class="public-eyebrow light">KERANGKA KUAT</span><h2>Bukan sekadar hafal, tapi KUAT.</h2><p>Teknologi membantu membaca manusia, kemampuan, makna, dan kesinambungan—bukan menggantikan guru atau hubungan nyata.</p><a class="public-button gold" href="{{ route('public.about') }}#kuat">Pelajari kerangka KUAT</a></div>
         <div class="kuat-grid">
-            <article><strong>K</strong><div><h3>Kenali Diri</h3><p>Kenali manusia, keadaan, kekuatan, dan kebutuhan aktualnya.</p></div></article>
-            <article><strong>U</strong><div><h3>Ukur Kemampuan, Usahakan Bertahap</h3><p>Tentukan beban setelah kesiapan dibaca, lalu tumbuhkan secara proporsional.</p></div></article>
-            <article><strong>A</strong><div><h3>Al-Qur’an Dipahami dan Diamalkan</h3><p>Hafalan diarahkan kembali kepada fungsi Al-Qur’an sebagai petunjuk.</p></div></article>
-            <article><strong>T</strong><div><h3>Teguh Menjaga Perjalanan</h3><p>Bangun sistem yang membantu menjaga, menyesuaikan, dan kembali.</p></div></article>
+            <article><strong>K</strong><div><h3>Kenali Diri</h3><p>Kondisi dan kebutuhan dibaca sebelum target ditentukan.</p></div></article>
+            <article><strong>U</strong><div><h3>Ukur Kemampuan</h3><p>Beban tumbuh bertahap dan dapat disesuaikan.</p></div></article>
+            <article><strong>A</strong><div><h3>Al-Qur’an Dipahami</h3><p>Hafalan kembali kepada fungsi Al-Qur’an sebagai petunjuk.</p></div></article>
+            <article><strong>T</strong><div><h3>Teguh Menjaga</h3><p>Jeda bukan akhir; sistem membantu pengguna kembali.</p></div></article>
         </div>
     </div>
 </section>
 
-<section class="public-section journey-section">
+<section class="public-section implementation-section">
     <div class="public-container journey-card">
-        <div>
-            <span class="public-eyebrow">DARI DUNIA NYATA KE JEJAK DIGITAL</span>
-            <h2>Teknologi tidak menggantikan guru. Teknologi membantu perjalanan tetap terbaca.</h2>
-            <p>Aplikasi Sullamul Ḥifẓ menyimpan catatan yang relevan agar keputusan tidak dibuat dari ingatan yang terputus-putus.</p>
-        </div>
-        <div class="journey-list">
-            <span>Data peserta dan hubungan wali</span>
-            <span>Kelas utama dan kelompok Tahfizh</span>
-            <span>Kehadiran, Tahsin, hafalan, murāja‘ah</span>
-            <span>Buku penghubung dan pengumuman</span>
-            <span>Laporan perkembangan yang dapat ditelusuri</span>
-        </div>
+        <div><span class="public-eyebrow">CONTOH IMPLEMENTASI</span><h2>TPA Al-Insyirah adalah salah satu penerapan, bukan batas produk.</h2><p>Model kelas, pembinaan, laporan, dan komunikasi dari implementasi awal menjadi rujukan yang dapat disesuaikan untuk lembaga lain.</p><div class="hero-actions"><a class="public-button primary" href="{{ route('public.institution.showcase') }}">Lihat implementasi</a><a class="public-button secondary" href="{{ route('institution.register') }}">Daftarkan lembaga</a></div></div>
+        <div class="journey-list"><span>TPA dan rumah tahfiz</span><span>SD, SMP, dan SMA</span><span>Pesantren dan kampus</span><span>Komunitas Al-Qur’an</span></div>
     </div>
 </section>
 
 @if(isset($featuredArticles) && $featuredArticles->isNotEmpty())
-<section class="public-section soft-section">
-    <div class="public-container section-heading centered"><span class="public-eyebrow">ARTIKEL TERBARU</span><h2>Gagasan untuk menjaga perjalanan.</h2></div>
-    <div class="public-container article-grid">
-        @foreach($featuredArticles as $article)
-        <a class="article-card" href="{{ route('public.article', $article) }}"><span>ARTIKEL</span><h2>{{ $article->title }}</h2><p>{{ $article->excerpt }}</p><small>Baca artikel →</small></a>
-        @endforeach
-    </div>
-</section>
+<section class="public-section soft-section"><div class="public-container section-heading centered"><span class="public-eyebrow">ARTIKEL TERBARU</span><h2>Gagasan untuk menjaga perjalanan.</h2></div><div class="public-container article-grid">@foreach($featuredArticles as $article)<a class="article-card" href="{{ route('public.article', $article) }}"><span>ARTIKEL</span><h2>{{ $article->title }}</h2><p>{{ $article->excerpt }}</p><small>Baca artikel →</small></a>@endforeach</div></section>
 @endif
 
-<section class="public-cta">
-    <div class="public-container cta-inner">
-        <div><span class="public-eyebrow light">MULAI DARI YANG SUDAH ADA</span><h2>Kenali ekosistemnya. Gunakan aplikasinya. Jaga perjalanannya.</h2></div>
-        <div class="hero-actions"><a class="public-button gold" href="{{ route('public.programs') }}">Lihat program</a><a class="public-button outline-light" href="{{ config('sullam.portal_url') ?: route('login') }}">Masuk aplikasi</a></div>
-    </div>
-</section>
+<section class="public-cta"><div class="public-container cta-inner"><div><span class="public-eyebrow light">MULAI SEKARANG</span><h2>Pilih ruang pertama. Perjalanan Anda dapat tumbuh dari sana.</h2></div><div class="hero-actions"><a class="public-button gold" href="{{ route('personal.register') }}">Daftar Personal</a><a class="public-button outline-light" href="{{ route('institution.register') }}">Daftar Lembaga</a></div></div></section>
 @endsection

@@ -1,6 +1,9 @@
 <?php
 
+/** @phase 4.3 Identity & Relationship Core; @phase 4.4 Multi-tenant verifier */
+
 use App\Console\Commands\SyncQuranAudio;
+use App\Console\Commands\VerifyIdentityCore;
 use App\Console\Commands\PurgeExpiredMedia;
 use App\Console\Commands\PruneCommunicationDeliveries;
 use App\Console\Commands\SecureLegacyMedia;
@@ -10,7 +13,9 @@ use App\Http\Middleware\EnsurePermission;
 use App\Http\Middleware\EnsureFeatureEnabled;
 use App\Http\Middleware\EnsurePersonalModuleEnrollment;
 use App\Http\Middleware\EnsureRole;
+use App\Http\Middleware\EnsureWorkspaceOperational;
 use App\Http\Middleware\SecurityHeaders;
+use App\Http\Middleware\ResolveWorkspaceContext;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -40,16 +45,17 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withCommands([SyncQuranAudio::class, PurgeExpiredMedia::class, SecureLegacyMedia::class, PruneCommunicationDeliveries::class])
+    ->withCommands([SyncQuranAudio::class, PurgeExpiredMedia::class, SecureLegacyMedia::class, PruneCommunicationDeliveries::class, VerifyIdentityCore::class])
     ->withMiddleware(function (Middleware $middleware) use ($trustedProxies): void {
         $middleware->trustProxies(at: $trustedProxies);
-        $middleware->web(append: [EnforceDomainSeparation::class, SecurityHeaders::class]);
+        $middleware->web(append: [EnforceDomainSeparation::class, SecurityHeaders::class, ResolveWorkspaceContext::class]);
         $middleware->alias([
             'role' => EnsureRole::class,
             'password.changed' => EnsurePasswordChanged::class,
             'permission' => EnsurePermission::class,
             'feature' => EnsureFeatureEnabled::class,
             'personal.module' => EnsurePersonalModuleEnrollment::class,
+            'workspace.operational' => EnsureWorkspaceOperational::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

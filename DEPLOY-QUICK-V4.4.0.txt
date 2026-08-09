@@ -1,0 +1,14 @@
+SULLAMUL HIFZ v4.4.0 — FASE 1–3, SEKALI REDEPLOY
+
+1. Backup MySQL dan volume storage.
+2. Pertahankan APP_KEY serta environment WhatsApp/email v4.1.0.
+3. Upload ISI folder ini ke root repository GitHub.
+4. Push ke branch yang dipantau Coolify.
+5. Tunggu workflow Tests dan Release Documentation Check hijau.
+6. Jalankan satu kali Redeploy di Coolify; jangan isi Post-deployment Command.
+7. Pastikan startup migration selesai tanpa error.
+8. Verifikasi Home, login akun lama, Hubungan Saya, dan Ganti Ruang.
+9. Uji pendaftaran lembaga dan approval superadmin dengan data uji.
+10. Tes kirim WhatsApp/email ke kontak admin sebelum penggunaan luas.
+
+Jika workflow gagal, jangan redeploy. Perbaiki source lalu tunggu seluruh gate hijau.

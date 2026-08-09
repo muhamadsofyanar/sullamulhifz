@@ -1,3 +1,4 @@
+{{-- @phase 4.2 Brand & Universal Home --}}
 @extends('layouts.public')
 @section('title', ($article->seo_title ?: $article->title).' — Sullamul Ḥifẓ')
 @section('description', $article->seo_description ?: ($article->excerpt ?: 'Artikel Sullamul Ḥifẓ.'))
@@ -19,7 +20,7 @@
         <aside class="prose-aside">
             <div class="aside-card soft">
                 <h2>Jelajahi ekosistem</h2>
-                <a class="text-link" href="{{ route('public.programs') }}">Program Sullamul Ḥifẓ →</a><br>
+                <a class="text-link" href="{{ route('public.home') }}#solusi">Solusi Sullamul Ḥifẓ →</a><br>
                 <a class="text-link" href="{{ route('public.registration') }}">Pendaftaran santri →</a>
             </div>
         </aside>

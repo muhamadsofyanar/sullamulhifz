@@ -11,9 +11,9 @@
 
 ## Current package
 
-**v4.1.0 — WhatsApp & Email Completion**
+**v4.4.0 — Universal Product, Identity Core & Multi-tenant Foundation**
 
-Migration v4.1.0 bersifat additive dan menambah template serta audit delivery komunikasi. Integrasi tidak diaktifkan otomatis; kredensial harus berada di Coolify Environment Variables.
+Migration v4.4.0 bersifat additive terhadap v4.1.0. Pusat Komunikasi tetap tersedia; rilis baru menambah membership workspace, relasi berbasis persetujuan, dan fondasi multi-tenant. Kredensial tetap harus berada di Coolify Environment Variables.
 
 ## Protected production baseline
 
@@ -33,9 +33,9 @@ Never expose account lists, passwords, `APP_KEY`, `DB_URL`, or private data keys
 
 ## Current priority
 
-Validasi paket v4.1.0 sebelum membuka kanal kepada seluruh wali:
+Validasi paket v4.4.0 sebelum membuka onboarding kepada seluruh lembaga:
 
-1. backup database dan volume, lalu deploy v4.1.0 satu kali;
+1. backup database dan volume, lalu deploy v4.4.0 satu kali;
 2. attach `academy.sullamulhifz.or.id` to the existing Coolify app and resolve origin SSL;
 3. test PWA on 360–430 px and a 588 px responsive viewport;
 4. test one complete admin → teacher → guardian flow;

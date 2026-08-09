@@ -1,0 +1,12 @@
+{{-- @phase 4.4 Multi-tenant Institution Foundation --}}
+@extends('layouts.public')
+@section('title', 'Daftarkan Lembaga — Sullamul Ḥifẓ')
+@section('content')
+<section class="page-hero"><div class="public-container page-hero-inner"><span class="public-eyebrow">RUANG LEMBAGA</span><h1>Mulai ruang Al-Qur’an untuk lembaga Anda.</h1><p>Untuk TPA, sekolah, pesantren, kampus, atau komunitas. Setelah pendaftaran, ruang akan diperiksa sebelum digunakan penuh.</p></div></section>
+<section class="public-section"><div class="public-container registration-grid"><form class="public-form-card" method="post" action="{{ route('institution.register.store') }}">@csrf
+<h2>Data lembaga dan pengelola</h2>
+@if($errors->any())<div class="public-alert danger"><ul>@foreach($errors->all() as $error)<li>{{ $error }}</li>@endforeach</ul></div>@endif
+<div class="public-form-grid"><label class="span-all">Nama lembaga<input name="institution_name" value="{{ old('institution_name') }}" required></label><label class="span-all">Jenis lembaga<select name="institution_type" required><option value="">Pilih jenis</option>@foreach($institutionTypes as $key=>$type)@continue($key==='personal')<option value="{{ $key }}" @selected(old('institution_type')===$key)>{{ $type['label'] }}</option>@endforeach</select></label><label class="span-all">Nama pengelola utama<input name="admin_name" value="{{ old('admin_name') }}" required></label><label>Email pengelola<input type="email" name="email" value="{{ old('email') }}" required></label><label>WhatsApp pengelola<input name="phone" value="{{ old('phone') }}"></label><label>Kata sandi<input type="password" name="password" required></label><label>Ulangi kata sandi<input type="password" name="password_confirmation" required></label><label class="span-all"><span><input type="checkbox" name="terms" value="1" required> Saya menyetujui syarat, privasi, dan pemeriksaan data lembaga.</span></label></div>
+<button class="public-button primary" type="submit">Buat Ruang Lembaga</button></form>
+<aside class="registration-aside"><img src="/brand/logo-mark.svg" alt=""><h2>Apa yang terjadi setelah daftar?</h2><ol><li>Ruang lembaga dan akun pengelola dibuat.</li><li>Tim platform memeriksa identitas dasar.</li><li>Setelah disetujui, fitur operasional dapat dikonfigurasi.</li></ol><p class="form-privacy">Pendaftaran tidak mempublikasikan data lembaga secara otomatis.</p></aside></div></section>
+@endsection

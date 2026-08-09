@@ -1,4 +1,5 @@
 #!/usr/bin/env sh
+# @phase 4.3 Identity release gate; @phase 4.4 Multi-tenant release gate
 set -eu
 
 cd /var/www/html
@@ -47,6 +48,7 @@ if [ "${AUTO_MIGRATE:-true}" = "true" ]; then
     php artisan db:seed --class=Database\\Seeders\\AcademyExpansionV220Seeder --force
     php artisan db:seed --class=Database\\Seeders\\IntegratedLearningEcosystemV230Seeder --force
     php artisan db:seed --class=Database\\Seeders\\CommunicationV410Seeder --force
+    php artisan sullam:verify-identity-core
     php artisan sullam:prune-communications || echo "PERINGATAN: retensi riwayat komunikasi belum dapat dijalankan."
     php artisan db:seed --class=Database\\Seeders\\FullQuranEngineV240Seeder --force
     php artisan db:seed --class=Database\\Seeders\\TahfizhLearningEngineV250Seeder --force

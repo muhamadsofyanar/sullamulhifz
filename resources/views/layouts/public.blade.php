@@ -1,3 +1,4 @@
+{{-- @phase 4.2 Brand & Universal Home --}}
 <!doctype html>
 <html lang="id">
 <head>
@@ -40,14 +41,12 @@
         </button>
         <nav class="public-nav" id="public-navigation" aria-label="Navigasi website" data-public-nav>
             <a href="{{ route('public.home') }}" class="{{ request()->routeIs('public.home') ? 'active' : '' }}">Beranda</a>
-            <a href="{{ route('public.about') }}" class="{{ request()->routeIs('public.about') ? 'active' : '' }}">Tentang</a>
-            <a href="{{ route('public.programs') }}" class="{{ request()->routeIs('public.programs') ? 'active' : '' }}">Program</a>
-            <a href="{{ route('public.tpa') }}" class="{{ request()->routeIs('public.tpa') ? 'active' : '' }}">TPA</a>
-            <a href="{{ route('public.institution.showcase') }}" class="{{ request()->routeIs('public.institution.*') ? 'active' : '' }}">Implementasi</a>
+            <a href="{{ route('public.home') }}#solusi" class="{{ request()->routeIs('public.solution') ? 'active' : '' }}">Solusi</a>
+            <a href="{{ route('public.features') }}" class="{{ request()->routeIs('public.features') ? 'active' : '' }}">Fitur</a>
             <a href="{{ route('public.academy') }}" class="{{ request()->routeIs('public.academy') ? 'active' : '' }}">Academy</a>
             <a href="{{ route('public.articles') }}" class="{{ request()->routeIs('public.articles') ? 'active' : '' }}">Artikel</a>
-            <a href="{{ route('public.contact') }}" class="{{ request()->routeIs('public.contact') ? 'active' : '' }}">Kontak</a>
-            <a href="{{ route('public.registration') }}" class="{{ request()->routeIs('public.registration*') || request()->routeIs('personal.register*') ? 'active' : '' }}">Daftar</a>
+            <a href="{{ route('public.pricing') }}" class="{{ request()->routeIs('public.pricing') ? 'active' : '' }}">Harga</a>
+            <a href="{{ route('public.about') }}" class="{{ request()->routeIs('public.about') ? 'active' : '' }}">Tentang</a>
             <a class="public-login-button" href="{{ $portalUrl }}">Masuk aplikasi</a>
         </nav>
     </div>
@@ -64,26 +63,26 @@
             <p>Pembinaan berlangsung di dunia nyata. Teknologi membantu menjaga jejak, komunikasi, dan kesinambungannya.</p>
         </div>
         <div>
-            <h2>Ekosistem</h2>
-            <a href="{{ route('public.tpa') }}">Sullamul Ḥifẓ TPA</a>
-            <a href="{{ route('public.institution.showcase') }}">TPA Al-Insyirah</a>
-            <a href="{{ route('public.institution.reference') }}">Referensi lembaga</a>
-            <a href="{{ route('public.pledge') }}">Ikrar Santri</a>
-            <a href="{{ route('public.academy') }}">Sullamul Ḥifẓ Academy</a>
-            <a href="{{ route('personal.register') }}">Sullamul Ḥifẓ Personal</a>
-            <a href="{{ route('public.programs') }}">Keluarga & komunitas</a>
+            <h2>Solusi</h2>
+            <a href="{{ route('public.solution','personal') }}">Personal</a>
+            <a href="{{ route('public.solution','ustadz') }}">Bimbingan Ustadz</a>
+            <a href="{{ route('public.solution','keluarga') }}">Keluarga</a>
+            <a href="{{ route('public.solution','lembaga') }}">Lembaga</a>
+            <a href="{{ route('public.institution.showcase') }}">Contoh TPA Al-Insyirah</a>
         </div>
         <div>
             <h2>Informasi</h2>
             <a href="{{ route('public.about') }}">Tentang kami</a>
             <a href="{{ route('public.articles') }}">Artikel</a>
             <a href="{{ route('public.contact') }}">Kontak</a>
+            <a href="{{ route('public.features') }}">Fitur</a>
+            <a href="{{ route('public.pricing') }}">Harga</a>
             <a href="{{ route('public.privacy') }}">Privasi</a>
             <a href="{{ route('public.terms') }}">Syarat & ketentuan</a>
         </div>
         <div>
             <h2>Aplikasi</h2>
-            <p>Portal untuk pengguna Personal, admin, guru, dan orang tua/wali.</p>
+            <p>Portal untuk Personal, ustadz, peserta, orang tua, dan pengelola lembaga.</p>
             <a class="footer-login" href="{{ $portalUrl }}">Masuk ke portal →</a>
         </div>
     </div>

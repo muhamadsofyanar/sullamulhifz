@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 4.3 Identity & Relationship Core */
+
 use App\Models\LoginHistory;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -41,6 +43,13 @@ class AuthController extends Controller
 
         $request->session()->regenerate();
         $user = $request->user();
+        if (Schema::hasTable('workspace_memberships')) {
+            $workspaceId = $user->workspaceMemberships()->active()->orderByDesc('is_default')->value('institution_id')
+                ?: $user->institution_id;
+            if ($workspaceId) {
+                $request->session()->put('workspace_id', (int) $workspaceId);
+            }
+        }
         $loginPayload = ['last_login_at'=>now(),'last_login_ip'=>$request->ip()];
         if (Schema::hasColumn('users','login_count')) $loginPayload['login_count']=((int)$user->login_count)+1;
         $user->forceFill($loginPayload)->save();

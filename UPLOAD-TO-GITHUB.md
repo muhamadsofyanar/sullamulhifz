@@ -1,11 +1,13 @@
-# Upload Manual ke GitHub — v4.1.0
+# Upload Manual ke GitHub — v4.4.0
+
+`@phase 4.2` · `@phase 4.3` · `@phase 4.4`
 
 Paket ini berisi perubahan runtime, migration additive, UI, dan konfigurasi deployment. Ikuti urutan berikut agar Coolify tidak perlu diredeploy berulang kali.
 
 ## 1. Siapkan repository lokal
 
 1. Backup repository lokal atau pastikan seluruh perubahan lama sudah di-commit.
-2. Ekstrak ZIP v4.1.0.
+2. Ekstrak ZIP v4.4.0.
 3. Salin **isi** folder `sullamulhifz-main` ke root repository—jangan membuat folder proyek bertingkat.
 4. Saat Windows menanyakan konflik, pilih replace untuk file paket ini.
 5. Jangan salin `.env` produksi ke repository.
@@ -24,7 +26,7 @@ Pastikan `APP_KEY`, password database, API key StarSender, token Mailketing, tok
 
 ```bash
 git add -A
-git commit -m "feat: complete WhatsApp and email communication center v4.1.0"
+git commit -m "feat: universal product identity and multi-tenant foundation v4.4.0"
 git push origin main
 ```
 
@@ -39,7 +41,7 @@ Jika workflow merah, perbaiki source terlebih dahulu agar kegagalan tidak berpin
 
 ## 5. Siapkan Environment Variables Coolify
 
-Tambahkan hanya provider yang dipakai sesuai `UPGRADE-V4.1.0.md`. Pertahankan `APP_KEY` lama dan gunakan:
+Pertahankan provider yang sudah dipakai sesuai `UPGRADE-V4.1.0.md`, lalu ikuti pemeriksaan baru pada `UPGRADE-V4.4.0.md`. Pertahankan `APP_KEY` lama dan gunakan:
 
 ```env
 COMMUNICATION_DISPATCH_MODE=sync

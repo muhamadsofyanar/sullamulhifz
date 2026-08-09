@@ -1,5 +1,7 @@
 <?php
 
+/** @phase 4.2 Public Positioning; @phase 4.3 Identity Core; @phase 4.4 Multi-tenant */
+
 use App\Http\Controllers\Admin\AcademicController;
 use App\Http\Controllers\Admin\AcademicCoreController;
 use App\Http\Controllers\Admin\AcademyController as AdminAcademyController;
@@ -46,6 +48,10 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\QuranPracticeController;
 use App\Http\Controllers\QuranJourneyController;
 use App\Http\Controllers\PublicSiteController;
+use App\Http\Controllers\WorkspaceContextController;
+use App\Http\Controllers\InstitutionRegistrationController;
+use App\Http\Controllers\RelationshipController;
+use App\Http\Controllers\Admin\WorkspaceController as AdminWorkspaceController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\AcademyRecommendationController;
 use App\Http\Controllers\Teacher\FamilyTeacherController;
@@ -83,7 +89,7 @@ Route::domain((string) config('sullam.staging_host'))->get('/status', fn () => r
 // mandiri pada academy.sullamulhifz.or.id. Route domain diletakkan sebelum
 // route publik generik agar path '/' Academy tidak tertangkap website utama.
 Route::domain((string) config('sullam.academy_host'))
-    ->middleware(['auth', 'password.changed', 'permission:academy.view', 'feature:academy_portal', 'personal.module:academy'])
+    ->middleware(['auth', 'password.changed', 'workspace.operational', 'permission:academy.view', 'feature:academy_portal', 'personal.module:academy'])
     ->name('academy.portal.')
     ->group(function (): void {
         Route::get('/', [AcademyController::class, 'index'])->name('index');
@@ -121,6 +127,9 @@ Route::domain((string) config('sullam.academy_host'))
     });
 
 Route::get('/', [PublicSiteController::class, 'home'])->name('public.home');
+Route::get('/solusi/{audience}', [PublicSiteController::class, 'solution'])->whereIn('audience', ['personal', 'ustadz', 'keluarga', 'lembaga'])->name('public.solution');
+Route::get('/fitur', [PublicSiteController::class, 'features'])->name('public.features');
+Route::get('/harga', [PublicSiteController::class, 'pricing'])->name('public.pricing');
 Route::get('/tentang', fn () => app(PublicSiteController::class)->page('tentang'))->name('public.about');
 Route::get('/program', fn () => app(PublicSiteController::class)->page('program'))->name('public.programs');
 Route::get('/tpa', fn () => app(PublicSiteController::class)->page('tpa'))->name('public.tpa');
@@ -138,6 +147,8 @@ Route::get('/pendaftaran', [PublicSiteController::class, 'registration'])->name(
 Route::post('/pendaftaran', [PublicSiteController::class, 'storeRegistration'])->middleware('throttle:5,10')->name('public.registration.store');
 Route::get('/daftar-personal', [PersonalRegistrationController::class, 'create'])->middleware('guest')->name('personal.register');
 Route::post('/daftar-personal', [PersonalRegistrationController::class, 'store'])->middleware(['guest','throttle:3,10'])->name('personal.register.store');
+Route::get('/daftar-lembaga', [InstitutionRegistrationController::class, 'create'])->middleware('guest')->name('institution.register');
+Route::post('/daftar-lembaga', [InstitutionRegistrationController::class, 'store'])->middleware(['guest','throttle:3,10'])->name('institution.register.store');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -150,9 +161,14 @@ Route::middleware('guest')->group(function (): void {
     Route::post('/aktivasi/{token}', [AccountInvitationController::class, 'activate'])->middleware('throttle:5,10')->name('activation.store');
 });
 
-Route::middleware(['auth', 'password.changed'])->group(function (): void {
+Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(function (): void {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/dashboard', DashboardController::class)->middleware('permission:dashboard.view')->name('dashboard');
+    Route::post('/ruang-aktif', [WorkspaceContextController::class, 'switch'])->middleware('throttle:10,1')->name('workspace.switch');
+    Route::get('/hubungan', [RelationshipController::class, 'index'])->name('relationships.index');
+    Route::post('/hubungan', [RelationshipController::class, 'store'])->middleware('throttle:6,10')->name('relationships.store');
+    Route::put('/hubungan/{relationship}/tanggapi', [RelationshipController::class, 'respond'])->name('relationships.respond');
+    Route::delete('/hubungan/{relationship}', [RelationshipController::class, 'destroy'])->name('relationships.destroy');
 
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil/kata-sandi', [ProfileController::class, 'updatePassword'])->name('profile.password');
@@ -216,6 +232,10 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
     Route::get('/media/assets/{mediaAsset}', [MediaController::class, 'adminAsset'])->middleware('permission:media.manage')->name('media.asset');
 
     Route::prefix('admin')->name('admin.')->group(function (): void {
+        Route::middleware('role:superadmin')->group(function (): void {
+            Route::get('/workspaces', [AdminWorkspaceController::class, 'index'])->name('workspaces.index');
+            Route::put('/workspaces/{institution}/status', [AdminWorkspaceController::class, 'status'])->name('workspaces.status');
+        });
         Route::middleware('role:superadmin,institution_admin')->group(function (): void {
             Route::resource('students', StudentController::class)->except(['destroy'])->middleware('permission:students.manage');
             Route::post('/students/{student}/guardians', [StudentController::class, 'addGuardian'])->middleware('permission:guardians.manage')->name('students.guardians.store');

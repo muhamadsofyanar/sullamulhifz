@@ -1,3 +1,4 @@
+{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology --}}
 <!doctype html>
 <html lang="id">
 <head>
@@ -22,6 +23,19 @@
     <link rel="stylesheet" href="/css/app-v340.css?v={{ @filemtime(public_path('css/app-v340.css')) ?: '340' }}">
     <link rel="stylesheet" href="/css/app-v400.css?v={{ @filemtime(public_path('css/app-v400.css')) ?: '400' }}">
     <link rel="stylesheet" href="/css/app-v410.css?v={{ @filemtime(public_path('css/app-v410.css')) ?: '410' }}">
+    <link rel="stylesheet" href="/css/app-v440.css?v={{ @filemtime(public_path('css/app-v440.css')) ?: '440' }}">
+    @auth
+    @php
+        $brandWorkspace = $activeWorkspace ?? auth()->user()->institution;
+        $workspacePrimary = preg_match('/^#[0-9a-fA-F]{6}$/', (string) $brandWorkspace?->brand_primary_color)
+            ? strtolower((string) $brandWorkspace->brand_primary_color)
+            : '#004b3f';
+        $workspaceSecondary = preg_match('/^#[0-9a-fA-F]{6}$/', (string) $brandWorkspace?->brand_secondary_color)
+            ? strtolower((string) $brandWorkspace->brand_secondary_color)
+            : '#d3a13a';
+    @endphp
+    <style>:root{--emerald:{{ $workspacePrimary }};--brand-emerald:{{ $workspacePrimary }};--gold:{{ $workspaceSecondary }};--brand-gold:{{ $workspaceSecondary }}}</style>
+    @endauth
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
@@ -32,6 +46,10 @@
         ? app(\App\Services\PersonalModuleAccessService::class)->activeModules(auth()->user())
         : collect();
     $personalAccess = $personalModules->mapWithKeys(fn (array $module): array => [$module['key'] => true])->all();
+    $workspaceForTerms = $activeWorkspace ?? auth()->user()->institution;
+    $termStudent = $workspaceForTerms?->term('student') ?? 'Peserta';
+    $termTeacher = $workspaceForTerms?->term('teacher') ?? 'Pengajar';
+    $termGuardian = $workspaceForTerms?->term('guardian') ?? 'Orang Tua/Wali';
 @endphp
 <div class="app-shell">
     <aside class="sidebar" id="sidebar">
@@ -43,6 +61,7 @@
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>
                 <x-icon name="home"/><span>Beranda</span>
             </a>
+            <a href="{{ route('relationships.index') }}" class="{{ request()->routeIs('relationships.*') ? 'active' : '' }}"><x-icon name="community"/><span>Hubungan Saya</span></a>
             @if(auth()->user()->hasRole('personal'))
                 <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*') ? 'active' : '' }}"><x-icon name="plan"/><span>Program Saya</span></a>
                 <a href="{{ route('personal.journey.index') }}" class="{{ request()->routeIs('personal.journey.*') ? 'active' : '' }}"><x-icon name="continuity"/><span>Perjalanan Saya</span></a>
@@ -69,14 +88,17 @@
                 <a href="{{ route('personal.dashboard') }}#jurnal"><x-icon name="continuity"/><span>Jurnal Perjalanan</span></a>
             @endif
             @if(auth()->user()->hasAnyRole(['superadmin','institution_admin']))
+                @if(auth()->user()->hasRole('superadmin'))
+                <a href="{{ route('admin.workspaces.index') }}" class="{{ request()->routeIs('admin.workspaces.*') ? 'active' : '' }}"><x-icon name="community"/><span>Ruang & Lembaga</span></a>
+                @endif
                 <a href="{{ route('admin.students.index') }}" class="{{ request()->routeIs('admin.students.*') ? 'active' : '' }}" @if(request()->routeIs('admin.students.*')) aria-current="page" @endif>
-                    <x-icon name="student"/><span>Santri</span>
+                    <x-icon name="student"/><span>{{ $termStudent }}</span>
                 </a>
                 <a href="{{ route('admin.teachers.index') }}" class="{{ request()->routeIs('admin.teachers.*') ? 'active' : '' }}" @if(request()->routeIs('admin.teachers.*')) aria-current="page" @endif>
-                    <x-icon name="teacher"/><span>Guru</span>
+                    <x-icon name="teacher"/><span>{{ $termTeacher }}</span>
                 </a>
                 <a href="{{ route('admin.guardians.index') }}" class="{{ request()->routeIs('admin.guardians.*') ? 'active' : '' }}">
-                    <x-icon name="profile"/><span>Wali</span>
+                    <x-icon name="profile"/><span>{{ $termGuardian }}</span>
                 </a>
                 <a href="{{ route('admin.imports.index') }}" class="{{ request()->routeIs('admin.imports.*') ? 'active' : '' }}">
                     <x-icon name="assignment"/><span>Impor Data</span>
@@ -165,7 +187,7 @@
                 </a>
                 @if(\App\Support\Feature::enabled('quran_journey', auth()->user()->institution_id, true))
                 <a href="{{ route('teacher.quran-journey.index') }}" class="{{ request()->routeIs('teacher.quran-journey.*') ? 'active' : '' }}">
-                    <x-icon name="growth"/><span>Qur’an Journey Santri</span>
+                    <x-icon name="growth"/><span>Qur’an Journey {{ $termStudent }}</span>
                 </a>
                 @endif
                 <a href="{{ route('teacher.learning-plan.index') }}" class="{{ request()->routeIs('teacher.learning-plan.*') ? 'active' : '' }}">
@@ -237,7 +259,7 @@
             </a>
             @endif
             <a href="{{ route('feed.pledge') }}" class="{{ request()->routeIs('feed.pledge') ? 'active' : '' }}" @if(request()->routeIs('feed.pledge')) aria-current="page" @endif>
-                <x-icon name="values"/><span>Ikrar Santri</span>
+                <x-icon name="values"/><span>Ikrar {{ $termStudent }}</span>
             </a>
             @endunless
         </nav>
@@ -257,7 +279,10 @@
     <main class="main-content">
         <header class="topbar">
             <button type="button" class="icon-button" data-sidebar-toggle aria-label="Buka menu"><x-icon name="menu" size="25"/></button>
-            <div class="topbar-title"><strong>{{ $pageTitle ?? 'Sullamul Ḥifẓ' }}</strong><small>{{ auth()->user()->hasRole('personal') ? 'Ruang Personal · Privat' : auth()->user()->institution?->name }}</small></div>
+            <div class="topbar-title"><strong>{{ $pageTitle ?? 'Sullamul Ḥifẓ' }}</strong><small>{{ ($activeWorkspace ?? auth()->user()->institution)?->workspace_type === 'personal' ? 'Ruang Personal · Privat' : ($activeWorkspace ?? auth()->user()->institution)?->name }}</small></div>
+            @if(isset($workspaceOptions) && $workspaceOptions->count() > 1)
+            <form class="workspace-switcher" method="post" action="{{ route('workspace.switch') }}">@csrf<label><span class="sr-only">Ruang aktif</span><select name="workspace_id">@foreach($workspaceOptions as $membership)<option value="{{ $membership->institution_id }}" @selected((int)($activeWorkspace?->id) === (int)$membership->institution_id)>{{ $membership->display_label ?: $membership->institution->name }}</option>@endforeach</select></label><button type="submit">Ganti</button></form>
+            @endif
             <button type="button" class="pwa-install-chip" data-pwa-install hidden>Instal</button>
             <a class="avatar" href="{{ route('profile.edit') }}" aria-label="Buka profil {{ auth()->user()->name }}">{{ strtoupper(mb_substr(auth()->user()->name,0,1)) }}</a>
         </header>

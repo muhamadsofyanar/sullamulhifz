@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 4.2 Brand & Universal Home */
+
 use App\Models\AdmissionRegistration;
 use App\Models\Institution;
 use App\Models\PublicArticle;
@@ -52,6 +54,68 @@ class PublicSiteController extends Controller
         }
 
         return view('public.page', compact('page'));
+    }
+
+    public function solution(string $audience): View
+    {
+        $this->ensurePublicFeature('public_website');
+
+        $solutions = [
+            'personal' => [
+                'eyebrow' => 'UNTUK PERSONAL',
+                'title' => 'Ruang privat untuk perjalanan Al-Qur’an Anda sendiri.',
+                'lead' => 'Tetapkan ritme, catat aktivitas, jaga murāja‘ah, dan pilih kapan Anda ingin belajar mandiri atau meminta pendampingan.',
+                'actors' => 'Personal',
+                'features' => ['Target dan jurnal pribadi', 'Latihan Qur’an dan Qur’an Journey', 'Kontrol privasi dan persetujuan', 'Dapat ditingkatkan ke bimbingan ustadz'],
+                'cta' => 'Buat Ruang Personal',
+                'url' => route('personal.register'),
+            ],
+            'ustadz' => [
+                'eyebrow' => 'BIMBINGAN USTADZ',
+                'title' => 'Pendampingan personal–ustadz tanpa harus terikat lembaga.',
+                'lead' => 'Satu ruang kerja untuk target bersama, setoran, koreksi, jadwal, dan evaluasi privat dengan batas akses yang jelas.',
+                'actors' => 'Personal ↔ Ustadz',
+                'features' => ['Program dan target bimbingan', 'Setoran audio, video, atau teks', 'Koreksi per ayat', 'Riwayat tetap milik pembelajar'],
+                'cta' => 'Pelajari alurnya',
+                'url' => route('public.contact'),
+            ],
+            'keluarga' => [
+                'eyebrow' => 'UNTUK KELUARGA',
+                'title' => 'Orang tua mendampingi tanpa menjadikan rumah ruang tekanan kedua.',
+                'lead' => 'Pantau yang memang diizinkan, bantu rutinitas di rumah, dan tetap hormati ruang pribadi serta tahap perkembangan anak.',
+                'actors' => 'Orang Tua ↔ Anak',
+                'features' => ['Beberapa anak dalam satu akun wali', 'Tugas dan rutinitas rumah', 'Laporan perkembangan', 'Persetujuan sesuai usia dan konteks'],
+                'cta' => 'Diskusikan kebutuhan keluarga',
+                'url' => route('public.contact'),
+            ],
+            'lembaga' => [
+                'eyebrow' => 'UNTUK LEMBAGA',
+                'title' => 'Satu fondasi untuk TPA, sekolah, pesantren, kampus, dan komunitas.',
+                'lead' => 'Kelola pembelajaran, pengajar, peserta, keluarga, laporan, serta komunikasi dengan istilah dan struktur yang mengikuti lembaga Anda.',
+                'actors' => 'Lembaga ↔ Pengajar ↔ Peserta ↔ Keluarga',
+                'features' => ['Multi-cabang dan tahun ajaran', 'Kelas, kelompok, jadwal, dan presensi', 'Tahsin, tahfiz, murāja‘ah, dan rapor', 'Branding dan istilah per jenis lembaga'],
+                'cta' => 'Daftarkan Lembaga',
+                'url' => route('institution.register'),
+            ],
+        ];
+
+        abort_unless(isset($solutions[$audience]), 404);
+
+        return view('public.solution', ['solution' => $solutions[$audience], 'audience' => $audience]);
+    }
+
+    public function features(): View
+    {
+        $this->ensurePublicFeature('public_website');
+
+        return view('public.features');
+    }
+
+    public function pricing(): View
+    {
+        $this->ensurePublicFeature('public_website');
+
+        return view('public.pricing');
     }
 
     public function pledge(): View
