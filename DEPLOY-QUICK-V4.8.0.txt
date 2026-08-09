@@ -1,0 +1,15 @@
+SULLAMUL HIFZ v4.8.0 — DEPLOY CEPAT
+
+1. Backup database dan volume storage.
+2. Upload isi folder sullamulhifz-main ke root GitHub.
+3. Commit: Release Sullamul Hifz v4.8.0 — Pendampingan Terhubung.
+4. Tunggu php-tests, docker-build, dan Release Documentation Check hijau.
+5. Redeploy Coolify satu kali.
+6. Pastikan log memakai commit terbaru dan berakhir Rolling update completed.
+7. Jalankan:
+   php artisan migrate:status
+   php artisan sullam:verify-personal-v450
+   php artisan sullam:verify-expansion-v480
+8. Smoke test Ustadz Privat, Suite Lembaga, Portal Keluarga, dan dashboard Guru Sofyan.
+
+JANGAN jalankan migrate:fresh, seeder demo, atau menghapus tabel lama.
