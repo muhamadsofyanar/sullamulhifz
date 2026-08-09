@@ -1,0 +1,12 @@
+@phase 4.4.2 Blade Compilation & Release Docs Hotfix
+
+1. Ekstrak ZIP v4.4.2.
+2. Salin seluruh isi folder sullamulhifz-main ke folder repository hasil clone.
+3. Pilih Replace jika Windows menanyakan file yang sama.
+4. Commit: Hotfix v4.4.2 - Blade dan release docs.
+5. Push origin.
+6. Tunggu php-tests, docker-build, dan release-docs hijau.
+7. Jika semuanya hijau, klik Redeploy di Coolify.
+8. Buka Admin > WhatsApp & Email dan pastikan halaman normal.
+
+Tidak perlu mengubah .env, APP_KEY, atau database.

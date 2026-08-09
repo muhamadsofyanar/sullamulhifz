@@ -1,6 +1,6 @@
 # Current State
 
-## Current candidate: v4.4.0
+## Current candidate: v4.4.2
 
 Fokus pengembangan aktif: **Satu Ruang Qur’an — perubahan nyata dari Home publik, Beranda Personal, timeline lintas program, sampai kendali admin**.
 
@@ -27,5 +27,7 @@ v4.0.0 menggabungkan sepuluh workstream menjadi satu kandidat deploy. Perubahan 
 v4.1.0 menyelesaikan scaffold WhatsApp/email menjadi Pusat Komunikasi operasional. Provider didukung melalui StarSender atau webhook generik untuk WhatsApp, serta SMTP atau Mailketing API untuk email. API key hanya berasal dari environment Coolify. Pengiriman, retry, status, pesan masuk webhook, template, undangan akun, reset kata sandi, dan notifikasi Buku Penghubung dicatat; isi pesan disimpan terenkripsi. Kanal tetap OFF sampai admin mengaktifkannya setelah kredensial tersedia.
 
 v4.4.0 menggabungkan Fase Produk 1–3. Home dan navigasi publik kini menerangkan Personal, Bimbingan Ustadz, Keluarga, serta Lembaga secara setara. Identity Core menambah membership lintas workspace, pemilih konteks, relationship consent, dan invitation ledger tanpa menghapus fallback `users.institution_id`. Multi-tenant Foundation menambah jenis lembaga, istilah adaptif, branding, pendaftaran, status onboarding, dan review superadmin. Seluruh file perubahan dicatat dalam Phase Registry.
+
+v4.4.2 adalah hotfix non-database untuk kompilasi Blade Pusat Komunikasi dan kelengkapan dokumen release gate. Seluruh fungsi v4.4.0 tetap dipertahankan.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.

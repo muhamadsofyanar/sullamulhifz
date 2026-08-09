@@ -1,12 +1,13 @@
 {
-  "release": "v4.4.1",
+  "release": "v4.4.2",
   "base_release": "v4.1.0",
   "tracking_policy": "Every runtime, migration, view, asset, and test introduced or changed by a roadmap phase is listed here and carries an @phase annotation.",
   "phases": {
     "4.2": {"name": "Brand & Universal Home", "status": "completed"},
     "4.3": {"name": "Identity & Relationship Core", "status": "completed"},
     "4.4": {"name": "Multi-tenant Institution Foundation", "status": "completed"},
-    "4.4.1": {"name": "Blade Communication Template Hotfix", "status": "completed"}
+    "4.4.1": {"name": "Blade Communication Template Hotfix", "status": "completed"},
+    "4.4.2": {"name": "Blade Compilation & Release Docs Hotfix", "status": "completed"}
   },
   "files": [
     {"path": "app/Http/Controllers/PublicSiteController.php", "phases": ["4.2"]},
@@ -52,10 +53,10 @@
     {"path": "resources/views/dashboard/onboarding.blade.php", "phases": ["4.4"]},
     {"path": "public/css/app-v440.css", "phases": ["4.3", "4.4"]},
     {"path": "tests/Feature/MultiTenantInstitutionV440Test.php", "phases": ["4.4"]},
-    {"path": "resources/views/admin/communications/index.blade.php", "phases": ["4.4.1"]},
+    {"path": "resources/views/admin/communications/index.blade.php", "phases": ["4.4.1", "4.4.2"]},
     {"path": "tests/Feature/CommunicationCenterV410Test.php", "phases": ["4.4.1"]},
 
     {"path": "routes/web.php", "phases": ["4.2", "4.3", "4.4"]}
-    ,{"path": "Dockerfile", "phases": ["4.4", "4.4.1"]}
+    ,{"path": "Dockerfile", "phases": ["4.4", "4.4.1", "4.4.2"]}
   ]
 }

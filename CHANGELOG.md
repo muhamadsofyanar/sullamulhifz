@@ -1,3 +1,10 @@
+# v4.4.2 — Blade Compilation & Release Docs Hotfix — 2026-08-09
+
+- Memperbaiki kompilasi daftar variabel template komunikasi agar tidak menghasilkan `unexpected token "endforeach"`.
+- Menghindari directive `@foreach` bertingkat dalam satu baris pada template WhatsApp & Email.
+- Melengkapi dokumen rilis wajib yang belum terbawa pada v4.4.1 dan menyelaraskan label versi publik.
+- Tidak menambah migration dan tidak mengubah database, akun, media, kredensial, atau konfigurasi produksi.
+
 # v4.4.0 — Universal Product, Identity Core & Multi-tenant Foundation — 2026-08-09
 
 - Menyelesaikan Fase 1/v4.2.0: Home universal, empat jalur solusi, lima pola hubungan, halaman fitur, dan posisi TPA Al-Insyirah sebagai contoh implementasi.
