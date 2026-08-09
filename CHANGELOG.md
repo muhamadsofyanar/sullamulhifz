@@ -387,3 +387,8 @@ See `docs/releases/v1.9.0.md`.
 - Menambahkan endpoint API preview katalog Academy tanpa data pribadi.
 - Menambahkan landing staging yang hanya aktif jika `STAGING_ENABLED=true`.
 - Menambah verifikasi konten Academy v2.2 pada `sullam:verify-academy`.
+# v4.4.4
+
+- Memperbaiki konfigurasi PHPUnit yang masih menunjuk ke direktori `tests/Unit` yang tidak tersedia.
+- Suite Feature yang ada sekarang dapat dijalankan oleh GitHub Actions.
+- Tidak ada perubahan database, data pengguna, atau konfigurasi produksi.

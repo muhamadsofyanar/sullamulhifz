@@ -1,5 +1,5 @@
 {
-  "release": "v4.4.3",
+  "release": "v4.4.4",
   "base_release": "v4.1.0",
   "tracking_policy": "Every runtime, migration, view, asset, and test introduced or changed by a roadmap phase is listed here and carries an @phase annotation.",
   "phases": {
@@ -8,7 +8,8 @@
     "4.4": {"name": "Multi-tenant Institution Foundation", "status": "completed"},
     "4.4.1": {"name": "Blade Communication Template Hotfix", "status": "completed"},
     "4.4.2": {"name": "Blade Compilation & Release Docs Hotfix", "status": "completed"},
-    "4.4.3": {"name": "Blade Directive Structure Hotfix", "status": "completed"}
+    "4.4.3": {"name": "Blade Directive Structure Hotfix", "status": "completed"},
+    "4.4.4": {"name": "PHPUnit Test Suite Configuration Hotfix", "status": "completed"}
   },
   "files": [
     {"path": "app/Http/Controllers/PublicSiteController.php", "phases": ["4.2"]},
@@ -56,6 +57,7 @@
     {"path": "tests/Feature/MultiTenantInstitutionV440Test.php", "phases": ["4.4"]},
     {"path": "resources/views/admin/communications/index.blade.php", "phases": ["4.4.1", "4.4.2", "4.4.3"]},
     {"path": "tests/Feature/CommunicationCenterV410Test.php", "phases": ["4.4.1"]},
+    {"path": "phpunit.xml", "phases": ["4.4.4"]},
 
     {"path": "routes/web.php", "phases": ["4.2", "4.3", "4.4"]}
     ,{"path": "Dockerfile", "phases": ["4.4", "4.4.1", "4.4.2", "4.4.3"]}
