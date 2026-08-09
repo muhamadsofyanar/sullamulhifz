@@ -1,8 +1,13 @@
 <?php
 
 use App\Models\AcademyProgram;
+use App\Http\Controllers\CommunicationWebhookController;
 use App\Models\Institution;
 use Illuminate\Support\Facades\Route;
+
+Route::post('/v1/webhooks/communications/whatsapp/{connection}', [CommunicationWebhookController::class, 'whatsapp'])
+    ->middleware('throttle:120,1')
+    ->name('api.webhooks.communications.whatsapp');
 
 Route::get('/health', fn () => response()->json([
     'status' => 'ok',

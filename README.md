@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v3.2.0 — Roadmap Completion Foundations**.
+Rilis kandidat: **v4.1.0 — WhatsApp & Email Completion**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajaran Al-Qur’an, operasional lembaga, tugas rumah, komunikasi guru–wali, dan perjalanan perkembangan santri. TPA Al-Insyirah menjadi implementasi pertama, sementara fondasinya disiapkan untuk cabang dan lembaga lain.
 
@@ -21,6 +21,7 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - Insight & Automation: reminder Murāja‘ah terjadwal dan AI Assist yang wajib melewati human review serta audit;
 - Public Personal Mode: masyarakat dapat daftar mandiri, memiliki workspace privat, mengatur ritme, mencatat hafalan/Murāja‘ah/tilawah/refleksi, membuat target, melihat streak dan arahan harian;
 - media terpusat, permission granular, feature flag, aktivasi akun, reset kata sandi, dan audit.
+- Pusat Komunikasi WhatsApp/email: StarSender, webhook generik, SMTP, Mailketing API, template, retry, webhook masuk, audit, dan notifikasi Buku Penghubung tanpa menyalin isi privat.
 
 ## Stack
 
@@ -41,8 +42,8 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 ## Mulai dari sini
 
 1. [`START-HERE.md`](START-HERE.md)
-2. [`UPGRADE-V3.0.0.md`](UPGRADE-V3.0.0.md)
-3. [`DEPLOY-QUICK-V3.0.0.txt`](DEPLOY-QUICK-V3.0.0.txt)
+2. [`UPGRADE-V4.1.0.md`](UPGRADE-V4.1.0.md)
+3. [`DEPLOY-QUICK-V4.1.0.txt`](DEPLOY-QUICK-V4.1.0.txt)
 4. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
 5. [`docs/ROADMAP-10-PHASES-V2.6.0.md`](docs/ROADMAP-10-PHASES-V2.6.0.md)
 6. [`docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md`](docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md)
@@ -54,6 +55,6 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk pencatatan pembelajara
 - untuk database yang sudah berisi, gunakan `BOOTSTRAP_PRODUCTION=false`;
 - jangan commit `.env`, `APP_KEY`, kredensial database, token, atau data pribadi;
 - pertahankan persistent volume `storage/app` saat mengganti image/container;
-- aktifkan SMTP agar reset kata sandi dapat dikirim melalui email.
+- aktifkan SMTP atau Mailketing API dari Pusat Komunikasi agar reset kata sandi dapat dikirim melalui email.
 
-Upgrade v3.1.0 bersifat additive terhadap v3.0.0. Data lembaga dan workspace Personal tetap dipertahankan; setoran program menggunakan relasi eksplisit agar reviewer hanya menerima bukti yang memang dikirim peserta.
+Upgrade v4.1.0 bersifat additive terhadap v4.0.0. Data lembaga, pembelajaran, media, dan workspace Personal tetap dipertahankan; kanal komunikasi baru tetap OFF sampai environment provider tersedia dan tes admin berhasil.

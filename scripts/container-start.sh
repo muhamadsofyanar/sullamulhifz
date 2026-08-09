@@ -46,6 +46,8 @@ if [ "${AUTO_MIGRATE:-true}" = "true" ]; then
     php artisan db:seed --class=Database\\Seeders\\PlatformFoundationV210Seeder --force
     php artisan db:seed --class=Database\\Seeders\\AcademyExpansionV220Seeder --force
     php artisan db:seed --class=Database\\Seeders\\IntegratedLearningEcosystemV230Seeder --force
+    php artisan db:seed --class=Database\\Seeders\\CommunicationV410Seeder --force
+    php artisan sullam:prune-communications || echo "PERINGATAN: retensi riwayat komunikasi belum dapat dijalankan."
     php artisan db:seed --class=Database\\Seeders\\FullQuranEngineV240Seeder --force
     php artisan db:seed --class=Database\\Seeders\\TahfizhLearningEngineV250Seeder --force
     php artisan db:seed --class=Database\\Seeders\\QuranJourneyV260Seeder --force

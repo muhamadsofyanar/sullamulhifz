@@ -1,4 +1,4 @@
-const CACHE = 'sullam-static-v400';
+const CACHE = 'sullam-static-v410';
 const STATIC_ASSETS = new Set([
   '/offline.html',
   '/academy-manifest.webmanifest',
@@ -15,6 +15,7 @@ const STATIC_ASSETS = new Set([
   '/css/app-v330.css',
   '/css/app-v340.css',
   '/css/app-v400.css',
+  '/css/app-v410.css',
   '/css/public.css',
   '/js/app.js',
   '/js/academy-player.js',

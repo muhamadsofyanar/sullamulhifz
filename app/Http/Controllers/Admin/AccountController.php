@@ -7,6 +7,7 @@ use App\Models\AccountInvitation;
 use App\Models\ActivityLog;
 use App\Models\User;
 use App\Notifications\AccountInvitationNotification;
+use App\Services\Communication\CommunicationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -55,16 +56,36 @@ class AccountController extends Controller
 
         $activationUrl = rtrim((string) config('sullam.portal_base_url'), '/').'/aktivasi/'.$plainToken;
 
-        if ($user->email) {
-            $user->notify(new AccountInvitationNotification($activationUrl));
+        $delivery = null;
+        try {
+            $delivery = app(CommunicationService::class)->sendAccountInvitation($user, $activationUrl, $request->user()->id);
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        if (! $delivery && $user->email) {
+            try {
+                $user->notify(new AccountInvitationNotification($activationUrl));
+            } catch (\Throwable $exception) {
+                report($exception);
+            }
+        }
+
+        if ($delivery) {
+            $invitation->update([
+                'delivery_channel' => $delivery->channel,
+                'delivery_address' => $delivery->recipient_address,
+            ]);
         }
 
         $this->log($request, $user, 'account_invitation_created', ['invitation_id' => $invitation->id]);
 
         return back()
-            ->with('success', $user->email
-                ? 'Undangan aktivasi dibuat dan dikirim melalui email. Tautan juga tersedia di bawah.'
-                : 'Undangan aktivasi dibuat. Salin tautan berikut dan kirim secara pribadi kepada pengguna.')
+            ->with('success', $delivery
+                ? 'Undangan aktivasi dibuat dan diproses melalui '.strtoupper($delivery->channel).'. Tautan juga tersedia di bawah.'
+                : ($user->email
+                    ? 'Undangan aktivasi dibuat melalui email bawaan. Pastikan konfigurasi email aktif; tautan juga tersedia di bawah.'
+                    : 'Undangan aktivasi dibuat. Salin tautan berikut dan kirim secara pribadi kepada pengguna.'))
             ->with('activation_url', $activationUrl);
     }
 

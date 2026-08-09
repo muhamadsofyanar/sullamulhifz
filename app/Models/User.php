@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\Communication\CommunicationService;
+use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -93,6 +95,24 @@ class User extends Authenticatable
         $active = $this->activeRolesQuery()->pluck('roles.name');
 
         return collect($priority)->first(fn (string $role): bool => $active->contains($role)) ?? $active->first();
+    }
+
+    public function sendPasswordResetNotification($token): void
+    {
+        $url = rtrim((string) config('sullam.portal_base_url'), '/')
+            .'/atur-ulang-kata-sandi/'.$token
+            .'?email='.rawurlencode((string) $this->getEmailForPasswordReset());
+
+        try {
+            $delivery = app(CommunicationService::class)->sendPasswordReset($this, $url);
+            if ($delivery) {
+                return;
+            }
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
+        $this->notify(new ResetPassword($token));
     }
 
     private function activeRolesQuery()

@@ -2,6 +2,7 @@
 
 use App\Console\Commands\SyncQuranAudio;
 use App\Console\Commands\PurgeExpiredMedia;
+use App\Console\Commands\PruneCommunicationDeliveries;
 use App\Console\Commands\SecureLegacyMedia;
 use App\Http\Middleware\EnforceDomainSeparation;
 use App\Http\Middleware\EnsurePasswordChanged;
@@ -39,7 +40,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withCommands([SyncQuranAudio::class, PurgeExpiredMedia::class, SecureLegacyMedia::class])
+    ->withCommands([SyncQuranAudio::class, PurgeExpiredMedia::class, SecureLegacyMedia::class, PruneCommunicationDeliveries::class])
     ->withMiddleware(function (Middleware $middleware) use ($trustedProxies): void {
         $middleware->trustProxies(at: $trustedProxies);
         $middleware->web(append: [EnforceDomainSeparation::class, SecurityHeaders::class]);

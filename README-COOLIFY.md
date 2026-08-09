@@ -76,7 +76,7 @@ APP_NAME="Sullamul Hifz"
 APP_ENV=production
 APP_KEY=base64:HASIL_KEY_ANDA
 APP_DEBUG=false
-APP_URL=https://taysriulqurani.id
+APP_URL=https://sullamulhifz.or.id
 APP_TIMEZONE=Asia/Jakarta
 APP_LOCALE=id
 APP_FALLBACK_LOCALE=id
@@ -103,6 +103,19 @@ MAIL_MAILER=log
 MAIL_FROM_ADDRESS=noreply@DOMAIN-ANDA
 MAIL_FROM_NAME="Sullamul Hifz"
 
+# Pusat Komunikasi v4.1 — tetap sync pada aplikasi satu-container.
+COMMUNICATION_DISPATCH_MODE=sync
+COMMUNICATION_HTTP_TIMEOUT=15
+COMMUNICATION_DEFAULT_COUNTRY_CODE=62
+COMMUNICATION_WEBHOOK_SECRET=TOKEN_ACAK_PANJANG
+COMMUNICATION_RETENTION_DAYS=365
+
+# Isi hanya provider yang dipakai, lalu pilih drivernya dari halaman admin.
+STARSENDER_API_KEY=
+WHATSAPP_WEBHOOK_ENDPOINT=
+WHATSAPP_WEBHOOK_TOKEN=
+MAILKETING_API_TOKEN=
+
 INITIAL_INSTITUTION_NAME="TPA Al-Insyirah"
 INITIAL_INSTITUTION_CODE=ALINSYIRAH
 INITIAL_ADMIN_NAME="Administrator TPA Al-Insyirah"
@@ -123,7 +136,7 @@ MEDIA_RETENTION_DAYS=180
 Gunakan URL final dengan HTTPS, misalnya:
 
 ```env
-APP_URL=https://taysriulqurani.id
+APP_URL=https://sullamulhifz.or.id
 ```
 
 ## 6. Persistent storage
@@ -285,7 +298,7 @@ Persistent storage belum dipasang atau destination path salah. Gunakan:
 Pastikan:
 
 ```env
-APP_URL=https://taysriulqurani.id
+APP_URL=https://sullamulhifz.or.id
 SESSION_SECURE_COOKIE=true
 ```
 

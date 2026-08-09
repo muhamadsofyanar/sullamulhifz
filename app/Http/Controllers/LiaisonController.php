@@ -10,6 +10,7 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\TeacherAssignment;
 use App\Services\MediaStorageService;
+use App\Services\Communication\CommunicationService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -179,6 +180,15 @@ class LiaisonController extends Controller
             throw $exception;
         }
 
+        try {
+            $latestMessage = $thread->messages()->latest('id')->first();
+            if ($latestMessage) {
+                app(CommunicationService::class)->notifyLiaison($latestMessage);
+            }
+        } catch (\Throwable $exception) {
+            report($exception);
+        }
+
         return redirect()->route('liaison.show', $thread)->with('success', 'Catatan buku penghubung berhasil dikirim.');
     }
 
@@ -239,6 +249,15 @@ class LiaisonController extends Controller
                 $this->media->delete($asset);
             }
             throw $exception;
+        }
+
+        try {
+            $latestMessage = $thread->messages()->latest('id')->first();
+            if ($latestMessage) {
+                app(CommunicationService::class)->notifyLiaison($latestMessage);
+            }
+        } catch (\Throwable $exception) {
+            report($exception);
         }
 
         return back()->with('success', 'Tanggapan berhasil dikirim.');

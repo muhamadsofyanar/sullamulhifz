@@ -18,6 +18,14 @@ Dokumen ini mencatat nama dan fungsi, bukan nilai.
 | `INITIAL_TEACHER_PASSWORD` | Ya | Password awal guru |
 | `INITIAL_GUARDIAN_PASSWORD` | Ya | Password awal wali |
 | `SEED_DEMO_DATA` | Tidak | Data demo; harus `false` di produksi |
+| `COMMUNICATION_DISPATCH_MODE` | Tidak | `sync` tanpa worker; `queue` hanya jika worker tersedia |
+| `COMMUNICATION_WEBHOOK_SECRET` | Ya | Token autentikasi webhook WhatsApp masuk |
+| `STARSENDER_API_KEY` | Ya | Device API key StarSender |
+| `WHATSAPP_WEBHOOK_ENDPOINT` | Terbatas | Endpoint provider WhatsApp generik |
+| `WHATSAPP_WEBHOOK_TOKEN` | Ya | Token provider WhatsApp generik |
+| `MAILKETING_API_TOKEN` | Ya | Token Mailketing API bila driver Mailketing dipilih |
+| `MAIL_HOST`, `MAIL_USERNAME`, `MAIL_PASSWORD` | Ya | Kredensial SMTP bila driver SMTP dipilih |
+| `MAIL_FROM_ADDRESS` | Tidak | Sender terverifikasi untuk email transaksional |
 
 ## Aturan
 

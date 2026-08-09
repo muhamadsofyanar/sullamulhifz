@@ -1,6 +1,6 @@
 # Current State
 
-## Current candidate: v4.0.0
+## Current candidate: v4.1.0
 
 Fokus pengembangan aktif: **Satu Ruang Qur’an — perubahan nyata dari Home publik, Beranda Personal, timeline lintas program, sampai kendali admin**.
 
@@ -23,5 +23,7 @@ v3.3.0 menambahkan tabel enrollment modul Personal dan menjadikan Beranda/naviga
 v3.4.0 menutup gap lifecycle tanpa migration baru. Pendaftar dapat memilih modul awal, Program Saya dapat mengaktifkan atau menonaktifkan modul mandiri, dan status enrollment eksplisit menjadi sumber keputusan utama. Beranda, sidebar, navigasi bawah ponsel, serta akses URL membaca keputusan yang sama. Nonaktivasi tidak menghapus histori. Program yang masih terhubung ke enrollment Guided Quran/Qur’an Journey aktif tidak dapat disembunyikan secara semu, dan Academy tetap bersifat turunan.
 
 v4.0.0 menggabungkan sepuluh workstream menjadi satu kandidat deploy. Perubahan terlihat pada Home publik dan Beranda Personal; check-in serta Perjalanan Saya menyatukan jejak lintas program. Admin memperoleh Kendali Ekosistem untuk assignment akses, ruang community bermoderasi, dan rekonsiliasi transfer BSI. Community dan Payments tetap OFF setelah migration dan baru dapat diakses jika feature flag aktif sekaligus enrollment akun diberikan.
+
+v4.1.0 menyelesaikan scaffold WhatsApp/email menjadi Pusat Komunikasi operasional. Provider didukung melalui StarSender atau webhook generik untuk WhatsApp, serta SMTP atau Mailketing API untuk email. API key hanya berasal dari environment Coolify. Pengiriman, retry, status, pesan masuk webhook, template, undangan akun, reset kata sandi, dan notifikasi Buku Penghubung dicatat; isi pesan disimpan terenkripsi. Kanal tetap OFF sampai admin mengaktifkannya setelah kredensial tersedia.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.

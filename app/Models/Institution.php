@@ -28,6 +28,9 @@ class Institution extends Model
     public function featureFlags(): HasMany { return $this->hasMany(FeatureFlag::class); }
     public function mediaAssets(): HasMany { return $this->hasMany(MediaAsset::class); }
     public function personalProfiles(): HasMany { return $this->hasMany(PersonalProfile::class); }
+    public function integrationConnections(): HasMany { return $this->hasMany(IntegrationConnection::class); }
+    public function communicationDeliveries(): HasMany { return $this->hasMany(CommunicationDelivery::class); }
+    public function communicationTemplates(): HasMany { return $this->hasMany(CommunicationTemplate::class); }
 
     public function setting(string $key, mixed $default = null): mixed
     {

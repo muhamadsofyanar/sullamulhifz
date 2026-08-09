@@ -1,3 +1,14 @@
+# v4.1.0 — WhatsApp & Email Completion — 2026-08-09
+
+- Menyelesaikan scaffold `integration_connections` menjadi Pusat Komunikasi admin yang operasional.
+- Mendukung WhatsApp StarSender, webhook/API generik, email SMTP, Mailketing API, dan driver log untuk simulasi.
+- Menambah template per kanal untuk Buku Penghubung, undangan akun, dan reset kata sandi.
+- Menambah delivery ledger terenkripsi, status, retry, idempotensi, provider message ID, serta audit tanpa memaparkan alamat utuh.
+- Menambah webhook WhatsApp terautentikasi untuk pesan masuk dan delivery status.
+- Menghubungkan Buku Penghubung ke notifikasi eksternal tanpa menyalin isi percakapan privat.
+- Menyimpan seluruh kredensial hanya pada Environment Variables Coolify; database hanya menyimpan konfigurasi non-secret.
+- Menjaga seluruh koneksi OFF setelah migration sampai environment tersedia dan admin mengaktifkannya.
+
 # v4.0.0 — Satu Ruang Qur’an — 2026-08-09
 
 - Menggabungkan sepuluh workstream pengalaman produk dalam satu paket deploy.

@@ -21,6 +21,7 @@
     <link rel="stylesheet" href="/css/app-v330.css?v={{ @filemtime(public_path('css/app-v330.css')) ?: '330' }}">
     <link rel="stylesheet" href="/css/app-v340.css?v={{ @filemtime(public_path('css/app-v340.css')) ?: '340' }}">
     <link rel="stylesheet" href="/css/app-v400.css?v={{ @filemtime(public_path('css/app-v400.css')) ?: '400' }}">
+    <link rel="stylesheet" href="/css/app-v410.css?v={{ @filemtime(public_path('css/app-v410.css')) ?: '410' }}">
     <script defer src="/js/app.js?v={{ @filemtime(public_path('js/app.js')) ?: '201' }}"></script>
     <script defer src="/js/academy-player.js?v={{ @filemtime(public_path('js/academy-player.js')) ?: '204' }}"></script>
 </head>
@@ -92,6 +93,11 @@
                 <a href="{{ route('admin.platform.index') }}" class="{{ request()->routeIs('admin.platform.*') ? 'active' : '' }}">
                     <x-icon name="growth"/><span>Fondasi Platform</span>
                 </a>
+                @if(auth()->user()->hasPermission('integrations.manage') && \App\Support\Feature::enabled('api_integrations', auth()->user()->institution_id, true))
+                <a href="{{ route('admin.communications.index') }}" class="{{ request()->routeIs('admin.communications.*') ? 'active' : '' }}">
+                    <x-icon name="discussion"/><span>WhatsApp & Email</span>
+                </a>
+                @endif
                 <a href="{{ route('admin.ecosystem.index') }}" class="{{ request()->routeIs('admin.ecosystem.*') ? 'active' : '' }}">
                     <x-icon name="continuity"/><span>Kendali Ekosistem</span>
                 </a>

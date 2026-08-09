@@ -1,0 +1,14 @@
+SULLAMUL HIFZ v4.1.0 — DEPLOY SEKALI DI COOLIFY
+
+1. Backup MySQL + volume storage.
+2. Upload isi folder ini ke root repository GitHub (branch main).
+3. Di Coolify, pertahankan APP_KEY dan seluruh environment lama.
+4. Tambahkan environment provider sesuai UPGRADE-V4.1.0.md.
+5. Gunakan COMMUNICATION_DISPATCH_MODE=sync.
+6. Tunggu GitHub Actions `Tests` dan `Release Documentation Check` hijau.
+7. Baru redeploy satu kali. Jangan isi Post-deployment Command.
+8. Tunggu startup migration + CommunicationV410Seeder selesai.
+9. Buka Admin > WhatsApp & Email, aktifkan satu kanal, dan kirim tes ke kontak admin.
+10. Uji webhook, undangan akun, reset password, dan Buku Penghubung sebelum dipakai massal.
+
+Jika provider belum siap, biarkan toggle kanal OFF. Aplikasi utama tetap berjalan normal.

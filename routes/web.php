@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\ReportCardController;
 use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\ContentController as AdminContentController;
+use App\Http\Controllers\Admin\CommunicationController as AdminCommunicationController;
 use App\Http\Controllers\Admin\EcosystemController as AdminEcosystemController;
 use App\Http\Controllers\Admin\StudentController;
 use App\Http\Controllers\Admin\StudentPledgeController;
@@ -242,6 +243,12 @@ Route::middleware(['auth', 'password.changed'])->group(function (): void {
             Route::put('/platform/branches/{branch}', [PlatformController::class, 'updateBranch'])->middleware('permission:features.manage')->name('platform.branches.update');
             Route::post('/platform/periods', [PlatformController::class, 'storePeriod'])->middleware('permission:academic.manage')->name('platform.periods.store');
             Route::put('/platform/features/{featureFlag}', [PlatformController::class, 'updateFeature'])->middleware('permission:features.manage')->name('platform.features.update');
+
+            Route::get('/communications', [AdminCommunicationController::class, 'index'])->middleware(['permission:integrations.manage','feature:api_integrations'])->name('communications.index');
+            Route::put('/communications/connections/{connection}', [AdminCommunicationController::class, 'updateConnection'])->middleware(['permission:integrations.manage','feature:api_integrations'])->name('communications.connections.update');
+            Route::post('/communications/connections/{connection}/test', [AdminCommunicationController::class, 'test'])->middleware(['permission:integrations.manage','feature:api_integrations','throttle:5,1'])->name('communications.connections.test');
+            Route::put('/communications/templates/{template}', [AdminCommunicationController::class, 'updateTemplate'])->middleware(['permission:integrations.manage','feature:api_integrations'])->name('communications.templates.update');
+            Route::post('/communications/deliveries/{delivery}/retry', [AdminCommunicationController::class, 'retry'])->middleware(['permission:integrations.manage','feature:api_integrations','throttle:10,1'])->name('communications.deliveries.retry');
 
             Route::get('/academic-core', [AcademicCoreController::class, 'index'])->middleware('permission:academic.manage')->name('academic-core.index');
             Route::put('/academic-core/years/{year}', [AcademicCoreController::class, 'updateYear'])->middleware('permission:academic.manage')->name('academic-core.year.update');
