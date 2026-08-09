@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-/** @phase 4.3 Identity & Relationship Core; @phase 4.4 Multi-tenant metadata */
+/** @phase 4.3 Identity & Relationship Core; @phase 4.4 Multi-tenant metadata; @phase 4.5 Personal 2.0 */
 
 use App\Models\Institution;
 use App\Models\FeatureFlag;
@@ -12,6 +12,7 @@ use App\Models\Student;
 use App\Models\User;
 use App\Models\WorkspaceMembership;
 use App\Services\PersonalModuleAccessService;
+use App\Support\PersonalIdentity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -29,6 +30,9 @@ class PersonalRegistrationController extends Controller
     {
         return view('auth.register-personal', [
             'programs' => $this->personalModules->registrationCatalog(),
+            'ageGroups' => PersonalIdentity::ageGroups(),
+            'interestOptions' => PersonalIdentity::interests(),
+            'learningModes' => PersonalIdentity::learningModes(),
         ]);
     }
 
@@ -42,12 +46,24 @@ class PersonalRegistrationController extends Controller
             'password' => ['required', 'confirmed', Password::min(12)->letters()->mixedCase()->numbers()],
             'programs' => ['sometimes', 'array', 'max:3'],
             'programs.*' => ['string', 'distinct', Rule::in($this->personalModules->registrationCatalog()->pluck('key')->all())],
+            'age_group' => ['nullable', Rule::in(array_keys(PersonalIdentity::ageGroups()))],
+            'interests' => ['sometimes', 'array', 'max:5'],
+            'interests.*' => ['string', 'distinct', Rule::in(array_keys(PersonalIdentity::interests()))],
+            'aspiration' => ['nullable', 'string', 'max:150'],
+            'learning_mode' => ['nullable', Rule::in(array_keys(PersonalIdentity::learningModes()))],
+            'guardian_acknowledgement' => [
+                Rule::requiredIf(fn (): bool => PersonalIdentity::isMinor($request->input('age_group'))),
+                'nullable',
+                'accepted',
+            ],
             'terms' => ['accepted'],
         ]);
 
         $selectedPrograms = collect($data['programs'] ?? [])->unique()->values();
+        $safeguardingAcknowledgedAt = PersonalIdentity::isMinor($data['age_group'] ?? null)
+            && $request->boolean('guardian_acknowledgement') ? now() : null;
 
-        $user = DB::transaction(function () use ($data, $selectedPrograms): User {
+        $user = DB::transaction(function () use ($data, $selectedPrograms, $safeguardingAcknowledgedAt): User {
             $token = Str::lower(str_replace('-', '', (string) Str::uuid()));
             $institution = Institution::create([
                 'name' => 'Ruang Personal '.Str::limit($data['name'], 70, ''),
@@ -67,7 +83,7 @@ class PersonalRegistrationController extends Controller
                 'institution_id' => $institution->id,
                 'name' => $data['name'],
                 'email' => $data['email'],
-                'phone' => $data['phone'] ?: null,
+                'phone' => $data['phone'] ?? null,
                 'password' => $data['password'],
                 'status' => 'active',
             ]);
@@ -103,6 +119,11 @@ class PersonalRegistrationController extends Controller
                 'user_id' => $user->id,
                 'student_id' => $student->id,
                 'daily_minutes' => 20,
+                'age_group' => $data['age_group'] ?? null,
+                'interests' => array_values($data['interests'] ?? []),
+                'aspiration' => $data['aspiration'] ?? null,
+                'learning_mode' => $data['learning_mode'] ?? 'self',
+                'safeguarding_acknowledged_at' => $safeguardingAcknowledgedAt,
                 'privacy_acknowledged_at' => now(),
             ]);
 

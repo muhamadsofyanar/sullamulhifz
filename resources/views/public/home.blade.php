@@ -1,4 +1,4 @@
-{{-- @phase 4.2 Brand & Universal Home --}}
+{{-- @phase 4.2 Brand & Universal Home; @phase 4.5 Every Person, Every Aspiration --}}
 @extends('layouts.public')
 @section('title', 'Sullamul Ḥifẓ — Satu Ruang untuk Menjaga Perjalanan Al-Qur’an')
 @section('description', 'Belajar mandiri, bersama ustadz, didampingi keluarga, atau dikelola melalui lembaga dalam satu ekosistem Al-Qur’an.')
@@ -22,6 +22,20 @@
             <span class="map-node node-family">Orang Tua</span>
             <span class="map-node node-institution">Lembaga</span>
             <span class="map-node node-student">Peserta</span>
+        </div>
+    </div>
+</section>
+
+<section class="public-section aspiration-section">
+    <div class="public-container aspiration-layout">
+        <div class="aspiration-copy"><span class="public-eyebrow">SETIAP ORANG · SETIAP CITA</span><h2>Anak maupun dewasa dapat tumbuh bersama Al-Qur’an.</h2><p>Dokter, guru, pilot, ahli tanaman, komunikator, teknolog, pengusaha, pelayan masyarakat, dan cita-cita lain tidak dijadikan kelas profesi. Sullamul Ḥifẓ memakai cita-cita sebagai konteks untuk menjaga amanah, ilmu, adab, kepedulian, dan keteguhan.</p><small>Tanpa ranking cita-cita · tanpa profil anak terbuka · tanpa menilai kemampuan dari label kepribadian</small></div>
+        <div class="aspiration-example-grid">
+            <article><strong>Dokter</strong><span>rahmah · amanah · menjaga kehidupan</span></article>
+            <article><strong>Guru</strong><span>ilmu · sabar · keteladanan</span></article>
+            <article><strong>Pilot</strong><span>disiplin · tanggung jawab · ketelitian</span></article>
+            <article><strong>Ahli tanaman</strong><span>merawat bumi · syukur · kebermanfaatan</span></article>
+            <article><strong>Komunikator</strong><span>jujur · santun · menyampaikan kebaikan</span></article>
+            <article><strong>Cita-cita lainnya</strong><span>nilai Qur’ani mengikuti perjalanan nyata</span></article>
         </div>
     </div>
 </section>

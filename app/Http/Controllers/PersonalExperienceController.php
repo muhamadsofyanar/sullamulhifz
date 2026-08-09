@@ -2,12 +2,16 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 4.5 Personal 2.0 — aspiration-aware journey and private portfolio */
+
 use App\Models\PersonalCheckIn;
 use App\Models\PersonalPracticeEntry;
 use App\Models\QuranGuidedSubmission;
 use App\Models\QuranPracticeSession;
 use App\Models\QuranProgramProgress;
+use App\Models\StudentPortfolio;
 use App\Services\PersonalModuleAccessService;
+use App\Support\PersonalIdentity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
@@ -23,6 +27,16 @@ class PersonalExperienceController extends Controller
         $user = $request->user();
         $profile = $user->personalProfile()->firstOrFail();
         $timeline = collect();
+        $portfolioEntries = Schema::hasTable('student_portfolios')
+            ? StudentPortfolio::query()
+                ->where('institution_id', $user->institution_id)
+                ->where('student_id', $profile->student_id)
+                ->where('status', 'published')
+                ->latest('occurred_on')
+                ->latest('id')
+                ->limit(20)
+                ->get()
+            : collect();
 
         if (Schema::hasTable('personal_practice_entries')) {
             $timeline = $timeline->concat(PersonalPracticeEntry::query()
@@ -75,6 +89,14 @@ class PersonalExperienceController extends Controller
                 ]));
         }
 
+        $timeline = $timeline->concat($portfolioEntries->map(fn (StudentPortfolio $entry): array => [
+            'date' => $entry->occurred_on ?: $entry->created_at,
+            'type' => 'Portofolio privat',
+            'title' => $entry->title,
+            'detail' => $entry->description ?: (PersonalIdentity::portfolioCategories()[$entry->category] ?? 'Jejak pertumbuhan'),
+            'status' => 'tercatat',
+        ]));
+
         return view('personal.journey', [
             'profile' => $profile,
             'timeline' => $timeline->filter(fn (array $item): bool => (bool) $item['date'])
@@ -83,7 +105,45 @@ class PersonalExperienceController extends Controller
             'checkIns' => Schema::hasTable('personal_check_ins')
                 ? PersonalCheckIn::query()->where('personal_profile_id', $profile->id)->latest('check_in_on')->limit(14)->get()
                 : collect(),
+            'portfolioEntries' => $portfolioEntries,
+            'portfolioCategories' => PersonalIdentity::portfolioCategories(),
+            'learningModes' => PersonalIdentity::learningModes(),
         ]);
+    }
+
+    public function storePortfolio(Request $request): RedirectResponse
+    {
+        $user = $request->user();
+        $profile = $user->personalProfile()->firstOrFail();
+        abort_unless(Schema::hasTable('student_portfolios'), 503, 'Fondasi portofolio belum tersedia.');
+
+        $data = $request->validate([
+            'category' => ['required', Rule::in(array_keys(PersonalIdentity::portfolioCategories()))],
+            'title' => ['required', 'string', 'max:190'],
+            'description' => ['nullable', 'string', 'max:2000'],
+            'occurred_on' => ['required', 'date', 'before_or_equal:today'],
+            'quranic_value' => ['nullable', 'string', 'max:190'],
+            'aspiration_connection' => ['nullable', 'string', 'max:300'],
+        ]);
+
+        StudentPortfolio::create([
+            'institution_id' => $user->institution_id,
+            'student_id' => $profile->student_id,
+            'created_by_user_id' => $user->id,
+            'category' => $data['category'],
+            'title' => $data['title'],
+            'description' => $data['description'] ?? null,
+            'occurred_on' => $data['occurred_on'],
+            'visibility' => 'private',
+            'status' => 'published',
+            'metadata' => [
+                'source' => 'personal_v450',
+                'quranic_value' => $data['quranic_value'] ?? null,
+                'aspiration_connection' => $data['aspiration_connection'] ?? null,
+            ],
+        ]);
+
+        return back()->with('success', 'Jejak portofolio privat tersimpan tanpa nilai, peringkat, atau perbandingan.');
     }
 
     public function checkIn(Request $request): RedirectResponse

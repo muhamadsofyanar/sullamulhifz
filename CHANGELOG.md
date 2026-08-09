@@ -191,6 +191,15 @@
 
 # Changelog
 
+# v4.5.0 — Personal 2.0: Setiap Orang, Setiap Cita — 2026-08-09
+
+- Menambahkan kelompok usia tanpa tanggal lahir, minat, cita-cita, tujuan Qur’ani, dan empat jalur pendampingan ke profil Personal.
+- Menjadikan cita-cita sebagai konteks nilai Qur’ani pada Beranda dan Perjalanan Saya, bukan kelas profesi atau ranking.
+- Menambahkan portofolio privat untuk karya, pelayanan, keterampilan, proyek, dan refleksi tanpa skor atau perbandingan.
+- Mewajibkan pengakuan pendampingan orang tua/wali untuk pengguna di bawah 18 tahun dan menjaga Community tetap tidak aktif secara otomatis.
+- Mempermanenkan hotfix dashboard Guru/Wali dengan menghindari eager-load relasi profil yang bergantung pada workspace aktif.
+- Menambah verifier produksi `sullam:verify-personal-v450` dan regresi privasi lintas akun.
+
 ## v2.6.0 — Qur’an Journey — 2026-08-08
 - Mengunci Marhalah berdasarkan perjalanan Juz: 30 Āyah, 29 Tsalātsiyyah, 28 Khamsiyyah, 27 Niṣfiyyah, 26 Ṣafḥah, Juz 1–25 Ṣafḥatayn.
 - Menegaskan porsi adalah standar per sesi, bukan kewajiban harian.

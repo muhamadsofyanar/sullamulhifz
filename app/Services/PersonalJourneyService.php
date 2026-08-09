@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+/** @phase 4.5 Personal 2.0 — aspiration-aware guidance without ranking */
+
 use App\Models\PersonalGoal;
 use App\Models\PersonalPracticeEntry;
 use App\Models\PersonalProfile;
@@ -87,6 +89,15 @@ class PersonalJourneyService
         $items = [];
         $minutes = (int) $todayEntries->sum('duration_minutes');
         $remaining = max(0, (int) $profile->daily_minutes - $minutes);
+
+        if ($profile->aspiration || $profile->quranic_purpose) {
+            $aspiration = $profile->aspiration ? " menuju {$profile->aspiration}" : '';
+            $items[] = [
+                'title' => 'Hubungkan langkah dengan nilai Qur’ani',
+                'body' => "Pilih satu nilai yang ingin dijaga hari ini{$aspiration}. Cita-cita memberi konteks, bukan menentukan nilai atau kemampuan Anda.",
+                'type' => 'purpose',
+            ];
+        }
 
         if ($remaining > 0) {
             $items[] = [

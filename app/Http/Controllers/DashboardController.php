@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-/** @phase 4.4 Multi-tenant Institution Foundation */
+/** @phase 4.4 Multi-tenant Institution Foundation; @phase 4.5 workspace profile eager-load hotfix */
 
 use App\Models\Announcement;
 use App\Models\AcademyProgram;
@@ -38,7 +38,11 @@ class DashboardController extends Controller
 
     public function __invoke(Request $request): View|RedirectResponse
     {
-        $user = $request->user()->load('roles', 'teacher', 'guardian.students.currentEnrollment.schoolClass');
+        // Workspace-scoped has-one relations use the active institution stored on the
+        // hydrated User model. Eager loading them would build the relation from a blank
+        // model and cache a false null result. Load only roles here; role profiles are
+        // resolved lazily after the active workspace is known.
+        $user = $request->user()->load('roles');
 
         if ($user->institution && $user->institution->status !== 'active') {
             return view('dashboard.onboarding', ['institution' => $user->institution]);

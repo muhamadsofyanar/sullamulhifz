@@ -799,5 +799,48 @@ Artisan::command('sullam:verify-roadmap-foundations-v320', function (): int {
     return 0;
 })->purpose('Memeriksa fondasi implementasi Fase 8, 9, dan readiness Fase 10');
 
+// @phase 4.5 Personal 2.0 production verification
+Artisan::command('sullam:verify-personal-v450', function (): int {
+    $requiredColumns = ['age_group', 'interests', 'aspiration', 'quranic_purpose', 'learning_mode', 'safeguarding_acknowledged_at'];
+    $missing = collect($requiredColumns)->reject(fn (string $column): bool => Schema::hasColumn('personal_profiles', $column));
+
+    if ($missing->isNotEmpty()) {
+        $this->error('Personal 2.0 belum siap. Kolom hilang: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $invalidModes = DB::table('personal_profiles')
+        ->whereNotNull('learning_mode')
+        ->whereNotIn('learning_mode', ['self', 'with_parent', 'private_teacher', 'institution'])
+        ->count();
+    $minorWithoutSafeguarding = DB::table('personal_profiles')
+        ->whereIn('age_group', ['child', 'teen'])
+        ->whereNull('safeguarding_acknowledged_at')
+        ->count();
+    $nonPrivatePortfolio = Schema::hasTable('student_portfolios')
+        ? DB::table('student_portfolios')
+            ->where('metadata->source', 'personal_v450')
+            ->where('visibility', '!=', 'private')
+            ->count()
+        : 0;
+
+    $this->table(['Komponen', 'Jumlah'], [
+        ['Profil Personal', DB::table('personal_profiles')->count()],
+        ['Profil dengan cita-cita', DB::table('personal_profiles')->whereNotNull('aspiration')->count()],
+        ['Pengguna di bawah 18 tahun', DB::table('personal_profiles')->whereIn('age_group', ['child', 'teen'])->count()],
+        ['Pengguna minor tanpa persetujuan pendamping', $minorWithoutSafeguarding],
+        ['Jalur pendampingan tidak dikenal', $invalidModes],
+        ['Portofolio v4.5.0 tidak privat', $nonPrivatePortfolio],
+    ]);
+
+    if ($minorWithoutSafeguarding > 0 || $invalidModes > 0 || $nonPrivatePortfolio > 0) {
+        $this->error('Guardrail Personal 2.0 belum lulus. Periksa perlindungan anak, jalur pendampingan, dan privasi portofolio.');
+        return 1;
+    }
+
+    $this->info('Personal 2.0 v4.5.0 siap untuk smoke test akun nyata. Tidak ada ranking cita-cita atau portofolio publik.');
+    return 0;
+})->purpose('Memeriksa profil cita-cita, perlindungan anak, jalur pendampingan, dan portofolio privat v4.5.0');
+
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();
 Schedule::command('sullam:send-murajaah-reminders')->dailyAt('05:30')->withoutOverlapping();

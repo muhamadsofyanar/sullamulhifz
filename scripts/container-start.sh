@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# @phase 4.3 Identity release gate; @phase 4.4 Multi-tenant release gate
+# @phase 4.3 Identity release gate; @phase 4.4 Multi-tenant release gate; @phase 4.5 Personal 2.0 gate
 set -eu
 
 cd /var/www/html
@@ -66,6 +66,7 @@ if [ "${AUTO_MIGRATE:-true}" = "true" ]; then
     php artisan sullam:verify-personal-learning || echo "PERINGATAN: Personal Learning System belum sepenuhnya siap."
     php artisan sullam:verify-personal-mode || echo "PERINGATAN: Public Personal Mode belum sepenuhnya siap."
     php artisan sullam:verify-personal-program-hub || echo "PERINGATAN: Personal Program Hub belum sepenuhnya siap."
+    php artisan sullam:verify-personal-v450 || echo "PERINGATAN: guardrail Personal 2.0 belum sepenuhnya siap."
     php artisan sullam:verify-ecosystem || echo "PERINGATAN: verifikasi ekosistem v2.3 belum sepenuhnya lulus."
     php artisan sullam:roadmap-status || echo "PERINGATAN: status roadmap belum dapat dihitung."
     php artisan storage:link || true

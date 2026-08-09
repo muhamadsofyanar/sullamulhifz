@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-/** @phase 4.3 Identity & Relationship Core */
+/** @phase 4.3 Identity & Relationship Core; @phase 4.5 workspace profile relation safeguards */
 
 use App\Services\Communication\CommunicationService;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -80,7 +80,9 @@ class User extends Authenticatable
 
     public function personalProfile(): HasOne
     {
-        return $this->hasOne(PersonalProfile::class)->where('institution_id', $this->institution_id);
+        // personal_profiles.user_id is globally unique, so this relation does not
+        // need a dynamic workspace predicate and remains safe for eager loading.
+        return $this->hasOne(PersonalProfile::class);
     }
     public function personalModuleEnrollments(): HasMany { return $this->hasMany(PersonalModuleEnrollment::class); }
     public function accountInvitations(): HasMany { return $this->hasMany(AccountInvitation::class); }

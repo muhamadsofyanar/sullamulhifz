@@ -1,3 +1,4 @@
+{{-- @phase 4.5 Personal 2.0 — contextual Personal home --}}
 @extends('layouts.app')
 @section('content')
 @php
@@ -13,7 +14,14 @@
         <div>
             <span class="personal-kicker">SATU RUANG QUR’AN · PRIVAT</span>
             <h1>Assalamu‘alaikum, {{ auth()->user()->name }}</h1>
-            <p>Hari ini tidak harus sempurna. Pilih satu langkah yang paling mungkin dijaga, lalu biarkan seluruh program Anda tercatat dalam satu perjalanan.</p>
+            <p>@if($profile->aspiration)Cita-cita Anda menjadi <strong>{{ $profile->aspiration }}</strong>. @endif Hari ini tidak harus sempurna. Pilih satu langkah Qur’ani yang paling mungkin dijaga.</p>
+            @if($profile->aspiration || $profile->quranic_purpose || $profile->learning_mode)
+            <div class="personal-identity-chips">
+                @if($profile->aspiration)<span>Cita-cita · {{ $profile->aspiration }}</span>@endif
+                @if($profile->learning_mode)<span>Jalur · {{ $learningModes[$profile->learning_mode]['label'] ?? 'Personal' }}</span>@endif
+                @if($profile->quranic_purpose)<span>Tujuan Qur’ani · {{ str($profile->quranic_purpose)->limit(80) }}</span>@endif
+            </div>
+            @endif
             <div class="v4-hero-actions">
                 @if($primaryModule)<a class="button primary" href="{{ route($primaryModule['route']) }}">Lanjutkan {{ $primaryModule['title'] }}</a>@else<a class="button primary" href="{{ route('personal.programs.index') }}">Pilih program pertama</a>@endif
                 <a class="button secondary" href="{{ route('personal.journey.index') }}">Lihat Perjalanan Saya</a>
@@ -31,21 +39,40 @@
         <a class="button secondary small" href="{{ route('personal.journey.index') }}">{{ $todayCheckIn ? 'Perbarui refleksi' : 'Check-in sekarang' }}</a>
     </section>
 
-    @if(!$profile->onboarding_completed_at)
-    <section class="card personal-onboarding">
-        <div class="section-head"><div><span class="eyebrow">LANGKAH PERTAMA</span><h2>Atur ritme yang realistis</h2><p class="muted">Ini bukan tes kemampuan. Pilihan ini hanya membantu menyusun fokus dashboard Anda.</p></div></div>
-        <form method="post" action="{{ route('personal.onboarding') }}" class="personal-form-grid">
+    @if(in_array($profile->age_group, ['child','teen'], true))
+    <section class="personal-safeguarding-banner"><strong>Ruang aman untuk pengguna di bawah 18 tahun</strong><span>Profil, jurnal, dan portofolio tetap privat. Orang tua/wali mendampingi penggunaan, dan fitur komunitas tidak otomatis aktif.</span><a href="{{ route('relationships.index') }}">Kelola hubungan pendamping →</a></section>
+    @endif
+
+    <section class="card personal-onboarding" id="arah-saya">
+        <div class="section-head"><div><span class="eyebrow">{{ $profile->onboarding_completed_at ? 'ARAH SAYA' : 'LANGKAH PERTAMA' }}</span><h2>Setiap orang, setiap cita</h2><p class="muted">Profil ini memberi konteks pada perjalanan Qur’an Anda. Ini bukan tes kemampuan, kelas profesi, atau dasar ranking.</p></div></div>
+        @if($profile->onboarding_completed_at)
+        <div class="personal-identity-summary">
+            <article><span>Kelompok usia</span><strong>{{ $ageGroups[$profile->age_group] ?? 'Belum dipilih' }}</strong></article>
+            <article><span>Cita-cita</span><strong>{{ $profile->aspiration ?: 'Masih terbuka' }}</strong></article>
+            <article><span>Jalur belajar</span><strong>{{ $learningModes[$profile->learning_mode]['label'] ?? 'Mandiri' }}</strong></article>
+            <article class="wide"><span>Tujuan Qur’ani</span><strong>{{ $profile->quranic_purpose ?: 'Belum ditulis' }}</strong></article>
+        </div>
+        @endif
+        <details class="personal-disclosure identity-disclosure" @if(!$profile->onboarding_completed_at) open @endif>
+        <summary>{{ $profile->onboarding_completed_at ? 'Perbarui arah perjalanan' : 'Lengkapi arah perjalanan' }}</summary>
+        <form method="post" action="{{ route('personal.onboarding') }}" class="personal-form-grid personal-identity-form">
             @csrf @method('put')
-            <label>Posisi perjalanan saat ini<select name="experience_level" required><option value="">Pilih</option><option value="starting">Baru memulai</option><option value="restarting">Mulai kembali setelah jeda</option><option value="active">Sedang aktif menghafal</option><option value="maintaining">Fokus menjaga hafalan</option></select></label>
-            <label>Fokus utama<select name="primary_focus" required><option value="balanced">Seimbang: hafalan + murāja‘ah</option><option value="memorization">Menambah hafalan</option><option value="murajaah">Menguatkan murāja‘ah</option></select></label>
-            <label>Ritme harian<input type="number" min="5" max="180" name="daily_minutes" value="{{ old('daily_minutes',20) }}" required><small>menit/hari</small></label>
-            <label>Target juz <span class="muted">opsional</span><input type="number" min="1" max="30" name="target_juz" value="{{ old('target_juz') }}" placeholder="1–30"></label>
-            <label>Target surah <span class="muted">opsional</span><select name="target_surah_id"><option value="">Belum ditentukan</option>@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
-            <label>Tanggal target <span class="muted">opsional</span><input type="date" name="target_date" value="{{ old('target_date') }}" min="{{ now()->addDay()->toDateString() }}"></label>
+            <label>Kelompok usia<select name="age_group" required><option value="">Pilih</option>@foreach($ageGroups as $value => $label)<option value="{{ $value }}" @selected(old('age_group', $profile->age_group) === $value)>{{ $label }}</option>@endforeach</select><small>Tidak memerlukan tanggal lahir.</small></label>
+            <label>Cita-cita atau peran<input name="aspiration" value="{{ old('aspiration', $profile->aspiration) }}" maxlength="150" placeholder="Contoh: dokter, guru, pilot, ahli tanaman"></label>
+            <label class="span-all">Tujuan Qur’ani<textarea name="quranic_purpose" rows="3" maxlength="500" required placeholder="Nilai apa yang ingin dijaga melalui Al-Qur’an dalam kehidupan dan cita-cita Anda?">{{ old('quranic_purpose', $profile->quranic_purpose) }}</textarea></label>
+            <label class="span-all">Jalur pendampingan<select name="learning_mode" required>@foreach($learningModes as $value => $mode)<option value="{{ $value }}" @selected(old('learning_mode', $profile->learning_mode ?: 'self') === $value)>{{ $mode['label'] }} — {{ $mode['description'] }}</option>@endforeach</select></label>
+            <fieldset class="span-all personal-interest-field"><legend>Minat yang ingin dikembangkan <span class="muted">maksimal lima</span></legend><div class="personal-interest-choice">@foreach($interestOptions as $value => $label)<label><input type="checkbox" name="interests[]" value="{{ $value }}" @checked(in_array($value, (array) old('interests', $profile->interests ?? []), true))><span>{{ $label }}</span></label>@endforeach</div></fieldset>
+            <label>Posisi perjalanan saat ini<select name="experience_level" required><option value="starting" @selected(old('experience_level',$profile->experience_level) === 'starting')>Baru memulai</option><option value="restarting" @selected(old('experience_level',$profile->experience_level) === 'restarting')>Mulai kembali setelah jeda</option><option value="active" @selected(old('experience_level',$profile->experience_level) === 'active')>Sedang aktif menghafal</option><option value="maintaining" @selected(old('experience_level',$profile->experience_level) === 'maintaining')>Fokus menjaga hafalan</option></select></label>
+            <label>Fokus utama<select name="primary_focus" required><option value="balanced" @selected(old('primary_focus',$profile->primary_focus ?: 'balanced') === 'balanced')>Seimbang: hafalan + murāja‘ah</option><option value="memorization" @selected(old('primary_focus',$profile->primary_focus) === 'memorization')>Menambah hafalan</option><option value="murajaah" @selected(old('primary_focus',$profile->primary_focus) === 'murajaah')>Menguatkan murāja‘ah</option></select></label>
+            <label>Ritme harian<input type="number" min="5" max="180" name="daily_minutes" value="{{ old('daily_minutes',$profile->daily_minutes ?: 20) }}" required><small>menit/hari</small></label>
+            <label>Target juz <span class="muted">opsional</span><input type="number" min="1" max="30" name="target_juz" value="{{ old('target_juz',$profile->target_juz) }}" placeholder="1–30"></label>
+            <label>Target surah <span class="muted">opsional</span><select name="target_surah_id"><option value="">Belum ditentukan</option>@foreach($surahs as $surah)<option value="{{ $surah->id }}" @selected((string) old('target_surah_id',$profile->target_surah_id) === (string) $surah->id)>{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
+            <label>Tanggal target <span class="muted">opsional</span><input type="date" name="target_date" value="{{ old('target_date',$profile->target_date?->toDateString()) }}" min="{{ now()->addDay()->toDateString() }}"></label>
+            <label class="span-all personal-guardian-ack"><input type="checkbox" name="guardian_acknowledgement" value="1" @checked(old('guardian_acknowledgement', (bool) $profile->safeguarding_acknowledged_at))> <span>Untuk pengguna di bawah 18 tahun, orang tua/wali mengetahui dan mendampingi penggunaan ruang ini. Profil tetap privat dan Community tidak otomatis dibuka.</span></label>
             <div class="span-all"><button class="button primary" type="submit">Simpan arah perjalanan</button></div>
         </form>
+        </details>
     </section>
-    @endif
 
     <section class="personal-stat-grid" aria-label="Ringkasan tujuh hari">
         <article><span>Hari ini</span><strong>{{ $today_minutes }}</strong><small>menit · {{ $today_sessions }} sesi</small></article>

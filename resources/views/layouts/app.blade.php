@@ -1,4 +1,4 @@
-{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology --}}
+{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology; @phase 4.5 Personal 2.0 styles --}}
 <!doctype html>
 <html lang="id">
 <head>
@@ -24,6 +24,7 @@
     <link rel="stylesheet" href="/css/app-v400.css?v={{ @filemtime(public_path('css/app-v400.css')) ?: '400' }}">
     <link rel="stylesheet" href="/css/app-v410.css?v={{ @filemtime(public_path('css/app-v410.css')) ?: '410' }}">
     <link rel="stylesheet" href="/css/app-v440.css?v={{ @filemtime(public_path('css/app-v440.css')) ?: '440' }}">
+    <link rel="stylesheet" href="/css/app-v450.css?v={{ @filemtime(public_path('css/app-v450.css')) ?: '450' }}">
     @auth
     @php
         $brandWorkspace = $activeWorkspace ?? auth()->user()->institution;
@@ -65,6 +66,7 @@
             @if(auth()->user()->hasRole('personal'))
                 <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*') ? 'active' : '' }}"><x-icon name="plan"/><span>Program Saya</span></a>
                 <a href="{{ route('personal.journey.index') }}" class="{{ request()->routeIs('personal.journey.*') ? 'active' : '' }}"><x-icon name="continuity"/><span>Perjalanan Saya</span></a>
+                <a href="{{ route('personal.journey.index') }}#portofolio"><x-icon name="achievement"/><span>Portofolio Privat</span></a>
                 @if($personalAccess['quran_practice'] ?? false)
                 <a href="{{ route('quran-practice.index') }}" class="{{ request()->routeIs('quran-practice.*') ? 'active' : '' }}"><x-icon name="listen"/><span>Latihan Qur’an</span></a>
                 @endif

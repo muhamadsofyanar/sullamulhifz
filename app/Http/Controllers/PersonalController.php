@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 4.5 Personal 2.0 — identity, aspiration, and safeguarding */
+
 use App\Models\PersonalGoal;
 use App\Models\PersonalCheckIn;
 use App\Models\PersonalPracticeEntry;
@@ -9,6 +11,7 @@ use App\Models\PersonalProfile;
 use App\Models\QuranSurah;
 use App\Services\PersonalJourneyService;
 use App\Services\PersonalModuleAccessService;
+use App\Support\PersonalIdentity;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -38,6 +41,9 @@ class PersonalController extends Controller
                 ? PersonalCheckIn::query()->where('personal_profile_id', $profile->id)->whereDate('check_in_on', today())->first()
                 : null,
             'unreadNotifications' => $request->user()->unreadNotifications()->count(),
+            'ageGroups' => PersonalIdentity::ageGroups(),
+            'interestOptions' => PersonalIdentity::interests(),
+            'learningModes' => PersonalIdentity::learningModes(),
             ...$snapshot,
         ]);
     }
@@ -45,6 +51,7 @@ class PersonalController extends Controller
     public function onboarding(Request $request): RedirectResponse
     {
         $profile = $this->profile($request);
+        $minorSelected = PersonalIdentity::isMinor($request->input('age_group'));
         $data = $request->validate([
             'experience_level' => ['required', Rule::in(['starting','restarting','active','maintaining'])],
             'primary_focus' => ['required', Rule::in(['memorization','murajaah','balanced'])],
@@ -52,10 +59,21 @@ class PersonalController extends Controller
             'target_juz' => ['nullable', 'integer', 'between:1,30'],
             'target_surah_id' => ['nullable', 'integer', 'exists:quran_surahs,id'],
             'target_date' => ['nullable', 'date', 'after:today'],
+            'age_group' => ['required', Rule::in(array_keys(PersonalIdentity::ageGroups()))],
+            'interests' => ['sometimes', 'array', 'max:5'],
+            'interests.*' => ['string', 'distinct', Rule::in(array_keys(PersonalIdentity::interests()))],
+            'aspiration' => ['nullable', 'string', 'max:150'],
+            'quranic_purpose' => ['required', 'string', 'max:500'],
+            'learning_mode' => ['required', Rule::in(array_keys(PersonalIdentity::learningModes()))],
+            'guardian_acknowledgement' => [Rule::requiredIf($minorSelected), 'nullable', 'accepted'],
         ]);
 
+        unset($data['guardian_acknowledgement']);
+        $data['interests'] = array_values($data['interests'] ?? []);
+        $data['safeguarding_acknowledged_at'] = $minorSelected ? now() : null;
+
         $profile->update([...$data, 'onboarding_completed_at' => now()]);
-        return back()->with('success', 'Arah perjalanan tersimpan. Ritme ini bisa Anda ubah kapan saja.');
+        return back()->with('success', 'Arah, cita-cita, dan ritme perjalanan tersimpan. Semuanya bisa diperbarui kapan saja.');
     }
 
     public function storeActivity(Request $request): RedirectResponse

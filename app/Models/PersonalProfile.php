@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+/** @phase 4.5 Personal 2.0 identity context */
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -11,6 +13,8 @@ class PersonalProfile extends Model
     protected $fillable = [
         'institution_id', 'user_id', 'student_id', 'experience_level', 'primary_focus',
         'daily_minutes', 'target_juz', 'target_surah_id', 'target_date',
+        'age_group', 'interests', 'aspiration', 'quranic_purpose', 'learning_mode',
+        'safeguarding_acknowledged_at',
         'onboarding_completed_at', 'privacy_acknowledged_at',
     ];
 
@@ -18,8 +22,10 @@ class PersonalProfile extends Model
     {
         return [
             'target_date' => 'date',
+            'interests' => 'array',
             'onboarding_completed_at' => 'datetime',
             'privacy_acknowledged_at' => 'datetime',
+            'safeguarding_acknowledged_at' => 'datetime',
         ];
     }
 

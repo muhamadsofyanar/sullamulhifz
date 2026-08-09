@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+/** @phase 4.5 workspace-scoped teacher relation hotfix */
+
 use App\Http\Controllers\Controller;
 use App\Models\AcademyProgram;
 use App\Models\GuidedQuranEnrollment;
@@ -26,7 +28,6 @@ class GuidedQuranProgramController extends Controller
             ->latest()
             ->get();
         $teachers = User::query()
-            ->with('teacher')
             ->where('institution_id', $institutionId)
             ->whereHas('roles', fn ($q) => $q->where('roles.name', 'teacher')->where('user_roles.status', 'active'))
             ->orderBy('name')
@@ -82,7 +83,7 @@ class GuidedQuranProgramController extends Controller
     {
         $this->authorizeProgram($request, $program);
         $data = $request->validate(['reviewer_user_id' => ['required', 'integer', 'exists:users,id']]);
-        $reviewer = User::query()->with('teacher')->findOrFail($data['reviewer_user_id']);
+        $reviewer = User::query()->findOrFail($data['reviewer_user_id']);
         abort_unless((int) $reviewer->institution_id === (int) $program->provider_institution_id && $reviewer->hasRole('teacher') && $reviewer->teacher, 422, 'Reviewer harus asatidz aktif dari lembaga penyelenggara.');
 
         GuidedQuranProgramReviewer::query()->updateOrCreate(

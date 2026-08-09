@@ -184,6 +184,7 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
         Route::put('/target/{goal}/selesai', [PersonalController::class, 'completeGoal'])->middleware('permission:personal.use')->name('goals.complete');
         Route::get('/perjalanan', [PersonalExperienceController::class, 'journey'])->middleware('permission:personal.use')->name('journey.index');
         Route::post('/check-in', [PersonalExperienceController::class, 'checkIn'])->middleware(['permission:personal.use','throttle:10,1'])->name('check-in.store');
+        Route::post('/portofolio', [PersonalExperienceController::class, 'storePortfolio'])->middleware(['permission:personal.use','throttle:10,1'])->name('portfolio.store'); // @phase 4.5
         Route::get('/community', [PersonalCommunityController::class, 'index'])->middleware(['feature:community','personal.module:community'])->name('community.index');
         Route::post('/community', [PersonalCommunityController::class, 'store'])->middleware(['feature:community','personal.module:community','throttle:5,10'])->name('community.store');
         Route::get('/pembayaran', [PersonalPaymentController::class, 'index'])->middleware(['feature:payments','personal.module:payments'])->name('payments.index');

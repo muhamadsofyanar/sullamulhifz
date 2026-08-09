@@ -1,0 +1,11 @@
+@phase 4.5 Personal 2.0
+
+1. Backup database dan storage.
+2. Salin isi folder sullamulhifz-main ke root repository GitHub.
+3. Commit: Release Sullamul Hifz v4.5.0 — Personal 2.0.
+4. Tunggu Tests, docker-build, dan Release Documentation Check hijau.
+5. Redeploy Coolify satu kali.
+6. Jalankan: php artisan sullam:verify-personal-v450
+7. Uji dashboard Guru Sofyan, satu akun Wali, Personal lama, Personal baru, dan privasi portofolio.
+
+Jangan upload .env, jangan migrate:fresh, dan jangan redeploy sebelum Actions hijau.

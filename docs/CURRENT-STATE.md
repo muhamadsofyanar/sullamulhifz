@@ -1,6 +1,6 @@
 # Current State
 
-## Current candidate: v4.4.2
+## Current candidate: v4.5.0
 
 Fokus pengembangan aktif: **Satu Ruang Qur’an — perubahan nyata dari Home publik, Beranda Personal, timeline lintas program, sampai kendali admin**.
 
@@ -29,5 +29,7 @@ v4.1.0 menyelesaikan scaffold WhatsApp/email menjadi Pusat Komunikasi operasiona
 v4.4.0 menggabungkan Fase Produk 1–3. Home dan navigasi publik kini menerangkan Personal, Bimbingan Ustadz, Keluarga, serta Lembaga secara setara. Identity Core menambah membership lintas workspace, pemilih konteks, relationship consent, dan invitation ledger tanpa menghapus fallback `users.institution_id`. Multi-tenant Foundation menambah jenis lembaga, istilah adaptif, branding, pendaftaran, status onboarding, dan review superadmin. Seluruh file perubahan dicatat dalam Phase Registry.
 
 v4.4.2 adalah hotfix non-database untuk kompilasi Blade Pusat Komunikasi dan kelengkapan dokumen release gate. Seluruh fungsi v4.4.0 tetap dipertahankan.
+
+v4.5.0 menjalankan Fase 4 Product Expansion Track: **Personal 2.0 — Setiap Orang, Setiap Cita**. Profil Personal menerima kelompok usia tanpa tanggal lahir, minat, cita-cita, tujuan Qur’ani, dan empat jalur pendampingan. Beranda, rekomendasi, Perjalanan Saya, serta portofolio privat memakai konteks tersebut tanpa mengubahnya menjadi kelas profesi atau ranking. Pengguna di bawah 18 tahun memerlukan pengakuan pendampingan orang tua/wali; profil, jurnal, dan portofolio tetap privat, sedangkan Community tidak otomatis aktif. Kandidat ini juga mempermanenkan perbaikan relasi profil Guru/Wali pada dashboard multi-workspace.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.
