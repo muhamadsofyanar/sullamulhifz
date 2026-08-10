@@ -1,6 +1,6 @@
 <?php
 
-/** @phase 4.3 Identity & Relationship Core; @phase 4.4 Multi-tenant verifier */
+/** @phase 4.3 Identity & Relationship Core; @phase 4.4 Multi-tenant verifier; @phase 6.0 API middleware hardening */
 
 use App\Console\Commands\SyncQuranAudio;
 use App\Console\Commands\VerifyIdentityCore;
@@ -51,6 +51,10 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->web(
             prepend: [EnforceDomainSeparation::class],
             append: [SecurityHeaders::class, ResolveWorkspaceContext::class],
+        );
+        $middleware->api(
+            prepend: [EnforceDomainSeparation::class],
+            append: [SecurityHeaders::class],
         );
         $middleware->alias([
             'role' => EnsureRole::class,

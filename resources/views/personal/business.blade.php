@@ -1,4 +1,4 @@
-{{-- @phase 5.0 Business, Payment & Integrations --}}
+{{-- @phase 5.0 Business, Payment & Integrations; @phase 6.0 Legacy billing archive --}}
 @extends('layouts.app',['pageTitle'=>'Paket & Layanan'])
 @section('content')
 @php
@@ -13,15 +13,15 @@
     <section class="v530-hero">
         <div>
             <span class="personal-kicker">FASE 9 · BUSINESS & PAYMENT</span>
-            <h1>Paket dan layanan dalam satu tempat</h1>
-            <p>Pilih layanan sesuai kebutuhan. Tagihan transfer memakai rekening resmi yang sama dan aktivasi berbayar baru berlaku setelah pembayaran diverifikasi.</p>
+            <h1>Riwayat paket sebelum aplikasi gratis</h1>
+            <p>Mulai v6.0, seluruh fungsi inti tersedia gratis. Halaman ini dipertahankan agar invoice dan subscription lama tidak hilang.</p>
         </div>
         <span class="v530-badge">v5.0</span>
     </section>
 
     @if($subscriptions->isNotEmpty())
     <section class="card">
-        <span class="eyebrow">AKTIF SEKARANG</span>
+        <span class="eyebrow">STATUS HISTORIS</span>
         <div class="v530-grid v530-grid-3">
             @foreach($subscriptions as $subscription)
             <article class="v530-card">
@@ -33,6 +33,7 @@
     </section>
     @endif
 
+    @if(config('sullam.subscriptions_enabled'))
     <section class="v530-grid v530-grid-2">
         @foreach($plans as $plan)
         <article class="card v530-plan">
@@ -53,6 +54,9 @@
         </article>
         @endforeach
     </section>
+    @else
+    <section class="card phase-highlight"><h2>Tidak perlu mengaktifkan paket.</h2><p>Akses inti telah dibuka gratis untuk semua pengguna. Jika ingin mendukung keberlanjutan, gunakan infak sukarela tanpa memengaruhi hak akses.</p><a class="button primary" href="{{ route('infaq.index') }}">Buka halaman Infak</a></section>
+    @endif
 
     <section class="v530-grid v530-grid-2">
         <article class="card">
@@ -63,14 +67,14 @@
             <div class="personal-guardrail">Sullamul Hifz tidak pernah meminta OTP, PIN, atau kata sandi perbankan.</div>
         </article>
         <article class="card">
-            <span class="eyebrow">HAK LAYANAN PAKET</span>
-            <h2>Entitlement yang tercatat</h2>
+            <span class="eyebrow">FUNGSI YANG TERSEDIA</span>
+            <h2>Akses inti tanpa langganan</h2>
             @if($entitlements === [])
                 <p class="muted">Belum ada entitlement berbayar. Modul gratis dan akses yang diberikan lembaga tetap mengikuti hak akun Anda.</p>
             @else
                 <div class="v530-chips">@foreach($entitlements as $item)<span>{{ str($item)->replace('_',' ')->headline() }}</span>@endforeach</div>
             @endif
-        <div class="personal-guardrail">Entitlement paket tidak melewati permission, enrollment, consent Ustadz/Keluarga, atau aturan workspace yang sudah berlaku.</div>
+        <div class="personal-guardrail">Akses gratis tetap mengikuti permission, enrollment program, consent Ustadz/Keluarga, dan aturan workspace—bukan pembayaran atau infak.</div>
         </article>
     </section>
 

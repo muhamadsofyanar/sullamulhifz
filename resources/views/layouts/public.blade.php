@@ -1,4 +1,4 @@
-{{-- @phase 4.2 Brand & Universal Home; @phase 4.5 Every Person, Every Aspiration --}}
+{{-- @phase 4.2 Brand & Universal Home; @phase 4.5 Every Person, Every Aspiration; @phase 6.0 Free & Voluntary Infaq --}}
 <!doctype html>
 <html lang="id">
 <head>
@@ -46,7 +46,7 @@
             <a href="{{ route('public.features') }}" class="{{ request()->routeIs('public.features') ? 'active' : '' }}">Fitur</a>
             <a href="{{ route('public.academy') }}" class="{{ request()->routeIs('public.academy') ? 'active' : '' }}">Academy</a>
             <a href="{{ route('public.articles') }}" class="{{ request()->routeIs('public.articles') ? 'active' : '' }}">Artikel</a>
-            <a href="{{ route('public.pricing') }}" class="{{ request()->routeIs('public.pricing') ? 'active' : '' }}">Harga</a>
+            <a href="{{ route('public.pricing') }}" class="{{ request()->routeIs('public.pricing') ? 'active' : '' }}">Gratis & Infak</a>
             <a href="{{ route('public.about') }}" class="{{ request()->routeIs('public.about') ? 'active' : '' }}">Tentang</a>
             <a class="public-login-button" href="{{ $portalUrl }}">Masuk aplikasi</a>
         </nav>
@@ -77,7 +77,7 @@
             <a href="{{ route('public.articles') }}">Artikel</a>
             <a href="{{ route('public.contact') }}">Kontak</a>
             <a href="{{ route('public.features') }}">Fitur</a>
-            <a href="{{ route('public.pricing') }}">Harga</a>
+            <a href="{{ route('public.pricing') }}">Gratis & Infak</a>
             <a href="{{ route('public.privacy') }}">Privasi</a>
             <a href="{{ route('public.terms') }}">Syarat & ketentuan</a>
         </div>

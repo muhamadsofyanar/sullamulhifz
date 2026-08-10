@@ -1,5 +1,7 @@
 <?php
 
+/** @phase 6.0 Free core access and voluntary infaq configuration */
+
 $csv = static fn (?string $value): array => array_values(array_filter(array_map(
     static fn (string $item): string => strtolower(trim($item)),
     explode(',', (string) $value),
@@ -32,6 +34,16 @@ return [
             'bank_name' => env('PAYMENT_BANK_NAME', 'BSI (Bank Syariah Indonesia)'),
             'account_name' => env('PAYMENT_BANK_ACCOUNT_NAME', 'YYS INSAN QURAN MADANI'),
             'account_number' => env('PAYMENT_BANK_ACCOUNT_NUMBER', '7350451147'),
+        ],
+    ],
+    'subscriptions_enabled' => filter_var(env('SUBSCRIPTIONS_ENABLED', false), FILTER_VALIDATE_BOOL),
+    'infaq' => [
+        'purposes' => [
+            'teacher_development' => 'Pembinaan dan honor ustadz',
+            'scholarship' => 'Beasiswa anak dan keluarga',
+            'foundation_operations' => 'Program dan operasional yayasan',
+            'technology' => 'Server dan pengembangan teknologi',
+            'general' => 'Infak umum sesuai laporan yayasan',
         ],
     ],
     // Mushaf Line Engine: KFGQPC V2 (1421H), 604-page Madani layout.

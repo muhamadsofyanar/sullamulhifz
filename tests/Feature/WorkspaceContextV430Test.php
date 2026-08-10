@@ -2,9 +2,10 @@
 
 namespace Tests\Feature;
 
-/** @phase 4.3 Identity & Relationship Core; @phase 4.8 specialized relationship safety */
+/** @phase 4.3 Identity & Relationship Core; @phase 4.8 specialized relationship safety; @phase 6.0 workspace status isolation */
 
 use App\Models\Institution;
+use App\Models\Guardian;
 use App\Models\Role;
 use App\Models\Teacher;
 use App\Models\User;
@@ -114,5 +115,59 @@ class WorkspaceContextV430Test extends TestCase
         $user->unsetRelation('teacher');
 
         $this->assertSame('Profil Ruang Kedua', $user->teacher?->full_name);
+    }
+
+    public function test_disabling_guardian_in_one_workspace_does_not_disable_the_global_account(): void
+    {
+        $admin = User::query()->whereHas('roles', fn ($query) => $query->where('roles.name', 'institution_admin'))->firstOrFail();
+        $admin->update(['must_change_password' => false]);
+        $first = $admin->institution;
+        $second = Institution::create([
+            'name' => 'Ruang Wali Kedua', 'code' => 'GUARDIAN-SECOND', 'slug' => 'guardian-second',
+            'workspace_type' => 'institution', 'institution_type' => 'tpa',
+            'privacy_mode' => 'institution', 'onboarding_status' => 'completed',
+            'status' => 'active', 'timezone' => 'Asia/Jakarta',
+        ]);
+        $guardianRole = Role::where('name', 'guardian')->firstOrFail();
+        $guardianUser = User::create([
+            'institution_id' => $first->id, 'name' => 'Wali Dua Ruang',
+            'email' => 'wali-dua-ruang@example.test', 'password' => 'RahasiaAman123',
+            'status' => 'active', 'must_change_password' => false,
+        ]);
+        $guardian = Guardian::create([
+            'institution_id' => $first->id, 'user_id' => $guardianUser->id,
+            'full_name' => 'Wali Dua Ruang', 'email' => $guardianUser->email, 'status' => 'active',
+        ]);
+        foreach ([$first, $second] as $index => $institution) {
+            $guardianUser->roles()->attach($guardianRole->id, [
+                'institution_id' => $institution->id, 'status' => 'active',
+            ]);
+            WorkspaceMembership::create([
+                'institution_id' => $institution->id, 'user_id' => $guardianUser->id,
+                'role_id' => $guardianRole->id, 'membership_type' => 'member',
+                'status' => 'active', 'is_default' => $index === 0, 'joined_at' => now(),
+            ]);
+        }
+
+        $this->actingAs($admin)->put(route('admin.guardians.update', $guardian), [
+            'full_name' => 'Wali Dua Ruang',
+            'email' => 'wali-dua-ruang@example.test',
+            'phone' => null,
+            'occupation' => null,
+            'address' => null,
+            'status' => 'inactive',
+        ])->assertRedirect();
+
+        $this->assertSame('active', $guardianUser->fresh()->status);
+        $this->assertDatabaseHas('workspace_memberships', [
+            'institution_id' => $first->id, 'user_id' => $guardianUser->id, 'status' => 'inactive',
+        ]);
+        $this->assertDatabaseHas('workspace_memberships', [
+            'institution_id' => $second->id, 'user_id' => $guardianUser->id, 'status' => 'active',
+        ]);
+        $this->assertDatabaseHas('user_roles', [
+            'institution_id' => $second->id, 'user_id' => $guardianUser->id,
+            'role_id' => $guardianRole->id, 'status' => 'active',
+        ]);
     }
 }

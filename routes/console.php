@@ -1007,7 +1007,11 @@ Artisan::command('sullam:verify-business-v500', function (): int {
         return 1;
     }
 
-    $this->info('Business, Payment & Integrations v5.0 siap untuk smoke test transaksi nyata. Pembayaran berbayar tetap memerlukan verifikasi admin sebelum entitlement aktif.');
+    if (config('sullam.subscriptions_enabled', false)) {
+        $this->info('Business, Payment & Integrations v5.0 siap untuk smoke test transaksi nyata. Pembayaran berbayar tetap memerlukan verifikasi admin sebelum entitlement aktif.');
+    } else {
+        $this->info('Struktur bisnis v5.0 tetap utuh sebagai histori. Subscription baru ditutup karena fungsi inti berjalan gratis pada v6.0.');
+    }
     return 0;
 })->purpose('Memeriksa Fase 9 Business, Payment & Integrations v5.0');
 
@@ -1146,3 +1150,80 @@ Artisan::command('sullam:verify-release-v530', function (): int {
     $this->info('Release v5.3.0 lulus verifier aplikasi. Lanjutkan smoke test akun nyata dan bukti operator Fase 10.');
     return 0;
 })->purpose('Menjalankan seluruh verifier release v5.3.0 dalam satu command');
+
+// @phase 6.0 Free, Infaq & Distraction-Free Tahfizh production verification
+Artisan::command('sullam:verify-v600', function (): int {
+    $requiredTables = [
+        'student_memorization_focuses',
+        'student_memorization_assessments',
+        'infaq_transactions',
+    ];
+    $missingTables = array_values(array_filter(
+        $requiredTables,
+        fn (string $table): bool => ! Schema::hasTable($table),
+    ));
+    $missingColumns = [];
+    foreach (['memorization_records', 'murajaah_records'] as $table) {
+        foreach (['daily_decision', 'short_note', 'submission_key'] as $column) {
+            if (! Schema::hasColumn($table, $column)) {
+                $missingColumns[] = $table.'.'.$column;
+            }
+        }
+    }
+    $duplicateActiveFocus = Schema::hasTable('student_memorization_focuses')
+        ? DB::table('student_memorization_focuses')
+            ->select(['institution_id', 'student_id'])
+            ->where('status', 'active')
+            ->groupBy('institution_id', 'student_id')
+            ->havingRaw('COUNT(*) > 1')
+            ->get()->count()
+        : 0;
+    $requiredRoutes = [
+        'teacher.tahfizh.quick-memorization.store',
+        'teacher.tahfizh.quick-murajaah.store',
+        'teacher.tahfizh.focus.update',
+        'teacher.tahfizh.assessments.store',
+        'infaq.index',
+        'admin.infaq.index',
+    ];
+    $missingRoutes = array_values(array_filter(
+        $requiredRoutes,
+        fn (string $route): bool => ! Route::has($route),
+    ));
+    $legacyRoutesReady = Route::has('teacher.tahfizh.memorization.store')
+        && Route::has('teacher.tahfizh.murajaah.store');
+    $freeMode = ! config('sullam.subscriptions_enabled', false);
+
+    $this->table(['Komponen', 'Status/Jumlah'], [
+        ['Tabel v6 hilang', count($missingTables)],
+        ['Kolom v6 hilang', count($missingColumns)],
+        ['Rute v6 hilang', count($missingRoutes)],
+        ['Form rinci lama', $legacyRoutesReady ? 'dipertahankan' : 'hilang'],
+        ['Fokus aktif ganda', $duplicateActiveFocus],
+        ['Mode fungsi inti gratis', $freeMode ? 'aktif' : 'belum aktif'],
+    ]);
+
+    if ($missingTables !== [] || $missingColumns !== [] || $missingRoutes !== [] || ! $legacyRoutesReady || $duplicateActiveFocus || ! $freeMode) {
+        $this->error('v6.0 belum lulus verifier. Periksa migration, route, fokus aktif, dan SUBSCRIPTIONS_ENABLED=false.');
+        return 1;
+    }
+
+    $this->info('v6.0 siap smoke test: fungsi inti gratis, infak sukarela, alur setoran cepat, dan form rinci lama tetap tersedia.');
+    return 0;
+})->purpose('Memeriksa Free, Infaq & Distraction-Free Tahfizh v6.0');
+
+Artisan::command('sullam:verify-release-v600', function (): int {
+    foreach (['sullam:verify-release-v530', 'sullam:verify-v600'] as $command) {
+        $this->newLine();
+        $this->line('>>> '.$command);
+        $exitCode = $this->call($command);
+        if ($exitCode !== 0) {
+            $this->error('Release v6.0.0 berhenti pada verifier: '.$command);
+            return $exitCode;
+        }
+    }
+
+    $this->newLine();
+    $this->info('Release v6.0.0 lulus verifier aplikasi. Lanjutkan smoke test setoran, ringkasan keluarga, dan infak dengan akun nyata.');
+    return 0;
+})->purpose('Menjalankan seluruh verifier release v6.0.0');

@@ -2,7 +2,7 @@
 
 namespace Tests\Feature;
 
-/** @phase 5.0 Business, Payment & Integrations */
+/** @phase 5.0 Business, Payment & Integrations; @phase 6.0 legacy subscription compatibility */
 
 use App\Models\BillingPlan;
 use App\Models\BillingSubscription;
@@ -24,6 +24,7 @@ class BusinessPaymentV500Test extends TestCase
         parent::setUp();
         putenv('INITIAL_ADMIN_PASSWORD=TestAdmin2026Secure');
         putenv('SEED_INITIAL_TPA_DATA=false');
+        config()->set('sullam.subscriptions_enabled', true);
         $this->seed(ProductionSeeder::class);
     }
 

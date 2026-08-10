@@ -1,3 +1,4 @@
+{{-- @phase 6.0 Distraction-free meeting submissions --}}
 @extends('layouts.app',['pageTitle'=>'Pertemuan'])
 @section('content')
 @php
@@ -7,6 +8,28 @@ $statusLabels=['draft'=>'Draf','ongoing'=>'Berlangsung','completed'=>'Selesai','
 <div class="page-head"><div><span class="eyebrow">{{ $statusLabels[$meeting->status] ?? strtoupper($meeting->status) }}</span><h1>{{ $targetEntity?->name }}</h1><p>{{ $meeting->meeting_date->format('d M Y') }} · {{ $meeting->topic ?: 'Materi belum ditulis' }}</p></div><div class="actions"><a class="button secondary" href="{{ route('teacher.meetings.attendance',$meeting) }}">Isi/Edit Absensi</a>@if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))<a class="button ghost" href="{{ route('quran-practice.index') }}">Latihan Al-Qur’an</a>@endif</div></div>
 <div class="stats-grid four"><div class="stat-card"><span>Absensi</span><strong>{{ $meeting->attendanceRecords->count() }}/{{ $students->count() }}</strong></div><div class="stat-card"><span>Catatan Tahsīn</span><strong>{{ $meeting->tahsinRecords->count() }}</strong></div><div class="stat-card"><span>Setoran</span><strong>{{ $meeting->memorizationRecords->count() }}</strong></div><div class="stat-card"><span>Murāja‘ah</span><strong>{{ $meeting->murajaahRecords->count() }}</strong></div></div>
 <section class="card"><div class="section-head"><div><h2>Target aktif</h2><p class="hint">Pilih target saat mencatat setoran agar riwayat dan status target selalu terhubung.</p></div><a class="button small secondary" href="{{ route('teacher.learning-plan.index') }}">Kelola target</a></div>@forelse($targets as $target)<div class="list-row"><div><strong>{{ $target->student->full_name }} · {{ $target->surah->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }}</strong><small>{{ $target->rubu?->name ?? 'Segment lama tidak dipakai' }} · {{ $target->marhalah?->name ?? 'Marhalah belum dipilih' }}</small></div>@if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))<a class="button small ghost" href="{{ route('quran-practice.target',$target) }}">▶ Latih</a>@endif</div>@empty<p class="empty">Belum ada target aktif.</p>@endforelse</section>
+<section class="card phase-highlight">
+    <div class="section-head"><div><span class="eyebrow">SETORAN TANPA DISTRAKSI</span><h2>Satu anak, satu kesimpulan, lalu lanjut.</h2><p class="hint">Gunakan dua form cepat ini untuk kegiatan harian. Semua form rinci lama tetap tersedia di bawah untuk ujian dan kasus khusus.</p></div></div>
+    <div class="grid two">
+        <div class="card soft-card"><h3>Hasil setoran</h3>
+            @include('teacher.tahfizh.partials.quick-memorization-form',[
+                'quickAction'=>route('teacher.meetings.quick-memorization.store',$meeting),
+                'quickStudents'=>$students,
+                'quickTargets'=>$targets,
+                'quickSurahs'=>$surahs,
+            ])
+        </div>
+        <div class="card soft-card"><h3>Hasil Murāja‘ah</h3>
+            @include('teacher.tahfizh.partials.quick-murajaah-form',[
+                'quickAction'=>route('teacher.meetings.quick-murajaah.store',$meeting),
+                'quickStudents'=>$students,
+                'quickReviewPlans'=>$reviewPlans,
+                'quickSurahs'=>$surahs,
+            ])
+        </div>
+    </div>
+</section>
+<details class="card legacy-detailed-entry"><summary><b>Form rinci untuk asesmen khusus</b><span>Tahsīn, setoran, dan Murāja‘ah rinci lama tetap tersedia.</span></summary>
 <div class="grid three">
 <section class="card"><h2>Catat Tahsīn</h2><form class="stack compact" method="post" action="{{ route('teacher.meetings.tahsin.store',$meeting) }}">@csrf
 <label>Santri<select name="student_id" required><option value="">Pilih</option>@foreach($students as $student)<option value="{{ $student->id }}">{{ $student->full_name }}</option>@endforeach</select></label>
@@ -25,5 +48,6 @@ $statusLabels=['draft'=>'Draf','ongoing'=>'Berlangsung','completed'=>'Selesai','
 <section class="card"><h2>Catat Murāja‘ah</h2><form class="stack compact" method="post" action="{{ route('teacher.meetings.murajaah.store',$meeting) }}">@csrf
 <label>Santri<select name="student_id" required><option value="">Pilih</option>@foreach($students as $student)<option value="{{ $student->id }}">{{ $student->full_name }}</option>@endforeach</select></label><label>Jadwal terkait<select name="review_plan_id"><option value="">Tanpa jadwal khusus</option>@foreach($reviewPlans as $plan)<option value="{{ $plan->id }}">{{ $plan->student?->full_name }} — {{ $plan->surah?->name_latin }} {{ $plan->start_verse }}–{{ $plan->end_verse }} ({{ $plan->review_date?->format('d M') }})</option>@endforeach</select></label><label>Jenis<select name="murajaah_type"><option value="scheduled">Terjadwal</option><option value="random_recall">Pemanggilan acak</option><option value="continuation">Sambung ayat</option><option value="tasmi">Tasmi‘</option><option value="home">Di rumah</option></select></label><label>Surah<select name="surah_id" required>@foreach($surahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label><div class="form-grid"><label>Ayat awal<input type="number" name="start_verse" min="1" required></label><label>Ayat akhir<input type="number" name="end_verse" min="1" required></label></div><label>Hasil<select name="result"><option value="maintained">Masih terjaga</option><option value="strengthening_needed">Perlu dikuatkan</option><option value="reactivation_needed">Perlu dipanggil kembali</option></select></label><label>Kekuatan hafalan<select name="strength_status"><option value="strong">Kuat</option><option value="fair">Cukup terjaga</option><option value="weak">Perlu penguatan</option><option value="recall_needed">Perlu dipanggil kembali</option></select></label><label>Bantuan<select name="assistance_level"><option value="none">Tanpa bantuan</option><option value="little">Sedikit bantuan</option><option value="several">Beberapa kali</option><option value="much">Banyak bantuan</option></select></label><div class="form-grid"><label>Prompt guru<input type="number" min="0" name="prompt_count"></label><label>Koreksi mandiri<input type="number" min="0" name="self_correction_count"></label></div><label>Jadwalkan ulang<input type="date" name="next_review_date"></label><label>Rekomendasi<input name="review_recommendation" placeholder="Minshawi satu surat 3×"></label><fieldset class="choice-field"><legend>Fokus koreksi, opsional</legend><div class="chip-checks"><label><input type="checkbox" name="error_categories[]" value="hesitation"> Ragu/terhenti</label><label><input type="checkbox" name="error_categories[]" value="omission"> Terlewat</label><label><input type="checkbox" name="error_categories[]" value="substitution"> Salah lafaz</label><label><input type="checkbox" name="error_categories[]" value="sequence"> Urutan</label><label><input type="checkbox" name="error_categories[]" value="prompt_dependency"> Banyak prompt</label></div></fieldset><div class="form-grid"><label>Ayat fokus<input type="number" min="1" name="error_ayah"></label><label>Keterangan<input name="error_note"></label></div><label>Catatan<textarea name="teacher_notes"></textarea></label><button class="button primary">Simpan Murāja‘ah</button></form></section>
 </div>
+</details>
 @if($meeting->status!=='completed')<section class="card finish-card"><div><h2>Tutup dan bagikan ringkasan</h2><p>Absensi seluruh santri wajib lengkap. Ringkasan hanya terlihat wali bila opsi publikasi dicentang.</p></div><form method="post" action="{{ route('teacher.meetings.finish',$meeting) }}">@csrf @method('PUT')<textarea name="general_notes" placeholder="Catatan internal guru"></textarea><textarea name="guardian_summary" placeholder="Ringkasan hangat untuk wali: materi, perkembangan umum, dan tindak lanjut"></textarea><label class="check"><input type="checkbox" name="publish_summary" value="1"> Tampilkan ringkasan kepada wali</label><button class="button primary">Selesaikan Pertemuan</button></form></section>@endif
 @endsection

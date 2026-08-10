@@ -1,6 +1,6 @@
-# Phase Registry — v5.3.0
+# Phase Registry — v6.0.0
 
-`@phase 4.2` · `@phase 4.3` · `@phase 4.4` · `@phase 4.5` · `@phase 4.6` · `@phase 4.7` · `@phase 4.8` · `@phase 4.9` · `@phase 5.0` · `@phase 5.1` · `@phase 5.2` · `@phase 5.3`
+`@phase 4.2` · `@phase 4.3` · `@phase 4.4` · `@phase 4.5` · `@phase 4.6` · `@phase 4.7` · `@phase 4.8` · `@phase 4.9` · `@phase 5.0` · `@phase 5.1` · `@phase 5.2` · `@phase 5.3` · `@phase 6.0`
 
 Registry ini menjadi sumber kebenaran manusia untuk mengetahui fitur dan file berasal dari fase mana. Pasangannya, `PHASE-MANIFEST.json`, digunakan oleh pemeriksaan otomatis.
 
@@ -28,6 +28,7 @@ Registry ini menjadi sumber kebenaran manusia untuk mengetahui fitur dan file be
 | 10 | v5.1.0 | Completed | SaaS Production Readiness: health/readiness, tenant integrity, histori checks, serta bukti operator yang eksplisit |
 | 11 | v5.2.0 | Completed | Pendamping Cerdas: rekomendasi lokal, consented mentor review, human decision, dan audit |
 | 12 | v5.3.0 | Completed | Mobile/PWA & Global Preferences: static offline shell, cache guard privat, preferensi bahasa/zona waktu, dan capability API |
+| 13 | v6.0.0 | Completed | Free, Infaq & Distraction-Free Tahfizh: fungsi inti gratis, infak sukarela, setoran cepat, Tangga Fokus, ringkasan consented, dan hardening operasional |
 
 ## Peta ketergantungan
 
@@ -43,6 +44,7 @@ Registry ini menjadi sumber kebenaran manusia untuk mengetahui fitur dan file be
 - Fase 5.1 membaca kondisi runtime dan menyimpan snapshot checks; marker backup/restore/load test hanya bukti operator, bukan otomatisasi palsu.
 - Fase 5.2 memakai tabel AI Assist lama tetapi menambah jalur Personal → Ustadz Privat yang consent-based; draft tetap membutuhkan human review.
 - Fase 5.3 hanya meng-cache static shell. Halaman privat, API, dan media pengguna tidak menjadi sumber data offline.
+- Fase 6.0 mempertahankan data dan alur rinci lama, menutup subscription baru, memisahkan infak dari entitlement, dan menambahkan jalur harian yang lebih ringkas.
 - `users.institution_id` belum dihapus; nilainya tetap menjadi fallback untuk modul lama, sedangkan konteks aktif ditentukan oleh session dan membership.
 
 ## Cara memeriksa

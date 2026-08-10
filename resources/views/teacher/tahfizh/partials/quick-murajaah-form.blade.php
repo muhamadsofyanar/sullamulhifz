@@ -1,0 +1,62 @@
+{{-- @phase 6.0 Distraction-free Murajaah submission --}}
+@php($quickStudents = $quickStudents ?? collect())
+<form class="stack compact quick-submission" method="post" action="{{ $quickAction }}" data-quick-submission>
+    @csrf
+    <input type="hidden" name="submission_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
+    @if($quickStudents->isNotEmpty())
+        <label>Santri
+            <select name="student_id" required data-quick-student>
+                <option value="">Pilih santri</option>
+                @foreach($quickStudents as $quickStudent)<option value="{{ $quickStudent->id }}">{{ $quickStudent->full_name }}</option>@endforeach
+            </select>
+        </label>
+    @endif
+    <label>Bagian Murāja‘ah
+        <select name="review_plan_id" data-quick-source>
+            <option value="">Pilih manual / uji acak</option>
+            @foreach($quickReviewPlans as $plan)
+                <option value="{{ $plan->id }}" data-student="{{ $plan->student_id }}" data-surah="{{ $plan->surah_id }}" data-start="{{ $plan->start_verse }}" data-end="{{ $plan->end_verse }}">
+                    @if($quickStudents->isNotEmpty()){{ $plan->student?->full_name }} — @endif{{ $plan->surah?->name_latin }} {{ $plan->start_verse }}–{{ $plan->end_verse }} · {{ $plan->review_date?->format('d M') }}
+                </option>
+            @endforeach
+        </select>
+    </label>
+    <details class="quick-portion-edit">
+        <summary>Ubah bagian ayat</summary>
+        <div class="form-grid">
+            <label>Surah<select name="surah_id" required data-quick-surah>@foreach($quickSurahs as $surah)<option value="{{ $surah->id }}">{{ $surah->id }}. {{ $surah->name_latin }}</option>@endforeach</select></label>
+            <label>Ayat awal<input type="number" name="start_verse" min="1" required data-quick-start></label>
+            <label>Ayat akhir<input type="number" name="end_verse" min="1" required data-quick-end></label>
+        </div>
+    </details>
+    <fieldset class="quick-decision"><legend>Kesimpulan setelah menyimak</legend>
+        <label class="decision-continue"><input type="radio" name="daily_decision" value="lanjut" required><span><b>Lanjut</b><small>Masih terjaga</small></span></label>
+        <label class="decision-strengthen"><input type="radio" name="daily_decision" value="kuatkan" required><span><b>Kuatkan</b><small>Perlu penguatan</small></span></label>
+        <label class="decision-repeat"><input type="radio" name="daily_decision" value="ulang" required><span><b>Ulang</b><small>Aktifkan kembali</small></span></label>
+    </fieldset>
+    <label>Satu catatan kecil <small>(opsional)</small><input name="short_note" maxlength="500" placeholder="Contoh: sambung ayat masih ragu"></label>
+    <button class="button primary">Simpan & lanjut ke santri berikutnya</button>
+</form>
+<script>
+(function () {
+    var form = document.currentScript.previousElementSibling;
+    if (!form || !form.matches('[data-quick-submission]')) return;
+    var source = form.querySelector('[data-quick-source]');
+    function apply() {
+        var option = source && source.options[source.selectedIndex];
+        var details = form.querySelector('.quick-portion-edit');
+        if (!option || !option.dataset.surah) {
+            if (details) details.open = true;
+            return;
+        }
+        if (details) details.open = false;
+        var student = form.querySelector('[data-quick-student]');
+        if (student && option.dataset.student) student.value = option.dataset.student;
+        form.querySelector('[data-quick-surah]').value = option.dataset.surah;
+        form.querySelector('[data-quick-start]').value = option.dataset.start || '';
+        form.querySelector('[data-quick-end]').value = option.dataset.end || '';
+    }
+    if (source) source.addEventListener('change', apply);
+    apply();
+})();
+</script>

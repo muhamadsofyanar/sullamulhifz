@@ -1,6 +1,6 @@
 <?php
 
-/** @phase 5.1 SaaS Production Readiness; @phase 5.3 Mobile & Global API metadata */
+/** @phase 5.1 SaaS Production Readiness; @phase 5.3 Mobile & Global API metadata; @phase 6.0 Public Academy opt-in */
 
 use App\Models\AcademyProgram;
 use App\Http\Controllers\CommunicationWebhookController;
@@ -51,9 +51,10 @@ Route::get('/v1/meta', fn () => response()->json([
 ]))->name('api.meta');
 
 Route::get('/v1/academy-preview', function () {
-    $institution = Institution::query()->where('status', 'active')->orderBy('id')->first();
+    $institution = Institution::query()->where('status', 'active')->orderBy('id')->get()
+        ->first(fn (Institution $item): bool => (bool) $item->setting('public_academy', false));
     if (! $institution) {
-        return response()->json(['data' => [], 'note' => 'Belum ada lembaga aktif.']);
+        return response()->json(['data' => [], 'note' => 'Belum ada lembaga yang mempublikasikan katalog Academy.']);
     }
 
     $programs = AcademyProgram::query()

@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+/** @phase 6.0 Memorization focus and assessment relations */
+
 use App\Models\Concerns\BelongsToInstitution;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -66,4 +68,6 @@ class Student extends Model
     public function quranProgramEnrollments(): HasMany { return $this->hasMany(QuranProgramEnrollment::class); }
     public function talentProgressRecords(): HasMany { return $this->hasMany(TalentProgressRecord::class); }
     public function portfolios(): HasMany { return $this->hasMany(StudentPortfolio::class); }
+    public function memorizationFocuses(): HasMany { return $this->hasMany(StudentMemorizationFocus::class); }
+    public function memorizationAssessments(): HasMany { return $this->hasMany(StudentMemorizationAssessment::class); }
 }

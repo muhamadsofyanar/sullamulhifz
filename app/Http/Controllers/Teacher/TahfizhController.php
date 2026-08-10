@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Teacher;
 
+/** @phase 6.0 Distraction-free Tahfizh */
+
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\AcademicYear;
@@ -15,11 +17,14 @@ use App\Models\MurajaahRecord;
 use App\Models\QuranLearningErrorItem;
 use App\Models\QuranSurah;
 use App\Models\Student;
+use App\Models\StudentMemorizationAssessment;
+use App\Models\StudentMemorizationFocus;
 use App\Models\TahfizhLearningCycle;
 use App\Models\TeacherAssignment;
 use App\Services\TahfizhLearningService;
 use App\Services\TahfizhProgressService;
 use App\Services\QuranJourneyService;
+use App\Services\DistractionFreeSubmissionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -32,6 +37,7 @@ class TahfizhController extends Controller
         private readonly TahfizhProgressService $progress,
         private readonly TahfizhLearningService $learning,
         private readonly QuranJourneyService $journey,
+        private readonly DistractionFreeSubmissionService $quickSubmission,
     ) {
     }
 
@@ -75,6 +81,11 @@ class TahfizhController extends Controller
                 ->latest()->limit(40)->get(),
             'surahs' => QuranSurah::orderBy('id')->get(),
             'marhalah' => MarhalahType::where('status', 'active')->orderBy('sequence')->get(),
+            'activeFocus' => StudentMemorizationFocus::activeFor((int) $request->user()->institution_id, (int) $student->id),
+            'assessments' => StudentMemorizationAssessment::query()
+                ->where('institution_id', $request->user()->institution_id)
+                ->where('student_id', $student->id)
+                ->latest('assessed_on')->limit(12)->get(),
         ]);
     }
 
@@ -135,6 +146,40 @@ class TahfizhController extends Controller
             'completed_at' => $data['status'] === 'completed' ? now() : null,
         ]);
         return back()->with('success', 'Status siklus belajar diperbarui.');
+    }
+
+    public function storeQuickMemorization(Request $request, Student $student): RedirectResponse
+    {
+        $this->authorizeStudent($request, $student);
+        $data = $this->validateQuickSubmission($request, true);
+        $record = $this->quickSubmission->recordMemorization($request->user(), $student, $data);
+        if ($record->wasRecentlyCreated) {
+            $this->log($request, 'tahfizh.quick_memorization_recorded', $record, [
+                'student_id' => $student->id,
+                'decision' => $record->daily_decision,
+                'input_mode' => 'distraction_free',
+            ]);
+        }
+
+        return redirect()->route('teacher.tahfizh.student', $student)
+            ->with('success', 'Hasil setoran tersimpan. Murāja‘ah berikutnya sudah disiapkan.');
+    }
+
+    public function storeQuickMurajaah(Request $request, Student $student): RedirectResponse
+    {
+        $this->authorizeStudent($request, $student);
+        $data = $this->validateQuickSubmission($request, false);
+        $record = $this->quickSubmission->recordMurajaah($request->user(), $student, $data);
+        if ($record->wasRecentlyCreated) {
+            $this->log($request, 'tahfizh.quick_murajaah_recorded', $record, [
+                'student_id' => $student->id,
+                'decision' => $record->daily_decision,
+                'input_mode' => 'distraction_free',
+            ]);
+        }
+
+        return redirect()->route('teacher.tahfizh.student', $student)
+            ->with('success', 'Hasil Murāja‘ah tersimpan. Jadwal penjagaan berikutnya sudah disiapkan.');
     }
 
     public function storeMemorization(Request $request, Student $student): RedirectResponse
@@ -444,6 +489,24 @@ class TahfizhController extends Controller
     {
         $surah = QuranSurah::findOrFail($surahId);
         abort_if($endVerse > $surah->verse_count, 422, 'Rentang ayat melebihi jumlah ayat surah.');
+    }
+
+    /** @return array<string, mixed> */
+    private function validateQuickSubmission(Request $request, bool $memorization): array
+    {
+        $data = $request->validate([
+            'submission_key' => ['required', 'uuid', 'max:64'],
+            'memorization_target_id' => [$memorization ? 'nullable' : 'exclude', 'integer', 'exists:memorization_targets,id'],
+            'review_plan_id' => [$memorization ? 'exclude' : 'nullable', 'integer', 'exists:memorization_review_plans,id'],
+            'surah_id' => ['required', 'integer', 'exists:quran_surahs,id'],
+            'start_verse' => ['required', 'integer', 'min:1'],
+            'end_verse' => ['required', 'integer', 'gte:start_verse'],
+            'daily_decision' => ['required', Rule::in(['lanjut', 'kuatkan', 'ulang'])],
+            'short_note' => ['nullable', 'string', 'max:500'],
+        ]);
+        $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
+
+        return $data;
     }
 
     private function log(Request $request, string $action, object $subject, array $newValues = []): void

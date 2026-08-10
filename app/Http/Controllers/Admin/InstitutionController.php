@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+/** @phase 6.0 Public Academy opt-in */
+
 /** @phase 4.4 Multi-tenant Institution Foundation */
 
 use App\Http\Controllers\Controller;
@@ -50,6 +52,7 @@ class InstitutionController extends Controller
             'mission' => ['nullable','string','max:5000'],
             'report_footer' => ['nullable','string','max:500'],
             'registration_notes' => ['nullable','string','max:3000'],
+            'public_academy' => ['nullable','boolean'],
         ]);
 
         $institution->update([
@@ -78,6 +81,7 @@ class InstitutionController extends Controller
             'mission' => $data['mission'] ?? null,
             'report_footer' => $data['report_footer'] ?? null,
             'registration_notes' => $data['registration_notes'] ?? null,
+            'public_academy' => (bool) ($data['public_academy'] ?? false),
         ];
         $profile['profile_completed'] = collect([
             $institution->address,

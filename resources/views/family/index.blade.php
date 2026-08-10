@@ -1,4 +1,4 @@
-{{-- @phase 4.8 Family & Parent Portal --}}
+{{-- @phase 4.8 Family & Parent Portal; @phase 6.0 Consented memorization summary --}}
 @extends('layouts.app', ['pageTitle' => 'Portal Keluarga'])
 
 @section('content')
@@ -93,7 +93,18 @@
             @if(isset($snapshot['practice']))
             <article class="snapshot-tile"><span>Latihan 30 hari</span><strong>{{ $snapshot['practice']['sessions_30_days'] }} sesi · {{ $snapshot['practice']['minutes_30_days'] }} menit</strong></article>
             @endif
+            @if(isset($snapshot['memorization']))
+            <article class="snapshot-tile"><span>Setoran 7 hari</span><strong>{{ $snapshot['memorization']['submission_count'] }} setoran · {{ $snapshot['memorization']['murajaah_count'] }} Murāja‘ah</strong></article>
+            @endif
         </div>
+        @if(isset($snapshot['memorization']))
+        @php($memorization=$snapshot['memorization'])
+        <div class="compact-list"><strong>Yang perlu didampingi</strong>
+            @if($memorization['latest'])<span>Terakhir: {{ $memorization['latest']->surah?->name_latin }} {{ $memorization['latest']->start_verse }}–{{ $memorization['latest']->end_verse }} · {{ ucfirst($memorization['latest']->daily_decision ?: 'tercatat') }}</span>@endif
+            @if($memorization['latest_note'])<span>Arahan ustadz: {{ $memorization['latest_note'] }}</span>@endif
+            @if($memorization['next_review'])<span>Berikutnya: Murāja‘ah {{ $memorization['next_review']->surah?->name_latin }} {{ $memorization['next_review']->start_verse }}–{{ $memorization['next_review']->end_verse }} pada {{ $memorization['next_review']->review_date?->format('d M Y') }}</span>@endif
+        </div>
+        @endif
         @if(isset($snapshot['goals']))
         <div class="compact-list"><strong>Target aktif</strong>@forelse($snapshot['goals'] as $goal)<span>{{ $goal->title }} · {{ $goal->progress_value }}/{{ $goal->target_value }}</span>@empty<span>Belum ada target aktif.</span>@endforelse</div>
         @endif

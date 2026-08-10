@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# @phase 4.3 Identity release gate; @phase 4.4 Multi-tenant release gate; @phase 4.5 Personal 2.0 gate; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration; @phase 5.0 Business; @phase 5.1 SaaS Readiness; @phase 5.2 Smart Assistant; @phase 5.3 Mobile & Global
+# @phase 4.3 Identity release gate; @phase 4.4 Multi-tenant release gate; @phase 4.5 Personal 2.0 gate; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration; @phase 5.0 Business; @phase 5.1 SaaS Readiness; @phase 5.2 Smart Assistant; @phase 5.3 Mobile & Global; @phase 6.0 safe release startup
 set -eu
 
 cd /var/www/html
@@ -19,13 +19,13 @@ mkdir -p \
 chown -R unit:unit storage bootstrap/cache 2>/dev/null || true
 chmod -R ug+rwX storage bootstrap/cache 2>/dev/null || true
 
-if [ "${AUTO_MIGRATE:-true}" = "true" ]; then
+if [ "${RUN_RELEASE_TASKS:-false}" = "true" ]; then
     attempt=1
     max_attempts="${DB_WAIT_ATTEMPTS:-30}"
 
     php artisan optimize:clear
 
-    until php artisan migrate --force; do
+    until php artisan migrate --isolated --force; do
         if [ "$attempt" -ge "$max_attempts" ]; then
             echo "ERROR: migration belum berhasil setelah ${max_attempts} percobaan."
             exit 1
@@ -73,16 +73,17 @@ if [ "${AUTO_MIGRATE:-true}" = "true" ]; then
     php artisan sullam:verify-saas-v510 || echo "PERINGATAN: SaaS Production Readiness v5.1 memiliki kegagalan kritis atau bukti operator belum lengkap."
     php artisan sullam:verify-ai-assist-v520 || echo "PERINGATAN: Pendamping Cerdas v5.2 belum sepenuhnya siap."
     php artisan sullam:verify-mobile-v530 || echo "PERINGATAN: Mobile/PWA v5.3 belum sepenuhnya siap."
+    php artisan sullam:verify-v600 || echo "PERINGATAN: Free, Infaq & Distraction-Free Tahfizh v6.0 belum sepenuhnya siap."
     php artisan sullam:verify-ecosystem || echo "PERINGATAN: verifikasi ekosistem v2.3 belum sepenuhnya lulus."
     php artisan sullam:roadmap-status || echo "PERINGATAN: status roadmap belum dapat dihitung."
     php artisan storage:link || true
     php artisan config:cache
     php artisan view:cache
 else
-    echo "AUTO_MIGRATE=false: migration otomatis dilewati."
+    echo "RUN_RELEASE_TASKS=false: migration, seeding, dan verifikasi rilis dilewati pada web replica."
 fi
 
-if [ "${MUSHAF_LINE_AUTO_SYNC:-true}" = "true" ]; then
+if [ "${MUSHAF_LINE_AUTO_SYNC:-false}" = "true" ]; then
     echo "Sinkronisasi Mushaf Line 604 halaman dijalankan di latar belakang (resume-safe)."
     (
         sleep "${MUSHAF_LINE_SYNC_DELAY:-12}"
@@ -92,7 +93,7 @@ if [ "${MUSHAF_LINE_AUTO_SYNC:-true}" = "true" ]; then
     ) &
 fi
 
-if [ "${QURAN_AUDIO_AUTO_SYNC:-true}" = "true" ]; then
+if [ "${QURAN_AUDIO_AUTO_SYNC:-false}" = "true" ]; then
     echo "Sinkronisasi Full Qur’an dijalankan di latar belakang: korpus lebih dahulu, lalu dua qari."
     (
         sleep "${QURAN_AUDIO_SYNC_DELAY:-8}"

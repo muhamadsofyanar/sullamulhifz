@@ -2,6 +2,8 @@
 
 namespace App\Http\Middleware;
 
+/** @phase 6.0 API domain isolation hardening */
+
 use Closure;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,6 +31,11 @@ class EnforceDomainSeparation
                 return $next($request);
             }
 
+            return response()->json(['message' => 'Endpoint tidak ditemukan.'], 404);
+        }
+
+        $trimmedPath = trim($request->path(), '/');
+        if ($apiHost && $host !== $apiHost && ($trimmedPath === 'api' || str_starts_with($trimmedPath, 'api/'))) {
             return response()->json(['message' => 'Endpoint tidak ditemukan.'], 404);
         }
 

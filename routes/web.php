@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\InstitutionController;
 use App\Http\Controllers\Admin\InstitutionSuiteController;
 use App\Http\Controllers\Admin\QuranLibraryController;
 use App\Http\Controllers\Admin\GuardianController;
+use App\Http\Controllers\Admin\InfaqController as AdminInfaqController;
 use App\Http\Controllers\Admin\GuidedQuranProgramController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LaunchReadinessController;
@@ -60,6 +61,7 @@ use App\Http\Controllers\InstitutionRegistrationController;
 use App\Http\Controllers\RelationshipController;
 use App\Http\Controllers\PrivateMentorshipController;
 use App\Http\Controllers\FamilyPortalController;
+use App\Http\Controllers\InfaqController;
 use App\Http\Controllers\Admin\WorkspaceController as AdminWorkspaceController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\AcademyRecommendationController;
@@ -71,6 +73,7 @@ use App\Http\Controllers\Teacher\LearningPlanController;
 use App\Http\Controllers\Teacher\PersonalLearningController;
 use App\Http\Controllers\Teacher\SmartAssistantReviewController;
 use App\Http\Controllers\Teacher\TahfizhController;
+use App\Http\Controllers\Teacher\MemorizationFocusController;
 use App\Http\Controllers\Teacher\QuranJourneyController as TeacherQuranJourneyController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -210,6 +213,8 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
 
     Route::get('/paket-layanan', [PersonalBusinessController::class, 'index'])->middleware(['role:personal,teacher,institution_admin,superadmin','feature:business_center'])->name('business.index'); // @phase 5.0
     Route::post('/paket-layanan/{plan}/aktifkan', [PersonalBusinessController::class, 'subscribe'])->middleware(['role:personal,teacher,institution_admin,superadmin','feature:business_center','throttle:4,10'])->name('business.subscribe'); // @phase 5.0
+    Route::get('/infak', [InfaqController::class, 'index'])->name('infaq.index'); // @phase 6.0
+    Route::post('/infak', [InfaqController::class, 'store'])->middleware('throttle:4,10')->name('infaq.store'); // @phase 6.0
 
     Route::prefix('personal')->name('personal.')->middleware('role:personal')->group(function (): void {
         Route::get('/', [PersonalController::class, 'index'])->middleware('permission:personal.use')->name('dashboard');
@@ -301,6 +306,8 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
             Route::get('/platform', [PlatformController::class, 'index'])->middleware('permission:features.manage')->name('platform.index');
             Route::get('/ekosistem', [AdminEcosystemController::class, 'index'])->middleware('permission:features.manage')->name('ecosystem.index');
             Route::get('/bisnis', [AdminBusinessController::class, 'index'])->middleware('permission:features.manage')->name('business.index'); // @phase 5.0
+            Route::get('/infak', [AdminInfaqController::class, 'index'])->middleware('permission:features.manage')->name('infaq.index'); // @phase 6.0
+            Route::put('/infak/{transaction}', [AdminInfaqController::class, 'update'])->middleware(['permission:features.manage','throttle:20,1'])->name('infaq.update'); // @phase 6.0
             Route::put('/bisnis/paket/{plan}', [AdminBusinessController::class, 'updatePlan'])->middleware('permission:features.manage')->name('business.plans.update'); // @phase 5.0
             Route::put('/bisnis/pembayaran/{transaction}', [AdminBusinessController::class, 'payment'])->middleware('permission:features.manage')->name('business.payments.update'); // @phase 5.0
             Route::get('/operasional-saas', [AdminOperationsController::class, 'index'])->middleware('permission:features.manage')->name('operations.index'); // @phase 5.1
@@ -432,6 +439,8 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
         Route::post('/meetings/{meeting}/tahsin', [MeetingController::class, 'storeTahsin'])->middleware('permission:learning.manage')->name('meetings.tahsin.store');
         Route::post('/meetings/{meeting}/memorization', [MeetingController::class, 'storeMemorization'])->middleware('permission:learning.manage')->name('meetings.memorization.store');
         Route::post('/meetings/{meeting}/murajaah', [MeetingController::class, 'storeMurajaah'])->middleware('permission:learning.manage')->name('meetings.murajaah.store');
+        Route::post('/meetings/{meeting}/quick-memorization', [MeetingController::class, 'storeQuickMemorization'])->middleware(['permission:learning.manage', 'throttle:60,1'])->name('meetings.quick-memorization.store');
+        Route::post('/meetings/{meeting}/quick-murajaah', [MeetingController::class, 'storeQuickMurajaah'])->middleware(['permission:learning.manage', 'throttle:60,1'])->name('meetings.quick-murajaah.store');
         Route::put('/meetings/{meeting}/finish', [MeetingController::class, 'finish'])->middleware('permission:meetings.manage')->name('meetings.finish');
 
         Route::get('/learning-plan', [LearningPlanController::class, 'index'])->middleware('permission:learning.manage')->name('learning-plan.index');
@@ -462,10 +471,14 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
         Route::post('/tahfizh/cycles', [TahfizhController::class, 'storeCycle'])->middleware('permission:learning.manage')->name('tahfizh.cycles.store');
         Route::post('/tahfizh/students/{student}/memorization', [TahfizhController::class, 'storeMemorization'])->middleware('permission:learning.manage')->name('tahfizh.memorization.store');
         Route::post('/tahfizh/students/{student}/murajaah', [TahfizhController::class, 'storeMurajaah'])->middleware('permission:learning.manage')->name('tahfizh.murajaah.store');
+        Route::post('/tahfizh/students/{student}/quick-memorization', [TahfizhController::class, 'storeQuickMemorization'])->middleware(['permission:learning.manage', 'throttle:60,1'])->name('tahfizh.quick-memorization.store');
+        Route::post('/tahfizh/students/{student}/quick-murajaah', [TahfizhController::class, 'storeQuickMurajaah'])->middleware(['permission:learning.manage', 'throttle:60,1'])->name('tahfizh.quick-murajaah.store');
         Route::put('/tahfizh/cycles/{cycle}', [TahfizhController::class, 'updateCycle'])->middleware('permission:learning.manage')->name('tahfizh.cycles.update');
         Route::post('/tahfizh/reviews', [TahfizhController::class, 'storeReviewPlan'])->middleware('permission:learning.manage')->name('tahfizh.reviews.store');
         Route::put('/tahfizh/reviews/{plan}', [TahfizhController::class, 'updateReviewPlan'])->middleware('permission:learning.manage')->name('tahfizh.reviews.update');
         Route::put('/tahfizh/errors/{error}/resolve', [TahfizhController::class, 'resolveError'])->middleware('permission:learning.manage')->name('tahfizh.errors.resolve');
+        Route::put('/tahfizh/students/{student}/focus', [MemorizationFocusController::class, 'update'])->middleware('permission:learning.manage')->name('tahfizh.focus.update');
+        Route::post('/tahfizh/students/{student}/assessments', [MemorizationFocusController::class, 'assess'])->middleware(['permission:learning.manage', 'throttle:10,1'])->name('tahfizh.assessments.store');
 
         Route::get('/assignments', [AssignmentController::class, 'index'])->middleware('permission:assignments.view')->name('assignments.index');
         Route::get('/assignments/create', [AssignmentController::class, 'create'])->middleware('permission:assignments.manage')->name('assignments.create');

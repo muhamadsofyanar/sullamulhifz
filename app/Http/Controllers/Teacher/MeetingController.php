@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Teacher;
 
+/** @phase 6.0 Distraction-free submissions */
+
 use App\Http\Controllers\Controller;
 use App\Models\ActivityLog;
 use App\Models\AttendanceRecord;
@@ -18,6 +20,7 @@ use App\Models\Student;
 use App\Models\TahsinRecord;
 use App\Services\TahfizhLearningService;
 use App\Services\QuranJourneyService;
+use App\Services\DistractionFreeSubmissionService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +32,7 @@ class MeetingController extends Controller
     public function __construct(
         private readonly TahfizhLearningService $tahfizh,
         private readonly QuranJourneyService $journey,
+        private readonly DistractionFreeSubmissionService $quickSubmission,
     ) {
     }
 
@@ -171,6 +175,42 @@ class MeetingController extends Controller
         );
         $this->log($request, 'tahsin.recorded', $record, ['student_id' => $data['student_id']]);
         return back()->with('success', 'Catatan Tahsīn berhasil disimpan.');
+    }
+
+    public function storeQuickMemorization(Request $request, Meeting $meeting): RedirectResponse
+    {
+        $this->authorizeMeeting($request, $meeting);
+        $data = $this->validateQuickSubmission($request, true);
+        $this->authorizeStudent($meeting, (int) $data['student_id']);
+        $student = Student::where('institution_id', $meeting->institution_id)->findOrFail($data['student_id']);
+        $record = $this->quickSubmission->recordMemorization($request->user(), $student, $data, $meeting);
+        if ($record->wasRecentlyCreated) {
+            $this->log($request, 'memorization.quick_recorded', $record, [
+                'student_id' => $student->id,
+                'decision' => $record->daily_decision,
+                'input_mode' => 'distraction_free',
+            ]);
+        }
+
+        return back()->with('success', 'Hasil setoran tersimpan. Silakan lanjut ke santri berikutnya.');
+    }
+
+    public function storeQuickMurajaah(Request $request, Meeting $meeting): RedirectResponse
+    {
+        $this->authorizeMeeting($request, $meeting);
+        $data = $this->validateQuickSubmission($request, false);
+        $this->authorizeStudent($meeting, (int) $data['student_id']);
+        $student = Student::where('institution_id', $meeting->institution_id)->findOrFail($data['student_id']);
+        $record = $this->quickSubmission->recordMurajaah($request->user(), $student, $data, $meeting);
+        if ($record->wasRecentlyCreated) {
+            $this->log($request, 'murajaah.quick_recorded', $record, [
+                'student_id' => $student->id,
+                'decision' => $record->daily_decision,
+                'input_mode' => 'distraction_free',
+            ]);
+        }
+
+        return back()->with('success', 'Hasil Murāja‘ah tersimpan. Silakan lanjut ke santri berikutnya.');
     }
 
     public function storeMemorization(Request $request, Meeting $meeting): RedirectResponse
@@ -427,6 +467,25 @@ class MeetingController extends Controller
     private function authorizeStudent(Meeting $meeting, int $studentId): void
     {
         abort_unless($this->students($meeting)->pluck('id')->contains($studentId), 403, 'Santri tidak termasuk dalam pertemuan ini.');
+    }
+
+    /** @return array<string, mixed> */
+    private function validateQuickSubmission(Request $request, bool $memorization): array
+    {
+        $data = $request->validate([
+            'submission_key' => ['required', 'uuid', 'max:64'],
+            'student_id' => ['required', 'integer', 'exists:students,id'],
+            'memorization_target_id' => [$memorization ? 'nullable' : 'exclude', 'integer', 'exists:memorization_targets,id'],
+            'review_plan_id' => [$memorization ? 'exclude' : 'nullable', 'integer', 'exists:memorization_review_plans,id'],
+            'surah_id' => ['required', 'integer', 'exists:quran_surahs,id'],
+            'start_verse' => ['required', 'integer', 'min:1'],
+            'end_verse' => ['required', 'integer', 'gte:start_verse'],
+            'daily_decision' => ['required', Rule::in(['lanjut', 'kuatkan', 'ulang'])],
+            'short_note' => ['nullable', 'string', 'max:500'],
+        ]);
+        $this->validateVerseRange((int) $data['surah_id'], (int) $data['end_verse']);
+
+        return $data;
     }
 
     private function validateVerseRange(int $surahId, int $endVerse): void

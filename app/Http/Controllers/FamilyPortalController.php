@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 6.0 Consented memorization summary */
+
 /** @phase 4.8 Family & Parent Portal */
 
 use App\Models\FamilySupportNote;
@@ -11,6 +13,8 @@ use App\Models\PersonalPracticeEntry;
 use App\Models\StudentPortfolio;
 use App\Models\User;
 use App\Models\UserRelationship;
+use App\Models\Student;
+use App\Services\MemorizationSummaryService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -19,6 +23,8 @@ use Illuminate\View\View;
 
 class FamilyPortalController extends Controller
 {
+    public function __construct(private readonly MemorizationSummaryService $memorizationSummary) {}
+
     private const SCOPES = [
         'progress_summary' => 'Ringkasan kondisi belajar',
         'goals' => 'Target aktif',
@@ -188,6 +194,16 @@ class FamilyPortalController extends Controller
         $snapshot = ['profile' => $child->personalProfile];
         if (in_array('progress_summary', $scopes, true)) {
             $snapshot['latest_check_in'] = PersonalCheckIn::query()->where('user_id', $child->id)->latest('check_in_on')->first();
+            $studentId = $child->personalProfile?->student_id;
+            if ($studentId) {
+                $student = Student::query()
+                    ->where('institution_id', $child->personalProfile?->institution_id)
+                    ->where('id', $studentId)
+                    ->first();
+                if ($student) {
+                    $snapshot['memorization'] = $this->memorizationSummary->forStudent($student, now()->subDays(6), now());
+                }
+            }
         }
         if (in_array('goals', $scopes, true)) {
             $snapshot['goals'] = PersonalGoal::query()->where('user_id', $child->id)->where('status', 'active')->latest()->limit(5)->get();

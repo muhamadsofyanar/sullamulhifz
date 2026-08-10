@@ -1,9 +1,9 @@
-{{-- @phase 5.0 Business, Payment & Integrations --}}
+{{-- @phase 5.0 Business, Payment & Integrations; @phase 6.0 Legacy billing archive --}}
 @extends('layouts.app',['pageTitle'=>'Pusat Bisnis'])
 @section('content')
 <div class="v530-page">
     <section class="v530-hero">
-        <div><span class="personal-kicker">FASE 9 · BUSINESS CONTROL</span><h1>Pusat Bisnis & Integrasi</h1><p>Katalog paket, subscription, invoice, pembayaran, dan koneksi integrasi terlihat dalam satu kendali. Superadmin melihat ledger lintas workspace; admin lembaga hanya ruangnya sendiri.</p></div>
+        <div><span class="personal-kicker">ARSIP v5 · BUSINESS CONTROL</span><h1>Riwayat Paket & Integrasi</h1><p>Mulai v6.0, paket, subscription, invoice, dan pembayaran langganan dipertahankan sebagai histori dan tidak menentukan akses fungsi inti. Superadmin melihat ledger lintas workspace; admin lembaga hanya ruangnya sendiri.</p></div>
         <span class="v530-badge">v5.0</span>
     </section>
 

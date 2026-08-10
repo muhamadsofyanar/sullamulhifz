@@ -2,6 +2,8 @@
 
 namespace Tests\Feature;
 
+/** @phase 6.0 API domain isolation regression */
+
 use Tests\TestCase;
 
 class DomainSeparationTest extends TestCase
@@ -17,6 +19,7 @@ class DomainSeparationTest extends TestCase
             'sullam.portal_base_url' => 'https://app.sullamulhifz.or.id',
             'sullam.portal_url' => 'https://app.sullamulhifz.or.id/login',
             'sullam.portal_host' => 'app.sullamulhifz.or.id',
+            'sullam.api_host' => 'api.sullamulhifz.or.id',
         ]);
     }
 
@@ -61,5 +64,18 @@ class DomainSeparationTest extends TestCase
     {
         $this->get('https://taysriulqurani.id/')
             ->assertOk();
+    }
+
+    public function test_api_path_is_not_exposed_on_public_or_portal_domains(): void
+    {
+        $this->get('https://sullamulhifz.or.id/api/v1/meta')->assertNotFound();
+        $this->get('https://app.sullamulhifz.or.id/api/v1/meta')->assertNotFound();
+    }
+
+    public function test_api_metadata_is_available_on_the_api_domain(): void
+    {
+        $this->get('https://api.sullamulhifz.or.id/api/v1/meta')
+            ->assertOk()
+            ->assertJsonPath('product', 'Sullamul Hifz');
     }
 }

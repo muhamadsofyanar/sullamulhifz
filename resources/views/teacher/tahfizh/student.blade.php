@@ -1,3 +1,4 @@
+{{-- @phase 6.0 Distraction-free Tahfizh and focus ladder --}}
 @extends('layouts.app',['pageTitle'=>'Perjalanan Tahfizh'])
 @section('content')
 @php
@@ -7,7 +8,7 @@ $soleActiveTargetId = $activeTargets->count() === 1 ? $activeTargets->first()?->
 @endphp
 <div class="page-head">
     <div><span class="eyebrow">PERJALANAN INDIVIDUAL</span><h1>{{ $student->full_name }}</h1><p>{{ $student->currentEnrollment?->schoolClass?->name ?? 'Kelompok belajar' }} · jejak belajar tanpa perbandingan dengan santri lain.</p></div>
-    <div class="actions"><a class="button secondary" href="{{ route('teacher.tahfizh.index') }}">Kembali</a><a class="button primary" href="#catat-setoran">Catat Setoran</a><a class="button secondary" href="#catat-murajaah">Catat Murāja‘ah</a>@if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))<a class="button ghost" href="{{ route('quran-practice.index') }}">Audio Qur’an</a>@endif</div>
+    <div class="actions"><a class="button secondary" href="{{ route('teacher.tahfizh.index') }}">Kembali</a><a class="button primary" href="#catat-setoran-cepat">Catat Setoran</a><a class="button secondary" href="#catat-murajaah-cepat">Catat Murāja‘ah</a>@if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))<a class="button ghost" href="{{ route('quran-practice.index') }}">Audio Qur’an</a>@endif</div>
 </div>
 <div class="stats-grid four">
     <div class="stat-card"><span>Target aktif</span><strong>{{ $summary['activeTargets'] }}</strong></div>
@@ -18,6 +19,7 @@ $soleActiveTargetId = $activeTargets->count() === 1 ? $activeTargets->first()?->
 @if($summary['nextReview'])
 <section class="card phase-highlight"><span class="eyebrow">BERIKUTNYA</span><h2>Murāja‘ah {{ $summary['nextReview']->surah?->name_latin }} {{ $summary['nextReview']->start_verse }}–{{ $summary['nextReview']->end_verse }}</h2><p>{{ $summary['nextReview']->review_date?->format('d M Y') }} · {{ $summary['nextReview']->notes ?: 'Ikuti kondisi hafalan saat pertemuan.' }}</p></section>
 @endif
+<details class="card legacy-detailed-entry"><summary><b>Perencanaan siklus dan jadwal manual</b><span>Buka bila perlu menyiapkan siklus atau jadwal di luar alur harian.</span></summary>
 <div class="grid two">
 <section class="card">
 <h2>Mulai / lanjutkan siklus belajar</h2>
@@ -40,6 +42,60 @@ $soleActiveTargetId = $activeTargets->count() === 1 ? $activeTargets->first()?->
 <button class="button primary">Simpan jadwal</button></form>
 </section>
 </div>
+</details>
+<section class="card phase-highlight" id="setoran-tanpa-distraksi">
+    <div class="section-head"><div><span class="eyebrow">SETORAN TANPA DISTRAKSI</span><h2>Dengarkan dahulu, koreksi langsung, catat kesimpulannya.</h2><p class="hint">Saat anak membaca, jangan isi apa pun. Setelah selesai, pilih satu keputusan dan catatan singkat bila perlu.</p></div></div>
+    @if($activeFocus)
+        @php($focusLabels=['accuracy'=>'Ketepatan lafaz & urutan','fluency'=>'Kelancaran','independence'=>'Kemandirian','makhraj_tajwid'=>'Makhraj & tajwid dominan','retention'=>'Kekuatan setelah jeda'])
+        <div class="focus-reminder"><b>Fokus {{ $student->nickname ?: $student->full_name }}:</b> {{ $focusLabels[$activeFocus->focus_key] ?? $activeFocus->focus_key }} @if($activeFocus->notes)<span>· {{ $activeFocus->notes }}</span>@endif</div>
+    @endif
+    <div class="grid two">
+        <div class="card soft-card" id="catat-setoran-cepat"><h3>Hasil setoran</h3>
+            @include('teacher.tahfizh.partials.quick-memorization-form',[
+                'quickAction'=>route('teacher.tahfizh.quick-memorization.store',$student),
+                'quickTargets'=>$activeTargets,
+                'quickSurahs'=>$surahs,
+                'quickAutoTargetId'=>$soleActiveTargetId,
+            ])
+        </div>
+        <div class="card soft-card" id="catat-murajaah-cepat"><h3>Hasil Murāja‘ah</h3>
+            @include('teacher.tahfizh.partials.quick-murajaah-form',[
+                'quickAction'=>route('teacher.tahfizh.quick-murajaah.store',$student),
+                'quickReviewPlans'=>$reviewPlans->where('status','scheduled'),
+                'quickSurahs'=>$surahs,
+            ])
+        </div>
+    </div>
+</section>
+<div class="grid two">
+<section class="card">
+    <div class="section-head"><div><h2>Tangga Fokus</h2><p class="hint">Satu fokus aktif per anak; tidak perlu dinilai pada setiap setoran.</p></div><span>{{ $activeFocus ? 'Aktif' : 'Belum dipilih' }}</span></div>
+    <form class="stack compact" method="post" action="{{ route('teacher.tahfizh.focus.update',$student) }}">@csrf @method('PUT')
+        <label>Fokus pembinaan<select name="focus_key" required>
+            <option value="accuracy" @selected($activeFocus?->focus_key==='accuracy')>1 · Ketepatan lafaz dan urutan</option>
+            <option value="fluency" @selected($activeFocus?->focus_key==='fluency')>2 · Kelancaran menyambung ayat</option>
+            <option value="independence" @selected($activeFocus?->focus_key==='independence')>3 · Kemandirian tanpa bantuan</option>
+            <option value="makhraj_tajwid" @selected($activeFocus?->focus_key==='makhraj_tajwid')>4 · Makhraj dan tajwid dominan</option>
+            <option value="retention" @selected($activeFocus?->focus_key==='retention')>5 · Kekuatan setelah jeda/uji acak</option>
+        </select></label>
+        <label>Pengingat singkat <small>(opsional)</small><input name="notes" maxlength="1000" value="{{ $activeFocus?->notes }}" placeholder="Contoh: latihan sambung ayat tanpa pancingan"></label>
+        <button class="button secondary">Tetapkan fokus</button>
+    </form>
+</section>
+<details class="card"><summary><b>Asesmen berkala lima aspek</b><span>Gunakan saat awal, bulanan, tasmi‘, ujian, atau kenaikan tahap.</span></summary>
+    <form class="stack compact" method="post" action="{{ route('teacher.tahfizh.assessments.store',$student) }}">@csrf
+        <div class="form-grid"><label>Jenis<select name="assessment_type"><option value="monthly">Bulanan</option><option value="initial">Asesmen awal</option><option value="completion">Selesai surat/tahap</option><option value="tasmi">Tasmi‘</option><option value="exam">Ujian</option><option value="stagnation">Evaluasi hambatan</option></select></label><label>Tanggal<input type="date" name="assessed_on" value="{{ today()->toDateString() }}" required></label></div>
+        @php($assessmentLevels=['strong'=>'Kuat','developing'=>'Berkembang','needs_support'=>'Perlu dukungan'])
+        @foreach(['accuracy_status'=>'Ketepatan','fluency_status'=>'Kelancaran','independence_status'=>'Kemandirian','makhraj_tajwid_status'=>'Makhraj & tajwid','retention_status'=>'Daya tahan hafalan'] as $field=>$label)
+            <label>{{ $label }}<select name="{{ $field }}" required>@foreach($assessmentLevels as $value=>$text)<option value="{{ $value }}">{{ $text }}</option>@endforeach</select></label>
+        @endforeach
+        <label>Saran fokus berikutnya<select name="recommended_focus"><option value="">Belum ditentukan</option><option value="accuracy">Ketepatan</option><option value="fluency">Kelancaran</option><option value="independence">Kemandirian</option><option value="makhraj_tajwid">Makhraj & tajwid</option><option value="retention">Daya tahan hafalan</option></select></label>
+        <label>Ringkasan<textarea name="summary" rows="3" maxlength="3000"></textarea></label>
+        <button class="button primary">Simpan asesmen berkala</button>
+    </form>
+</details>
+</div>
+<details class="card legacy-detailed-entry"><summary><b>Pencatatan rinci untuk tasmi‘, ujian, atau kasus khusus</b><span>Form lama tetap tersedia dan data lama tidak dihapus.</span></summary>
 <section class="card">
 <div class="section-head"><div><span class="eyebrow">ALUR TERPADU</span><h2>Catat hasil tanpa keluar dari perjalanan santri</h2><p class="hint">Gunakan halaman ini untuk pencatatan individual. Operasional Hari Ini tetap cocok untuk pencatatan satu kelas secara massal.</p></div></div>
 <div class="grid two">
@@ -70,6 +126,7 @@ $soleActiveTargetId = $activeTargets->count() === 1 ? $activeTargets->first()?->
 </div>
 </div>
 </section>
+</details>
 <section class="card"><div class="section-head"><div><h2>Siklus belajar</h2><p class="hint">Status menjelaskan posisi proses, bukan nilai anak.</p></div><span>{{ $cycles->count() }}</span></div>
 @forelse($cycles as $cycle)<div class="list-row"><div><strong>{{ ucfirst(str_replace('_',' ',$cycle->cycle_type)) }} · {{ $cycle->target?->surah?->name_latin ?? 'Tanpa target terkait' }}</strong><small>{{ ucfirst(str_replace('_',' ',$cycle->preparation_method)) }} · {{ ucfirst(str_replace('_',' ',$cycle->status)) }}</small><p>{{ $cycle->teacher_guidance }} {{ $cycle->guardian_guidance }}</p></div><form class="inline-form" method="post" action="{{ route('teacher.tahfizh.cycles.update',$cycle) }}">@csrf @method('PUT')<select name="status"><option value="preparing" @selected($cycle->status==='preparing')>Persiapan</option><option value="ready" @selected($cycle->status==='ready')>Siap</option><option value="submitted" @selected($cycle->status==='submitted')>Sudah setoran</option><option value="strengthening" @selected($cycle->status==='strengthening')>Penguatan</option><option value="completed" @selected($cycle->status==='completed')>Selesai</option><option value="paused" @selected($cycle->status==='paused')>Jeda</option><option value="cancelled" @selected($cycle->status==='cancelled')>Dibatalkan</option></select><input type="hidden" name="teacher_guidance" value="{{ $cycle->teacher_guidance }}"><input type="hidden" name="guardian_guidance" value="{{ $cycle->guardian_guidance }}"><button class="button small secondary">Simpan</button></form></div>@empty<p class="empty">Belum ada siklus belajar.</p>@endforelse
 </section>

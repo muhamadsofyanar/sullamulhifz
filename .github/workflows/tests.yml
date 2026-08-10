@@ -1,3 +1,4 @@
+# @phase 6.0 Safe release startup gate
 name: Tests
 
 on:
@@ -24,6 +25,10 @@ jobs:
       - name: Bootstrap and route smoke test
         run: |
           sh -n scripts/container-start.sh
+          grep -F 'RUN_RELEASE_TASKS:-false' scripts/container-start.sh
+          grep -F 'MUSHAF_LINE_AUTO_SYNC:-false' scripts/container-start.sh
+          grep -F 'QURAN_AUDIO_AUTO_SYNC:-false' scripts/container-start.sh
+          grep -F 'migrate --isolated --force' scripts/container-start.sh
           php artisan package:discover --ansi
           php artisan route:list --no-ansi > /tmp/sullam-routes.txt
       - name: Compile and lint Blade views

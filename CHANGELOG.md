@@ -1,3 +1,14 @@
+# v6.0.0 — Gratis, Infak Sukarela & Setoran Tanpa Distraksi — 2026-08-10
+
+- Menjadikan seluruh fungsi inti tersedia tanpa subscription; pembuatan invoice langganan baru ditutup, sedangkan histori v5 tetap dipertahankan.
+- Menambah ledger infak sukarela terpisah, idempotensi per pengguna, verifikasi admin, bukti penerimaan, dan ringkasan dana terverifikasi tanpa perubahan entitlement.
+- Menambah alur setoran harian dan Murāja‘ah cepat dengan keputusan Lanjut/Kuatkan/Ulang serta penjadwalan review otomatis.
+- Menambah Tangga Fokus individual dan asesmen berkala lima aspek tanpa skor atau ranking.
+- Menambah ringkasan progres keluarga berbasis consent serta mempertahankan form pencatatan rinci lama.
+- Memperketat status akun lintas workspace, pemisahan domain API, dan opt-in katalog Academy publik.
+- Mengubah startup web replica agar release task dan sinkronisasi berat tidak berjalan otomatis pada setiap replica.
+- Menambah migration additive `007000_free_infaq_distraction_free_v600`, verifier `sullam:verify-release-v600`, tes regresi v6, dan panduan upgrade/rollback operasional.
+
 # v5.3.0 — Empat Fase, Satu Deploy — 2026-08-10
 
 - Menggabungkan Fase 9–12 dalam satu kandidat deploy dari baseline v4.9.0.

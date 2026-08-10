@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-/** @phase 5.0 Business, Payment & Integrations */
+/** @phase 5.0 Business, Payment & Integrations; @phase 6.0 Free core access */
 
 use App\Models\BillingInvoice;
 use App\Models\BillingPlan;
@@ -63,6 +63,11 @@ class BusinessBillingService
 
     public function createSubscriptionInvoice(User $user, BillingPlan $plan): BillingInvoice
     {
+        if (! config('sullam.subscriptions_enabled', false)) {
+            throw ValidationException::withMessages([
+                'plan' => 'Langganan baru sudah ditutup. Seluruh fungsi inti kini gratis; dukungan dapat diberikan secara sukarela melalui menu Infak.',
+            ]);
+        }
         abort_unless($plan->status === 'active', 404);
         abort_unless($plan->institution_id === null || (int) $plan->institution_id === (int) $user->institution_id, 404);
 
@@ -205,12 +210,16 @@ class BusinessBillingService
 
     public function entitlements(User $user): array
     {
-        return $this->activeSubscriptions($user)
+        $historical = $this->activeSubscriptions($user)
             ->flatMap(fn (BillingSubscription $subscription) => $subscription->entitlement_snapshot ?? [])
             ->filter(fn ($value) => is_string($value) && $value !== '')
-            ->unique()
-            ->values()
             ->all();
+
+        return collect(array_merge([
+            'personal_core', 'learning_hub', 'quran_practice', 'quran_journey',
+            'guided_learning', 'academy', 'mentorship', 'guided_review',
+            'institution_suite', 'communications', 'reports', 'operations',
+        ], $historical))->unique()->values()->all();
     }
 
     private function endDate(string $cycle)

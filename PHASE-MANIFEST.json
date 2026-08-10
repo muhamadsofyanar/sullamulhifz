@@ -1,5 +1,5 @@
 {
-  "release": "v5.3.0",
+  "release": "v6.0.0",
   "base_release": "v4.1.0",
   "tracking_policy": "Every runtime, migration, view, asset, and test introduced or changed by a roadmap phase is listed here and carries an @phase annotation.",
   "phases": {
@@ -65,6 +65,10 @@
     },
     "5.3": {
       "name": "Mobile, Offline-safe & Global Preferences",
+      "status": "completed"
+    },
+    "6.0": {
+      "name": "Free, Voluntary Infaq & Distraction-Free Tahfizh",
       "status": "completed"
     }
   },
@@ -841,6 +845,126 @@
       "phases": [
         "5.3"
       ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/GuardianController.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/InfaqController.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Http/Controllers/InfaqController.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Http/Controllers/Teacher/MeetingController.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Http/Controllers/Teacher/MemorizationFocusController.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Http/Controllers/Teacher/TahfizhController.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Http/Middleware/EnforceDomainSeparation.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Models/InfaqTransaction.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Models/MemorizationRecord.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Models/MurajaahRecord.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Models/Student.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Models/StudentMemorizationAssessment.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Models/StudentMemorizationFocus.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Services/DistractionFreeSubmissionService.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Services/InfaqService.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "app/Services/MemorizationSummaryService.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "config/sullam.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "database/migrations/2026_08_10_007000_free_infaq_distraction_free_v600.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "public/css/app.css",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "resources/views/admin/infaq/index.blade.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "resources/views/infaq/index.blade.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "resources/views/teacher/meetings/show.blade.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "resources/views/teacher/tahfizh/partials/quick-memorization-form.blade.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "resources/views/teacher/tahfizh/partials/quick-murajaah-form.blade.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "resources/views/teacher/tahfizh/student.blade.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "tests/Feature/DomainSeparationTest.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "tests/Feature/FreeInfaqDistractionFreeV600Test.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "resources/views/public/privacy.blade.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": "resources/views/public/terms.blade.php",
+      "phases": ["6.0"]
+    },
+    {
+      "path": ".github/workflows/tests.yml",
+      "phases": ["6.0"]
     }
   ]
 }

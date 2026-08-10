@@ -1,0 +1,29 @@
+SULLAMUL HIFZ v6.0.0 — GRATIS, INFAK SUKARELA, SETORAN TANPA DISTRAKSI
+
+1. Backup database + persistent storage dan pastikan prosedur restore tersedia.
+2. Set web replica: SUBSCRIPTIONS_ENABLED=false, RUN_RELEASE_TASKS=false,
+   QURAN_AUDIO_AUTO_SYNC=false, MUSHAF_LINE_AUTO_SYNC=false.
+3. Upload/push paket ke GitHub dan tunggu semua GitHub Actions hijau.
+4. Dari SATU release job/terminal operator:
+   php artisan down --render="errors::503"
+   php artisan migrate --isolated --force
+   php artisan optimize:clear
+   php artisan config:cache
+   php artisan view:cache
+   php artisan up
+   php artisan sullam:verify-release-v600
+5. Redeploy/roll web replica dengan RUN_RELEASE_TASKS=false.
+6. Smoke test: setoran cepat 3 keputusan, retry, form rinci lama, Tangga Fokus,
+   asesmen berkala, ringkasan keluarga sesuai consent, infak, isolasi API,
+   dan opt-in Academy publik.
+
+YANG TETAP ADA:
+- seluruh data dan modul v5.3;
+- form setoran/Murajaah rinci;
+- histori paket, subscription, invoice, dan payment lama.
+
+JANGAN:
+- menjalankan release task pada setiap web replica;
+- menyalakan kembali subscription baru pada mode v6;
+- memakai infak sebagai syarat akses;
+- menjalankan migrate:fresh, db:wipe, atau rollback migration tanpa backup.

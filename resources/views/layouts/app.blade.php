@@ -1,4 +1,4 @@
-{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology; @phase 4.5 Personal 2.0 styles; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration; @phase 5.0 Business; @phase 5.1 SaaS Readiness; @phase 5.2 Smart Assistant; @phase 5.3 Mobile & Global --}}
+{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology; @phase 4.5 Personal 2.0 styles; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration; @phase 5.0 Business; @phase 5.1 SaaS Readiness; @phase 5.2 Smart Assistant; @phase 5.3 Mobile & Global; @phase 6.0 Free & Voluntary Infaq --}}
 <!doctype html>
 <html lang="{{ auth()->check() ? (auth()->user()->preference?->locale ?? 'id') : 'id' }}" dir="{{ auth()->check() && (auth()->user()->preference?->locale ?? 'id') === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
@@ -66,8 +66,9 @@
                 <x-icon name="home"/><span>Beranda</span>
             </a>
             <a href="{{ route('relationships.index') }}" class="{{ request()->routeIs('relationships.*') ? 'active' : '' }}"><x-icon name="community"/><span>Hubungan Saya</span></a>
+            <a href="{{ route('infaq.index') }}" class="{{ request()->routeIs('infaq.*') ? 'active' : '' }}"><x-icon name="achievement"/><span>Dukung melalui Infak</span></a>
             @if(auth()->user()->hasAnyRole(['personal','teacher','institution_admin','superadmin']) && \App\Support\Feature::enabled('business_center', auth()->user()->institution_id, true))
-            <a href="{{ route('business.index') }}" class="{{ request()->routeIs('business.*') ? 'active' : '' }}"><x-icon name="report"/><span>Paket & Layanan</span></a>
+            <a href="{{ route('business.index') }}" class="{{ request()->routeIs('business.*') ? 'active' : '' }}"><x-icon name="report"/><span>Riwayat Paket Lama</span></a>
             @endif
             @if(auth()->user()->hasRole('personal'))
                 <a href="{{ route('mentorship.index') }}" class="{{ request()->routeIs('mentorship.*') ? 'active' : '' }}"><x-icon name="teacher"/><span>Ustadz Privat</span></a>
@@ -104,6 +105,7 @@
                 <a href="{{ route('admin.workspaces.index') }}" class="{{ request()->routeIs('admin.workspaces.*') ? 'active' : '' }}"><x-icon name="community"/><span>Ruang & Lembaga</span></a>
                 @endif
                 <a href="{{ route('admin.institution-suite.index') }}" class="{{ request()->routeIs('admin.institution-suite.*') ? 'active' : '' }}"><x-icon name="community"/><span>Suite Lembaga</span></a>
+                <a href="{{ route('admin.infaq.index') }}" class="{{ request()->routeIs('admin.infaq.*') ? 'active' : '' }}"><x-icon name="achievement"/><span>Tata Kelola Infak</span></a>
                 <a href="{{ route('admin.students.index') }}" class="{{ request()->routeIs('admin.students.*') ? 'active' : '' }}" @if(request()->routeIs('admin.students.*')) aria-current="page" @endif>
                     <x-icon name="student"/><span>{{ $termStudent }}</span>
                 </a>

@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers\Admin;
 
+/** @phase 6.0 Workspace-scoped guardian status hardening */
+
 use App\Http\Controllers\Controller;
 use App\Models\Guardian;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\View\View;
+use Illuminate\Support\Facades\DB;
 
 class GuardianController extends Controller
 {
@@ -55,8 +58,20 @@ class GuardianController extends Controller
                 'name' => $data['full_name'],
                 'phone' => $data['phone'],
                 'email' => $data['email'],
-                'status' => $data['status'],
             ]);
+            DB::table('workspace_memberships')
+                ->where('institution_id', $guardian->institution_id)
+                ->where('user_id', $guardian->user_id)
+                ->update([
+                    'status' => $data['status'],
+                    'left_at' => $data['status'] === 'inactive' ? now() : null,
+                    'updated_at' => now(),
+                ]);
+            DB::table('user_roles')
+                ->where('institution_id', $guardian->institution_id)
+                ->where('user_id', $guardian->user_id)
+                ->whereIn('role_id', DB::table('roles')->where('name', 'guardian')->select('id'))
+                ->update(['status' => $data['status'], 'updated_at' => now()]);
         }
 
         return back()->with('success', 'Profil wali berhasil diperbarui.');
