@@ -1,6 +1,6 @@
-# Phase Registry — v4.8.0
+# Phase Registry — v4.9.0
 
-`@phase 4.2` · `@phase 4.3` · `@phase 4.4` · `@phase 4.5` · `@phase 4.6` · `@phase 4.7` · `@phase 4.8`
+`@phase 4.2` · `@phase 4.3` · `@phase 4.4` · `@phase 4.5` · `@phase 4.6` · `@phase 4.7` · `@phase 4.8` · `@phase 4.9`
 
 Registry ini menjadi sumber kebenaran manusia untuk mengetahui fitur dan file berasal dari fase mana. Pasangannya, `PHASE-MANIFEST.json`, digunakan oleh pemeriksaan otomatis.
 
@@ -23,6 +23,7 @@ Registry ini menjadi sumber kebenaran manusia untuk mengetahui fitur dan file be
 | 5 | v4.6.0 | Completed | Ustadz Privat: consent, scope data, jadwal sesi, catatan Ustadz, dan guardrail pengguna minor |
 | 6 | v4.7.0 | Completed | Suite Lembaga: readiness, direktori anggota, invitation ledger, penerimaan peran, dan suspend terisolasi |
 | 7 | v4.8.0 | Completed | Portal Keluarga: relasi anak–wali, batas akses milik anak, ringkasan progres, dan catatan dukungan privat |
+| 8 | v4.9.0 | Completed | Learning & Academy Integration: Ruang Belajar terpadu, ringkasan lintas mesin belajar, target Personal, Ustadz, Academy, dan tugas lembaga tanpa duplikasi data |
 
 ## Peta ketergantungan
 
@@ -33,6 +34,7 @@ Registry ini menjadi sumber kebenaran manusia untuk mengetahui fitur dan file be
 - Fase 4.6 memakai `user_relationships` sebagai consent ledger dan tidak menyalin profil Personal ke ruang Ustadz.
 - Fase 4.7 mengaktifkan `workspace_invitations` serta `workspace_memberships`; status anggota selalu diubah per lembaga, bukan pada akun global.
 - Fase 4.8 memakai hubungan global anak–wali agar keluarga dapat mendampingi Personal tanpa harus menjadi lembaga.
+- Fase 4.9 tidak membuat storage pembelajaran baru; ia merangkum mesin yang sudah ada dan tetap mengikuti permission, consent, enrollment, serta membership aktif.
 - `users.institution_id` belum dihapus; nilainya tetap menjadi fallback untuk modul lama, sedangkan konteks aktif ditentukan oleh session dan membership.
 
 ## Cara memeriksa

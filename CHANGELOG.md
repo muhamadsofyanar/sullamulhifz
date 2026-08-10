@@ -1,3 +1,13 @@
+# v4.9.0 — Ruang Belajar Terpadu — 2026-08-10
+
+- Menyelesaikan implementasi Fase 8 Product Expansion Track: Learning & Academy Integration.
+- Menambah **Ruang Belajar** sebagai integration layer Personal untuk Latihan Qur’an, Qur’an Journey, Program Asatidz, Academy, target Personal, sesi Ustadz Privat, dan tugas lembaga.
+- Menjaga semua mesin lama tetap menjadi sumber data; tidak ada tabel duplikat dan tidak ada migration baru.
+- Membatasi rekomendasi Academy pada akun yang memang memiliki akses Academy aktif.
+- Membatasi tugas lembaga pada workspace dengan membership aktif dan sesi Ustadz pada relasi `mentor_learner` yang masih accepted.
+- Menambah verifier `sullam:verify-learning-hub-v490`, test isolasi target dua akun, Phase Manifest v4.9, dan panduan deploy/rollback.
+- Jurnal Personal dan isi portofolio tidak dibuka otomatis oleh integration layer.
+
 # v4.4.3 — Blade Directive Structure Hotfix — 2026-08-09
 
 - Memperbaiki kegagalan `php-tests` dengan pesan `unexpected token "endforeach"` pada compiled Blade.

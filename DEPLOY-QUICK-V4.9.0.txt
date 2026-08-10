@@ -1,0 +1,16 @@
+SULLAMUL HIFZ v4.9.0 — DEPLOY CEPAT
+
+1. Backup database dan volume storage.
+2. Upload isi folder sullamulhifz-main ke root GitHub.
+3. Commit: Release Sullamul Hifz v4.9.0 — Ruang Belajar Terpadu.
+4. Tunggu php-tests, docker-build, dan Release Documentation Check hijau.
+5. Redeploy Coolify satu kali.
+6. Pastikan log memakai commit terbaru dan berakhir Rolling update completed.
+7. Jalankan:
+   php artisan migrate:status
+   php artisan sullam:verify-expansion-v480
+   php artisan sullam:verify-learning-hub-v490
+8. Login akun Personal dan smoke test menu Ruang Belajar.
+
+v4.9.0 TIDAK memiliki migration baru.
+JANGAN jalankan migrate:fresh, db:wipe, atau seeder demo.

@@ -2,7 +2,7 @@
 
 **Bukan Sekadar Hafal, Tapi KUAT.**
 
-Rilis kandidat: **v4.4.0 — Universal Product, Identity Core & Multi-tenant Foundation**.
+Rilis kandidat: **v4.9.0 — Ruang Belajar Terpadu**.
 
 Sullamul Ḥifẓ adalah platform web responsif/PWA untuk perjalanan Al-Qur’an secara personal, bersama ustadz, bersama keluarga, atau melalui lembaga. TPA Al-Insyirah adalah implementasi pertama dan studi kasus, bukan identitas utama produk.
 
@@ -25,6 +25,7 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk perjalanan Al-Qur’an
 - satu akun dengan beberapa workspace, pemilih konteks, dan relasi berbasis persetujuan;
 - onboarding multi-tenant untuk TPA, sekolah, pesantren, kampus, serta komunitas dengan istilah dan branding adaptif;
 - phase registry dan manifest otomatis agar asal fase setiap file pengembangan dapat diaudit.
+- Ruang Belajar Terpadu v4.9: ringkasan Personal atas Latihan Qur’an, Qur’an Journey, Program Asatidz, Academy, target, arahan Ustadz Privat, dan tugas lembaga tanpa menggandakan data privat.
 
 ## Stack
 
@@ -45,8 +46,8 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk perjalanan Al-Qur’an
 ## Mulai dari sini
 
 1. [`START-HERE.md`](START-HERE.md)
-2. [`UPGRADE-V4.4.0.md`](UPGRADE-V4.4.0.md)
-3. [`DEPLOY-QUICK-V4.4.0.txt`](DEPLOY-QUICK-V4.4.0.txt)
+2. [`UPGRADE-V4.9.0.md`](UPGRADE-V4.9.0.md)
+3. [`DEPLOY-QUICK-V4.9.0.txt`](DEPLOY-QUICK-V4.9.0.txt)
 4. [`docs/CURRENT-STATE.md`](docs/CURRENT-STATE.md)
 5. [`docs/ROADMAP-10-PHASES-V2.6.0.md`](docs/ROADMAP-10-PHASES-V2.6.0.md)
 6. [`docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md`](docs/PRODUCT-P1-PUBLIC-PERSONAL-V3.0.0.md)
@@ -60,4 +61,4 @@ Sullamul Ḥifẓ adalah platform web responsif/PWA untuk perjalanan Al-Qur’an
 - pertahankan persistent volume `storage/app` saat mengganti image/container;
 - aktifkan SMTP atau Mailketing API dari Pusat Komunikasi agar reset kata sandi dapat dikirim melalui email.
 
-Upgrade v4.4.0 bersifat additive terhadap v4.1.0. Data lembaga, pembelajaran, media, workspace Personal, dan ledger komunikasi tetap dipertahankan. `users.institution_id` masih digunakan sebagai fallback kompatibilitas selama modul lama beralih ke membership.
+Upgrade v4.9.0 bersifat additive terhadap v4.8.0 dan tidak memiliki migration baru. Data lembaga, pembelajaran, media, workspace Personal, hubungan Ustadz/Keluarga, dan ledger komunikasi tetap dipertahankan. `users.institution_id` masih digunakan sebagai fallback kompatibilitas selama modul lama beralih ke membership.

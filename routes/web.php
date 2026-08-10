@@ -1,6 +1,6 @@
 <?php
 
-/** @phase 4.2 Public Positioning; @phase 4.3 Identity Core; @phase 4.4 Multi-tenant; @phase 4.5 Personal 2.0; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal */
+/** @phase 4.2 Public Positioning; @phase 4.3 Identity Core; @phase 4.4 Multi-tenant; @phase 4.5 Personal 2.0; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration */
 
 use App\Http\Controllers\Admin\AcademicController;
 use App\Http\Controllers\Admin\AcademicCoreController;
@@ -28,6 +28,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountInvitationController;
 use App\Http\Controllers\PasswordResetController;
 use App\Http\Controllers\PersonalController;
+use App\Http\Controllers\PersonalLearningHubController;
 use App\Http\Controllers\PersonalGuidedLearningController;
 use App\Http\Controllers\PersonalProgramController;
 use App\Http\Controllers\PersonalExperienceController;
@@ -202,6 +203,7 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
     Route::prefix('personal')->name('personal.')->middleware('role:personal')->group(function (): void {
         Route::get('/', [PersonalController::class, 'index'])->middleware('permission:personal.use')->name('dashboard');
         Route::get('/program', [PersonalProgramController::class, 'index'])->middleware('permission:personal.use')->name('programs.index');
+        Route::get('/ruang-belajar', [PersonalLearningHubController::class, 'index'])->middleware('permission:personal.use')->name('learning-hub.index'); // @phase 4.9
         Route::post('/program-saya/{moduleKey}/aktifkan', [PersonalProgramController::class, 'enroll'])->middleware('permission:personal.use')->name('programs.enroll');
         Route::delete('/program-saya/{moduleKey}', [PersonalProgramController::class, 'deactivate'])->middleware('permission:personal.use')->name('programs.deactivate');
         Route::put('/onboarding', [PersonalController::class, 'onboarding'])->middleware('permission:personal.use')->name('onboarding');

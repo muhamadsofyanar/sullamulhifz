@@ -1,0 +1,32 @@
+Sullamul Hifz v4.9.0 — Ruang Belajar Terpadu
+
+BARU
+- app/Services/UnifiedLearningHubService.php
+- app/Http/Controllers/PersonalLearningHubController.php
+- resources/views/personal/learning-hub.blade.php
+- public/css/app-v490.css
+- tests/Feature/LearningAcademyIntegrationV490Test.php
+- UPGRADE-V4.9.0.md
+- DEPLOY-QUICK-V4.9.0.txt
+- BUILD-REPORT-V4.9.0.md
+- docs/releases/v4.9.0.md
+
+DIUBAH
+- routes/web.php
+- routes/console.php
+- resources/views/layouts/app.blade.php
+- resources/views/personal/dashboard.blade.php
+- scripts/container-start.sh
+- PHASE-MANIFEST.json
+- docs/PHASE-REGISTRY.md
+- docs/CURRENT-STATE.md
+- docs/ROADMAP.md
+- README.md
+- START-HERE.md
+- UPLOAD-TO-GITHUB.md
+- CHANGELOG.md
+- RELEASE
+- public/release.txt
+
+DATABASE
+- Tidak ada migration baru.

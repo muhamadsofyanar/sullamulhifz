@@ -1,100 +1,576 @@
 {
-  "release": "v4.8.0",
+  "release": "v4.9.0",
   "base_release": "v4.1.0",
   "tracking_policy": "Every runtime, migration, view, asset, and test introduced or changed by a roadmap phase is listed here and carries an @phase annotation.",
   "phases": {
-    "4.2": {"name": "Brand & Universal Home", "status": "completed"},
-    "4.3": {"name": "Identity & Relationship Core", "status": "completed"},
-    "4.4": {"name": "Multi-tenant Institution Foundation", "status": "completed"},
-    "4.4.1": {"name": "Blade Communication Template Hotfix", "status": "completed"},
-    "4.4.2": {"name": "Blade Compilation & Release Docs Hotfix", "status": "completed"},
-    "4.4.3": {"name": "Blade Directive Structure Hotfix", "status": "completed"},
-    "4.4.4": {"name": "PHPUnit Test Suite Configuration Hotfix", "status": "completed"},
-    "4.5": {"name": "Personal 2.0 — Every Person, Every Aspiration", "status": "verified"},
-    "4.6": {"name": "Private Ustadz", "status": "completed"},
-    "4.7": {"name": "Institution Suite", "status": "completed"},
-    "4.8": {"name": "Family & Parent Portal", "status": "completed"}
+    "4.2": {
+      "name": "Brand & Universal Home",
+      "status": "completed"
+    },
+    "4.3": {
+      "name": "Identity & Relationship Core",
+      "status": "completed"
+    },
+    "4.4": {
+      "name": "Multi-tenant Institution Foundation",
+      "status": "completed"
+    },
+    "4.4.1": {
+      "name": "Blade Communication Template Hotfix",
+      "status": "completed"
+    },
+    "4.4.2": {
+      "name": "Blade Compilation & Release Docs Hotfix",
+      "status": "completed"
+    },
+    "4.4.3": {
+      "name": "Blade Directive Structure Hotfix",
+      "status": "completed"
+    },
+    "4.4.4": {
+      "name": "PHPUnit Test Suite Configuration Hotfix",
+      "status": "completed"
+    },
+    "4.5": {
+      "name": "Personal 2.0 — Every Person, Every Aspiration",
+      "status": "verified"
+    },
+    "4.6": {
+      "name": "Private Ustadz",
+      "status": "completed"
+    },
+    "4.7": {
+      "name": "Institution Suite",
+      "status": "completed"
+    },
+    "4.8": {
+      "name": "Family & Parent Portal",
+      "status": "completed"
+    },
+    "4.9": {
+      "name": "Learning & Academy Integration",
+      "status": "completed"
+    }
   },
   "files": [
-    {"path": "app/Http/Controllers/PublicSiteController.php", "phases": ["4.2"]},
-    {"path": "resources/views/public/home.blade.php", "phases": ["4.2", "4.5"]},
-    {"path": "resources/views/public/programs.blade.php", "phases": ["4.2"]},
-    {"path": "resources/views/public/academy.blade.php", "phases": ["4.2"]},
-    {"path": "resources/views/public/article.blade.php", "phases": ["4.2"]},
-    {"path": "resources/views/public/solution.blade.php", "phases": ["4.2"]},
-    {"path": "resources/views/public/features.blade.php", "phases": ["4.2"]},
-    {"path": "resources/views/public/pricing.blade.php", "phases": ["4.2"]},
-    {"path": "resources/views/layouts/public.blade.php", "phases": ["4.2", "4.5"]},
-    {"path": "public/css/public.css", "phases": ["4.2"]},
-    {"path": "tests/Feature/PublicPositioningV420Test.php", "phases": ["4.2"]},
-
-    {"path": "app/Models/User.php", "phases": ["4.3", "4.5"]},
-    {"path": "app/Models/Institution.php", "phases": ["4.3", "4.4"]},
-    {"path": "app/Models/WorkspaceMembership.php", "phases": ["4.3"]},
-    {"path": "app/Models/UserRelationship.php", "phases": ["4.3", "4.6", "4.8"]},
-    {"path": "app/Models/WorkspaceInvitation.php", "phases": ["4.3"]},
-    {"path": "app/Http/Middleware/ResolveWorkspaceContext.php", "phases": ["4.3"]},
-    {"path": "app/Http/Middleware/EnsureWorkspaceOperational.php", "phases": ["4.4"]},
-    {"path": "app/Http/Controllers/WorkspaceContextController.php", "phases": ["4.3"]},
-    {"path": "app/Http/Controllers/RelationshipController.php", "phases": ["4.3", "4.6", "4.8"]},
-    {"path": "app/Http/Controllers/AuthController.php", "phases": ["4.3"]},
-    {"path": "app/Http/Controllers/PersonalRegistrationController.php", "phases": ["4.3", "4.4", "4.5"]},
-    {"path": "resources/views/relationships/index.blade.php", "phases": ["4.3", "4.6", "4.8"]},
-    {"path": "resources/views/layouts/app.blade.php", "phases": ["4.3", "4.4", "4.5", "4.6", "4.7", "4.8"]},
-    {"path": "bootstrap/app.php", "phases": ["4.3", "4.4"]},
-    {"path": "app/Console/Commands/VerifyIdentityCore.php", "phases": ["4.3", "4.4"]},
-    {"path": "scripts/container-start.sh", "phases": ["4.3", "4.4", "4.5", "4.6", "4.7", "4.8"]},
-    {"path": "tests/Feature/WorkspaceContextV430Test.php", "phases": ["4.3", "4.8"]},
-
-    {"path": "app/Support/InstitutionType.php", "phases": ["4.4"]},
-    {"path": "app/Http/Controllers/InstitutionRegistrationController.php", "phases": ["4.4"]},
-    {"path": "app/Http/Controllers/Admin/WorkspaceController.php", "phases": ["4.4"]},
-    {"path": "app/Http/Controllers/Admin/InstitutionController.php", "phases": ["4.4"]},
-    {"path": "app/Http/Controllers/DashboardController.php", "phases": ["4.4", "4.5"]},
-    {"path": "database/migrations/2026_08_09_003000_identity_relationship_multitenant_v440.php", "phases": ["4.3", "4.4"]},
-    {"path": "database/seeders/ProductionSeeder.php", "phases": ["4.4"]},
-    {"path": "resources/views/auth/register-institution.blade.php", "phases": ["4.4"]},
-    {"path": "resources/views/admin/workspaces/index.blade.php", "phases": ["4.4"]},
-    {"path": "resources/views/admin/institution/edit.blade.php", "phases": ["4.4"]},
-    {"path": "resources/views/dashboard/onboarding.blade.php", "phases": ["4.4"]},
-    {"path": "public/css/app-v440.css", "phases": ["4.3", "4.4"]},
-    {"path": "tests/Feature/MultiTenantInstitutionV440Test.php", "phases": ["4.4"]},
-    {"path": "resources/views/admin/communications/index.blade.php", "phases": ["4.4.1", "4.4.2", "4.4.3"]},
-    {"path": "tests/Feature/CommunicationCenterV410Test.php", "phases": ["4.4.1"]},
-    {"path": "phpunit.xml", "phases": ["4.4.4"]},
-
-    {"path": "routes/web.php", "phases": ["4.2", "4.3", "4.4", "4.5", "4.6", "4.7", "4.8"]},
-    {"path": "Dockerfile", "phases": ["4.4", "4.4.1", "4.4.2", "4.4.3", "4.5", "4.6", "4.7", "4.8"]},
-
-    {"path": "app/Http/Controllers/PersonalController.php", "phases": ["4.5"]},
-    {"path": "app/Http/Controllers/PersonalExperienceController.php", "phases": ["4.5"]},
-    {"path": "app/Http/Controllers/Admin/GuidedQuranProgramController.php", "phases": ["4.5"]},
-    {"path": "app/Models/PersonalProfile.php", "phases": ["4.5"]},
-    {"path": "app/Services/PersonalJourneyService.php", "phases": ["4.5"]},
-    {"path": "app/Support/PersonalIdentity.php", "phases": ["4.5"]},
-    {"path": "database/migrations/2026_08_09_004000_personal_identity_portfolio_v450.php", "phases": ["4.5"]},
-    {"path": "resources/views/auth/register-personal.blade.php", "phases": ["4.5"]},
-    {"path": "resources/views/personal/dashboard.blade.php", "phases": ["4.5"]},
-    {"path": "resources/views/personal/journey.blade.php", "phases": ["4.5"]},
-    {"path": "public/css/app-v450.css", "phases": ["4.5"]},
-    {"path": "public/css/public-v450.css", "phases": ["4.5"]},
-    {"path": "routes/console.php", "phases": ["4.5", "4.6", "4.7", "4.8"]},
-    {"path": "tests/Feature/PersonalTwoV450Test.php", "phases": ["4.5"]},
-
-    {"path": "app/Http/Controllers/PrivateMentorshipController.php", "phases": ["4.6"]},
-    {"path": "app/Models/MentorshipSession.php", "phases": ["4.6"]},
-    {"path": "resources/views/mentorship/index.blade.php", "phases": ["4.6"]},
-
-    {"path": "app/Http/Controllers/Admin/InstitutionSuiteController.php", "phases": ["4.7"]},
-    {"path": "resources/views/admin/institution-suite/index.blade.php", "phases": ["4.7"]},
-    {"path": "resources/views/auth/accept-workspace.blade.php", "phases": ["4.7"]},
-
-    {"path": "app/Http/Controllers/FamilyPortalController.php", "phases": ["4.8"]},
-    {"path": "app/Models/FamilySupportNote.php", "phases": ["4.8"]},
-    {"path": "resources/views/family/index.blade.php", "phases": ["4.8"]},
-
-    {"path": "database/migrations/2026_08_10_005000_private_mentor_institution_family_v480.php", "phases": ["4.6", "4.7", "4.8"]},
-    {"path": "public/css/app-v480.css", "phases": ["4.6", "4.7", "4.8"]},
-    {"path": "tests/Feature/ProductExpansionV480Test.php", "phases": ["4.6", "4.7", "4.8"]}
+    {
+      "path": "app/Http/Controllers/PublicSiteController.php",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "resources/views/public/home.blade.php",
+      "phases": [
+        "4.2",
+        "4.5"
+      ]
+    },
+    {
+      "path": "resources/views/public/programs.blade.php",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "resources/views/public/academy.blade.php",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "resources/views/public/article.blade.php",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "resources/views/public/solution.blade.php",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "resources/views/public/features.blade.php",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "resources/views/public/pricing.blade.php",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "resources/views/layouts/public.blade.php",
+      "phases": [
+        "4.2",
+        "4.5"
+      ]
+    },
+    {
+      "path": "public/css/public.css",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "tests/Feature/PublicPositioningV420Test.php",
+      "phases": [
+        "4.2"
+      ]
+    },
+    {
+      "path": "app/Models/User.php",
+      "phases": [
+        "4.3",
+        "4.5"
+      ]
+    },
+    {
+      "path": "app/Models/Institution.php",
+      "phases": [
+        "4.3",
+        "4.4"
+      ]
+    },
+    {
+      "path": "app/Models/WorkspaceMembership.php",
+      "phases": [
+        "4.3"
+      ]
+    },
+    {
+      "path": "app/Models/UserRelationship.php",
+      "phases": [
+        "4.3",
+        "4.6",
+        "4.8"
+      ]
+    },
+    {
+      "path": "app/Models/WorkspaceInvitation.php",
+      "phases": [
+        "4.3"
+      ]
+    },
+    {
+      "path": "app/Http/Middleware/ResolveWorkspaceContext.php",
+      "phases": [
+        "4.3"
+      ]
+    },
+    {
+      "path": "app/Http/Middleware/EnsureWorkspaceOperational.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/WorkspaceContextController.php",
+      "phases": [
+        "4.3"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/RelationshipController.php",
+      "phases": [
+        "4.3",
+        "4.6",
+        "4.8"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/AuthController.php",
+      "phases": [
+        "4.3"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/PersonalRegistrationController.php",
+      "phases": [
+        "4.3",
+        "4.4",
+        "4.5"
+      ]
+    },
+    {
+      "path": "resources/views/relationships/index.blade.php",
+      "phases": [
+        "4.3",
+        "4.6",
+        "4.8"
+      ]
+    },
+    {
+      "path": "resources/views/layouts/app.blade.php",
+      "phases": [
+        "4.3",
+        "4.4",
+        "4.5",
+        "4.6",
+        "4.7",
+        "4.8",
+        "4.9"
+      ]
+    },
+    {
+      "path": "bootstrap/app.php",
+      "phases": [
+        "4.3",
+        "4.4"
+      ]
+    },
+    {
+      "path": "app/Console/Commands/VerifyIdentityCore.php",
+      "phases": [
+        "4.3",
+        "4.4"
+      ]
+    },
+    {
+      "path": "scripts/container-start.sh",
+      "phases": [
+        "4.3",
+        "4.4",
+        "4.5",
+        "4.6",
+        "4.7",
+        "4.8",
+        "4.9"
+      ]
+    },
+    {
+      "path": "tests/Feature/WorkspaceContextV430Test.php",
+      "phases": [
+        "4.3",
+        "4.8"
+      ]
+    },
+    {
+      "path": "app/Support/InstitutionType.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/InstitutionRegistrationController.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/WorkspaceController.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/InstitutionController.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/DashboardController.php",
+      "phases": [
+        "4.4",
+        "4.5"
+      ]
+    },
+    {
+      "path": "database/migrations/2026_08_09_003000_identity_relationship_multitenant_v440.php",
+      "phases": [
+        "4.3",
+        "4.4"
+      ]
+    },
+    {
+      "path": "database/seeders/ProductionSeeder.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "resources/views/auth/register-institution.blade.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "resources/views/admin/workspaces/index.blade.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "resources/views/admin/institution/edit.blade.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "resources/views/dashboard/onboarding.blade.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "public/css/app-v440.css",
+      "phases": [
+        "4.3",
+        "4.4"
+      ]
+    },
+    {
+      "path": "tests/Feature/MultiTenantInstitutionV440Test.php",
+      "phases": [
+        "4.4"
+      ]
+    },
+    {
+      "path": "resources/views/admin/communications/index.blade.php",
+      "phases": [
+        "4.4.1",
+        "4.4.2",
+        "4.4.3"
+      ]
+    },
+    {
+      "path": "tests/Feature/CommunicationCenterV410Test.php",
+      "phases": [
+        "4.4.1"
+      ]
+    },
+    {
+      "path": "phpunit.xml",
+      "phases": [
+        "4.4.4"
+      ]
+    },
+    {
+      "path": "routes/web.php",
+      "phases": [
+        "4.2",
+        "4.3",
+        "4.4",
+        "4.5",
+        "4.6",
+        "4.7",
+        "4.8",
+        "4.9"
+      ]
+    },
+    {
+      "path": "Dockerfile",
+      "phases": [
+        "4.4",
+        "4.4.1",
+        "4.4.2",
+        "4.4.3",
+        "4.5",
+        "4.6",
+        "4.7",
+        "4.8"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/PersonalController.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/PersonalExperienceController.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/GuidedQuranProgramController.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "app/Models/PersonalProfile.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "app/Services/PersonalJourneyService.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "app/Support/PersonalIdentity.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "database/migrations/2026_08_09_004000_personal_identity_portfolio_v450.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "resources/views/auth/register-personal.blade.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "resources/views/personal/dashboard.blade.php",
+      "phases": [
+        "4.5",
+        "4.9"
+      ]
+    },
+    {
+      "path": "resources/views/personal/journey.blade.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "public/css/app-v450.css",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "public/css/public-v450.css",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "routes/console.php",
+      "phases": [
+        "4.5",
+        "4.6",
+        "4.7",
+        "4.8",
+        "4.9"
+      ]
+    },
+    {
+      "path": "tests/Feature/PersonalTwoV450Test.php",
+      "phases": [
+        "4.5"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/PrivateMentorshipController.php",
+      "phases": [
+        "4.6"
+      ]
+    },
+    {
+      "path": "app/Models/MentorshipSession.php",
+      "phases": [
+        "4.6"
+      ]
+    },
+    {
+      "path": "resources/views/mentorship/index.blade.php",
+      "phases": [
+        "4.6"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/InstitutionSuiteController.php",
+      "phases": [
+        "4.7"
+      ]
+    },
+    {
+      "path": "resources/views/admin/institution-suite/index.blade.php",
+      "phases": [
+        "4.7"
+      ]
+    },
+    {
+      "path": "resources/views/auth/accept-workspace.blade.php",
+      "phases": [
+        "4.7"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/FamilyPortalController.php",
+      "phases": [
+        "4.8"
+      ]
+    },
+    {
+      "path": "app/Models/FamilySupportNote.php",
+      "phases": [
+        "4.8"
+      ]
+    },
+    {
+      "path": "resources/views/family/index.blade.php",
+      "phases": [
+        "4.8"
+      ]
+    },
+    {
+      "path": "database/migrations/2026_08_10_005000_private_mentor_institution_family_v480.php",
+      "phases": [
+        "4.6",
+        "4.7",
+        "4.8"
+      ]
+    },
+    {
+      "path": "public/css/app-v480.css",
+      "phases": [
+        "4.6",
+        "4.7",
+        "4.8"
+      ]
+    },
+    {
+      "path": "tests/Feature/ProductExpansionV480Test.php",
+      "phases": [
+        "4.6",
+        "4.7",
+        "4.8"
+      ]
+    },
+    {
+      "path": "app/Services/UnifiedLearningHubService.php",
+      "phases": [
+        "4.9"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/PersonalLearningHubController.php",
+      "phases": [
+        "4.9"
+      ]
+    },
+    {
+      "path": "resources/views/personal/learning-hub.blade.php",
+      "phases": [
+        "4.9"
+      ]
+    },
+    {
+      "path": "public/css/app-v490.css",
+      "phases": [
+        "4.9"
+      ]
+    },
+    {
+      "path": "tests/Feature/LearningAcademyIntegrationV490Test.php",
+      "phases": [
+        "4.9"
+      ]
+    }
   ]
 }

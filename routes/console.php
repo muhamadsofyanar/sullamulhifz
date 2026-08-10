@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schedule;
 use App\Services\QuranAudioSyncService;
 use App\Services\QuranCorpusSyncService;
@@ -893,6 +894,68 @@ Artisan::command('sullam:verify-expansion-v480', function (): int {
     $this->info('Fase v4.6–v4.8 siap untuk smoke test akun nyata. Akses tetap consent-based dan terisolasi per workspace.');
     return 0;
 })->purpose('Memeriksa Ustadz Privat, Suite Lembaga, dan Portal Keluarga v4.8.0');
+
+
+// @phase 4.9 Learning & Academy Integration production verification
+Artisan::command('sullam:verify-learning-hub-v490', function (): int {
+    $requiredTables = [
+        'personal_profiles', 'personal_goals', 'personal_module_enrollments',
+        'quran_practice_sessions', 'quran_program_enrollments', 'guided_quran_enrollments',
+        'academy_lesson_progress', 'workspace_memberships', 'user_relationships', 'mentorship_sessions',
+    ];
+    $missing = collect($requiredTables)->reject(fn (string $table): bool => Schema::hasTable($table));
+    if ($missing->isNotEmpty()) {
+        $this->error('Ruang Belajar v4.9.0 belum siap. Tabel fondasi hilang: '.$missing->implode(', '));
+        return 1;
+    }
+
+    $personalOwnershipIssues = DB::table('personal_goals as pg')
+        ->join('personal_profiles as pp', 'pp.id', '=', 'pg.personal_profile_id')
+        ->where(function ($query): void {
+            $query->whereColumn('pg.user_id', '!=', 'pp.user_id')
+                ->orWhereColumn('pg.institution_id', '!=', 'pp.institution_id');
+        })->count();
+
+    $guidedOwnershipIssues = DB::table('guided_quran_enrollments as ge')
+        ->join('personal_profiles as pp', 'pp.user_id', '=', 'ge.learner_user_id')
+        ->whereNotNull('ge.learner_user_id')
+        ->whereColumn('ge.learner_institution_id', '!=', 'pp.institution_id')
+        ->count();
+
+    $mentorshipScopeIssues = DB::table('mentorship_sessions as ms')
+        ->join('user_relationships as ur', 'ur.id', '=', 'ms.user_relationship_id')
+        ->where(function ($query): void {
+            $query->where('ur.relationship_type', '!=', 'mentor_learner')
+                ->orWhereColumn('ms.learner_user_id', '!=', 'ur.from_user_id')
+                ->orWhereColumn('ms.mentor_user_id', '!=', 'ur.to_user_id');
+        })->count();
+
+    $this->table(['Komponen', 'Jumlah'], [
+        ['Profil Personal', DB::table('personal_profiles')->count()],
+        ['Program Personal aktif', DB::table('personal_module_enrollments')->where('status', 'active')->count()],
+        ['Target Personal aktif', DB::table('personal_goals')->where('status', 'active')->count()],
+        ['Program Asatidz aktif', DB::table('guided_quran_enrollments')->where('status', 'active')->count()],
+        ['Qur’an Journey aktif', DB::table('quran_program_enrollments')->where('status', 'active')->count()],
+        ['Materi Academy selesai', DB::table('academy_lesson_progress')->where('status', 'completed')->count()],
+        ['Sesi Ustadz aktif/terjadwal', DB::table('mentorship_sessions')->whereIn('status', ['requested', 'scheduled'])->count()],
+        ['Masalah ownership target', $personalOwnershipIssues],
+        ['Masalah ownership program Asatidz', $guidedOwnershipIssues],
+        ['Masalah scope sesi Ustadz', $mentorshipScopeIssues],
+    ]);
+
+    if (! Route::has('personal.learning-hub.index') || ! class_exists(\App\Services\UnifiedLearningHubService::class)) {
+        $this->error('Route atau service Ruang Belajar v4.9.0 belum tersedia.');
+        return 1;
+    }
+
+    if ($personalOwnershipIssues || $guidedOwnershipIssues || $mentorshipScopeIssues) {
+        $this->error('Guardrail Ruang Belajar v4.9.0 belum lulus. Periksa ownership Personal, program Asatidz, dan scope Ustadz Privat.');
+        return 1;
+    }
+
+    $this->info('Ruang Belajar Terpadu v4.9.0 siap untuk smoke test akun nyata. Integrasi merangkum data yang sudah berizin tanpa membuka jurnal atau portofolio privat.');
+    return 0;
+})->purpose('Memeriksa integrasi Learning & Academy dan guardrail ownership v4.9.0');
 
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();
 Schedule::command('sullam:send-murajaah-reminders')->dailyAt('05:30')->withoutOverlapping();

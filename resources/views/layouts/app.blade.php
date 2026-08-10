@@ -1,4 +1,4 @@
-{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology; @phase 4.5 Personal 2.0 styles; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal --}}
+{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology; @phase 4.5 Personal 2.0 styles; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration --}}
 <!doctype html>
 <html lang="id">
 <head>
@@ -26,6 +26,7 @@
     <link rel="stylesheet" href="/css/app-v440.css?v={{ @filemtime(public_path('css/app-v440.css')) ?: '440' }}">
     <link rel="stylesheet" href="/css/app-v450.css?v={{ @filemtime(public_path('css/app-v450.css')) ?: '450' }}">
     <link rel="stylesheet" href="/css/app-v480.css?v={{ @filemtime(public_path('css/app-v480.css')) ?: '480' }}">
+    <link rel="stylesheet" href="/css/app-v490.css?v={{ @filemtime(public_path('css/app-v490.css')) ?: '490' }}">
     @auth
     @php
         $brandWorkspace = $activeWorkspace ?? auth()->user()->institution;
@@ -68,6 +69,7 @@
                 <a href="{{ route('mentorship.index') }}" class="{{ request()->routeIs('mentorship.*') ? 'active' : '' }}"><x-icon name="teacher"/><span>Ustadz Privat</span></a>
                 <a href="{{ route('family.index') }}" class="{{ request()->routeIs('family.*') ? 'active' : '' }}"><x-icon name="community"/><span>Portal Keluarga</span></a>
                 <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*') ? 'active' : '' }}"><x-icon name="plan"/><span>Program Saya</span></a>
+                <a href="{{ route('personal.learning-hub.index') }}" class="{{ request()->routeIs('personal.learning-hub.*') ? 'active' : '' }}"><x-icon name="growth"/><span>Ruang Belajar</span></a>
                 <a href="{{ route('personal.journey.index') }}" class="{{ request()->routeIs('personal.journey.*') ? 'active' : '' }}"><x-icon name="continuity"/><span>Perjalanan Saya</span></a>
                 <a href="{{ route('personal.journey.index') }}#portofolio"><x-icon name="achievement"/><span>Portofolio Privat</span></a>
                 @if($personalAccess['quran_practice'] ?? false)

@@ -1,6 +1,6 @@
 # Current State
 
-## Current candidate: v4.8.0
+## Current candidate: v4.9.0
 
 Fokus pengembangan aktif: **Satu Ruang Qur’an — perubahan nyata dari Home publik, Beranda Personal, timeline lintas program, sampai kendali admin**.
 
@@ -33,5 +33,7 @@ v4.4.2 adalah hotfix non-database untuk kompilasi Blade Pusat Komunikasi dan kel
 v4.5.0 menjalankan Fase 4 Product Expansion Track: **Personal 2.0 — Setiap Orang, Setiap Cita**. Profil Personal menerima kelompok usia tanpa tanggal lahir, minat, cita-cita, tujuan Qur’ani, dan empat jalur pendampingan. Beranda, rekomendasi, Perjalanan Saya, serta portofolio privat memakai konteks tersebut tanpa mengubahnya menjadi kelas profesi atau ranking. Pengguna di bawah 18 tahun memerlukan pengakuan pendampingan orang tua/wali; profil, jurnal, dan portofolio tetap privat, sedangkan Community tidak otomatis aktif. Kandidat ini juga mempermanenkan perbaikan relasi profil Guru/Wali pada dashboard multi-workspace.
 
 v4.8.0 menggabungkan Fase 5–7 Product Expansion Track. Ustadz Privat mengaktifkan hubungan Personal–Ustadz, batas akses, dan lifecycle sesi. Suite Lembaga mengaktifkan invitation ledger, penerimaan peran lintas workspace, checklist kesiapan, serta suspend terisolasi. Portal Keluarga mengaktifkan hubungan anak–wali, kontrol batas informasi milik anak, dan catatan dukungan privat. Jurnal pribadi tidak dibuka, isi portofolio tidak dibagikan otomatis, serta pengguna di bawah 18 tahun harus mempunyai hubungan keluarga aktif sebelum bimbingan privat.
+
+v4.9.0 menjalankan Fase 8 Product Expansion Track: **Learning & Academy Integration**. Ruang Belajar menjadi integration layer untuk Personal: modul aktif, Latihan Qur’an 30 hari, Qur’an Journey, Guided Quran/Program Asatidz, Academy yang memang terhubung, target Personal, sesi Ustadz Privat, serta tugas lembaga dari workspace aktif diringkas tanpa membuat salinan data baru. Jurnal dan isi portofolio tetap tidak ikut diringkas. Tidak ada migration baru pada v4.9.0.
 
 Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.

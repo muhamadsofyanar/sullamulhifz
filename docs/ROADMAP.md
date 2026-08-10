@@ -24,7 +24,7 @@ Fase 7 telah mencapai alur produksi utama pada v2.9.0. Source v3.0.0 menambahkan
 - Fase 5 / v4.6.0 — Ustadz Privat: **implementation completed in v4.8.0; menunggu CI dan smoke test produksi**.
 - Fase 6 / v4.7.0 — Institution Suite: **implementation completed in v4.8.0; menunggu CI dan smoke test produksi**.
 - Fase 7 / v4.8.0 — Family & Parent Portal: **implementation completed in v4.8.0; menunggu CI dan smoke test produksi**.
-- Fase 8 / v4.9.0 — Learning & Academy Integration: planned.
+- Fase 8 / v4.9.0 — Learning & Academy Integration: **implementation completed in v4.9.0; menunggu CI dan smoke test produksi**.
 - Fase 9 / v5.0.0 — Business, Payment & Integrations: planned.
 - Fase 10 / v5.1.0 — SaaS Production Readiness: planned.
 

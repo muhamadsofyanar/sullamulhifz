@@ -1,4 +1,4 @@
-{{-- @phase 4.5 Personal 2.0 — contextual Personal home --}}
+{{-- @phase 4.5 Personal 2.0 — contextual Personal home; @phase 4.9 Learning Hub entry point --}}
 @extends('layouts.app')
 @section('content')
 @php
@@ -23,7 +23,7 @@
             </div>
             @endif
             <div class="v4-hero-actions">
-                @if($primaryModule)<a class="button primary" href="{{ route($primaryModule['route']) }}">Lanjutkan {{ $primaryModule['title'] }}</a>@else<a class="button primary" href="{{ route('personal.programs.index') }}">Pilih program pertama</a>@endif
+                <a class="button primary" href="{{ route('personal.learning-hub.index') }}">Buka Ruang Belajar</a>
                 <a class="button secondary" href="{{ route('personal.journey.index') }}">Lihat Perjalanan Saya</a>
             </div>
         </div>

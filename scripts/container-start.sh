@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
-# @phase 4.3 Identity release gate; @phase 4.4 Multi-tenant release gate; @phase 4.5 Personal 2.0 gate; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal
+# @phase 4.3 Identity release gate; @phase 4.4 Multi-tenant release gate; @phase 4.5 Personal 2.0 gate; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration
 set -eu
 
 cd /var/www/html
@@ -68,6 +68,7 @@ if [ "${AUTO_MIGRATE:-true}" = "true" ]; then
     php artisan sullam:verify-personal-program-hub || echo "PERINGATAN: Personal Program Hub belum sepenuhnya siap."
     php artisan sullam:verify-personal-v450 || echo "PERINGATAN: guardrail Personal 2.0 belum sepenuhnya siap."
     php artisan sullam:verify-expansion-v480 || echo "PERINGATAN: guardrail Ustadz Privat, Suite Lembaga, atau Portal Keluarga belum sepenuhnya siap."
+    php artisan sullam:verify-learning-hub-v490 || echo "PERINGATAN: Ruang Belajar Terpadu v4.9.0 belum sepenuhnya siap."
     php artisan sullam:verify-ecosystem || echo "PERINGATAN: verifikasi ekosistem v2.3 belum sepenuhnya lulus."
     php artisan sullam:roadmap-status || echo "PERINGATAN: status roadmap belum dapat dihitung."
     php artisan storage:link || true
