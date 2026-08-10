@@ -1,7 +1,9 @@
 {{-- @phase 4.9 Learning & Academy Integration — unified Personal learning space --}}
 @extends('layouts.app')
 @section('content')
-@php($activeModuleKeys = $activeModules->pluck('key')->all())
+@php
+    $activeModuleKeys = $activeModules->pluck('key')->all();
+@endphp
 <div class="learning-hub-v490">
     <section class="learning-hub-hero">
         <div>
@@ -64,7 +66,9 @@
         <div class="card">
             <div class="section-head"><div><span class="eyebrow">TARGET PERSONAL</span><h2>Yang Anda tetapkan sendiri</h2></div><a href="{{ route('personal.dashboard') }}#target">Kelola →</a></div>
             @forelse($personalGoals as $goal)
-                @php($percent = min(100, (int) round(($goal->progress_value / max(1, $goal->target_value)) * 100)))
+                @php
+                    $percent = min(100, (int) round(($goal->progress_value / max(1, $goal->target_value)) * 100));
+                @endphp
                 <article class="learning-hub-row"><div><strong>{{ $goal->title }}</strong><small>{{ $goal->progress_value }} / {{ $goal->target_value }}@if($goal->due_on) · {{ $goal->due_on->translatedFormat('d M Y') }}@endif</small></div><span>{{ $percent }}%</span></article>
             @empty
                 <p class="muted">Belum ada target Personal aktif.</p>
@@ -83,7 +87,9 @@
         <div class="card">
             <div class="section-head"><div><span class="eyebrow">PROGRAM ASATIDZ</span><h2>Setoran & review</h2></div>@if(in_array('guided_learning', $activeModuleKeys, true))<a href="{{ route('personal.learning.index') }}">Buka →</a>@endif</div>
             @forelse($guidedEnrollments as $enrollment)
-                @php($latest = $enrollment->submissions->first())
+                @php
+                    $latest = $enrollment->submissions->first();
+                @endphp
                 <article class="learning-hub-row"><div><strong>{{ $enrollment->program?->title ?? 'Program Al-Qur’an' }}</strong><small>{{ $enrollment->program?->provider?->name ?: 'Penyelenggara' }}@if($latest) · setoran terakhir {{ $latest->review_status }}@endif</small></div><span>{{ ucfirst($enrollment->status) }}</span></article>
             @empty
                 <p class="muted">Belum ada program Asatidz yang diikuti.</p>
