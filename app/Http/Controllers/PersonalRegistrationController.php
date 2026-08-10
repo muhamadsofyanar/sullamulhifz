@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 5.0 Business defaults; @phase 5.2 Smart Assistant defaults; @phase 5.3 Global preferences defaults */
+
 /** @phase 4.3 Identity & Relationship Core; @phase 4.4 Multi-tenant metadata; @phase 4.5 Personal 2.0 */
 
 use App\Models\Institution;
@@ -124,7 +126,7 @@ class PersonalRegistrationController extends Controller
                 'privacy_acknowledged_at' => now(),
             ]);
 
-            foreach (['academy_portal', 'quran_audio', 'quran_journey'] as $featureKey) {
+            foreach (['academy_portal', 'quran_audio', 'quran_journey', 'business_center', 'smart_assistant', 'user_preferences'] as $featureKey) {
                 FeatureFlag::firstOrCreate(
                     ['institution_id' => $institution->id, 'feature_key' => $featureKey],
                     ['enabled' => true],

@@ -2,11 +2,14 @@
 
 namespace App\Services;
 
+/** @phase 5.2 Smart Assistant cross-workspace human review guardrail */
+
 use App\Models\ActivityLog;
 use App\Models\AiAssistDraft;
 use App\Models\AiAssistReview;
 use App\Models\Student;
 use App\Models\User;
+use App\Models\UserRelationship;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
 
@@ -34,7 +37,18 @@ class AiAssistWorkflowService
 
     public function review(AiAssistDraft $draft, User $reviewer, string $decision, ?string $finalText = null, ?string $note = null): AiAssistReview
     {
-        abort_unless((int) $draft->institution_id === (int) $reviewer->institution_id, 403);
+        $sameInstitution = (int) $draft->institution_id === (int) $reviewer->institution_id;
+        $learnerUserId = (int) data_get($draft->evidence_snapshot, 'learner_user_id', 0);
+        $consentedMentorReview = $draft->purpose === 'personal_learning_guidance'
+            && $learnerUserId > 0
+            && (int) $draft->created_by_user_id === $learnerUserId
+            && UserRelationship::query()
+                ->where('relationship_type', 'mentor_learner')
+                ->where('status', 'accepted')
+                ->where('from_user_id', $learnerUserId)
+                ->where('to_user_id', $reviewer->id)
+                ->exists();
+        abort_unless($sameInstitution || $consentedMentorReview, 403);
 
         if (! in_array($decision, ['accepted', 'modified', 'rejected'], true)) {
             throw ValidationException::withMessages(['decision' => 'Keputusan review tidak dikenal.']);

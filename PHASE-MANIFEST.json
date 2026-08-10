@@ -1,5 +1,5 @@
 {
-  "release": "v4.9.0",
+  "release": "v5.3.0",
   "base_release": "v4.1.0",
   "tracking_policy": "Every runtime, migration, view, asset, and test introduced or changed by a roadmap phase is listed here and carries an @phase annotation.",
   "phases": {
@@ -49,6 +49,22 @@
     },
     "4.9": {
       "name": "Learning & Academy Integration",
+      "status": "verified"
+    },
+    "5.0": {
+      "name": "Business, Payment & Integrations",
+      "status": "completed"
+    },
+    "5.1": {
+      "name": "SaaS Production Readiness",
+      "status": "completed"
+    },
+    "5.2": {
+      "name": "Smart Assistant + Human Review",
+      "status": "completed"
+    },
+    "5.3": {
+      "name": "Mobile, Offline-safe & Global Preferences",
       "status": "completed"
     }
   },
@@ -125,7 +141,9 @@
       "path": "app/Models/User.php",
       "phases": [
         "4.3",
-        "4.5"
+        "4.5",
+        "5.0",
+        "5.3"
       ]
     },
     {
@@ -192,7 +210,10 @@
       "phases": [
         "4.3",
         "4.4",
-        "4.5"
+        "4.5",
+        "5.0",
+        "5.2",
+        "5.3"
       ]
     },
     {
@@ -212,7 +233,11 @@
         "4.6",
         "4.7",
         "4.8",
-        "4.9"
+        "4.9",
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3"
       ]
     },
     {
@@ -238,7 +263,11 @@
         "4.6",
         "4.7",
         "4.8",
-        "4.9"
+        "4.9",
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3"
       ]
     },
     {
@@ -257,7 +286,10 @@
     {
       "path": "app/Http/Controllers/InstitutionRegistrationController.php",
       "phases": [
-        "4.4"
+        "4.4",
+        "5.0",
+        "5.2",
+        "5.3"
       ]
     },
     {
@@ -289,7 +321,10 @@
     {
       "path": "database/seeders/ProductionSeeder.php",
       "phases": [
-        "4.4"
+        "4.4",
+        "5.0",
+        "5.2",
+        "5.3"
       ]
     },
     {
@@ -359,7 +394,11 @@
         "4.6",
         "4.7",
         "4.8",
-        "4.9"
+        "4.9",
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3"
       ]
     },
     {
@@ -372,7 +411,11 @@
         "4.5",
         "4.6",
         "4.7",
-        "4.8"
+        "4.8",
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3"
       ]
     },
     {
@@ -455,7 +498,11 @@
         "4.6",
         "4.7",
         "4.8",
-        "4.9"
+        "4.9",
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3"
       ]
     },
     {
@@ -570,6 +617,229 @@
       "path": "tests/Feature/LearningAcademyIntegrationV490Test.php",
       "phases": [
         "4.9"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/BusinessController.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/EcosystemController.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/PersonalBusinessController.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "app/Models/BillingInvoice.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "app/Models/BillingPlan.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "app/Models/BillingSubscription.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "app/Models/PaymentTransaction.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "app/Services/BusinessBillingService.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "database/migrations/2026_08_10_006000_business_saas_ai_mobile_v530.php",
+      "phases": [
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3"
+      ]
+    },
+    {
+      "path": "public/css/app-v530.css",
+      "phases": [
+        "5.0",
+        "5.1",
+        "5.2",
+        "5.3"
+      ]
+    },
+    {
+      "path": "resources/views/admin/business/index.blade.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "resources/views/personal/business.blade.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": "tests/Feature/BusinessPaymentV500Test.php",
+      "phases": [
+        "5.0"
+      ]
+    },
+    {
+      "path": ".env.example",
+      "phases": [
+        "5.1"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/OperationsController.php",
+      "phases": [
+        "5.1"
+      ]
+    },
+    {
+      "path": "app/Models/OperationalCheckRun.php",
+      "phases": [
+        "5.1"
+      ]
+    },
+    {
+      "path": "app/Services/SaasReadinessService.php",
+      "phases": [
+        "5.1"
+      ]
+    },
+    {
+      "path": "resources/views/admin/operations/index.blade.php",
+      "phases": [
+        "5.1"
+      ]
+    },
+    {
+      "path": "routes/api.php",
+      "phases": [
+        "5.1",
+        "5.3"
+      ]
+    },
+    {
+      "path": "tests/Feature/SaasReadinessV510Test.php",
+      "phases": [
+        "5.1"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/PersonalSmartAssistantController.php",
+      "phases": [
+        "5.2"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Teacher/SmartAssistantReviewController.php",
+      "phases": [
+        "5.2"
+      ]
+    },
+    {
+      "path": "app/Services/AiAssistWorkflowService.php",
+      "phases": [
+        "5.2"
+      ]
+    },
+    {
+      "path": "app/Services/PersonalSmartAssistantService.php",
+      "phases": [
+        "5.2"
+      ]
+    },
+    {
+      "path": "resources/views/personal/smart-assistant.blade.php",
+      "phases": [
+        "5.2"
+      ]
+    },
+    {
+      "path": "resources/views/teacher/smart-assistant/index.blade.php",
+      "phases": [
+        "5.2"
+      ]
+    },
+    {
+      "path": "tests/Feature/SmartAssistantV520Test.php",
+      "phases": [
+        "5.2"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/PreferenceController.php",
+      "phases": [
+        "5.3"
+      ]
+    },
+    {
+      "path": "app/Models/UserPreference.php",
+      "phases": [
+        "5.3"
+      ]
+    },
+    {
+      "path": "app/Services/Communication/CommunicationService.php",
+      "phases": [
+        "5.3"
+      ]
+    },
+    {
+      "path": "public/js/app.js",
+      "phases": [
+        "5.3"
+      ]
+    },
+    {
+      "path": "public/manifest.webmanifest",
+      "phases": [
+        "5.3"
+      ]
+    },
+    {
+      "path": "public/offline.html",
+      "phases": [
+        "5.3"
+      ]
+    },
+    {
+      "path": "public/service-worker.js",
+      "phases": [
+        "5.3"
+      ]
+    },
+    {
+      "path": "resources/views/profile/preferences.blade.php",
+      "phases": [
+        "5.3"
+      ]
+    },
+    {
+      "path": "tests/Feature/MobileGlobalV530Test.php",
+      "phases": [
+        "5.3"
       ]
     }
   ]

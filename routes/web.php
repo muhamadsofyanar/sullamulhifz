@@ -1,6 +1,6 @@
 <?php
 
-/** @phase 4.2 Public Positioning; @phase 4.3 Identity Core; @phase 4.4 Multi-tenant; @phase 4.5 Personal 2.0; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration */
+/** @phase 4.2 Public Positioning; @phase 4.3 Identity Core; @phase 4.4 Multi-tenant; @phase 4.5 Personal 2.0; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration; @phase 5.0 Business; @phase 5.1 SaaS Readiness; @phase 5.2 Smart Assistant; @phase 5.3 Mobile & Global */
 
 use App\Http\Controllers\Admin\AcademicController;
 use App\Http\Controllers\Admin\AcademicCoreController;
@@ -13,11 +13,13 @@ use App\Http\Controllers\Admin\GuardianController;
 use App\Http\Controllers\Admin\GuidedQuranProgramController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LaunchReadinessController;
+use App\Http\Controllers\Admin\OperationsController as AdminOperationsController;
 use App\Http\Controllers\Admin\PlatformController;
 use App\Http\Controllers\Admin\ReportCardController;
 use App\Http\Controllers\Admin\WebsiteController;
 use App\Http\Controllers\Admin\AccountController;
 use App\Http\Controllers\Admin\ContentController as AdminContentController;
+use App\Http\Controllers\Admin\BusinessController as AdminBusinessController;
 use App\Http\Controllers\Admin\CommunicationController as AdminCommunicationController;
 use App\Http\Controllers\Admin\EcosystemController as AdminEcosystemController;
 use App\Http\Controllers\Admin\StudentController;
@@ -27,6 +29,7 @@ use App\Http\Controllers\Admin\TeacherController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\AccountInvitationController;
 use App\Http\Controllers\PasswordResetController;
+use App\Http\Controllers\PersonalBusinessController;
 use App\Http\Controllers\PersonalController;
 use App\Http\Controllers\PersonalLearningHubController;
 use App\Http\Controllers\PersonalGuidedLearningController;
@@ -64,6 +67,7 @@ use App\Http\Controllers\Teacher\DailyOperationsController;
 use App\Http\Controllers\Teacher\MeetingController;
 use App\Http\Controllers\Teacher\LearningPlanController;
 use App\Http\Controllers\Teacher\PersonalLearningController;
+use App\Http\Controllers\Teacher\SmartAssistantReviewController;
 use App\Http\Controllers\Teacher\TahfizhController;
 use App\Http\Controllers\Teacher\QuranJourneyController as TeacherQuranJourneyController;
 use Illuminate\Http\Request;
@@ -199,11 +203,18 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
 
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::put('/profil/kata-sandi', [ProfileController::class, 'updatePassword'])->name('profile.password');
+    Route::get('/preferensi', [PreferenceController::class, 'edit'])->name('preferences.edit'); // @phase 5.3
+    Route::put('/preferensi', [PreferenceController::class, 'update'])->name('preferences.update'); // @phase 5.3
+
+    Route::get('/paket-layanan', [PersonalBusinessController::class, 'index'])->middleware(['role:personal,teacher,institution_admin,superadmin','feature:business_center'])->name('business.index'); // @phase 5.0
+    Route::post('/paket-layanan/{plan}/aktifkan', [PersonalBusinessController::class, 'subscribe'])->middleware(['role:personal,teacher,institution_admin,superadmin','feature:business_center','throttle:4,10'])->name('business.subscribe'); // @phase 5.0
 
     Route::prefix('personal')->name('personal.')->middleware('role:personal')->group(function (): void {
         Route::get('/', [PersonalController::class, 'index'])->middleware('permission:personal.use')->name('dashboard');
         Route::get('/program', [PersonalProgramController::class, 'index'])->middleware('permission:personal.use')->name('programs.index');
         Route::get('/ruang-belajar', [PersonalLearningHubController::class, 'index'])->middleware('permission:personal.use')->name('learning-hub.index'); // @phase 4.9
+        Route::get('/pendamping-cerdas', [PersonalSmartAssistantController::class, 'index'])->middleware(['permission:personal.use','feature:smart_assistant'])->name('smart-assistant.index'); // @phase 5.2
+        Route::post('/pendamping-cerdas/review', [PersonalSmartAssistantController::class, 'requestReview'])->middleware(['permission:personal.use','feature:smart_assistant','throttle:3,10'])->name('smart-assistant.review-request'); // @phase 5.2
         Route::post('/program-saya/{moduleKey}/aktifkan', [PersonalProgramController::class, 'enroll'])->middleware('permission:personal.use')->name('programs.enroll');
         Route::delete('/program-saya/{moduleKey}', [PersonalProgramController::class, 'deactivate'])->middleware('permission:personal.use')->name('programs.deactivate');
         Route::put('/onboarding', [PersonalController::class, 'onboarding'])->middleware('permission:personal.use')->name('onboarding');
@@ -287,6 +298,11 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
 
             Route::get('/platform', [PlatformController::class, 'index'])->middleware('permission:features.manage')->name('platform.index');
             Route::get('/ekosistem', [AdminEcosystemController::class, 'index'])->middleware('permission:features.manage')->name('ecosystem.index');
+            Route::get('/bisnis', [AdminBusinessController::class, 'index'])->middleware('permission:features.manage')->name('business.index'); // @phase 5.0
+            Route::put('/bisnis/paket/{plan}', [AdminBusinessController::class, 'updatePlan'])->middleware('permission:features.manage')->name('business.plans.update'); // @phase 5.0
+            Route::put('/bisnis/pembayaran/{transaction}', [AdminBusinessController::class, 'payment'])->middleware('permission:features.manage')->name('business.payments.update'); // @phase 5.0
+            Route::get('/operasional-saas', [AdminOperationsController::class, 'index'])->middleware('permission:features.manage')->name('operations.index'); // @phase 5.1
+            Route::post('/operasional-saas/periksa', [AdminOperationsController::class, 'run'])->middleware(['permission:features.manage','throttle:5,1'])->name('operations.run'); // @phase 5.1
             Route::put('/ekosistem/personal/{user}', [AdminEcosystemController::class, 'access'])->middleware('permission:features.manage')->name('ecosystem.personal.access');
             Route::post('/ekosistem/community-spaces', [AdminEcosystemController::class, 'storeSpace'])->middleware('permission:features.manage')->name('ecosystem.community-spaces.store');
             Route::put('/ekosistem/community-spaces/{space}', [AdminEcosystemController::class, 'updateSpace'])->middleware('permission:features.manage')->name('ecosystem.community-spaces.update');
@@ -392,6 +408,8 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
     });
 
     Route::prefix('teacher')->name('teacher.')->middleware('role:teacher')->group(function (): void {
+        Route::get('/pendamping-cerdas', [SmartAssistantReviewController::class, 'index'])->middleware('feature:smart_assistant')->name('smart-assistant.index'); // @phase 5.2
+        Route::put('/pendamping-cerdas/{draft}', [SmartAssistantReviewController::class, 'review'])->middleware('feature:smart_assistant')->name('smart-assistant.review'); // @phase 5.2
         Route::get('/academy', [AcademyRecommendationController::class, 'index'])->middleware(['feature:parent_academy','permission:academy.view'])->name('academy.index');
         Route::post('/academy/recommendations', [AcademyRecommendationController::class, 'store'])->middleware(['feature:parent_academy','permission:academy.view'])->name('academy.recommendations.store');
         Route::get('/family-learning', [FamilyTeacherController::class, 'index'])->middleware(['feature:family_learning','permission:academy.view'])->name('family-learning.index');

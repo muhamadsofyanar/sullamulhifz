@@ -959,3 +959,190 @@ Artisan::command('sullam:verify-learning-hub-v490', function (): int {
 
 Schedule::command('sullam:purge-expired-media')->dailyAt('02:30')->withoutOverlapping();
 Schedule::command('sullam:send-murajaah-reminders')->dailyAt('05:30')->withoutOverlapping();
+
+// @phase 5.0 Business, Payment & Integrations production verification
+Artisan::command('sullam:verify-business-v500', function (): int {
+    $required = ['billing_plans', 'billing_subscriptions', 'billing_invoices', 'payment_transactions', 'integration_connections'];
+    $missing = array_values(array_filter($required, fn (string $table): bool => ! Schema::hasTable($table)));
+    $planCount = Schema::hasTable('billing_plans') ? DB::table('billing_plans')->where('status', 'active')->count() : 0;
+    $invoiceTenantIssues = 0;
+    $paymentInvoiceIssues = 0;
+    $duplicateInstitutionSubscriptions = 0;
+
+    if (Schema::hasTable('billing_invoices') && Schema::hasTable('billing_subscriptions')) {
+        $invoiceTenantIssues = DB::table('billing_invoices as bi')
+            ->join('billing_subscriptions as bs', 'bs.id', '=', 'bi.billing_subscription_id')
+            ->whereColumn('bi.institution_id', '!=', 'bs.institution_id')
+            ->count();
+    }
+    if (Schema::hasTable('payment_transactions') && Schema::hasColumn('payment_transactions', 'billing_invoice_id') && Schema::hasTable('billing_invoices')) {
+        $paymentInvoiceIssues = DB::table('payment_transactions as pt')
+            ->join('billing_invoices as bi', 'bi.id', '=', 'pt.billing_invoice_id')
+            ->whereColumn('pt.institution_id', '!=', 'bi.institution_id')
+            ->count();
+    }
+    if (Schema::hasTable('billing_subscriptions')) {
+        $duplicateInstitutionSubscriptions = DB::table('billing_subscriptions')
+            ->select(['institution_id', 'billing_plan_id'])
+            ->where('scope_type', 'institution')
+            ->whereIn('status', ['pending', 'active'])
+            ->groupBy('institution_id', 'billing_plan_id')
+            ->havingRaw('COUNT(*) > 1')
+            ->get()
+            ->count();
+    }
+
+    $this->table(['Komponen', 'Status/Jumlah'], [
+        ['Tabel bisnis hilang', count($missing)],
+        ['Paket aktif', $planCount],
+        ['Masalah tenant invoice/subscription', $invoiceTenantIssues],
+        ['Masalah tenant payment/invoice', $paymentInvoiceIssues],
+        ['Duplikasi paket lembaga pending/aktif', $duplicateInstitutionSubscriptions],
+        ['Route portal paket', Route::has('business.index') ? 'siap' : 'belum'],
+        ['Route Admin bisnis', Route::has('admin.business.index') ? 'siap' : 'belum'],
+    ]);
+
+    if ($missing !== [] || $planCount < 1 || $invoiceTenantIssues || $paymentInvoiceIssues || $duplicateInstitutionSubscriptions || ! Route::has('business.index') || ! Route::has('admin.business.index')) {
+        $this->error('Fase 9 v5.0 belum lulus verifier. Periksa schema, paket, route, dan isolasi tenant.');
+        return 1;
+    }
+
+    $this->info('Business, Payment & Integrations v5.0 siap untuk smoke test transaksi nyata. Pembayaran berbayar tetap memerlukan verifikasi admin sebelum entitlement aktif.');
+    return 0;
+})->purpose('Memeriksa Fase 9 Business, Payment & Integrations v5.0');
+
+// @phase 5.1 SaaS Production Readiness production verification
+Artisan::command('sullam:verify-saas-v510', function (): int {
+    $service = app(\App\Services\SaasReadinessService::class);
+    $checks = $service->checks();
+    $summary = $service->summary($checks);
+
+    $this->table(['Check', 'Status', 'Keterangan'], array_map(
+        fn (array $check): array => [$check['key'], strtoupper($check['status']), $check['message']],
+        $checks,
+    ));
+
+    if (! Route::has('admin.operations.index') || ! Schema::hasTable('operational_check_runs')) {
+        $this->error('Dashboard atau tabel operasional SaaS v5.1 belum tersedia.');
+        return 1;
+    }
+    if (! $summary['critical_ready']) {
+        $this->error('Ada pemeriksaan kritis yang gagal. SaaS Production Readiness belum aman untuk smoke test.');
+        return 1;
+    }
+
+    if ($summary['fully_verified']) {
+        $this->info('SaaS Production Readiness v5.1 lulus termasuk bukti operator backup/restore dan load test.');
+    } else {
+        $this->warn('Kode Fase 10 v5.1 lulus tanpa kegagalan kritis, tetapi masih ada bukti operator yang belum diverifikasi. Warning tidak dipalsukan menjadi PASS.');
+    }
+    return 0;
+})->purpose('Memeriksa guardrail dan bukti operasional SaaS v5.1');
+
+// @phase 5.2 Smart Assistant production verification
+Artisan::command('sullam:verify-ai-assist-v520', function (): int {
+    $approvedWithoutReview = 0;
+    $reviewScopeIssues = 0;
+    if (Schema::hasTable('ai_assist_drafts') && Schema::hasTable('ai_assist_reviews')) {
+        $approvedWithoutReview = DB::table('ai_assist_drafts as d')
+            ->leftJoin('ai_assist_reviews as r', 'r.ai_assist_draft_id', '=', 'd.id')
+            ->where('d.status', 'approved')->whereNull('r.id')->count();
+
+        $reviews = \App\Models\AiAssistReview::query()->with(['draft', 'reviewer'])->get();
+        foreach ($reviews as $review) {
+            $draft = $review->draft;
+            if (! $draft || ! $review->reviewer) {
+                $reviewScopeIssues++;
+                continue;
+            }
+            if ((int) $draft->institution_id === (int) $review->reviewer->institution_id) {
+                continue;
+            }
+            $learnerId = (int) data_get($draft->evidence_snapshot, 'learner_user_id', 0);
+            $validCrossWorkspaceMentor = $draft->purpose === 'personal_learning_guidance'
+                && $learnerId > 0
+                && (int) $draft->created_by_user_id === $learnerId
+                && \App\Models\UserRelationship::query()
+                    ->where('relationship_type', 'mentor_learner')
+                    ->where('status', 'accepted')
+                    ->where('from_user_id', $learnerId)
+                    ->where('to_user_id', $review->reviewer_user_id)
+                    ->exists();
+            if (! $validCrossWorkspaceMentor) {
+                $reviewScopeIssues++;
+            }
+        }
+    }
+
+    $this->table(['Komponen', 'Jumlah/Status'], [
+        ['Draft AI Assist', Schema::hasTable('ai_assist_drafts') ? DB::table('ai_assist_drafts')->count() : 'tabel hilang'],
+        ['Review manusia', Schema::hasTable('ai_assist_reviews') ? DB::table('ai_assist_reviews')->count() : 'tabel hilang'],
+        ['Approved tanpa review', $approvedWithoutReview],
+        ['Masalah scope reviewer', $reviewScopeIssues],
+        ['Pendamping Personal', Route::has('personal.smart-assistant.index') ? 'siap' : 'belum'],
+        ['Review Ustadz', Route::has('teacher.smart-assistant.index') ? 'siap' : 'belum'],
+    ]);
+
+    if (! Schema::hasTable('ai_assist_drafts') || ! Schema::hasTable('ai_assist_reviews') || $approvedWithoutReview || $reviewScopeIssues || ! Route::has('personal.smart-assistant.index') || ! Route::has('teacher.smart-assistant.index')) {
+        $this->error('Fase 11 v5.2 belum lulus human-review guardrail.');
+        return 1;
+    }
+
+    $this->info('Pendamping Cerdas v5.2 siap untuk smoke test. Review lintas workspace hanya sah melalui hubungan Ustadz Privat yang telah disetujui.');
+    return 0;
+})->purpose('Memeriksa Pendamping Cerdas dan human-review guardrail v5.2');
+
+// @phase 5.3 Mobile, Offline & Global production verification
+Artisan::command('sullam:verify-mobile-v530', function (): int {
+    $manifestPath = public_path('manifest.webmanifest');
+    $swPath = public_path('service-worker.js');
+    $manifest = is_file($manifestPath) ? json_decode((string) file_get_contents($manifestPath), true) : null;
+    $sw = is_file($swPath) ? (string) file_get_contents($swPath) : '';
+    $offlineGuard = str_contains($sw, "url.pathname.startsWith('/media/')")
+        && str_contains($sw, "url.pathname.startsWith('/api/')")
+        && str_contains($sw, "cache: 'no-store'");
+
+    $this->table(['Komponen', 'Status'], [
+        ['Tabel user_preferences', Schema::hasTable('user_preferences') ? 'siap' : 'belum'],
+        ['Manifest valid', is_array($manifest) ? 'siap' : 'belum'],
+        ['PWA display standalone', data_get($manifest, 'display') === 'standalone' ? 'siap' : 'belum'],
+        ['Offline guard media/API/private navigation', $offlineGuard ? 'siap' : 'belum'],
+        ['Route preferensi', Route::has('preferences.edit') ? 'siap' : 'belum'],
+        ['Health API', Route::has('api.health') ? 'siap' : 'belum'],
+    ]);
+
+    if (! Schema::hasTable('user_preferences') || ! is_array($manifest) || data_get($manifest, 'display') !== 'standalone' || ! $offlineGuard || ! Route::has('preferences.edit') || ! Route::has('api.health')) {
+        $this->error('Fase 12 v5.3 belum lulus PWA/offline-safe/global preference verifier.');
+        return 1;
+    }
+
+    $this->info('Mobile, Offline & Global v5.3 siap smoke test perangkat. Data privat tidak dimasukkan ke cache offline.');
+    return 0;
+})->purpose('Memeriksa PWA, offline-safe cache, dan preferensi global v5.3');
+
+// @phase 5.3 Consolidated v5.3 release verification — one command for phases 4.5 through 5.3
+Artisan::command('sullam:verify-release-v530', function (): int {
+    $commands = [
+        'sullam:verify-personal-v450',
+        'sullam:verify-expansion-v480',
+        'sullam:verify-learning-hub-v490',
+        'sullam:verify-business-v500',
+        'sullam:verify-saas-v510',
+        'sullam:verify-ai-assist-v520',
+        'sullam:verify-mobile-v530',
+    ];
+
+    foreach ($commands as $command) {
+        $this->newLine();
+        $this->line('>>> '.$command);
+        $exitCode = $this->call($command);
+        if ($exitCode !== 0) {
+            $this->error('Release v5.3.0 berhenti pada verifier: '.$command);
+            return $exitCode;
+        }
+    }
+
+    $this->newLine();
+    $this->info('Release v5.3.0 lulus verifier aplikasi. Lanjutkan smoke test akun nyata dan bukti operator Fase 10.');
+    return 0;
+})->purpose('Menjalankan seluruh verifier release v5.3.0 dalam satu command');

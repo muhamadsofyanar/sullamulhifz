@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+/** @phase 5.0 Business defaults; @phase 5.2 Smart Assistant defaults; @phase 5.3 Global preferences defaults */
+
 /** @phase 4.4 Multi-tenant Institution Foundation */
 
 use App\Models\Branch;
@@ -101,7 +103,7 @@ class InstitutionRegistrationController extends Controller
                 'joined_at' => now(),
             ]);
 
-            foreach (['core_academic', 'public_website', 'quran_audio', 'quran_journey', 'report_cards', 'api_integrations'] as $featureKey) {
+            foreach (['core_academic', 'public_website', 'quran_audio', 'quran_journey', 'report_cards', 'api_integrations', 'business_center', 'smart_assistant', 'user_preferences'] as $featureKey) {
                 FeatureFlag::firstOrCreate(
                     ['institution_id' => $institution->id, 'feature_key' => $featureKey],
                     ['enabled' => true],

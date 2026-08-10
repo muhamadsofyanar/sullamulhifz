@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-/** @phase 4.3 Identity & Relationship Core; @phase 4.5 workspace profile relation safeguards */
+/** @phase 4.3 Identity & Relationship Core; @phase 4.5 workspace profile relation safeguards; @phase 5.0 billing relations; @phase 5.3 user preferences */
 
 use App\Services\Communication\CommunicationService;
 use Illuminate\Auth\Notifications\ResetPassword;
@@ -86,6 +86,9 @@ class User extends Authenticatable
     }
     public function personalModuleEnrollments(): HasMany { return $this->hasMany(PersonalModuleEnrollment::class); }
     public function accountInvitations(): HasMany { return $this->hasMany(AccountInvitation::class); }
+    public function billingSubscriptions(): HasMany { return $this->hasMany(BillingSubscription::class); }
+    public function billingInvoices(): HasMany { return $this->hasMany(BillingInvoice::class); }
+    public function preference(): HasOne { return $this->hasOne(UserPreference::class); }
 
     public function hasRole(string $role): bool
     {

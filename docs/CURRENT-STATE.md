@@ -1,8 +1,8 @@
 # Current State
 
-## Current candidate: v4.9.0
+## Current candidate: v5.3.0
 
-Fokus pengembangan aktif: **Satu Ruang Qur’an — perubahan nyata dari Home publik, Beranda Personal, timeline lintas program, sampai kendali admin**.
+Fokus pengembangan aktif: **batch Fase 9–12 — bisnis, kesiapan SaaS, Pendamping Cerdas, serta PWA/offline-safe dalam satu deploy**.
 
 v3.0.0 membuka penggunaan mandiri kepada masyarakat umum tanpa mengubah mereka menjadi anggota lembaga. Di backend setiap pengguna Personal memiliki workspace privat untuk mempertahankan isolasi tenant; di UI pengguna melihat pengalaman Personal, bukan struktur admin lembaga.
 
@@ -36,4 +36,8 @@ v4.8.0 menggabungkan Fase 5–7 Product Expansion Track. Ustadz Privat mengaktif
 
 v4.9.0 menjalankan Fase 8 Product Expansion Track: **Learning & Academy Integration**. Ruang Belajar menjadi integration layer untuk Personal: modul aktif, Latihan Qur’an 30 hari, Qur’an Journey, Guided Quran/Program Asatidz, Academy yang memang terhubung, target Personal, sesi Ustadz Privat, serta tugas lembaga dari workspace aktif diringkas tanpa membuat salinan data baru. Jurnal dan isi portofolio tetap tidak ikut diringkas. Tidak ada migration baru pada v4.9.0.
 
-Launch penuh baru direkomendasikan setelah Fase 1–10 semuanya 100% dan release gate produksi lulus.
+v5.3.0 menggabungkan Fase 9–12 agar hanya perlu satu upload GitHub dan satu redeploy Coolify. Fase 9 membangun subscription/invoice di atas payment ledger yang sudah ada. Fase 10 menambahkan readiness checks dan secara sengaja membiarkan backup/restore/load test berstatus warning sampai ada bukti operator nyata. Fase 11 menambah Pendamping Cerdas berbasis data akun sendiri dengan human review Ustadz yang consented. Fase 12 memperketat PWA menjadi static-shell only dan menambah preferensi bahasa/zona waktu sebagai fondasi global; seluruh copy UI belum diklaim sudah terlokalisasi penuh.
+
+Pada baseline produksi sebelum batch ini, v4.9.0 telah lulus verifier `sullam:verify-learning-hub-v490` dan smoke test halaman Ruang Belajar akun nyata. Batch v5.3.0 masih harus melalui CI, migration produksi, `sullam:verify-release-v530`, dan smoke test sebelum status tiap fase dinaikkan menjadi `verified`.
+
+Launch penuh tetap bergantung pada release gate produksi. Khusus Fase 10, `fully_verified` membutuhkan backup, restore drill, dan load test nyata; ketersediaan kode saja tidak cukup.

@@ -1,6 +1,6 @@
-{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology; @phase 4.5 Personal 2.0 styles; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration --}}
+{{-- @phase 4.3 Identity & Relationship Core; @phase 4.4 Adaptive institution terminology; @phase 4.5 Personal 2.0 styles; @phase 4.6 Private Ustadz; @phase 4.7 Institution Suite; @phase 4.8 Family Portal; @phase 4.9 Learning & Academy Integration; @phase 5.0 Business; @phase 5.1 SaaS Readiness; @phase 5.2 Smart Assistant; @phase 5.3 Mobile & Global --}}
 <!doctype html>
-<html lang="id">
+<html lang="{{ auth()->check() ? (auth()->user()->preference?->locale ?? 'id') : 'id' }}" dir="{{ auth()->check() && (auth()->user()->preference?->locale ?? 'id') === 'ar' ? 'rtl' : 'ltr' }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -27,6 +27,7 @@
     <link rel="stylesheet" href="/css/app-v450.css?v={{ @filemtime(public_path('css/app-v450.css')) ?: '450' }}">
     <link rel="stylesheet" href="/css/app-v480.css?v={{ @filemtime(public_path('css/app-v480.css')) ?: '480' }}">
     <link rel="stylesheet" href="/css/app-v490.css?v={{ @filemtime(public_path('css/app-v490.css')) ?: '490' }}">
+    <link rel="stylesheet" href="/css/app-v530.css?v={{ @filemtime(public_path('css/app-v530.css')) ?: '530' }}">
     @auth
     @php
         $brandWorkspace = $activeWorkspace ?? auth()->user()->institution;
@@ -65,11 +66,15 @@
                 <x-icon name="home"/><span>Beranda</span>
             </a>
             <a href="{{ route('relationships.index') }}" class="{{ request()->routeIs('relationships.*') ? 'active' : '' }}"><x-icon name="community"/><span>Hubungan Saya</span></a>
+            @if(auth()->user()->hasAnyRole(['personal','teacher','institution_admin','superadmin']) && \App\Support\Feature::enabled('business_center', auth()->user()->institution_id, true))
+            <a href="{{ route('business.index') }}" class="{{ request()->routeIs('business.*') ? 'active' : '' }}"><x-icon name="report"/><span>Paket & Layanan</span></a>
+            @endif
             @if(auth()->user()->hasRole('personal'))
                 <a href="{{ route('mentorship.index') }}" class="{{ request()->routeIs('mentorship.*') ? 'active' : '' }}"><x-icon name="teacher"/><span>Ustadz Privat</span></a>
                 <a href="{{ route('family.index') }}" class="{{ request()->routeIs('family.*') ? 'active' : '' }}"><x-icon name="community"/><span>Portal Keluarga</span></a>
                 <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*') ? 'active' : '' }}"><x-icon name="plan"/><span>Program Saya</span></a>
                 <a href="{{ route('personal.learning-hub.index') }}" class="{{ request()->routeIs('personal.learning-hub.*') ? 'active' : '' }}"><x-icon name="growth"/><span>Ruang Belajar</span></a>
+                <a href="{{ route('personal.smart-assistant.index') }}" class="{{ request()->routeIs('personal.smart-assistant.*') ? 'active' : '' }}"><x-icon name="guidance"/><span>Pendamping Cerdas</span></a>
                 <a href="{{ route('personal.journey.index') }}" class="{{ request()->routeIs('personal.journey.*') ? 'active' : '' }}"><x-icon name="continuity"/><span>Perjalanan Saya</span></a>
                 <a href="{{ route('personal.journey.index') }}#portofolio"><x-icon name="achievement"/><span>Portofolio Privat</span></a>
                 @if($personalAccess['quran_practice'] ?? false)
@@ -131,6 +136,8 @@
                 <a href="{{ route('admin.ecosystem.index') }}" class="{{ request()->routeIs('admin.ecosystem.*') ? 'active' : '' }}">
                     <x-icon name="continuity"/><span>Kendali Ekosistem</span>
                 </a>
+                <a href="{{ route('admin.business.index') }}" class="{{ request()->routeIs('admin.business.*') ? 'active' : '' }}"><x-icon name="report"/><span>Pusat Bisnis</span></a>
+                <a href="{{ route('admin.operations.index') }}" class="{{ request()->routeIs('admin.operations.*') ? 'active' : '' }}"><x-icon name="achievement"/><span>Operasional SaaS</span></a>
                 @if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))
                 <a href="{{ route('admin.quran-library.index') }}" class="{{ request()->routeIs('admin.quran-library.*') ? 'active' : '' }}">
                     <x-icon name="audio"/><span>Pustaka Qur’an</span>
@@ -185,6 +192,7 @@
             @endif
             @if(auth()->user()->hasRole('teacher'))
                 <a href="{{ route('mentorship.index') }}" class="{{ request()->routeIs('mentorship.*') ? 'active' : '' }}"><x-icon name="teacher"/><span>Bimbingan Privat</span></a>
+                <a href="{{ route('teacher.smart-assistant.index') }}" class="{{ request()->routeIs('teacher.smart-assistant.*') ? 'active' : '' }}"><x-icon name="guidance"/><span>Review Pendamping Cerdas</span></a>
                 <a href="{{ route('teacher.daily.index') }}" class="{{ request()->routeIs('teacher.daily.*') ? 'active' : '' }}">
                     <x-icon name="home"/><span>Operasional Hari Ini</span>
                 </a>
@@ -279,6 +287,7 @@
                 <span class="sidebar-avatar"><x-icon name="profile" size="19"/></span>
                 <span><strong>{{ auth()->user()->name }}</strong><small>Lihat profil</small></span>
             </a>
+            <a class="sidebar-user" href="{{ route('preferences.edit') }}"><span>Preferensi perangkat & bahasa</span></a>
             <form method="post" action="{{ route('logout') }}">
                 @csrf
                 <button class="link-button logout-button" type="submit"><x-icon name="logout" size="18"/><span>Keluar</span></button>
@@ -293,7 +302,9 @@
             @if(isset($workspaceOptions) && $workspaceOptions->count() > 1)
             <form class="workspace-switcher" method="post" action="{{ route('workspace.switch') }}">@csrf<label><span class="sr-only">Ruang aktif</span><select name="workspace_id">@foreach($workspaceOptions as $membership)<option value="{{ $membership->institution_id }}" @selected((int)($activeWorkspace?->id) === (int)$membership->institution_id)>{{ $membership->display_label ?: $membership->institution->name }}</option>@endforeach</select></label><button type="submit">Ganti</button></form>
             @endif
+            @if(auth()->user()->preference?->pwa_enabled ?? true)
             <button type="button" class="pwa-install-chip" data-pwa-install hidden>Instal</button>
+            @endif
             <a class="avatar" href="{{ route('profile.edit') }}" aria-label="Buka profil {{ auth()->user()->name }}">{{ strtoupper(mb_substr(auth()->user()->name,0,1)) }}</a>
         </header>
         <div class="content-wrap">

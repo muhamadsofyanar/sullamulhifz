@@ -2,6 +2,8 @@
 
 namespace App\Services\Communication;
 
+/** @phase 5.3 Mobile & Global notification preferences */
+
 use App\Jobs\SendCommunicationDelivery;
 use App\Models\CommunicationDelivery;
 use App\Models\CommunicationTemplate;
@@ -197,6 +199,9 @@ class CommunicationService
     private function sendEventSafely(string $event, User $recipient, array $variables, string $idempotencyPrefix): void
     {
         foreach (['whatsapp', 'email'] as $channel) {
+            if (! $this->channelAllowedByPreference($recipient, $channel)) {
+                continue;
+            }
             $address = $channel === 'whatsapp' ? $recipient->phone : $recipient->email;
             $connection = $recipient->institution_id ? $this->connection((int) $recipient->institution_id, $channel) : null;
             if (! $address || ! $connection || ! $this->eventEnabled($connection, $event)) {
@@ -221,6 +226,16 @@ class CommunicationService
                 report($exception);
             }
         }
+    }
+
+    private function channelAllowedByPreference(User $recipient, string $channel): bool
+    {
+        $preferences = $recipient->preference?->notification_preferences;
+        if (! is_array($preferences) || ! array_key_exists($channel, $preferences)) {
+            return true;
+        }
+
+        return (bool) $preferences[$channel];
     }
 
     private function template(int $institutionId, string $channel, string $event): ?CommunicationTemplate

@@ -1,0 +1,22 @@
+SULLAMUL HIFZ v5.3.0 — 4 FASE, 1 DEPLOY
+
+1. Backup database + persistent storage.
+2. Upload isi folder sullamulhifz-main ke root GitHub (replace file lama).
+3. Commit: Release Sullamul Hifz v5.3.0 — Fase 9–12.
+4. Tunggu php-tests, Blade compile, Docker build, Release Documentation Check, dan Phase Manifest hijau.
+5. Redeploy Coolify SATU KALI.
+6. Pastikan log memakai commit terbaru dan berakhir: Rolling update completed.
+7. Jalankan di Terminal Coolify:
+   php artisan migrate:status
+   php artisan sullam:verify-release-v530
+   Jika verifier batch berhenti, jalankan verifier fase yang disebut pada error untuk diagnosis.
+8. Smoke test: Paket & Layanan → Pusat Bisnis → Operasional SaaS → Pendamping Cerdas/Review Ustadz → Preferensi/PWA.
+
+CATATAN FASE 9:
+Hanya Personal Gratis aktif sebagai preset awal. Paket berbayar tetap nonaktif/harga 0 sampai superadmin menetapkan harga nyata.
+
+CATATAN FASE 10:
+WARNING backup/restore/load test adalah normal sampai pengujian operator nyata dilakukan.
+Jangan mengisi marker SULLAM_*_VERIFIED_AT sebelum pengujian benar-benar selesai.
+
+JANGAN: migrate:fresh, db:wipe, seeder demo, atau migrate:rollback tanpa backup dan inspeksi.

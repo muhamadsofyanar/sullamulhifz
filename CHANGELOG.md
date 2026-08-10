@@ -1,3 +1,13 @@
+# v5.3.0 — Empat Fase, Satu Deploy — 2026-08-10
+
+- Menggabungkan Fase 9–12 dalam satu kandidat deploy dari baseline v4.9.0.
+- Fase 9: paket, subscription, invoice, entitlement, payment lifecycle, dan Pusat Bisnis.
+- Fase 10: health/readiness checks, histori operasional, dan bukti operator backup/restore/load test yang tidak dipalsukan menjadi PASS.
+- Fase 11: Pendamping Cerdas lokal dengan review Ustadz berbasis hubungan privat `accepted` dan audit keputusan.
+- Fase 12: PWA static-shell only, offline guard data privat, preferensi bahasa/zona waktu/notifikasi, dan metadata API.
+- Menambah satu migration additive `006000_business_saas_ai_mobile_v530` dan empat verifier produksi v5.0–v5.3.
+- Menjaga komunikasi, jurnal Personal, media privat, dan tenant boundary dari fase sebelumnya.
+
 # v4.9.0 — Ruang Belajar Terpadu — 2026-08-10
 
 - Menyelesaikan implementasi Fase 8 Product Expansion Track: Learning & Academy Integration.

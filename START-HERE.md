@@ -1,17 +1,27 @@
-# MULAI DI SINI — v4.9.0
+# MULAI DI SINI — v5.3.0
 
-Rilis kandidat adalah **v4.9.0 — Ruang Belajar Terpadu**.
+Rilis kandidat adalah **v5.3.0 — Empat Fase, Satu Deploy**.
+
+Paket ini meneruskan v4.9.0 dan menggabungkan empat fase berikut dalam satu upload GitHub dan satu redeploy Coolify:
+
+- **Fase 9 / v5.0.0 — Business, Payment & Integrations**
+- **Fase 10 / v5.1.0 — SaaS Production Readiness**
+- **Fase 11 / v5.2.0 — Pendamping Cerdas + human review**
+- **Fase 12 / v5.3.0 — Mobile/PWA, offline-safe & global preferences**
 
 ## Baca berurutan
 
-1. `UPGRADE-V4.9.0.md`
-2. `DEPLOY-QUICK-V4.9.0.txt`
+1. `UPGRADE-V5.3.0.md`
+2. `DEPLOY-QUICK-V5.3.0.txt`
 3. `UPLOAD-TO-GITHUB.md`
-4. `docs/releases/v4.9.0.md`
+4. `docs/releases/v5.3.0.md`
 5. `docs/CURRENT-STATE.md`
 6. `docs/ROADMAP.md`
-7. `docs/ROADMAP-10-PHASES-V2.6.0.md`
+7. `docs/PHASE-REGISTRY.md`
 
-v4.9.0 meneruskan v4.8.0 dan menjalankan Fase 8 Product Expansion Track: Learning & Academy Integration. Personal memperoleh **Ruang Belajar** yang merangkum Latihan Qur’an, Qur’an Journey, Program Asatidz, Academy, target Personal, arahan Ustadz Privat, dan tugas lembaga tanpa menggandakan data atau membuka jurnal privat.
+Alur paling aman: **backup → upload/push sekali → tunggu semua GitHub Actions hijau → redeploy sekali → migration additive berjalan → jalankan `sullam:verify-release-v530` → smoke test akun nyata**.
 
-Alur paling aman: backup → salin paket ke repository → push sekali → tunggu semua GitHub Actions hijau → redeploy sekali → jalankan verifier v4.8 dan v4.9 → smoke test Ruang Belajar dengan minimal dua akun Personal.
+Jangan menjalankan `migrate:fresh`, `db:wipe`, atau seeder demo pada database produksi.
+
+
+Catatan Fase 9: preset berbayar tidak diaktifkan dan tidak diberi harga produksi secara otomatis. Hanya **Personal Gratis** yang aktif; superadmin harus menetapkan harga nyata sebelum mengaktifkan paket berbayar.

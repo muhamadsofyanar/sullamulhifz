@@ -2,10 +2,11 @@
 
 namespace Database\Seeders;
 
-/** @phase 4.4 Multi-tenant Institution Foundation */
+/** @phase 4.4 Multi-tenant Institution Foundation; @phase 5.0 Business; @phase 5.2 Smart Assistant; @phase 5.3 Preferences */
 
 use App\Models\AcademicYear;
 use App\Models\Institution;
+use App\Models\FeatureFlag;
 use App\Models\LearningGroup;
 use App\Models\Level;
 use App\Models\MarhalahType;
@@ -39,6 +40,13 @@ class ProductionSeeder extends Seeder
                 'status' => 'active',
             ]
         );
+
+        foreach (['business_center', 'smart_assistant', 'user_preferences'] as $featureKey) {
+            FeatureFlag::updateOrCreate(
+                ['institution_id' => $institution->id, 'feature_key' => $featureKey],
+                ['enabled' => true, 'config' => []],
+            );
+        }
 
         $roles = [
             'superadmin' => 'Superadmin',

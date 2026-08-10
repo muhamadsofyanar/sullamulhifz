@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers\Admin;
 
+/** @phase 5.0 Business payment lifecycle integration */
+
 use App\Http\Controllers\Controller;
 use App\Models\CommunityPost;
 use App\Models\CommunitySpace;
 use App\Models\PaymentTransaction;
 use App\Models\User;
+use App\Services\BusinessBillingService;
 use App\Services\CommunityModerationService;
 use App\Services\PaymentLedgerService;
 use App\Services\PersonalModuleAccessService;
@@ -21,6 +24,7 @@ class EcosystemController extends Controller
         private readonly PersonalModuleAccessService $modules,
         private readonly CommunityModerationService $moderation,
         private readonly PaymentLedgerService $payments,
+        private readonly BusinessBillingService $billing,
     ) {}
 
     public function index(Request $request): View
@@ -97,6 +101,7 @@ class EcosystemController extends Controller
 
     public function payment(Request $request, PaymentTransaction $transaction): RedirectResponse
     {
+        abort_unless($transaction->status === 'pending', 409, 'Pembayaran sudah diproses dan tidak dapat direview ulang dari layar ini.');
         abort_unless((int) $transaction->institution_id === (int) $request->user()->institution_id, 404);
         $data = $request->validate([
             'decision' => ['required', Rule::in(['paid', 'rejected'])],
@@ -111,11 +116,13 @@ class EcosystemController extends Controller
                 ['verified_by_user_id' => $request->user()->id],
             );
             $transaction->update(['verified_by_user_id' => $request->user()->id, 'verified_at' => now(), 'rejection_reason' => null]);
+            $this->billing->syncFromVerifiedPayment($transaction->refresh());
         } else {
             $transaction->update([
                 'status' => 'rejected', 'verified_by_user_id' => $request->user()->id,
                 'verified_at' => now(), 'rejection_reason' => $data['reason'],
             ]);
+            $this->billing->syncFromRejectedPayment($transaction->refresh());
         }
 
         return back()->with('success', 'Status pembayaran diperbarui.');

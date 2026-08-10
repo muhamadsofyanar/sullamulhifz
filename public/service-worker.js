@@ -1,6 +1,8 @@
-const CACHE = 'sullam-static-v410';
+/* @phase 5.3 Mobile, Offline & Global — offline-safe static shell only */
+const CACHE = 'sullam-static-v530';
 const STATIC_ASSETS = new Set([
   '/offline.html',
+  '/manifest.webmanifest',
   '/academy-manifest.webmanifest',
   '/css/app.css',
   '/css/app-v203.css',
@@ -16,7 +18,13 @@ const STATIC_ASSETS = new Set([
   '/css/app-v340.css',
   '/css/app-v400.css',
   '/css/app-v410.css',
+  '/css/app-v440.css',
+  '/css/app-v450.css',
+  '/css/app-v480.css',
+  '/css/app-v490.css',
+  '/css/app-v530.css',
   '/css/public.css',
+  '/css/public-v450.css',
   '/js/app.js',
   '/js/academy-player.js',
   '/js/academy-quran.js',
@@ -29,7 +37,18 @@ const STATIC_ASSETS = new Set([
 
 self.addEventListener('install', event => {
   self.skipWaiting();
-  event.waitUntil(caches.open(CACHE).then(cache => cache.addAll([...STATIC_ASSETS])));
+  event.waitUntil(
+    caches.open(CACHE).then(async cache => {
+      for (const asset of STATIC_ASSETS) {
+        try {
+          await cache.add(asset);
+        } catch (error) {
+          // Satu asset opsional tidak boleh menggagalkan instal PWA seluruhnya.
+          console.warn('Sullam PWA asset skipped:', asset);
+        }
+      }
+    })
+  );
 });
 
 self.addEventListener('activate', event => {
@@ -46,8 +65,13 @@ self.addEventListener('fetch', event => {
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Authenticated pages and private files must never enter Cache Storage.
-  if (url.pathname.startsWith('/media/') || request.headers.has('authorization')) return;
+  // Guardrail privasi: halaman terautentikasi, media privat, API, dan request
+  // dengan Authorization tidak pernah disimpan sebagai data offline.
+  if (
+    url.pathname.startsWith('/media/') ||
+    url.pathname.startsWith('/api/') ||
+    request.headers.has('authorization')
+  ) return;
 
   if (request.mode === 'navigate') {
     event.respondWith(fetch(request, { cache: 'no-store' }).catch(() => caches.match('/offline.html')));

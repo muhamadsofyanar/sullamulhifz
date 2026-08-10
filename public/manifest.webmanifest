@@ -1,9 +1,12 @@
 {
+  "_phase": "@phase 5.3 Mobile, Offline & Global",
   "name": "Sullamul Hifz — Bukan Sekadar Hafal, Tapi KUAT",
   "short_name": "Sullamul",
-  "description": "Portal pembinaan Al-Qur'an, tugas, komunikasi keluarga, audio Qur'an, dan Academy.",
+  "description": "Pendamping belajar Al-Qur'an untuk Personal, Ustadz, keluarga, dan lembaga.",
+  "lang": "id",
+  "dir": "auto",
   "id": "/dashboard",
-  "start_url": "/dashboard",
+  "start_url": "/dashboard?source=pwa",
   "scope": "/",
   "display": "standalone",
   "orientation": "any",
@@ -14,9 +17,9 @@
     {"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable"}
   ],
   "shortcuts": [
-    {"name": "Beranda", "short_name": "Beranda", "url": "/dashboard", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
-    {"name": "Buku Penghubung", "short_name": "Pesan", "url": "/buku-penghubung", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
+    {"name": "Ruang Belajar", "short_name": "Belajar", "url": "/personal/ruang-belajar", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
+    {"name": "Pendamping Cerdas", "short_name": "Pendamping", "url": "/personal/pendamping-cerdas", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
     {"name": "Latihan Al-Qur'an", "short_name": "Qur'an", "url": "/latihan-quran", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]},
-    {"name": "Parent Academy", "short_name": "Academy", "url": "/academy/belajar", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]}
+    {"name": "Preferensi", "short_name": "Preferensi", "url": "/preferensi", "icons": [{"src": "/icon.svg", "sizes": "any", "type": "image/svg+xml"}]}
   ]
 }

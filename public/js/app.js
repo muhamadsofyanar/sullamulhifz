@@ -1,3 +1,4 @@
+/* @phase 5.3 Mobile, Offline & Global — PWA install/update hook */
 document.addEventListener('DOMContentLoaded',()=>{
   const sidebar=document.getElementById('sidebar');
   const backdrop=document.querySelector('.sidebar-backdrop');
@@ -46,5 +47,5 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;installButtons.forEach(btn=>btn.hidden=false)});
   installButtons.forEach(btn=>btn.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;installButtons.forEach(item=>item.hidden=true)}));
   window.addEventListener('appinstalled',()=>installButtons.forEach(btn=>btn.hidden=true));
-  if('serviceWorker'in navigator){navigator.serviceWorker.register('/service-worker.js?v=210').catch(()=>{})}
+  if('serviceWorker'in navigator){navigator.serviceWorker.register('/service-worker.js?v=530').catch(()=>{})}
 });
