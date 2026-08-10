@@ -12,6 +12,7 @@ use App\Models\MurajaahRecord;
 use App\Models\Student;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class DistractionFreeSubmissionService
 {
@@ -34,6 +35,7 @@ class DistractionFreeSubmissionService
                 ->where('submission_key', $data['submission_key'])
                 ->first();
             if ($existing) {
+                $this->assertSameMemorizationPayload($existing, $data, $meeting);
                 return $existing;
             }
 
@@ -118,6 +120,7 @@ class DistractionFreeSubmissionService
                 ->where('submission_key', $data['submission_key'])
                 ->first();
             if ($existing) {
+                $this->assertSameMurajaahPayload($existing, $data, $meeting);
                 return $existing;
             }
 
@@ -244,5 +247,47 @@ class DistractionFreeSubmissionService
         $note = trim((string) $value);
 
         return $note === '' ? null : $note;
+    }
+
+    /** @param array<string, mixed> $data */
+    private function assertSameMemorizationPayload(MemorizationRecord $record, array $data, ?Meeting $meeting): void
+    {
+        $matches = (int) $record->surah_id === (int) $data['surah_id']
+            && (int) $record->start_verse === (int) $data['start_verse']
+            && (int) $record->end_verse === (int) $data['end_verse']
+            && $record->daily_decision === (string) $data['daily_decision']
+            && $record->short_note === $this->note($data['short_note'] ?? null)
+            && (int) ($record->meeting_id ?? 0) === (int) ($meeting?->id ?? 0)
+            && (
+                empty($data['memorization_target_id'])
+                || (int) $record->memorization_target_id === (int) $data['memorization_target_id']
+            );
+
+        if (! $matches) {
+            throw ValidationException::withMessages([
+                'submission_key' => 'Kunci setoran ini sudah dipakai untuk hasil yang berbeda. Muat ulang formulir sebelum menyimpan kembali.',
+            ]);
+        }
+    }
+
+    /** @param array<string, mixed> $data */
+    private function assertSameMurajaahPayload(MurajaahRecord $record, array $data, ?Meeting $meeting): void
+    {
+        $matches = (int) $record->surah_id === (int) $data['surah_id']
+            && (int) $record->start_verse === (int) $data['start_verse']
+            && (int) $record->end_verse === (int) $data['end_verse']
+            && $record->daily_decision === (string) $data['daily_decision']
+            && $record->short_note === $this->note($data['short_note'] ?? null)
+            && (int) ($record->meeting_id ?? 0) === (int) ($meeting?->id ?? 0)
+            && (
+                empty($data['review_plan_id'])
+                || (int) $record->review_plan_id === (int) $data['review_plan_id']
+            );
+
+        if (! $matches) {
+            throw ValidationException::withMessages([
+                'submission_key' => 'Kunci Murāja‘ah ini sudah dipakai untuk hasil yang berbeda. Muat ulang formulir sebelum menyimpan kembali.',
+            ]);
+        }
     }
 }

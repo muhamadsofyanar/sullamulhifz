@@ -9,6 +9,7 @@ use App\Models\User;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class InfaqService
 {
@@ -16,7 +17,9 @@ class InfaqService
     public function createPending(User $user, array $data, string $idempotencyKey): InfaqTransaction
     {
         return DB::transaction(function () use ($user, $data, $idempotencyKey): InfaqTransaction {
-            return InfaqTransaction::query()->firstOrCreate([
+            User::query()->whereKey($user->id)->lockForUpdate()->firstOrFail();
+
+            $transaction = InfaqTransaction::query()->firstOrCreate([
                 'user_id' => $user->id,
                 'idempotency_key' => $idempotencyKey,
             ], [
@@ -30,6 +33,19 @@ class InfaqService
                 'is_anonymous' => (bool) ($data['is_anonymous'] ?? false),
                 'metadata' => ['source' => 'voluntary_infaq_v600'],
             ]);
+
+            if (! $transaction->wasRecentlyCreated) {
+                $samePayload = $transaction->purpose === (string) $data['purpose']
+                    && round((float) $transaction->amount, 2) === round((float) $data['amount'], 2)
+                    && $transaction->is_anonymous === (bool) ($data['is_anonymous'] ?? false);
+                if (! $samePayload) {
+                    throw ValidationException::withMessages([
+                        'idempotency_key' => 'Kunci transaksi ini sudah dipakai untuk infak yang berbeda. Muat ulang halaman sebelum mencoba lagi.',
+                    ]);
+                }
+            }
+
+            return $transaction;
         }, 3);
     }
 
@@ -37,6 +53,11 @@ class InfaqService
     {
         return DB::transaction(function () use ($transaction, $reviewer, $decision): InfaqTransaction {
             $locked = InfaqTransaction::query()->lockForUpdate()->findOrFail($transaction->id);
+            abort_unless(
+                $reviewer->hasRole('superadmin')
+                || (int) $locked->institution_id === (int) $reviewer->institution_id,
+                404,
+            );
             if ($locked->status !== 'pending') {
                 return $locked;
             }

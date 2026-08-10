@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers\Admin;
 
+/** @phase 6.0 PHP 8.4 report export syntax compatibility */
+
 use App\Http\Controllers\Controller;
 use App\Models\AttendanceRecord;
 use App\Models\AssignmentRecipient;
@@ -46,7 +48,7 @@ class ReportController extends Controller
     public function attendanceCsv(Request $request): StreamedResponse
     {
         $records=AttendanceRecord::with(['student','meeting.schoolClass','meeting.learningGroup'])->whereHas('meeting',fn($q)=>$q->where('institution_id',$request->user()->institution_id))->latest()->get();
-        return $this->csv('absensi',['Tanggal','Kelas/Kelompok','Santri','Status','Jam datang','Catatan'],function($out)use($records):void{foreach($records as $r)fputcsv($out,[optional($r->meeting?->meeting_date)->format('Y-m-d'),($r->meeting?->schoolClass?:$r->meeting?->learningGroup)?->name,$r->student?->full_name,$r->status,$r->arrival_time,$r->notes]);});
+        return $this->csv('absensi',['Tanggal','Kelas/Kelompok','Santri','Status','Jam datang','Catatan'],function($out)use($records):void{foreach($records as $r)fputcsv($out,[optional($r->meeting?->meeting_date)->format('Y-m-d'),optional($r->meeting?->schoolClass ?? $r->meeting?->learningGroup)->name,$r->student?->full_name,$r->status,$r->arrival_time,$r->notes]);});
     }
 
     public function tahsinCsv(Request $request): StreamedResponse
@@ -101,7 +103,7 @@ class ReportController extends Controller
             ->whereHas('assignment',fn($q)=>$q->where('institution_id',$request->user()->institution_id))
             ->latest()->get();
         return $this->csv('tugas-santri',['Tugas','Jenis','Kelas/Kelompok','Santri','Status','Tenggat','Selesai'],function($out)use($records):void{
-            foreach($records as $r)fputcsv($out,[$r->assignment?->title,$r->assignment?->assignment_type,($r->assignment?->schoolClass?:$r->assignment?->learningGroup)?->name,$r->student?->full_name,$r->status,optional($r->assignment?->due_at)->format('Y-m-d H:i'),optional($r->completed_at)->format('Y-m-d H:i')]);
+            foreach($records as $r)fputcsv($out,[$r->assignment?->title,$r->assignment?->assignment_type,optional($r->assignment?->schoolClass ?? $r->assignment?->learningGroup)->name,$r->student?->full_name,$r->status,optional($r->assignment?->due_at)->format('Y-m-d H:i'),optional($r->completed_at)->format('Y-m-d H:i')]);
         });
     }
 

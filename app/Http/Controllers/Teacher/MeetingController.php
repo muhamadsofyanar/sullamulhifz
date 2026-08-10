@@ -81,22 +81,40 @@ class MeetingController extends Controller
         $students = $this->students($meeting);
         $meeting->load(['attendanceRecords','tahsinRecords','memorizationRecords','murajaahRecords','schoolClass','learningGroup','teacher']);
 
+        $targets = MemorizationTarget::with(['student','rubu','surah','marhalah'])
+            ->where('institution_id', $meeting->institution_id)
+            ->whereIn('student_id', $students->pluck('id'))
+            ->whereIn('status', ['active','in_progress','strengthening','paused'])
+            ->latest()
+            ->get();
+        $reviewPlans = MemorizationReviewPlan::with(['student','surah','target'])
+            ->where('institution_id', $meeting->institution_id)
+            ->whereIn('student_id', $students->pluck('id'))
+            ->where('status', 'scheduled')
+            ->whereDate('review_date', '<=', today())
+            ->orderBy('review_date')
+            ->get();
+
+        $requestedStudentId = $request->integer('student');
+        $selectedStudentId = $students->contains('id', $requestedStudentId)
+            ? $requestedStudentId
+            : ($request->boolean('queue_done') ? null : $students->first()?->id);
+
         return view('teacher.meetings.show', [
             'meeting' => $meeting,
             'students' => $students,
             'surahs' => QuranSurah::orderBy('id')->get(),
             'marhalah' => MarhalahType::where('status', 'active')->orderBy('sequence')->get(),
-            'targets' => MemorizationTarget::with(['student','rubu','surah','marhalah'])
-                ->where('institution_id', $meeting->institution_id)
-                ->whereIn('student_id', $students->pluck('id'))
-                ->whereIn('status', ['active','in_progress','strengthening','paused'])
-                ->latest()->get(),
-            'reviewPlans' => MemorizationReviewPlan::with(['student','surah','target'])
-                ->where('institution_id', $meeting->institution_id)
-                ->whereIn('student_id', $students->pluck('id'))
-                ->where('status', 'scheduled')
-                ->whereDate('review_date', '<=', today())
-                ->orderBy('review_date')->get(),
+            'targets' => $targets,
+            'reviewPlans' => $reviewPlans,
+            'quickSelectedStudentId' => $selectedStudentId,
+            'quickAutoTargetId' => $selectedStudentId
+                ? $targets->firstWhere('student_id', $selectedStudentId)?->id
+                : null,
+            'quickAutoReviewPlanId' => $selectedStudentId
+                ? $reviewPlans->firstWhere('student_id', $selectedStudentId)?->id
+                : null,
+            'queueComplete' => $request->boolean('queue_done'),
         ]);
     }
 
@@ -192,7 +210,7 @@ class MeetingController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Hasil setoran tersimpan. Silakan lanjut ke santri berikutnya.');
+        return $this->redirectToNextStudent($meeting, $student, 'Hasil setoran tersimpan.');
     }
 
     public function storeQuickMurajaah(Request $request, Meeting $meeting): RedirectResponse
@@ -210,7 +228,7 @@ class MeetingController extends Controller
             ]);
         }
 
-        return back()->with('success', 'Hasil Murāja‘ah tersimpan. Silakan lanjut ke santri berikutnya.');
+        return $this->redirectToNextStudent($meeting, $student, 'Hasil Murāja‘ah tersimpan.');
     }
 
     public function storeMemorization(Request $request, Meeting $meeting): RedirectResponse
@@ -452,6 +470,24 @@ class MeetingController extends Controller
             return $meeting->schoolClass->activeEnrollments()->with('student')->get()->pluck('student')->sortBy('full_name')->values();
         }
         return $meeting->learningGroup->activeMemberships()->with('student')->get()->pluck('student')->sortBy('full_name')->values();
+    }
+
+    private function redirectToNextStudent(Meeting $meeting, Student $current, string $message): RedirectResponse
+    {
+        $studentIds = $this->students($meeting)->pluck('id')->values();
+        $position = $studentIds->search($current->id);
+        $nextStudentId = $position === false ? null : $studentIds->get($position + 1);
+        $parameters = ['meeting' => $meeting];
+
+        if ($nextStudentId) {
+            $parameters['student'] = $nextStudentId;
+            $message .= ' Santri berikutnya sudah dipilih otomatis.';
+        } else {
+            $parameters['queue_done'] = 1;
+            $message .= ' Antrean santri pada pertemuan ini selesai.';
+        }
+
+        return redirect()->route('teacher.meetings.show', $parameters)->with('success', $message);
     }
 
     private function authorizeMeeting(Request $request, Meeting $meeting): void

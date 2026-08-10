@@ -300,7 +300,7 @@
     <main class="main-content">
         <header class="topbar">
             <button type="button" class="icon-button" data-sidebar-toggle aria-label="Buka menu"><x-icon name="menu" size="25"/></button>
-            <div class="topbar-title"><strong>{{ $pageTitle ?? 'Sullamul Ḥifẓ' }}</strong><small>{{ ($activeWorkspace ?? auth()->user()->institution)?->workspace_type === 'personal' ? 'Ruang Personal · Privat' : ($activeWorkspace ?? auth()->user()->institution)?->name }}</small></div>
+            <div class="topbar-title"><strong>{{ $pageTitle ?? 'Sullamul Ḥifẓ' }}</strong><small>{{ optional($activeWorkspace ?? auth()->user()->institution)->workspace_type === 'personal' ? 'Ruang Personal · Privat' : optional($activeWorkspace ?? auth()->user()->institution)->name }}</small></div>
             @if(isset($workspaceOptions) && $workspaceOptions->count() > 1)
             <form class="workspace-switcher" method="post" action="{{ route('workspace.switch') }}">@csrf<label><span class="sr-only">Ruang aktif</span><select name="workspace_id">@foreach($workspaceOptions as $membership)<option value="{{ $membership->institution_id }}" @selected((int)($activeWorkspace?->id) === (int)$membership->institution_id)>{{ $membership->display_label ?: $membership->institution->name }}</option>@endforeach</select></label><button type="submit">Ganti</button></form>
             @endif

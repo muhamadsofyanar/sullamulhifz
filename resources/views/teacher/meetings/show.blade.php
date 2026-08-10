@@ -10,6 +10,7 @@ $statusLabels=['draft'=>'Draf','ongoing'=>'Berlangsung','completed'=>'Selesai','
 <section class="card"><div class="section-head"><div><h2>Target aktif</h2><p class="hint">Pilih target saat mencatat setoran agar riwayat dan status target selalu terhubung.</p></div><a class="button small secondary" href="{{ route('teacher.learning-plan.index') }}">Kelola target</a></div>@forelse($targets as $target)<div class="list-row"><div><strong>{{ $target->student->full_name }} · {{ $target->surah->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }}</strong><small>{{ $target->rubu?->name ?? 'Segment lama tidak dipakai' }} · {{ $target->marhalah?->name ?? 'Marhalah belum dipilih' }}</small></div>@if(\App\Support\Feature::enabled('quran_audio', auth()->user()->institution_id, true))<a class="button small ghost" href="{{ route('quran-practice.target',$target) }}">▶ Latih</a>@endif</div>@empty<p class="empty">Belum ada target aktif.</p>@endforelse</section>
 <section class="card phase-highlight">
     <div class="section-head"><div><span class="eyebrow">SETORAN TANPA DISTRAKSI</span><h2>Satu anak, satu kesimpulan, lalu lanjut.</h2><p class="hint">Gunakan dua form cepat ini untuk kegiatan harian. Semua form rinci lama tetap tersedia di bawah untuk ujian dan kasus khusus.</p></div></div>
+    @if($queueComplete)<div class="alert success"><b>Antrean selesai.</b> Semua santri pada pertemuan ini sudah dilewati. Pilih nama secara manual jika ada setoran tambahan.</div>@endif
     <div class="grid two">
         <div class="card soft-card"><h3>Hasil setoran</h3>
             @include('teacher.tahfizh.partials.quick-memorization-form',[
@@ -17,6 +18,9 @@ $statusLabels=['draft'=>'Draf','ongoing'=>'Berlangsung','completed'=>'Selesai','
                 'quickStudents'=>$students,
                 'quickTargets'=>$targets,
                 'quickSurahs'=>$surahs,
+                'quickSelectedStudentId'=>$quickSelectedStudentId,
+                'quickAutoTargetId'=>$quickAutoTargetId,
+                'quickSubmitLabel'=>'Simpan & lanjut ke santri berikutnya',
             ])
         </div>
         <div class="card soft-card"><h3>Hasil Murāja‘ah</h3>
@@ -25,6 +29,9 @@ $statusLabels=['draft'=>'Draf','ongoing'=>'Berlangsung','completed'=>'Selesai','
                 'quickStudents'=>$students,
                 'quickReviewPlans'=>$reviewPlans,
                 'quickSurahs'=>$surahs,
+                'quickSelectedStudentId'=>$quickSelectedStudentId,
+                'quickAutoReviewPlanId'=>$quickAutoReviewPlanId,
+                'quickSubmitLabel'=>'Simpan & lanjut ke santri berikutnya',
             ])
         </div>
     </div>

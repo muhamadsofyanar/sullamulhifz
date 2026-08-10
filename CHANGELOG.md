@@ -3,6 +3,9 @@
 - Menjadikan seluruh fungsi inti tersedia tanpa subscription; pembuatan invoice langganan baru ditutup, sedangkan histori v5 tetap dipertahankan.
 - Menambah ledger infak sukarela terpisah, idempotensi per pengguna, verifikasi admin, bukti penerimaan, dan ringkasan dana terverifikasi tanpa perubahan entitlement.
 - Menambah alur setoran harian dan Murāja‘ah cepat dengan keputusan Lanjut/Kuatkan/Ulang serta penjadwalan review otomatis.
+- Memilih target anak secara otomatis pada antrean pertemuan, memajukan form ke santri berikutnya setelah penyimpanan, dan menandai antrean selesai.
+- Menolak penggunaan ulang kunci idempotensi bila isi setoran atau infak berbeda dari transaksi pertama.
+- Menyederhanakan ekspresi ekspor absensi agar lolos pemeriksaan sintaks PHP 8.4 tanpa mengubah isi CSV.
 - Menambah Tangga Fokus individual dan asesmen berkala lima aspek tanpa skor atau ranking.
 - Menambah ringkasan progres keluarga berbasis consent serta mempertahankan form pencatatan rinci lama.
 - Memperketat status akun lintas workspace, pemisahan domain API, dan opt-in katalog Academy publik.

@@ -106,6 +106,55 @@ class FreeInfaqDistractionFreeV600Test extends TestCase
         $this->assertSame('pending', $firstUser->infaqTransactions()->firstOrFail()->status);
     }
 
+    public function test_infaq_retry_key_cannot_be_reused_for_a_different_payload(): void
+    {
+        [$user] = $this->teacherAndStudent('infaq-mismatch');
+        $service = app(InfaqService::class);
+        $key = (string) Str::uuid();
+
+        $service->createPending($user, [
+            'purpose' => 'technology',
+            'amount' => 50000,
+            'is_anonymous' => false,
+        ], $key);
+
+        $this->expectException(ValidationException::class);
+        $service->createPending($user, [
+            'purpose' => 'teacher_development',
+            'amount' => 75000,
+            'is_anonymous' => false,
+        ], $key);
+    }
+
+    public function test_submission_retry_key_cannot_change_the_teacher_decision(): void
+    {
+        [$user, $student] = $this->teacherAndStudent('submission-mismatch');
+        QuranSurah::create([
+            'id' => 1,
+            'name_arabic' => 'الفاتحة',
+            'name_latin' => 'Al-Fatihah',
+            'verse_count' => 7,
+            'sequence' => 1,
+        ]);
+        $key = (string) Str::uuid();
+        $payload = [
+            'submission_key' => $key,
+            'surah_id' => 1,
+            'start_verse' => 1,
+            'end_verse' => 7,
+            'daily_decision' => 'lanjut',
+            'short_note' => null,
+        ];
+        $service = app(DistractionFreeSubmissionService::class);
+        $service->recordMemorization($user, $student, $payload);
+
+        $this->expectException(ValidationException::class);
+        $service->recordMemorization($user, $student, [
+            ...$payload,
+            'daily_decision' => 'ulang',
+        ]);
+    }
+
     public function test_new_subscription_invoice_is_closed_when_free_mode_is_enabled(): void
     {
         config()->set('sullam.subscriptions_enabled', false);

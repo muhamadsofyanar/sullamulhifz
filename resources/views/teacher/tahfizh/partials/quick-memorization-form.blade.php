@@ -1,5 +1,6 @@
 {{-- @phase 6.0 Distraction-free memorization submission --}}
 @php($quickStudents = $quickStudents ?? collect())
+@php($quickSelectedStudentId = (int) ($quickSelectedStudentId ?? 0))
 <form class="stack compact quick-submission" method="post" action="{{ $quickAction }}" data-quick-submission>
     @csrf
     <input type="hidden" name="submission_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">
@@ -7,7 +8,7 @@
         <label>Santri
             <select name="student_id" required data-quick-student>
                 <option value="">Pilih santri</option>
-                @foreach($quickStudents as $quickStudent)<option value="{{ $quickStudent->id }}">{{ $quickStudent->full_name }}</option>@endforeach
+                @foreach($quickStudents as $quickStudent)<option value="{{ $quickStudent->id }}" @selected($quickSelectedStudentId === (int) $quickStudent->id)>{{ $quickStudent->full_name }}</option>@endforeach
             </select>
         </label>
     @endif
@@ -15,7 +16,7 @@
         <select name="memorization_target_id" data-quick-source>
             <option value="">Pilih manual / latihan bebas</option>
             @foreach($quickTargets as $target)
-                <option value="{{ $target->id }}" @selected(($quickAutoTargetId ?? null) === $target->id)
+                <option value="{{ $target->id }}" @selected((int) ($quickAutoTargetId ?? 0) === (int) $target->id)
                     data-student="{{ $target->student_id }}" data-surah="{{ $target->surah_id }}"
                     data-start="{{ $target->start_verse }}" data-end="{{ $target->end_verse }}">
                     @if($quickStudents->isNotEmpty()){{ $target->student?->full_name }} — @endif{{ $target->surah?->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }}
@@ -38,13 +39,14 @@
         <label class="decision-repeat"><input type="radio" name="daily_decision" value="ulang" required><span><b>Ulang</b><small>Belum siap lanjut</small></span></label>
     </fieldset>
     <label>Satu catatan kecil <small>(opsional)</small><input name="short_note" maxlength="500" placeholder="Contoh: ulang ayat 6–8 sebanyak 3×"></label>
-    <button class="button primary">Simpan & lanjut ke santri berikutnya</button>
+    <button class="button primary">{{ $quickSubmitLabel ?? 'Simpan hasil setoran' }}</button>
 </form>
 <script>
 (function () {
     var form = document.currentScript.previousElementSibling;
     if (!form || !form.matches('[data-quick-submission]')) return;
     var source = form.querySelector('[data-quick-source]');
+    var student = form.querySelector('[data-quick-student]');
     function apply() {
         var option = source && source.options[source.selectedIndex];
         var details = form.querySelector('.quick-portion-edit');
@@ -53,13 +55,26 @@
             return;
         }
         if (details) details.open = false;
-        var student = form.querySelector('[data-quick-student]');
         if (student && option.dataset.student) student.value = option.dataset.student;
         form.querySelector('[data-quick-surah]').value = option.dataset.surah;
         form.querySelector('[data-quick-start]').value = option.dataset.start || '';
         form.querySelector('[data-quick-end]').value = option.dataset.end || '';
     }
+    function chooseForStudent() {
+        if (!source || !student) return apply();
+        var studentId = student.value;
+        var firstMatch = null;
+        Array.prototype.forEach.call(source.options, function (option, index) {
+            if (index === 0) return;
+            var matches = !studentId || option.dataset.student === studentId;
+            option.hidden = !matches;
+            if (matches && !firstMatch) firstMatch = option;
+        });
+        source.value = firstMatch ? firstMatch.value : '';
+        apply();
+    }
     if (source) source.addEventListener('change', apply);
-    apply();
+    if (student) student.addEventListener('change', chooseForStudent);
+    if (student && student.value) chooseForStudent(); else apply();
 })();
 </script>

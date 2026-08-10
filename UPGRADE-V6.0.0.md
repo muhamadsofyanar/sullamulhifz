@@ -52,7 +52,7 @@ Jika deployment memakai rolling update dan migration telah dipastikan backward-c
 
 ## Smoke test wajib
 
-1. Ustadz mencatat satu setoran cepat untuk masing-masing keputusan Lanjut, Kuatkan, dan Ulang; pastikan jadwal Murāja‘ah terbentuk.
+1. Ustadz mencatat satu setoran cepat untuk masing-masing keputusan Lanjut, Kuatkan, dan Ulang; pastikan target anak dipilih otomatis, antrean berpindah ke anak berikutnya, dan jadwal Murāja‘ah terbentuk.
 2. Retry request dengan kunci yang sama tidak membuat record ganda.
 3. Buka pencatatan rinci lama dan pastikan masih dapat digunakan.
 4. Ubah Tangga Fokus dan simpan satu asesmen berkala lima aspek.

@@ -119,14 +119,16 @@
     {
       "path": "resources/views/public/pricing.blade.php",
       "phases": [
-        "4.2"
+        "4.2",
+        "6.0"
       ]
     },
     {
       "path": "resources/views/layouts/public.blade.php",
       "phases": [
         "4.2",
-        "4.5"
+        "4.5",
+        "6.0"
       ]
     },
     {
@@ -147,7 +149,8 @@
         "4.3",
         "4.5",
         "5.0",
-        "5.3"
+        "5.3",
+        "6.0"
       ]
     },
     {
@@ -241,14 +244,16 @@
         "5.0",
         "5.1",
         "5.2",
-        "5.3"
+        "5.3",
+        "6.0"
       ]
     },
     {
       "path": "bootstrap/app.php",
       "phases": [
         "4.3",
-        "4.4"
+        "4.4",
+        "6.0"
       ]
     },
     {
@@ -271,14 +276,16 @@
         "5.0",
         "5.1",
         "5.2",
-        "5.3"
+        "5.3",
+        "6.0"
       ]
     },
     {
       "path": "tests/Feature/WorkspaceContextV430Test.php",
       "phases": [
         "4.3",
-        "4.8"
+        "4.8",
+        "6.0"
       ]
     },
     {
@@ -305,7 +312,8 @@
     {
       "path": "app/Http/Controllers/Admin/InstitutionController.php",
       "phases": [
-        "4.4"
+        "4.4",
+        "6.0"
       ]
     },
     {
@@ -346,7 +354,8 @@
     {
       "path": "resources/views/admin/institution/edit.blade.php",
       "phases": [
-        "4.4"
+        "4.4",
+        "6.0"
       ]
     },
     {
@@ -402,7 +411,8 @@
         "5.0",
         "5.1",
         "5.2",
-        "5.3"
+        "5.3",
+        "6.0"
       ]
     },
     {
@@ -419,7 +429,8 @@
         "5.0",
         "5.1",
         "5.2",
-        "5.3"
+        "5.3",
+        "6.0"
       ]
     },
     {
@@ -506,7 +517,8 @@
         "5.0",
         "5.1",
         "5.2",
-        "5.3"
+        "5.3",
+        "6.0"
       ]
     },
     {
@@ -554,7 +566,8 @@
     {
       "path": "app/Http/Controllers/FamilyPortalController.php",
       "phases": [
-        "4.8"
+        "4.8",
+        "6.0"
       ]
     },
     {
@@ -566,7 +579,8 @@
     {
       "path": "resources/views/family/index.blade.php",
       "phases": [
-        "4.8"
+        "4.8",
+        "6.0"
       ]
     },
     {
@@ -668,7 +682,8 @@
     {
       "path": "app/Services/BusinessBillingService.php",
       "phases": [
-        "5.0"
+        "5.0",
+        "6.0"
       ]
     },
     {
@@ -692,19 +707,22 @@
     {
       "path": "resources/views/admin/business/index.blade.php",
       "phases": [
-        "5.0"
+        "5.0",
+        "6.0"
       ]
     },
     {
       "path": "resources/views/personal/business.blade.php",
       "phases": [
-        "5.0"
+        "5.0",
+        "6.0"
       ]
     },
     {
       "path": "tests/Feature/BusinessPaymentV500Test.php",
       "phases": [
-        "5.0"
+        "5.0",
+        "6.0"
       ]
     },
     {
@@ -741,7 +759,8 @@
       "path": "routes/api.php",
       "phases": [
         "5.1",
-        "5.3"
+        "5.3",
+        "6.0"
       ]
     },
     {
@@ -848,123 +867,213 @@
     },
     {
       "path": "app/Http/Controllers/Admin/GuardianController.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Http/Controllers/Admin/InfaqController.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Http/Controllers/InfaqController.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Http/Controllers/Teacher/MeetingController.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Http/Controllers/Teacher/MemorizationFocusController.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Http/Controllers/Teacher/TahfizhController.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Http/Middleware/EnforceDomainSeparation.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Models/InfaqTransaction.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Models/MemorizationRecord.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Models/MurajaahRecord.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Models/Student.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Models/StudentMemorizationAssessment.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Models/StudentMemorizationFocus.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Services/DistractionFreeSubmissionService.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Services/InfaqService.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "app/Services/MemorizationSummaryService.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "config/sullam.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "database/migrations/2026_08_10_007000_free_infaq_distraction_free_v600.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "public/css/app.css",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "resources/views/admin/infaq/index.blade.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "resources/views/infaq/index.blade.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "resources/views/teacher/meetings/show.blade.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "resources/views/teacher/tahfizh/partials/quick-memorization-form.blade.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "resources/views/teacher/tahfizh/partials/quick-murajaah-form.blade.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "resources/views/teacher/tahfizh/student.blade.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "tests/Feature/DomainSeparationTest.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "tests/Feature/FreeInfaqDistractionFreeV600Test.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "resources/views/public/privacy.blade.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": "resources/views/public/terms.blade.php",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
     },
     {
       "path": ".github/workflows/tests.yml",
-      "phases": ["6.0"]
+      "phases": [
+        "6.0"
+      ]
+    },
+    {
+      "path": "app/Http/Controllers/Admin/ReportController.php",
+      "phases": [
+        "6.0"
+      ]
+    },
+    {
+      "path": "resources/views/admin/academic/index.blade.php",
+      "phases": [
+        "6.0"
+      ]
+    },
+    {
+      "path": "resources/views/teacher/meetings/attendance.blade.php",
+      "phases": [
+        "6.0"
+      ]
+    },
+    {
+      "path": "resources/views/teacher/assignments/index.blade.php",
+      "phases": [
+        "6.0"
+      ]
+    },
+    {
+      "path": "resources/views/teacher/assignments/show.blade.php",
+      "phases": [
+        "6.0"
+      ]
     }
   ]
 }
