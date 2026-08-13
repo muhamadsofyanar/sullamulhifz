@@ -1,0 +1,23 @@
+SULLAMUL HIFZ v6.1.0 — TRANSPARANSI INFAK + UI/UX OPERASIONAL
+
+1. Backup database dan private files; catat checksum dengan sullam:record-backup.
+2. Pastikan RUN_RELEASE_TASKS=false pada semua web replica.
+3. Tunggu GitHub Actions hijau dari commit yang akan di-deploy.
+4. Dari SATU release job/terminal operator:
+   php artisan down --render="errors::503"
+   php artisan migrate --isolated --force
+   php artisan optimize:clear
+   php artisan config:cache
+   php artisan view:cache
+   php artisan sullam:verify-release-v610
+   php artisan up
+5. Aktifkan feature flag v610_pilot hanya untuk satu lembaga.
+6. Jalankan smoke test penerimaan, alokasi, realisasi, maker-checker, bukti,
+   laporan publik, dashboard, antrean setoran, UI 360px, dan restore drill.
+7. Buka feature flag lembaga lain hanya setelah seluruh gerbang lulus.
+
+NO-GO: test gagal, kebocoran tenant, saldo negatif, receipt ganda, bukti asli
+publik, maker=checker, backup/restore drill gagal, atau alur mobile kritis rusak.
+
+JANGAN: restore dari browser, membuka arsip bulanan, menghitung ulang transaksi
+lama, mengaitkan infak dengan entitlement, atau menjalankan migrate:fresh/db:wipe.

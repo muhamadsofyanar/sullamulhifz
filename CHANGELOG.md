@@ -1,3 +1,15 @@
+# v6.1.0 — Transparansi Infak, Operasional Cepat & UI/UX Mobile — 2026-08-11
+
+- Menambah kebijakan alokasi Infak Umum berversi dengan bawaan 40% ustadz, 30% yayasan, 20% teknologi, dan 10% beasiswa; perubahan hanya berlaku prospektif.
+- Menjaga Infak Khusus 100% pada tujuan pemberi dan menyimpan snapshot alokasi transaksi terverifikasi.
+- Menambah receipt berurutan per lembaga/tahun, ledger append-only, saldo kategori non-negatif, serta transfer antarkategori dengan maker-checker.
+- Menambah realisasi dana, bukti asli privat, bukti publik tersamarkan, persetujuan Penanggung Jawab, jumlah penerima manfaat, dan laporan dampak publik.
+- Menjadikan pemberi anonim secara bawaan; nama berizin tidak pernah dihubungkan dengan nominal individual.
+- Menambah laporan bulanan terkunci, checksum snapshot, audit perubahan, peran auditor read-only, dan izin infak granular pengganti `features.manage`.
+- Menambah dashboard antrean admin, prioritas Tahfizh, navigasi berkelompok, status konsisten, target sentuh 44px, fokus keyboard, reduced motion, dan layout mobile v6.1.
+- Menambah pencatatan manifest backup, checksum SHA-256, retensi 14 harian/8 mingguan/12 bulanan, approval restore dua tahap, serta hasil simulasi tanpa endpoint restore produksi.
+- Menambah feature flag `v610_pilot`, verifier `sullam:verify-release-v610`, test regresi v6.1, dan dokumentasi pilot/deploy.
+
 # v6.0.0 — Gratis, Infak Sukarela & Setoran Tanpa Distraksi — 2026-08-10
 
 - Menjadikan seluruh fungsi inti tersedia tanpa subscription; pembuatan invoice langganan baru ditutup, sedangkan histori v5 tetap dipertahankan.

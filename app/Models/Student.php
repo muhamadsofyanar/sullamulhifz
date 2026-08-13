@@ -55,11 +55,13 @@ class Student extends Model
     public function memorizationReviewPlans(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(MemorizationReviewPlan::class); }
     public function quranLearningErrors(): \Illuminate\Database\Eloquent\Relations\HasMany { return $this->hasMany(QuranLearningErrorItem::class); }
     public function memorizationRecords(): HasMany { return $this->hasMany(MemorizationRecord::class); }
+    public function latestMemorizationRecord() { return $this->hasOne(MemorizationRecord::class)->latestOfMany('recorded_at'); }
     public function murajaahRecords(): HasMany { return $this->hasMany(MurajaahRecord::class); }
     public function tahsinRecords(): HasMany { return $this->hasMany(TahsinRecord::class); }
     public function attendanceRecords(): HasMany { return $this->hasMany(AttendanceRecord::class); }
     public function reportCards(): HasMany { return $this->hasMany(ReportCard::class); }
     public function memorizationTargets(): HasMany { return $this->hasMany(MemorizationTarget::class); }
+    public function currentMemorizationTarget() { return $this->hasOne(MemorizationTarget::class)->whereIn('status', ['active', 'in_progress', 'strengthening'])->latestOfMany(); }
     public function learningObservations(): HasMany { return $this->hasMany(LearningObservation::class); }
     public function marhalahHistories(): HasMany { return $this->hasMany(StudentMarhalahHistory::class); }
     public function quranJourneyPortions(): HasMany { return $this->hasMany(QuranJourneyPortion::class); }

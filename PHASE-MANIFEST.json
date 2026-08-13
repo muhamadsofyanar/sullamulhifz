@@ -1,5 +1,5 @@
 {
-  "release": "v6.0.0",
+  "release": "v6.1.0",
   "base_release": "v4.1.0",
   "tracking_policy": "Every runtime, migration, view, asset, and test introduced or changed by a roadmap phase is listed here and carries an @phase annotation.",
   "phases": {
@@ -69,6 +69,10 @@
     },
     "6.0": {
       "name": "Free, Voluntary Infaq & Distraction-Free Tahfizh",
+      "status": "completed"
+    },
+    "6.1": {
+      "name": "Transparent Infaq, Operational Clarity & Mobile UX",
       "status": "completed"
     }
   },

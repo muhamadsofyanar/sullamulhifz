@@ -44,10 +44,21 @@ class TahfizhController extends Controller
     public function index(Request $request): View
     {
         $students = $this->students($request);
+        if ($request->filled('q')) {
+            $needle = mb_strtolower(trim((string) $request->string('q')));
+            $students = $students->filter(fn (Student $student) => str_contains(mb_strtolower($student->full_name.' '.$student->student_code), $needle))->values();
+        }
         $dashboard = $this->progress->teacherDashboard($students);
+
+        $priorityQueue = collect($dashboard['dueReviews'])->map(fn ($plan) => [
+            'student' => $plan->student, 'reason' => $plan->review_date?->isPast() ? 'Murāja‘ah lewat jadwal' : 'Murāja‘ah hari ini', 'priority' => 1,
+        ])->concat(collect($dashboard['attentionStudents'])->map(fn ($student) => [
+            'student' => $student, 'reason' => 'Perlu koreksi atau penguatan', 'priority' => 2,
+        ]))->unique(fn ($item) => $item['student']?->id)->take(20)->values();
 
         return view('teacher.tahfizh.index', [
             'students' => $students,
+            'priorityQueue' => $priorityQueue,
             ...$dashboard,
         ]);
     }

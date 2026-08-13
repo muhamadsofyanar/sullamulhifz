@@ -1,5 +1,6 @@
 @extends('layouts.app',['pageTitle'=>'Beranda Orang Tua'])
 @section('content')
+@php($setoranLabels=['fluent'=>'Lancar','fair'=>'Lulus dengan penguatan','repeat_needed'=>'Perlu diulang','postponed'=>'Belum dinilai'])
 <div class="family-dashboard-head"><span class="eyebrow">ORANG TUA / WALI</span><h1>Assalamu‘alaikum, {{ $guardian->full_name }}</h1><p>Yang penting hari ini: lihat kebutuhan anak, dampingi satu langkah, lalu lanjutkan dengan tenang.</p></div>
 
 @if($academyEnabled && $academyRecommendations->isNotEmpty())
@@ -8,7 +9,24 @@
 
 <section class="family-children-grid" id="anak-saya">
 @forelse($students as $student)
-<a class="family-child-card" href="{{ route('guardian.children.show',$student) }}"><div class="family-child-avatar">{{ strtoupper(mb_substr($student->full_name,0,1)) }}</div><div><small>Anak saya</small><strong>{{ $student->full_name }}</strong><span>{{ $student->currentEnrollment?->schoolClass?->name ?? 'Belum ditempatkan' }}</span></div><b>→</b></a>
+<a class="family-child-card family-child-card-v610" href="{{ route('guardian.children.show',$student) }}">
+    <div class="family-child-avatar">{{ strtoupper(mb_substr($student->full_name,0,1)) }}</div>
+    <div>
+        <small>Anak saya</small><strong>{{ $student->full_name }}</strong>
+        <span>{{ $student->currentEnrollment?->schoolClass?->name ?? 'Belum ditempatkan' }}</span>
+        <div class="family-child-signals">
+            @if($student->latestMemorizationRecord)
+                <em>Setoran {{ $setoranLabels[$student->latestMemorizationRecord->result] ?? str_replace('_',' ',$student->latestMemorizationRecord->result) }} · {{ $student->latestMemorizationRecord->recorded_at?->format('d M') }}</em>
+            @else
+                <em>Belum ada setoran terbaru</em>
+            @endif
+            @if($student->currentMemorizationTarget)
+                <em>Target: {{ $student->currentMemorizationTarget->surah?->name_latin }} {{ $student->currentMemorizationTarget->start_verse }}–{{ $student->currentMemorizationTarget->end_verse }}</em>
+            @endif
+        </div>
+    </div>
+    <b aria-hidden="true">→</b>
+</a>
 @empty<div class="card"><p class="empty">Belum ada data anak yang terhubung. Hubungi admin.</p></div>@endforelse
 </section>
 

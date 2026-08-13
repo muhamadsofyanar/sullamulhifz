@@ -7,6 +7,8 @@ use App\Console\Commands\VerifyIdentityCore;
 use App\Console\Commands\PurgeExpiredMedia;
 use App\Console\Commands\PruneCommunicationDeliveries;
 use App\Console\Commands\SecureLegacyMedia;
+use App\Console\Commands\RecordBackupRun;
+use App\Console\Commands\VerifyReleaseV610;
 use App\Http\Middleware\EnforceDomainSeparation;
 use App\Http\Middleware\EnsurePasswordChanged;
 use App\Http\Middleware\EnsurePermission;
@@ -45,7 +47,7 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
-    ->withCommands([SyncQuranAudio::class, PurgeExpiredMedia::class, SecureLegacyMedia::class, PruneCommunicationDeliveries::class, VerifyIdentityCore::class])
+    ->withCommands([SyncQuranAudio::class, PurgeExpiredMedia::class, SecureLegacyMedia::class, PruneCommunicationDeliveries::class, VerifyIdentityCore::class, RecordBackupRun::class, VerifyReleaseV610::class])
     ->withMiddleware(function (Middleware $middleware) use ($trustedProxies): void {
         $middleware->trustProxies(at: $trustedProxies);
         $middleware->web(

@@ -47,5 +47,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   window.addEventListener('beforeinstallprompt',event=>{event.preventDefault();installPrompt=event;installButtons.forEach(btn=>btn.hidden=false)});
   installButtons.forEach(btn=>btn.addEventListener('click',async()=>{if(!installPrompt)return;installPrompt.prompt();await installPrompt.userChoice;installPrompt=null;installButtons.forEach(item=>item.hidden=true)}));
   window.addEventListener('appinstalled',()=>installButtons.forEach(btn=>btn.hidden=true));
-  if('serviceWorker'in navigator){navigator.serviceWorker.register('/service-worker.js?v=530').catch(()=>{})}
+  document.querySelectorAll('[data-confirm-message]').forEach(button=>button.addEventListener('click',event=>{if(!window.confirm(button.dataset.confirmMessage))event.preventDefault()}));
+  document.querySelectorAll('[data-percentage-group]').forEach(group=>{const output=group.querySelector('[data-percentage-total]');const fields=[...group.querySelectorAll('input[type="number"]')];const update=()=>{const total=fields.reduce((sum,input)=>sum+(Number(input.value)||0),0);if(output){output.textContent=`${total}%`;output.classList.toggle('is-invalid',total!==100)}};fields.forEach(field=>field.addEventListener('input',update));update()});
+  if('serviceWorker'in navigator){navigator.serviceWorker.register('/service-worker.js?v=610').catch(()=>{})}
 });

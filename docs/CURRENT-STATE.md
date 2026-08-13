@@ -1,8 +1,10 @@
 # Current State
 
-## Current candidate: v6.0.0
+## Current candidate: v6.1.0
 
 Fokus pengembangan aktif: **fungsi inti gratis, infak sukarela, pencatatan Tahfizh tanpa distraksi, dan hardening multi-tenant/operasional**.
+
+v6.1.0 menambahkan alokasi prospektif 40/30/20/10 untuk Infak Umum, tujuan 100% untuk Infak Khusus, receipt berurutan, ledger append-only, realisasi maker-checker, bukti privat/tersamarkan, laporan dampak publik, arsip bulanan terkunci, manifest backup, dan kontrol simulasi restore. UI admin, antrean Tahfizh, ringkasan wali, navigasi, status, fokus keyboard, serta layout ponsel diperbarui. Seluruh fitur transparansi baru tetap OFF melalui `v610_pilot` sampai CI, migration drill, smoke test peran, dan restore drill nyata lulus.
 
 v3.0.0 membuka penggunaan mandiri kepada masyarakat umum tanpa mengubah mereka menjadi anggota lembaga. Di backend setiap pengguna Personal memiliki workspace privat untuk mempertahankan isolasi tenant; di UI pengguna melihat pengalaman Personal, bukan struktur admin lembaga.
 

@@ -38,6 +38,7 @@ return [
     ],
     'subscriptions_enabled' => filter_var(env('SUBSCRIPTIONS_ENABLED', false), FILTER_VALIDATE_BOOL),
     'infaq' => [
+        'proof_max_kb' => (int) env('INFAQ_PROOF_MAX_KB', 5120),
         'purposes' => [
             'teacher_development' => 'Pembinaan dan honor ustadz',
             'scholarship' => 'Beasiswa anak dan keluarga',
@@ -45,6 +46,11 @@ return [
             'technology' => 'Server dan pengembangan teknologi',
             'general' => 'Infak umum sesuai laporan yayasan',
         ],
+    ],
+    'backup' => [
+        'retention_daily' => (int) env('BACKUP_RETENTION_DAILY', 14),
+        'retention_weekly' => (int) env('BACKUP_RETENTION_WEEKLY', 8),
+        'retention_monthly' => (int) env('BACKUP_RETENTION_MONTHLY', 12),
     ],
     // Mushaf Line Engine: KFGQPC V2 (1421H), 604-page Madani layout.
     // Data is synchronized at runtime so the application does not redistribute third-party layout files.

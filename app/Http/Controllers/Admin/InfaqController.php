@@ -10,6 +10,7 @@ use App\Services\InfaqService;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
+use App\Notifications\InfaqStatusNotification;
 use Illuminate\View\View;
 
 class InfaqController extends Controller
@@ -38,8 +39,12 @@ class InfaqController extends Controller
             || (int) $transaction->institution_id === (int) $request->user()->institution_id,
             404,
         );
-        $data = $request->validate(['decision' => ['required', Rule::in(['verified', 'rejected'])]]);
-        $this->infaq->verify($transaction, $request->user(), $data['decision']);
+        $data = $request->validate([
+            'decision' => ['required', Rule::in(['verified', 'rejected'])],
+            'review_note' => ['required', 'string', 'min:8', 'max:2000'],
+        ]);
+        $reviewed = $this->infaq->verify($transaction, $request->user(), $data['decision'], $data['review_note']);
+        $reviewed->user?->notify(new InfaqStatusNotification($reviewed));
 
         return back()->with('success', $data['decision'] === 'verified' ? 'Infak diverifikasi dan bukti penerimaan dibuat.' : 'Transaksi ditandai ditolak.');
     }

@@ -1,4 +1,4 @@
-# @phase 6.0 Safe release startup gate
+# @phase 6.0 Free core release gate; @phase 6.1 transparent operations gate
 name: Tests
 
 on:
@@ -37,7 +37,9 @@ jobs:
           for file in storage/framework/views/*.php; do php -l "$file" || exit 1; done
           php artisan view:clear
       - name: Run complete Laravel test suite
-        run: php artisan test
+        run: |
+          php artisan test
+          php artisan sullam:verify-release-v610
 
   docker-build:
     runs-on: ubuntu-latest

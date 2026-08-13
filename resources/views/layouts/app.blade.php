@@ -28,6 +28,7 @@
     <link rel="stylesheet" href="/css/app-v480.css?v={{ @filemtime(public_path('css/app-v480.css')) ?: '480' }}">
     <link rel="stylesheet" href="/css/app-v490.css?v={{ @filemtime(public_path('css/app-v490.css')) ?: '490' }}">
     <link rel="stylesheet" href="/css/app-v530.css?v={{ @filemtime(public_path('css/app-v530.css')) ?: '530' }}">
+    <link rel="stylesheet" href="/css/app-v610.css?v={{ @filemtime(public_path('css/app-v610.css')) ?: '610' }}">
     @auth
     @php
         $brandWorkspace = $activeWorkspace ?? auth()->user()->institution;
@@ -62,6 +63,7 @@
         </a>
 
         <nav class="nav-list" aria-label="Navigasi utama">
+            <span class="v610-nav-label">Utama</span>
             <a href="{{ route('dashboard') }}" class="{{ request()->routeIs('dashboard') ? 'active' : '' }}" @if(request()->routeIs('dashboard')) aria-current="page" @endif>
                 <x-icon name="home"/><span>Beranda</span>
             </a>
@@ -71,6 +73,7 @@
             <a href="{{ route('business.index') }}" class="{{ request()->routeIs('business.*') ? 'active' : '' }}"><x-icon name="report"/><span>Riwayat Paket Lama</span></a>
             @endif
             @if(auth()->user()->hasRole('personal'))
+                <span class="v610-nav-label">Perjalanan belajar</span>
                 <a href="{{ route('mentorship.index') }}" class="{{ request()->routeIs('mentorship.*') ? 'active' : '' }}"><x-icon name="teacher"/><span>Ustadz Privat</span></a>
                 <a href="{{ route('family.index') }}" class="{{ request()->routeIs('family.*') ? 'active' : '' }}"><x-icon name="community"/><span>Portal Keluarga</span></a>
                 <a href="{{ route('personal.programs.index') }}" class="{{ request()->routeIs('personal.programs.*') ? 'active' : '' }}"><x-icon name="plan"/><span>Program Saya</span></a>
@@ -101,11 +104,16 @@
                 <a href="{{ route('personal.dashboard') }}#jurnal"><x-icon name="continuity"/><span>Jurnal Perjalanan</span></a>
             @endif
             @if(auth()->user()->hasAnyRole(['superadmin','institution_admin']))
+                <span class="v610-nav-label">Tata kelola lembaga</span>
                 @if(auth()->user()->hasRole('superadmin'))
                 <a href="{{ route('admin.workspaces.index') }}" class="{{ request()->routeIs('admin.workspaces.*') ? 'active' : '' }}"><x-icon name="community"/><span>Ruang & Lembaga</span></a>
+                <a href="{{ route('admin.recovery.index') }}" class="{{ request()->routeIs('admin.recovery.*') ? 'active' : '' }}"><x-icon name="achievement"/><span>Backup & Pemulihan</span></a>
                 @endif
                 <a href="{{ route('admin.institution-suite.index') }}" class="{{ request()->routeIs('admin.institution-suite.*') ? 'active' : '' }}"><x-icon name="community"/><span>Suite Lembaga</span></a>
                 <a href="{{ route('admin.infaq.index') }}" class="{{ request()->routeIs('admin.infaq.*') ? 'active' : '' }}"><x-icon name="achievement"/><span>Tata Kelola Infak</span></a>
+                @if(\App\Support\Feature::enabled('v610_pilot', auth()->user()->institution_id, false))
+                <a href="{{ route('admin.infaq.realisations.index') }}" class="{{ request()->routeIs('admin.infaq.realisations.*') ? 'active' : '' }}"><x-icon name="report"/><span>Realisasi & Dampak</span></a>
+                @endif
                 <a href="{{ route('admin.students.index') }}" class="{{ request()->routeIs('admin.students.*') ? 'active' : '' }}" @if(request()->routeIs('admin.students.*')) aria-current="page" @endif>
                     <x-icon name="student"/><span>{{ $termStudent }}</span>
                 </a>
@@ -193,6 +201,7 @@
                 </a>
             @endif
             @if(auth()->user()->hasRole('teacher'))
+                <span class="v610-nav-label">Pembelajaran</span>
                 <a href="{{ route('mentorship.index') }}" class="{{ request()->routeIs('mentorship.*') ? 'active' : '' }}"><x-icon name="teacher"/><span>Bimbingan Privat</span></a>
                 <a href="{{ route('teacher.smart-assistant.index') }}" class="{{ request()->routeIs('teacher.smart-assistant.*') ? 'active' : '' }}"><x-icon name="guidance"/><span>Review Pendamping Cerdas</span></a>
                 <a href="{{ route('teacher.daily.index') }}" class="{{ request()->routeIs('teacher.daily.*') ? 'active' : '' }}">
@@ -233,8 +242,13 @@
                     <x-icon name="listen"/><span>Review Setoran Online</span>
                 </a>
                 @endif
+            @elseif(auth()->user()->hasAnyRole(['head','auditor']) && \App\Support\Feature::enabled('v610_pilot', auth()->user()->institution_id, false))
+                <span class="v610-nav-label">Tata kelola infak</span>
+                <a href="{{ route('admin.infaq.realisations.index') }}" class="{{ request()->routeIs('admin.infaq.realisations.*') ? 'active' : '' }}"><x-icon name="report"/><span>Realisasi & Bukti</span></a>
+                <a href="{{ route('admin.infaq.reports.index') }}" class="{{ request()->routeIs('admin.infaq.reports.*') ? 'active' : '' }}"><x-icon name="achievement"/><span>Arsip Laporan</span></a>
             @endif
             @if(auth()->user()->hasRole('guardian'))
+                <span class="v610-nav-label">Pendampingan keluarga</span>
                 <a href="{{ route('family.index') }}" class="{{ request()->routeIs('family.*') ? 'active' : '' }}"><x-icon name="community"/><span>Portal Keluarga</span></a>
                 <a href="{{ route('guardian.children.index') }}" class="{{ request()->routeIs('guardian.children.*') ? 'active' : '' }}">
                     <x-icon name="progress"/><span>Perkembangan Anak</span>

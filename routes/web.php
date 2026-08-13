@@ -11,6 +11,11 @@ use App\Http\Controllers\Admin\InstitutionSuiteController;
 use App\Http\Controllers\Admin\QuranLibraryController;
 use App\Http\Controllers\Admin\GuardianController;
 use App\Http\Controllers\Admin\InfaqController as AdminInfaqController;
+use App\Http\Controllers\Admin\InfaqPolicyController;
+use App\Http\Controllers\Admin\InfaqRealisationController;
+use App\Http\Controllers\Admin\InfaqReportController;
+use App\Http\Controllers\Admin\InfaqTransferController;
+use App\Http\Controllers\Admin\RecoveryController;
 use App\Http\Controllers\Admin\GuidedQuranProgramController;
 use App\Http\Controllers\Admin\ImportController;
 use App\Http\Controllers\Admin\LaunchReadinessController;
@@ -62,6 +67,9 @@ use App\Http\Controllers\RelationshipController;
 use App\Http\Controllers\PrivateMentorshipController;
 use App\Http\Controllers\FamilyPortalController;
 use App\Http\Controllers\InfaqController;
+use App\Http\Controllers\InfaqEvidenceController;
+use App\Http\Controllers\InfaqReceiptController;
+use App\Http\Controllers\PublicInfaqController;
 use App\Http\Controllers\Admin\WorkspaceController as AdminWorkspaceController;
 use App\Http\Controllers\Teacher\AssignmentController;
 use App\Http\Controllers\Teacher\AcademyRecommendationController;
@@ -162,6 +170,8 @@ Route::get('/daftar-personal', [PersonalRegistrationController::class, 'create']
 Route::post('/daftar-personal', [PersonalRegistrationController::class, 'store'])->middleware(['guest','throttle:3,10'])->name('personal.register.store');
 Route::get('/daftar-lembaga', [InstitutionRegistrationController::class, 'create'])->middleware('guest')->name('institution.register');
 Route::post('/daftar-lembaga', [InstitutionRegistrationController::class, 'store'])->middleware(['guest','throttle:3,10'])->name('institution.register.store');
+Route::get('/transparansi-infak/{institution:slug}', [PublicInfaqController::class, 'show'])->name('public.infaq.show');
+Route::get('/transparansi-infak/bukti/{evidence}', [InfaqEvidenceController::class, 'redacted'])->name('public.infaq.evidence');
 
 Route::middleware('guest')->group(function (): void {
     Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
@@ -215,6 +225,10 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
     Route::post('/paket-layanan/{plan}/aktifkan', [PersonalBusinessController::class, 'subscribe'])->middleware(['role:personal,teacher,institution_admin,superadmin','feature:business_center','throttle:4,10'])->name('business.subscribe'); // @phase 5.0
     Route::get('/infak', [InfaqController::class, 'index'])->name('infaq.index'); // @phase 6.0
     Route::post('/infak', [InfaqController::class, 'store'])->middleware('throttle:4,10')->name('infaq.store'); // @phase 6.0
+    Route::put('/infak/{transaction}/persetujuan-nama', [InfaqController::class, 'consent'])->name('infaq.consent');
+    Route::get('/infak/bukti-penerimaan/{transaction}', [InfaqReceiptController::class, 'show'])->name('infaq.receipt');
+    Route::get('/infak/bukti-asli/{evidence}', [InfaqEvidenceController::class, 'original'])->middleware('permission:infaq.audit.view')->name('infaq.evidence.original');
+    Route::get('/infak/bukti-transfer/{transaction}', [InfaqEvidenceController::class, 'transferProof'])->middleware('permission:infaq.verify,infaq.audit.view')->name('infaq.transfer-proof');
 
     Route::prefix('personal')->name('personal.')->middleware('role:personal')->group(function (): void {
         Route::get('/', [PersonalController::class, 'index'])->middleware('permission:personal.use')->name('dashboard');
@@ -282,6 +296,10 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
         Route::middleware('role:superadmin')->group(function (): void {
             Route::get('/workspaces', [AdminWorkspaceController::class, 'index'])->name('workspaces.index');
             Route::put('/workspaces/{institution}/status', [AdminWorkspaceController::class, 'status'])->name('workspaces.status');
+            Route::get('/pemulihan-data', [RecoveryController::class, 'index'])->middleware('permission:backup.manage')->name('recovery.index');
+            Route::post('/pemulihan-data', [RecoveryController::class, 'store'])->middleware(['permission:backup.manage','throttle:3,10'])->name('recovery.store');
+            Route::put('/pemulihan-data/{restoreRequest}/setujui', [RecoveryController::class, 'approve'])->middleware(['permission:backup.manage','throttle:5,10'])->name('recovery.approve');
+            Route::put('/pemulihan-data/{restoreRequest}/simulasi', [RecoveryController::class, 'simulation'])->middleware(['permission:backup.manage','throttle:5,10'])->name('recovery.simulation');
         });
         Route::middleware('role:superadmin,institution_admin')->group(function (): void {
             Route::get('/suite-lembaga', [InstitutionSuiteController::class, 'index'])->name('institution-suite.index');
@@ -306,8 +324,8 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
             Route::get('/platform', [PlatformController::class, 'index'])->middleware('permission:features.manage')->name('platform.index');
             Route::get('/ekosistem', [AdminEcosystemController::class, 'index'])->middleware('permission:features.manage')->name('ecosystem.index');
             Route::get('/bisnis', [AdminBusinessController::class, 'index'])->middleware('permission:features.manage')->name('business.index'); // @phase 5.0
-            Route::get('/infak', [AdminInfaqController::class, 'index'])->middleware('permission:features.manage')->name('infaq.index'); // @phase 6.0
-            Route::put('/infak/{transaction}', [AdminInfaqController::class, 'update'])->middleware(['permission:features.manage','throttle:20,1'])->name('infaq.update'); // @phase 6.0
+            Route::get('/infak', [AdminInfaqController::class, 'index'])->middleware('permission:infaq.verify,infaq.audit.view')->name('infaq.index'); // @phase 6.1
+            Route::put('/infak/{transaction}', [AdminInfaqController::class, 'update'])->middleware(['permission:infaq.verify','throttle:20,1'])->name('infaq.update'); // @phase 6.1
             Route::put('/bisnis/paket/{plan}', [AdminBusinessController::class, 'updatePlan'])->middleware('permission:features.manage')->name('business.plans.update'); // @phase 5.0
             Route::put('/bisnis/pembayaran/{transaction}', [AdminBusinessController::class, 'payment'])->middleware('permission:features.manage')->name('business.payments.update'); // @phase 5.0
             Route::get('/operasional-saas', [AdminOperationsController::class, 'index'])->middleware('permission:features.manage')->name('operations.index'); // @phase 5.1
@@ -345,7 +363,20 @@ Route::middleware(['auth', 'password.changed', 'workspace.operational'])->group(
             Route::post('/academic/schedules', [AcademicController::class, 'storeSchedule'])->middleware('permission:academic.manage')->name('academic.schedules.store');
         });
 
-        Route::middleware('role:superadmin,institution_admin,head')->group(function (): void {
+        Route::middleware('role:superadmin,institution_admin,head,auditor')->group(function (): void {
+            Route::middleware('feature:v610_pilot')->prefix('infak-transparan')->name('infaq.')->group(function (): void {
+                Route::get('/kebijakan', [InfaqPolicyController::class, 'edit'])->middleware('permission:infaq.policy.manage')->name('policy.edit');
+                Route::put('/kebijakan', [InfaqPolicyController::class, 'update'])->middleware('permission:infaq.policy.manage')->name('policy.update');
+                Route::get('/realisasi', [InfaqRealisationController::class, 'index'])->middleware('permission:infaq.realisation.manage,infaq.realisation.approve,infaq.audit.view')->name('realisations.index');
+                Route::post('/realisasi', [InfaqRealisationController::class, 'store'])->middleware(['permission:infaq.realisation.manage','throttle:10,1'])->name('realisations.store');
+                Route::put('/realisasi/{realisation}/review', [InfaqRealisationController::class, 'review'])->middleware(['permission:infaq.realisation.approve','throttle:20,1'])->name('realisations.review');
+                Route::put('/realisasi/{realisation}/ajukan-ulang', [InfaqRealisationController::class, 'resubmit'])->middleware(['permission:infaq.realisation.manage','throttle:10,1'])->name('realisations.resubmit');
+                Route::post('/pemindahan', [InfaqTransferController::class, 'store'])->middleware(['permission:infaq.realisation.manage','throttle:10,1'])->name('transfers.store');
+                Route::put('/pemindahan/{fundTransfer}/review', [InfaqTransferController::class, 'review'])->middleware(['permission:infaq.realisation.approve','throttle:20,1'])->name('transfers.review');
+                Route::get('/laporan', [InfaqReportController::class, 'index'])->middleware('permission:infaq.report.manage,infaq.audit.view')->name('reports.index');
+                Route::post('/laporan', [InfaqReportController::class, 'store'])->middleware(['permission:infaq.report.manage','throttle:5,1'])->name('reports.store');
+                Route::post('/laporan/koreksi', [InfaqReportController::class, 'correction'])->middleware(['permission:infaq.report.manage','throttle:5,1'])->name('reports.correction');
+            });
             Route::get('/academy', [AdminAcademyController::class, 'index'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.index');
             Route::post('/academy/programs', [AdminAcademyController::class, 'storeProgram'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.programs.store');
             Route::put('/academy/programs/{program}', [AdminAcademyController::class, 'updateProgram'])->middleware(['permission:academy.manage','feature:academy_portal'])->name('academy.programs.update');

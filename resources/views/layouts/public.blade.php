@@ -28,6 +28,7 @@
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="stylesheet" href="/css/public.css?v={{ @filemtime(public_path('css/public.css')) ?: '201' }}">
     <link rel="stylesheet" href="/css/public-v450.css?v={{ @filemtime(public_path('css/public-v450.css')) ?: '450' }}">
+    <link rel="stylesheet" href="/css/public-v610.css?v={{ @filemtime(public_path('css/public-v610.css')) ?: '610' }}">
     <script defer src="/js/public.js?v={{ @filemtime(public_path('js/public.js')) ?: '201' }}"></script>
 </head>
 <body class="public-body">

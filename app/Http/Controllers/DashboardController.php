@@ -22,6 +22,9 @@ use App\Models\SchoolClass;
 use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\TeacherAssignment;
+use App\Models\InfaqTransaction;
+use App\Models\InfaqRealisation;
+use App\Models\BackupRun;
 use App\Services\ContentAudienceService;
 use App\Support\Feature;
 use Illuminate\Http\RedirectResponse;
@@ -70,6 +73,7 @@ class DashboardController extends Controller
     private function admin(Request $request): View
     {
         $institutionId = $request->user()->institution_id;
+        $v610Enabled = Feature::enabled('v610_pilot', $institutionId, false);
         return view('dashboard.admin', [
             'studentCount' => Student::where('institution_id', $institutionId)->where('status', 'active')->count(),
             'teacherCount' => Teacher::where('institution_id', $institutionId)->where('status', 'active')->count(),
@@ -83,6 +87,10 @@ class DashboardController extends Controller
                 ? AdmissionRegistration::where('institution_id',$institutionId)->where('status','new')->count()
                 : 0,
             'recentAnnouncements' => Announcement::where('institution_id', $institutionId)->latest('publish_at')->limit(5)->get(),
+            'v610Enabled' => $v610Enabled,
+            'pendingInfaq' => $v610Enabled && Schema::hasTable('infaq_transactions') ? InfaqTransaction::where('institution_id', $institutionId)->where('status', 'pending')->count() : 0,
+            'pendingRealisations' => $v610Enabled && Schema::hasTable('infaq_realisations') ? InfaqRealisation::where('institution_id', $institutionId)->where('status', 'submitted')->count() : 0,
+            'lastBackupAt' => $v610Enabled && Schema::hasTable('backup_runs') ? BackupRun::where('status', 'completed')->latest('completed_at')->value('completed_at') : null,
         ]);
     }
 
@@ -130,7 +138,11 @@ class DashboardController extends Controller
     {
         $guardian = $request->user()->guardian;
         abort_unless($guardian, 403, 'Profil wali belum terhubung.');
-        $students = $guardian->students()->with('currentEnrollment.schoolClass')->get();
+        $students = $guardian->students()->with([
+            'currentEnrollment.schoolClass',
+            'latestMemorizationRecord.surah',
+            'currentMemorizationTarget.surah',
+        ])->get();
         $studentIds = $students->pluck('id');
 
         $todayRecords = AttendanceRecord::with(['student','meeting.schoolClass','meeting.learningGroup'])
