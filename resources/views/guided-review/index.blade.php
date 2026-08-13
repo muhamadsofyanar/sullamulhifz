@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('content')
-@php($statusLabels = ['pending'=>'Menunggu review','revision'=>'Perlu perbaikan','verified'=>'Terverifikasi','rejected'=>'Belum diterima'])
+@php
+    $statusLabels = ['pending'=>'Menunggu review','revision'=>'Perlu perbaikan','verified'=>'Terverifikasi','rejected'=>'Belum diterima'];
+@endphp
 <div class="guided-page">
     <section class="page-heading"><div><span class="eyebrow">AMANAH REVIEW</span><h1>Setoran Al-Qur’an Online</h1><p class="muted">Periksa bukti yang memang dikirim peserta. Jurnal dan target Personal lainnya tetap di luar ruang review.</p></div></section>
     @forelse($submissions as $submission)

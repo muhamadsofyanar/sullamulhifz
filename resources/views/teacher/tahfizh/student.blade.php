@@ -46,7 +46,9 @@ $soleActiveTargetId = $activeTargets->count() === 1 ? $activeTargets->first()?->
 <section class="card phase-highlight" id="setoran-tanpa-distraksi">
     <div class="section-head"><div><span class="eyebrow">SETORAN TANPA DISTRAKSI</span><h2>Dengarkan dahulu, koreksi langsung, catat kesimpulannya.</h2><p class="hint">Saat anak membaca, jangan isi apa pun. Setelah selesai, pilih satu keputusan dan catatan singkat bila perlu.</p></div></div>
     @if($activeFocus)
-        @php($focusLabels=['accuracy'=>'Ketepatan lafaz & urutan','fluency'=>'Kelancaran','independence'=>'Kemandirian','makhraj_tajwid'=>'Makhraj & tajwid dominan','retention'=>'Kekuatan setelah jeda'])
+        @php
+            $focusLabels=['accuracy'=>'Ketepatan lafaz & urutan','fluency'=>'Kelancaran','independence'=>'Kemandirian','makhraj_tajwid'=>'Makhraj & tajwid dominan','retention'=>'Kekuatan setelah jeda'];
+        @endphp
         <div class="focus-reminder"><b>Fokus {{ $student->nickname ?: $student->full_name }}:</b> {{ $focusLabels[$activeFocus->focus_key] ?? $activeFocus->focus_key }} @if($activeFocus->notes)<span>· {{ $activeFocus->notes }}</span>@endif</div>
     @endif
     <div class="grid two">
@@ -85,7 +87,9 @@ $soleActiveTargetId = $activeTargets->count() === 1 ? $activeTargets->first()?->
 <details class="card"><summary><b>Asesmen berkala lima aspek</b><span>Gunakan saat awal, bulanan, tasmi‘, ujian, atau kenaikan tahap.</span></summary>
     <form class="stack compact" method="post" action="{{ route('teacher.tahfizh.assessments.store',$student) }}">@csrf
         <div class="form-grid"><label>Jenis<select name="assessment_type"><option value="monthly">Bulanan</option><option value="initial">Asesmen awal</option><option value="completion">Selesai surat/tahap</option><option value="tasmi">Tasmi‘</option><option value="exam">Ujian</option><option value="stagnation">Evaluasi hambatan</option></select></label><label>Tanggal<input type="date" name="assessed_on" value="{{ today()->toDateString() }}" required></label></div>
-        @php($assessmentLevels=['strong'=>'Kuat','developing'=>'Berkembang','needs_support'=>'Perlu dukungan'])
+        @php
+            $assessmentLevels=['strong'=>'Kuat','developing'=>'Berkembang','needs_support'=>'Perlu dukungan'];
+        @endphp
         @foreach(['accuracy_status'=>'Ketepatan','fluency_status'=>'Kelancaran','independence_status'=>'Kemandirian','makhraj_tajwid_status'=>'Makhraj & tajwid','retention_status'=>'Daya tahan hafalan'] as $field=>$label)
             <label>{{ $label }}<select name="{{ $field }}" required>@foreach($assessmentLevels as $value=>$text)<option value="{{ $value }}">{{ $text }}</option>@endforeach</select></label>
         @endforeach

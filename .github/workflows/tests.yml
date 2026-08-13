@@ -18,6 +18,12 @@ jobs:
       - run: cp .env.example .env
       - name: Require reproducible dependencies
         run: test -f composer.lock
+      - name: Reject unsupported inline Blade PHP
+        run: |
+          if grep -R -n --include='*.blade.php' '@php(' resources/views; then
+            echo 'Inline @php(...) tidak didukung Laravel 13; gunakan blok @php/@endphp.' >&2
+            exit 1
+          fi
       - run: composer validate --strict --no-check-publish
       - run: composer install --no-interaction --prefer-dist --no-progress
       - run: composer audit --locked --no-dev --no-interaction

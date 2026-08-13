@@ -1,6 +1,8 @@
 @extends('layouts.academy',['pageTitle'=>'Program Qur’an'])
 @section('content')
-@php($purposeLabel=['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawah + Murāja‘ah'])
+@php
+    $purposeLabel=['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawah + Murāja‘ah'];
+@endphp
 <div class="academy-page-head">
     <div><span class="eyebrow">QUR’AN JOURNEY</span><h1>Program Qur’an</h1><p>Khatam, tilawah, dan Murāja‘ah berjalan berdampingan dengan hafalan. Jadwal membantu kesinambungan, bukan memberi label gagal.</p></div>
     <a class="button secondary" href="{{ route('academy.portal.audio') }}">Buka Mushaf & Audio</a>
@@ -24,8 +26,12 @@
 <section class="academy-content-card">
     <div class="academy-section-heading"><div><span class="eyebrow">PROGRES</span><h2>Perjalanan aktif & riwayat</h2><p>Jika satu hari terlewat, lanjutkan saat siap. Sistem tidak memberi status gagal.</p></div></div>
     @forelse($enrollments as $enrollment)
-        @php($done=$enrollment->progress->where('status','completed')->count())
-        @php($total=$enrollment->progress->count())
+        @php
+            $done=$enrollment->progress->where('status','completed')->count();
+        @endphp
+        @php
+            $total=$enrollment->progress->count();
+        @endphp
         <div class="academy-progress-row"><span>{{ $total ? round(($done/$total)*100) : 0 }}%</span><div><strong>{{ $enrollment->template?->name }}</strong><small>{{ $purposeLabel[$enrollment->purpose] ?? $enrollment->purpose }} · {{ $done }}/{{ $total }} bagian</small></div></div>
         <div class="academy-progress-programs">
         @foreach($enrollment->progress->sortBy(fn($p)=>$p->step?->sequence) as $progress)

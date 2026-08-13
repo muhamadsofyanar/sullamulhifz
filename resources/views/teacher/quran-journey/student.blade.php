@@ -258,7 +258,9 @@ $purposeLabel = ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawa
 
 <section class="card">
     <div class="section-head"><div><h2>Milestone Juz {{ $profile->current_juz_number }}</h2><p class="hint">“Selesai hafalan” dan “terjaga” adalah dua hal berbeda.</p></div></div>
-    @php($current = $summary['currentMilestone'])
+    @php
+        $current = $summary['currentMilestone'];
+    @endphp
     <div class="list-row"><div><strong>{{ $current?->label ?? 'Juz '.$profile->current_juz_number }}</strong><small>Hafalan: {{ $statusMem[$current?->memorization_status ?? 'in_progress'] ?? '-' }} · Penjagaan: {{ $statusRetention[$current?->retention_status ?? 'not_assessed'] ?? '-' }}</small><p>{{ $current?->notes }}</p></div></div>
     <form class="inline-form" method="post" action="{{ route('teacher.quran-journey.milestones.current-juz',$student) }}">@csrf
         <select name="memorization_status"><option value="in_progress" @selected(($current?->memorization_status ?? 'in_progress')==='in_progress')>Masih berjalan</option><option value="completed" @selected(($current?->memorization_status ?? null)==='completed')>Selesai hafalan Juz ini</option></select>
@@ -315,8 +317,12 @@ $purposeLabel = ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawa
         <label>Mulai<input type="date" name="start_date" value="{{ now()->format('Y-m-d') }}"></label><label>Catatan<textarea name="notes" rows="2"></textarea></label><button class="button primary">Mulai program untuk santri</button>
     </form>
     @foreach($enrollments as $enrollment)
-        @php($done=$enrollment->progress->where('status','completed')->count())
-        @php($total=$enrollment->progress->count())
+        @php
+            $done=$enrollment->progress->where('status','completed')->count();
+        @endphp
+        @php
+            $total=$enrollment->progress->count();
+        @endphp
         <div class="item-card static" style="margin-top:12px"><div><strong>{{ $enrollment->template?->name }}</strong><small>{{ $purposeLabel[$enrollment->purpose] ?? $enrollment->purpose }} · {{ $done }}/{{ $total }} bagian · {{ $enrollment->status }}</small></div><span>{{ $total ? round(($done/$total)*100) : 0 }}%</span></div>
         <div class="cards-list">
             @foreach($enrollment->progress->sortBy(fn($p)=>$p->step?->sequence) as $progress)

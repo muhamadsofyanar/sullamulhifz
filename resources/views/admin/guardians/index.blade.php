@@ -1,5 +1,7 @@
 @extends('layouts.app')
-@php($pageTitle='Data Wali')
+@php
+    $pageTitle='Data Wali';
+@endphp
 @section('content')
 <div class="page-head"><div><span class="eyebrow">AKUN & KELUARGA</span><h1>Data wali</h1><p>Satu akun wali dapat terhubung ke beberapa santri.</p></div></div>
 <form class="filter-bar" method="get"><input name="q" value="{{ request('q') }}" placeholder="Cari nama, email, atau nomor"><button class="button secondary">Cari</button></form>

@@ -1,7 +1,9 @@
 {{-- @phase 6.1 Realisation maker-checker workspace --}}
 @extends('layouts.app',['pageTitle'=>'Realisasi & Dampak Infak'])
 @section('content')
-@php($labels=['teacher_development'=>'Pembinaan/honor ustadz','foundation_operations'=>'Program yayasan','technology'=>'Teknologi','scholarship'=>'Beasiswa'])
+@php
+    $labels=['teacher_development'=>'Pembinaan/honor ustadz','foundation_operations'=>'Program yayasan','technology'=>'Teknologi','scholarship'=>'Beasiswa'];
+@endphp
 <div class="v610-page-head"><div><span class="eyebrow">REALISASI & DAMPAK</span><h1>Catat penggunaan, periksa bukti, publikasikan dampak.</h1><p>Pencatat tidak dapat menyetujui catatannya sendiri. Saldo kategori tidak boleh negatif.</p></div></div>
 <nav class="v610-tabs">@if(auth()->user()->hasAnyRole(['superadmin','institution_admin']))<a href="{{ route('admin.infaq.index') }}">Penerimaan</a>@endif<a class="active" href="{{ route('admin.infaq.realisations.index') }}">Realisasi</a>@if(auth()->user()->hasPermission('infaq.policy.manage'))<a href="{{ route('admin.infaq.policy.edit') }}">Kebijakan alokasi</a>@endif<a href="{{ route('admin.infaq.reports.index') }}">Arsip laporan</a></nav>
 <div class="v610-metrics">@foreach($balances as $category=>$balance)<div class="v610-metric"><span>{{ $labels[$category] ?? $category }}</span><strong>Rp{{ number_format((float)$balance,0,',','.') }}</strong><small>Saldo tersedia</small></div>@endforeach</div>

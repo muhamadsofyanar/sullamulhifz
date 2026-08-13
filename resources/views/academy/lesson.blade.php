@@ -70,7 +70,9 @@ $isDirectAudio = $lesson->lesson_type === 'audio' && $mediaUrl !== '' && !$youtu
     @endif
 
     @if($quiz)
-    @php($passedAttempt=$quizAttempts->first(fn($attempt)=>$attempt->passed))
+    @php
+        $passedAttempt=$quizAttempts->first(fn($attempt)=>$attempt->passed);
+    @endphp
     <section class="card" style="margin-top:18px">
         <div class="section-head"><div><span class="eyebrow">KUIS</span><h2>{{ $quiz->title }}</h2><p class="muted">{{ $quiz->instructions ?: 'Jawab pertanyaan untuk mengonfirmasi pemahaman materi.' }}</p></div><span class="badge">Lulus ≥ {{ $quiz->passing_percent }}%</span></div>
         @if($passedAttempt)

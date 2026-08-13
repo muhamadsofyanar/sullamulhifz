@@ -1,6 +1,8 @@
 @extends('layouts.app',['pageTitle'=>'Beranda Orang Tua'])
 @section('content')
-@php($setoranLabels=['fluent'=>'Lancar','fair'=>'Lulus dengan penguatan','repeat_needed'=>'Perlu diulang','postponed'=>'Belum dinilai'])
+@php
+    $setoranLabels=['fluent'=>'Lancar','fair'=>'Lulus dengan penguatan','repeat_needed'=>'Perlu diulang','postponed'=>'Belum dinilai'];
+@endphp
 <div class="family-dashboard-head"><span class="eyebrow">ORANG TUA / WALI</span><h1>Assalamu‘alaikum, {{ $guardian->full_name }}</h1><p>Yang penting hari ini: lihat kebutuhan anak, dampingi satu langkah, lalu lanjutkan dengan tenang.</p></div>
 
 @if($academyEnabled && $academyRecommendations->isNotEmpty())

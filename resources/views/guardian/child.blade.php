@@ -25,7 +25,13 @@ $retentionLabels = ['not_assessed'=>'Belum dinilai','strengthening'=>'Penguatan'
     @endif
     @if($quranJourneyPrograms->isNotEmpty())
     <h3>Program Qur’an</h3>
-    @foreach($quranJourneyPrograms as $program)@php($done=$program->progress->where('status','completed')->count()) @php($total=$program->progress->count())<div class="list-row"><div><strong>{{ $program->template?->name }}</strong><small>{{ $done }}/{{ $total }} bagian · {{ ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawah + Murāja‘ah'][$program->purpose] ?? $program->purpose }}</small></div></div>@endforeach
+    @foreach($quranJourneyPrograms as $program)@php
+    $done=$program->progress->where('status','completed')->count();
+@endphp
+ @php
+    $total=$program->progress->count();
+@endphp
+<div class="list-row"><div><strong>{{ $program->template?->name }}</strong><small>{{ $done }}/{{ $total }} bagian · {{ ['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawah + Murāja‘ah'][$program->purpose] ?? $program->purpose }}</small></div></div>@endforeach
     @endif
 </section>
 @endif
@@ -45,7 +51,10 @@ $retentionLabels = ['not_assessed'=>'Belum dinilai','strengthening'=>'Penguatan'
     </div>
 </section>
 @endif
-@if($publishedMeetings->isNotEmpty())<section class="card"><div class="section-head"><h2>Ringkasan pertemuan terbaru</h2><span class="badge">Dari guru</span></div>@foreach($publishedMeetings as $meeting)@php($target=$meeting->schoolClass ?: $meeting->learningGroup)<div class="list-row"><div><strong>{{ $meeting->meeting_date->format('d M Y') }} · {{ $target?->name }}</strong><small>{{ $meeting->topic ?: 'Pembelajaran' }}</small><p>{{ $meeting->guardian_summary }}</p></div></div>@endforeach</section>@endif
+@if($publishedMeetings->isNotEmpty())<section class="card"><div class="section-head"><h2>Ringkasan pertemuan terbaru</h2><span class="badge">Dari guru</span></div>@foreach($publishedMeetings as $meeting)@php
+    $target=$meeting->schoolClass ?: $meeting->learningGroup;
+@endphp
+<div class="list-row"><div><strong>{{ $meeting->meeting_date->format('d M Y') }} · {{ $target?->name }}</strong><small>{{ $meeting->topic ?: 'Pembelajaran' }}</small><p>{{ $meeting->guardian_summary }}</p></div></div>@endforeach</section>@endif
 <div class="grid three">
 <section class="card"><h2>Target saat ini</h2>@forelse($student->memorizationTargets as $target)<div class="list-row"><div><strong>{{ $target->surah?->name_latin }} {{ $target->start_verse }}–{{ $target->end_verse }}</strong><small>{{ $target->rubu?->name ?? 'Segment legacy tidak digunakan' }} · {{ $target->marhalah?->name ?? 'Beban disesuaikan guru' }}</small><p>{{ $statusTarget[$target->status] ?? ucfirst(str_replace('_',' ',$target->status)) }}{{ $target->due_date ? ' · target '.$target->due_date->format('d M Y') : '' }}{{ $target->notes ? ' · '.$target->notes : '' }}</p>@if($quranEnabled)<a class="button small ghost" href="{{ route('quran-practice.target',$target) }}">▶ Latihan target</a>@endif</div></div>@empty<p class="empty">Belum ada target yang dibagikan.</p>@endforelse</section>
 <section class="card"><h2>Kehadiran terbaru</h2>@forelse($student->attendanceRecords as $record)<div class="list-row"><div><strong>{{ $record->meeting?->meeting_date?->format('d M Y') }}</strong><small>{{ $attendanceLabel[$record->status] ?? $record->status }}{{ $record->notes ? ' · '.$record->notes : '' }}</small></div></div>@empty<p class="empty">Belum ada catatan.</p>@endforelse</section>

@@ -25,7 +25,9 @@
 <section class="card">
     <div class="section-head"><div><h2>Santri dalam penugasan</h2><p class="hint">Inisialisasi sekali sesuai posisi nyata santri. Setelah itu perpindahan Juz dilakukan melalui milestone Juz selesai.</p></div><span>{{ $students->count() }} santri</span></div>
     @forelse($students as $student)
-        @php($profile = $student->quranJourneyProfile)
+        @php
+            $profile = $student->quranJourneyProfile;
+        @endphp
         <div class="list-row">
             <div>
                 <strong>{{ $student->full_name }}</strong>

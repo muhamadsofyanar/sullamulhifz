@@ -1,6 +1,8 @@
 @extends('layouts.app')
 @section('content')
-@php($academyLogin = strtolower(request()->getHost()) === strtolower((string) config('sullam.academy_host')))
+@php
+    $academyLogin = strtolower(request()->getHost()) === strtolower((string) config('sullam.academy_host'));
+@endphp
 <div class="auth-page">
     <div class="auth-ornament auth-ornament-left" aria-hidden="true"></div>
     <div class="auth-ornament auth-ornament-right" aria-hidden="true"></div>

@@ -1,5 +1,7 @@
 @extends('layouts.app')
-@php($pageTitle='Preview Impor')
+@php
+    $pageTitle='Preview Impor';
+@endphp
 @section('content')
 <div class="page-head"><div><span class="eyebrow">BATCH #{{ $batch->id }}</span><h1>Preview impor</h1><p>{{ $batch->original_name }} · {{ $batch->total_rows }} baris</p></div><a class="button secondary" href="{{ route('admin.imports.index') }}">Kembali</a></div>
 <div class="stats-grid three"><div class="stat-card"><span>Valid</span><strong>{{ $batch->success_rows }}</strong></div><div class="stat-card"><span>Tidak valid</span><strong>{{ $batch->failed_rows }}</strong></div><div class="stat-card"><span>Status</span><strong>{{ $batch->status }}</strong></div></div>

@@ -1,6 +1,10 @@
 {{-- @phase 6.0 Distraction-free memorization submission --}}
-@php($quickStudents = $quickStudents ?? collect())
-@php($quickSelectedStudentId = (int) ($quickSelectedStudentId ?? 0))
+@php
+    $quickStudents = $quickStudents ?? collect();
+@endphp
+@php
+    $quickSelectedStudentId = (int) ($quickSelectedStudentId ?? 0);
+@endphp
 <form class="stack compact quick-submission" method="post" action="{{ $quickAction }}" data-quick-submission>
     @csrf
     <input type="hidden" name="submission_key" value="{{ (string) \Illuminate\Support\Str::uuid() }}">

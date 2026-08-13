@@ -5,8 +5,12 @@
 </div>
 <div class="academy-path-grid">
 @forelse($paths as $path)
-    @php($p = $progress[$path->id] ?? ['done'=>0,'total'=>0,'percent'=>0])
-    @php($locked = $lockedPathIds->contains($path->id))
+    @php
+        $p = $progress[$path->id] ?? ['done'=>0,'total'=>0,'percent'=>0];
+    @endphp
+    @php
+        $locked = $lockedPathIds->contains($path->id);
+    @endphp
     <article class="academy-path-card">
         <div class="academy-path-top"><span class="academy-path-phase">{{ strtoupper($path->category ?? 'ACADEMY') }}</span><span>{{ $p['percent'] }}%</span></div>
         <h2>{{ $path->title }}</h2>

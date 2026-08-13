@@ -18,6 +18,13 @@ COPY . .
 # Production builds must use the dependency graph already verified by CI.
 RUN test -f composer.lock || (echo "ERROR: composer.lock wajib tersedia." >&2; exit 1)
 
+# Laravel 13 only accepts raw PHP as an @php ... @endphp block. Fail with the
+# source filename instead of waiting for php -l to report an opaque cache hash.
+RUN if grep -R -n --include='*.blade.php' '@php(' resources/views; then \
+        echo "ERROR: inline @php(...) tidak didukung; gunakan blok @php/@endphp." >&2; \
+        exit 1; \
+    fi
+
 # Coolify/BuildKit can occasionally resolve Packagist over an unreachable IPv6 path.
 # Force Composer downloads to IPv4 and retry transient outbound failures before
 # failing the image build. This keeps production deploys resilient without

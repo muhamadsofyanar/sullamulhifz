@@ -3,9 +3,15 @@
 <div class="academy-page-head"><div><span class="eyebrow">TERSIMPAN</span><h1>Materi yang ingin Anda buka kembali.</h1><p>Simpan hanya yang relevan agar daftar belajar tetap ringan.</p></div></div>
 <div class="academy-bookmark-list">
 @forelse($rows as $row)
-    @php($lesson = $row->bookmark_type === 'lesson' ? ($lessons[$row->bookmark_id] ?? null) : null)
-    @php($preset = $row->bookmark_type === 'quran_preset' ? ($presets[$row->bookmark_id] ?? null) : null)
-    @php($ayah = $row->bookmark_type === 'quran_ayah' ? ($ayahs[$row->bookmark_id] ?? null) : null)
+    @php
+        $lesson = $row->bookmark_type === 'lesson' ? ($lessons[$row->bookmark_id] ?? null) : null;
+    @endphp
+    @php
+        $preset = $row->bookmark_type === 'quran_preset' ? ($presets[$row->bookmark_id] ?? null) : null;
+    @endphp
+    @php
+        $ayah = $row->bookmark_type === 'quran_ayah' ? ($ayahs[$row->bookmark_id] ?? null) : null;
+    @endphp
     @if($lesson)
         <article><x-icon name="lesson" size="24"/><div><span>{{ $lesson->module?->program?->title }}</span><strong>{{ $lesson->title }}</strong><small>{{ $lesson->lesson_type }} · ± {{ $lesson->duration_minutes ?? 5 }} menit</small></div><a href="{{ route('academy.portal.lesson',$lesson) }}">Buka →</a></article>
     @elseif($preset)

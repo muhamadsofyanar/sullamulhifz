@@ -17,7 +17,9 @@
     <div class="section-head"><div><h2>Mulai pertemuan</h2><p class="hint">Pilih kelas atau kelompok yang sedang diampu.</p></div></div>
     <div class="cards-list">
     @forelse($assignments as $item)
-        @php($target=$item->schoolClass ?: $item->learningGroup)
+        @php
+            $target=$item->schoolClass ?: $item->learningGroup;
+        @endphp
         <div class="item-card daily-target-card">
             <div><strong>{{ $target?->name }}</strong><small>{{ $item->program?->name }} · {{ $item->class_id ? 'Kelas' : 'Kelompok' }}</small></div>
             <a class="button small primary" href="{{ route('teacher.meetings.create',['target_type'=>$item->class_id?'class':'group','target_id'=>$target?->id]) }}">Buka</a>
@@ -31,7 +33,9 @@
 <section class="card">
     <div class="section-head"><h2>Pertemuan belum ditutup</h2><span class="badge">Wajib diselesaikan</span></div>
     @forelse($openMeetings as $meeting)
-        @php($target=$meeting->schoolClass ?: $meeting->learningGroup)
+        @php
+            $target=$meeting->schoolClass ?: $meeting->learningGroup;
+        @endphp
         <a class="list-row" href="{{ route('teacher.meetings.show',$meeting) }}">
             <div><strong>{{ $target?->name }}</strong><small>{{ $meeting->meeting_date->format('d M Y') }} · {{ $meeting->topic ?: 'Materi belum ditulis' }}</small></div><span>→</span>
         </a>
@@ -45,7 +49,9 @@
 <section class="card">
     <div class="section-head"><h2>Jadwal hari ini</h2></div>
     @forelse($todaySchedules as $schedule)
-        @php($target=$schedule->schoolClass ?: $schedule->learningGroup)
+        @php
+            $target=$schedule->schoolClass ?: $schedule->learningGroup;
+        @endphp
         <div class="list-row"><div><strong>{{ $target?->name }}</strong><small>{{ substr((string)$schedule->start_time,0,5) }}–{{ substr((string)$schedule->end_time,0,5) }} · {{ $schedule->program?->name }}{{ $schedule->location ? ' · '.$schedule->location : '' }}</small></div></div>
     @empty
         <p class="empty">Tidak ada jadwal resmi pada hari ini. Pertemuan tambahan tetap dapat dibuat.</p>

@@ -59,9 +59,15 @@
 <div class="academy-section-heading"><div><span class="eyebrow">E-COURSE</span><h2>Program yang dapat Anda ikuti</h2><p>Mulai dari materi yang paling relevan. Tidak harus selesai sekaligus.</p></div>@if($academyStandalone ?? false)<a class="button secondary" href="{{ route('academy.portal.classes') }}">Kelas Saya</a>@endif</div>
 <section class="academy-program-grid">
 @forelse($programs as $program)
-    @php($lessons=$program->modules->flatMap->lessons)
-    @php($done=$lessons->whereIn('id',$completedIds)->count())
-    @php($percent=$lessons->count() ? (int)round(($done/$lessons->count())*100) : 0)
+    @php
+        $lessons=$program->modules->flatMap->lessons;
+    @endphp
+    @php
+        $done=$lessons->whereIn('id',$completedIds)->count();
+    @endphp
+    @php
+        $percent=$lessons->count() ? (int)round(($done/$lessons->count())*100) : 0;
+    @endphp
     <a class="academy-program-card" href="{{ route($academyRoutePrefix.'program',$program) }}">
         <div class="academy-program-top"><span class="academy-audience">{{ $program->audience==='guardian'?'ORANG TUA':($program->audience==='teacher'?'GURU':($program->audience==='admin'?'PENGELOLA':'BERSAMA')) }}</span>@if($program->is_featured)<span class="badge">Utama</span>@endif</div>
         <h2>{{ $program->title }}</h2><p>{{ $program->summary }}</p>

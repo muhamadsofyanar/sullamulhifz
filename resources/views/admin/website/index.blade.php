@@ -1,5 +1,7 @@
 @extends('layouts.app')
-@php($pageTitle='Website Publik')
+@php
+    $pageTitle='Website Publik';
+@endphp
 @section('content')
 <div class="page-head"><div><span class="eyebrow">CMS RINGAN</span><h1>Website publik</h1><p>Kelola halaman, artikel, dan pendaftaran tanpa mengubah source.</p></div><a class="button secondary" target="_blank" href="{{ route('public.home') }}">Buka website</a></div>
 <div class="grid two">

@@ -1,6 +1,8 @@
 @extends('layouts.app',['pageTitle'=>'Pembayaran Program'])
 @section('content')
-@php($statusLabels = ['pending'=>'Menunggu verifikasi','paid'=>'Terverifikasi','rejected'=>'Ditolak','cancelled'=>'Dibatalkan'])
+@php
+    $statusLabels = ['pending'=>'Menunggu verifikasi','paid'=>'Terverifikasi','rejected'=>'Ditolak','cancelled'=>'Dibatalkan'];
+@endphp
 <div class="personal-page personal-v4-page">
     <section class="personal-v4-hero compact"><div><span class="personal-kicker">PEMBAYARAN PROGRAM</span><h1>Transfer ke rekening resmi yayasan</h1><p>Nomor tujuan ditampilkan dari konfigurasi resmi dan disimpan sebagai snapshot pada setiap transaksi.</p></div></section>
     <section class="personal-v4-grid">

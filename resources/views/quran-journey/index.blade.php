@@ -1,6 +1,8 @@
 @extends('layouts.app',['pageTitle'=>'Program Qur’an Saya'])
 @section('content')
-@php($purposeLabel=['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawah + Murāja‘ah'])
+@php
+    $purposeLabel=['tilawah'=>'Tilawah','murajaah'=>'Murāja‘ah','both'=>'Tilawah + Murāja‘ah'];
+@endphp
 <div class="page-head"><div><span class="eyebrow">QUR’AN JOURNEY</span><h1>Program Qur’an Saya</h1><p>Tilawah dan Murāja‘ah berjalan berdampingan dengan hafalan. Jadwal adalah alat bantu kesinambungan, bukan alat untuk memberi label gagal.</p></div>@if(!auth()->user()->hasRole('personal') || app(\App\Services\PersonalModuleAccessService::class)->allows(auth()->user(), 'quran_practice'))<div class="actions"><a class="button ghost" href="{{ route('quran-practice.index') }}">Latihan Al-Qur’an</a></div>@endif</div>
 
 <div class="grid two">
@@ -19,7 +21,12 @@
 
 <section class="card"><div class="section-head"><div><h2>Perjalanan aktif & riwayat</h2><p class="hint">Jika satu hari terlewat, lanjutkan langkah berikutnya saat siap. Sistem tidak memberi status gagal.</p></div><span>{{ $enrollments->count() }} program</span></div>
 @forelse($enrollments as $enrollment)
-    @php($done=$enrollment->progress->where('status','completed')->count()) @php($total=$enrollment->progress->count())
+    @php
+        $done=$enrollment->progress->where('status','completed')->count();
+    @endphp
+     @php
+    $total=$enrollment->progress->count();
+@endphp
     <div class="item-card static"><div><strong>{{ $enrollment->template?->name }}</strong><small>{{ $purposeLabel[$enrollment->purpose] ?? $enrollment->purpose }} · mulai {{ $enrollment->start_date?->format('d M Y') }} · {{ $done }}/{{ $total }} bagian</small></div><span>{{ $total ? round(($done/$total)*100) : 0 }}%</span></div>
     <div class="cards-list">
     @foreach($enrollment->progress->sortBy(fn($p)=>$p->step?->sequence) as $progress)

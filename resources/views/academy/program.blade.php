@@ -24,8 +24,12 @@ $audienceLabel=$program->audience==='guardian'?'ORANG TUA':($program->audience==
     <div class="academy-course-module-head"><div><small>MODUL</small><h2>{{ $module->title }}</h2><p>{{ $module->summary }}</p></div><span>{{ $module->lessons->count() }} materi</span></div>
     <div class="academy-course-lessons">
     @foreach($module->lessons as $index=>$lesson)
-        @php($item=$progress->get($lesson->id))
-        @php($locked=$lockedLessonIds->contains($lesson->id))
+        @php
+            $item=$progress->get($lesson->id);
+        @endphp
+        @php
+            $locked=$lockedLessonIds->contains($lesson->id);
+        @endphp
         <a class="academy-course-lesson {{ $item?->status === 'completed' ? 'completed' : '' }} {{ $locked ? 'locked' : '' }}" href="{{ $locked ? '#' : route($academyRoutePrefix.'lesson',$lesson) }}" @if($locked) aria-disabled="true" @endif>
             <span class="academy-course-number">{{ $item?->status === 'completed' ? '✓' : ($locked ? '🔒' : $index + 1) }}</span>
             <span><strong>{{ $lesson->title }}</strong><small>{{ ucfirst($lesson->lesson_type) }} · ± {{ $lesson->duration_minutes ?? 5 }} menit</small></span>

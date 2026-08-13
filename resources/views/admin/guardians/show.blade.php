@@ -1,5 +1,7 @@
 @extends('layouts.app')
-@php($pageTitle='Profil Wali')
+@php
+    $pageTitle='Profil Wali';
+@endphp
 @section('content')
 <div class="page-head"><div><span class="eyebrow">WALI SANTRI</span><h1>{{ $guardian->full_name }}</h1><p>{{ $guardian->students->count() }} santri terhubung.</p></div><a class="button secondary" href="{{ route('admin.guardians.index') }}">Kembali</a></div>
 <div class="grid two"><form class="card stack" method="post" action="{{ route('admin.guardians.update',$guardian) }}">@csrf @method('put')

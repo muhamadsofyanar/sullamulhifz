@@ -1,14 +1,16 @@
 @props(['name', 'size' => 20, 'label' => null])
-@php($icon = match($name) {
-    'academic' => 'plan',
-    'assignment' => 'plan',
-    'audio' => 'listen',
-    'calendar' => 'schedule',
-    'classroom' => 'lesson',
-    'report' => 'progress',
-    'video' => 'lesson',
-    default => $name,
-})
+@php
+    $icon = match($name) {
+        'academic' => 'plan',
+        'assignment' => 'plan',
+        'audio' => 'listen',
+        'calendar' => 'schedule',
+        'classroom' => 'lesson',
+        'report' => 'progress',
+        'video' => 'lesson',
+        default => $name,
+    };
+@endphp
 <svg {{ $attributes->merge(['class' => 'app-icon icon-'.$icon]) }} width="{{ $size }}" height="{{ $size }}" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" @if($label) role="img" aria-label="{{ $label }}" @else aria-hidden="true" @endif>
     @switch($icon)
         @case('home')

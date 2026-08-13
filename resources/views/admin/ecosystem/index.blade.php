@@ -4,7 +4,9 @@
 
 <section class="card" style="margin-bottom:18px"><div class="section-head"><div><span class="eyebrow">AKSES PERSONAL</span><h2>Program yang didaftarkan per akun</h2><p class="muted">Yang tidak dicentang tidak muncul dan tidak dapat dibuka oleh akun tersebut. Histori lama tetap tersimpan.</p></div><span class="badge">{{ $personalUsers->count() }} akun</span></div>
 <div class="v4-admin-access-list">@forelse($personalUsers as $personalUser)
-@php($activeKeys = collect($personalAccessMaps[$personalUser->id] ?? [])->filter()->keys()->all())
+@php
+    $activeKeys = collect($personalAccessMaps[$personalUser->id] ?? [])->filter()->keys()->all();
+@endphp
 <form method="post" action="{{ route('admin.ecosystem.personal.access',$personalUser) }}" class="v4-admin-access">@csrf @method('put')
     <div><strong>{{ $personalUser->name }}</strong><small>{{ $personalUser->email }}</small></div>
     <div class="v4-access-options">@foreach($moduleDefinitions as $key=>$definition)<label><input type="checkbox" name="programs[]" value="{{ $key }}" @checked(in_array($key,$activeKeys,true))><span>{{ $definition['title'] }}</span></label>@endforeach</div>

@@ -1,7 +1,9 @@
 {{-- @phase 6.0 Voluntary infaq; @phase 6.1 transparent UX --}}
 @extends('layouts.app',['pageTitle'=>'Infak Sukarela'])
 @section('content')
-@php($statusLabels=['pending'=>'Menunggu verifikasi','verified'=>'Terverifikasi','rejected'=>'Perlu diperbaiki','refunded'=>'Dikembalikan'])
+@php
+    $statusLabels=['pending'=>'Menunggu verifikasi','verified'=>'Terverifikasi','rejected'=>'Perlu diperbaiki','refunded'=>'Dikembalikan'];
+@endphp
 <div class="v610-page-head"><div><span class="eyebrow">GRATIS · SUKARELA · TRANSPARAN</span><h1>Dukung keberlanjutan, tanpa mengubah hak akses.</h1><p>Aplikasi tetap gratis. Bukti transfer boleh dilampirkan untuk membantu pencocokan, tetapi verifikasi tetap dilakukan melalui mutasi rekening resmi.</p></div><span class="v610-status is-info">v6.1</span></div>
 <div class="grid two">
 <section class="card"><div class="section-head"><div><h2>Catat infak</h2><p class="hint">Nama anonim secara bawaan.</p></div></div>

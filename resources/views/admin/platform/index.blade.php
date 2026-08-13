@@ -52,7 +52,9 @@
         <p class="muted">Modul baru dapat disiapkan lebih dahulu, lalu diaktifkan ketika konten dan alurnya siap.</p>
         <div class="stack">
             @foreach($features as $feature)
-                @php($meta = $featureCatalog[$feature->feature_key] ?? [str($feature->feature_key)->headline(), 'Modul tambahan.'])
+                @php
+                    $meta = $featureCatalog[$feature->feature_key] ?? [str($feature->feature_key)->headline(), 'Modul tambahan.'];
+                @endphp
                 <form method="post" action="{{ route('admin.platform.features.update', $feature) }}" class="list-row">
                     @csrf @method('put')
                     <div>
@@ -90,7 +92,9 @@
         <thead><tr><th>Cabang</th><th>Kontak</th><th>Status</th><th>Utama</th><th>Aksi</th></tr></thead>
         <tbody>
         @forelse($branches as $branch)
-            @php($formId = 'branch-form-'.$branch->id)
+            @php
+                $formId = 'branch-form-'.$branch->id;
+            @endphp
             <tr>
                 <td>
                     <input form="{{ $formId }}" name="name" value="{{ $branch->name }}" required>

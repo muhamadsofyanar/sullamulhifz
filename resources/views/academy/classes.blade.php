@@ -3,10 +3,18 @@
 <div class="academy-section-heading"><div><span class="eyebrow">KELAS SAYA</span><h1>Ruang belajar yang tersedia untuk Anda</h1><p>Pada fase ini, kelas Academy mengikuti program yang sesuai dengan peran pengguna.</p></div><a class="button secondary" href="{{ route('academy.portal.progress') }}">Lihat progres</a></div>
 <div class="academy-class-grid">
 @foreach($programs as $program)
-    @php($lessons=$program->modules->flatMap->lessons)
-    @php($done=$lessons->whereIn('id',$completedIds)->count())
-    @php($started=$lessons->filter(fn($lesson)=>$progressRows->has($lesson->id))->count())
-    @php($percent=$lessons->count() ? (int)round(($done/$lessons->count())*100) : 0)
+    @php
+        $lessons=$program->modules->flatMap->lessons;
+    @endphp
+    @php
+        $done=$lessons->whereIn('id',$completedIds)->count();
+    @endphp
+    @php
+        $started=$lessons->filter(fn($lesson)=>$progressRows->has($lesson->id))->count();
+    @endphp
+    @php
+        $percent=$lessons->count() ? (int)round(($done/$lessons->count())*100) : 0;
+    @endphp
     <article class="academy-class-card">
         <span class="academy-content-type">{{ $started ? 'SEDANG DIPELAJARI' : 'SIAP DIMULAI' }}</span>
         <h2>{{ $program->title }}</h2><p>{{ $program->summary }}</p>

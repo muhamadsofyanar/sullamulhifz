@@ -18,9 +18,15 @@ $trackLabels=[
 @endif
 <section class="academy-program-grid">
 @forelse($programs as $program)
-    @php($lessons=$program->modules->flatMap->lessons)
-    @php($done=$lessons->whereIn('id',$completedIds)->count())
-    @php($percent=$lessons->count() ? (int)round(($done/$lessons->count())*100) : 0)
+    @php
+        $lessons=$program->modules->flatMap->lessons;
+    @endphp
+    @php
+        $done=$lessons->whereIn('id',$completedIds)->count();
+    @endphp
+    @php
+        $percent=$lessons->count() ? (int)round(($done/$lessons->count())*100) : 0;
+    @endphp
     <a class="academy-program-card" href="{{ route($academyRoutePrefix.'program',$program) }}">
         <div class="academy-program-top">
             <span class="academy-audience">{{ $program->audience==='guardian'?'ORANG TUA':($program->audience==='teacher'?'GURU':($program->audience==='admin'?'PENGELOLA':'BERSAMA')) }}</span>

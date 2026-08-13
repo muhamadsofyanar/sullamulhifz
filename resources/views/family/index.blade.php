@@ -98,7 +98,9 @@
             @endif
         </div>
         @if(isset($snapshot['memorization']))
-        @php($memorization=$snapshot['memorization'])
+        @php
+            $memorization=$snapshot['memorization'];
+        @endphp
         <div class="compact-list"><strong>Yang perlu didampingi</strong>
             @if($memorization['latest'])<span>Terakhir: {{ $memorization['latest']->surah?->name_latin }} {{ $memorization['latest']->start_verse }}–{{ $memorization['latest']->end_verse }} · {{ ucfirst($memorization['latest']->daily_decision ?: 'tercatat') }}</span>@endif
             @if($memorization['latest_note'])<span>Arahan ustadz: {{ $memorization['latest_note'] }}</span>@endif

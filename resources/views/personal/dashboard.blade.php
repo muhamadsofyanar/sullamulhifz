@@ -133,7 +133,9 @@
         @if($goals->isNotEmpty())
         <div class="personal-goal-list">
             @foreach($goals as $goal)
-            @php($percent = min(100, (int) round(($goal->progress_value / max(1,$goal->target_value))*100)))
+            @php
+                $percent = min(100, (int) round(($goal->progress_value / max(1,$goal->target_value))*100));
+            @endphp
             <article>
                 <div><strong>{{ $goal->title }}</strong><small>{{ $goal->progress_value }} / {{ $goal->target_value }} {{ $metricLabels[$goal->metric] ?? $goal->metric }} @if($goal->due_on) · sampai {{ $goal->due_on->translatedFormat('d M Y') }} @endif</small></div>
                 <div class="personal-progress"><span style="width:{{ $percent }}%"></span></div><b>{{ $percent }}%</b>
